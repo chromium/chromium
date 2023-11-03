@@ -84,8 +84,8 @@ src/webgpu/util/conversion.ts
 src/webgpu/util/device_pool.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/util/texture/texel_view.ts
-src/webgpu/util/texture.ts
 src/webgpu/util/texture/texture_ok.ts
+src/webgpu/util/texture.ts
 src/webgpu/gpu_test.ts
 src/stress/compute/compute_pass.spec.ts
 src/stress/device/bind_group_allocation.spec.ts
