@@ -30,6 +30,8 @@ source_set("recording") {
     "recording_service.cc",
     "recording_service.h",
     "recording_service_constants.h",
+    "rgb_video_frame.cc",
+    "rgb_video_frame.h",
     "video_capture_params.cc",
     "video_capture_params.h",
     "webm_encoder_muxer.cc",

@@ -6,9 +6,10 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_COLOR_QUANTIZATION_H_
 
 #include "chromeos/ash/services/recording/gif_encoding_types.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace recording {
+
+class RgbVideoFrame;
 
 // GIF images can have a maximum number of 256 colors in their color tables.
 // This means that the minimum number of bits needed to represent this count is
@@ -16,11 +17,11 @@ namespace recording {
 constexpr size_t kMaxNumberOfColorsInPalette = 256;
 constexpr uint8_t kMaxColorBitDepth = 8;
 
-// Performs color quantization on the given `bitmap` and fills
+// Performs color quantization on the given `rgb_video_frame` and fills
 // `out_color_palette` with the most important 256 colors in the image, and also
 // fills `out_pixel_color_indices` with the indices of the chosen colors from
-// `out_color_palette` for all the pixels in `bitmap`.
-void BuildColorPaletteAndPixelIndices(const SkBitmap& bitmap,
+// `out_color_palette` for all the pixels in `rgb_video_frame`.
+void BuildColorPaletteAndPixelIndices(const RgbVideoFrame& rgb_video_frame,
                                       ColorTable& out_color_palette,
                                       ColorIndices& out_pixel_color_indices);
 

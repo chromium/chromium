@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_RECORDING_GIF_ENCODER_H_
 #define CHROMEOS_ASH_SERVICES_RECORDING_GIF_ENCODER_H_
 
-#include <vector>
+#include <cstdint>
 
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -16,6 +16,8 @@
 #include "chromeos/ash/services/recording/recording_encoder.h"
 
 namespace recording {
+
+class RgbVideoFrame;
 
 // Encapsulates encoding video frames into an animated GIF and writes the
 // encoded output to a file that it creates at the given `gif_file_path`. An
@@ -99,7 +101,7 @@ class GifEncoder : public RecordingEncoder {
   // earlier in the Logical Screen Descriptor block). It also specifies whether
   // the frame has its own Local Color Table.
   // This block repeats once per every received video frame.
-  void WriteImageDescriptor(const gfx::Size& frame_size,
+  void WriteImageDescriptor(const RgbVideoFrame& rgb_video_frame,
                             uint8_t color_bit_depth);
 
   // Writes the `color_palette_` which has the given `color_bit_depth` to the

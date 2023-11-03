@@ -15,6 +15,8 @@ include_rules = [
   "+testing/gtest/include/gtest/gtest.h",
   "+third_party/skia/include/core/SkBitmap.h",
   "+third_party/skia/include/core/SkColor.h",
+  "+third_party/skia/include/core/SkColorType.h",
+  "+third_party/skia/include/core/SkTypes.h",
   "+ui/gfx",
 
   # Abseil is allowed by default, but some features are banned. See
