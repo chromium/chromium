@@ -40,6 +40,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -1102,6 +1103,23 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kManagedTabDiscardingExceptions] =
       settings_api::PrefType::PREF_TYPE_LIST;
+
+  // AI settings.
+  (*s_allowlist)
+      [optimization_guide::prefs::kModelExecutionMainToggleSettingState] =
+          settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_COMPOSE)] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
 
   return *s_allowlist;
 }
