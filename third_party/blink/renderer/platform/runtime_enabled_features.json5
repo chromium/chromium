@@ -601,6 +601,10 @@
       base_feature_status: "enabled",
     },
     {
+      name: "CheckVisibilityExtraProperties",
+      status: "test",
+    },
+    {
       name: "ClickToCapturedPointer",
       status: "experimental",
       base_feature: "none",

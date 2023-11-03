@@ -9143,10 +9143,34 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
     UseCounter::Count(GetDocument(),
                       WebFeature::kElementCheckVisibilityOptionCheckOpacity);
   }
+  if (options->contentVisibilityAuto()) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kElementCheckVisibilityOptionContentVisibilityAuto);
+  }
+  if (options->opacityProperty()) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kElementCheckVisibilityOptionOpacityProperty);
+  }
+  if (options->visibilityProperty()) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kElementCheckVisibilityOptionVisibilityProperty);
+  }
 
-  // Unlock ancestor content-visibility:auto elements. If this element is
+  // If we're checking content-visibility: auto, then we can just check if we're
+  // display locked at all. This is because, content-visibility: hidden is
+  // always checked, so regardless of _why_ we're locked, the answer will be
+  // false if we're locked.
+  if (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
+      options->contentVisibilityAuto() &&
+      DisplayLockUtilities::IsDisplayLockedPreventingPaint(this)) {
+    return false;
+  }
+
+  // Now, unlock ancestor content-visibility:auto elements. If this element is
   // offscreen and locked due to content-visibility:auto, this method should not
-  // count that as invisible.
+  // count that as invisible. That's checked above.
   DisplayLockUtilities::ScopedForcedUpdate force_locks(
       this, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree,
       /*include_self=*/false, /*only_cv_auto=*/true,
@@ -9163,7 +9187,9 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   }
 
   DCHECK(options);
-  if (options->checkVisibilityCSS() &&
+  if ((options->checkVisibilityCSS() ||
+       (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
+        options->visibilityProperty())) &&
       style->Visibility() != EVisibility::kVisible) {
     return false;
   }
@@ -9181,7 +9207,9 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
       }
 
       // Check for opacity:0
-      if (options->checkOpacity()) {
+      if (options->checkOpacity() ||
+          (RuntimeEnabledFeatures::CheckVisibilityExtraPropertiesEnabled() &&
+           options->opacityProperty())) {
         if (style = ancestor_element->GetComputedStyle(); style) {
           if (style->Opacity() == 0.f) {
             return false;

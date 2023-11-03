@@ -4052,6 +4052,9 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use = 4713,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory = 4714,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use = 4715,
+  kElementCheckVisibilityOptionContentVisibilityAuto = 4716,
+  kElementCheckVisibilityOptionOpacityProperty = 4717,
+  kElementCheckVisibilityOptionVisibilityProperty = 4718,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

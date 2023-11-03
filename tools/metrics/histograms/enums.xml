@@ -33995,6 +33995,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory"/>
   <int value="4715"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use"/>
+  <int value="4716" label="ElementCheckVisibilityOptionContentVisibilityAuto"/>
+  <int value="4717" label="ElementCheckVisibilityOptionOpacityProperty"/>
+  <int value="4718" label="ElementCheckVisibilityOptionVisibilityProperty"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

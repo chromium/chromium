@@ -22,6 +22,9 @@
 dictionary CheckVisibilityOptions {
   boolean checkOpacity = false;
   boolean checkVisibilityCSS = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean contentVisibilityAuto = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean opacityProperty = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean visibilityProperty = false;
 };
 
 // https://dom.spec.whatwg.org/#interface-element
