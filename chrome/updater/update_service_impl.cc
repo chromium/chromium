@@ -763,6 +763,11 @@ void UpdateServiceImpl::CheckForUpdate(
   VLOG(1) << __func__ << ": " << app_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!persisted_data_->GetProductVersion(app_id).IsValid()) {
+    std::move(callback).Run(Result::kInvalidArgument);
+    return;
+  }
+
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, priority, false, policy)) {
     HandleUpdateDisabledByPolicy(app_id, policy, false, state_update,
@@ -786,6 +791,11 @@ void UpdateServiceImpl::Update(
     Callback callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!persisted_data_->GetProductVersion(app_id).IsValid()) {
+    std::move(callback).Run(Result::kInvalidArgument);
+    return;
+  }
 
   int policy = kPolicyEnabled;
   if (IsUpdateDisabledByPolicy(app_id, priority, false, policy)) {
