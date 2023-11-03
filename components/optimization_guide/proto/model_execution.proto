@@ -28,6 +28,8 @@ message ExecuteResponse {
     Any response_metadata = 2;
     string error_message = 3;
   }
+
+  optional string server_execution_id = 4;
 }
 
 enum ModelExecutionFeature {
