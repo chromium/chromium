@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHELL_INTEGRATION_LINUX_H_
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
@@ -28,17 +29,6 @@ struct DesktopActionInfo;
 }
 
 namespace shell_integration_linux {
-
-// Get the path to write user-specific application data files to, as specified
-// in the XDG Base Directory Specification:
-// http://standards.freedesktop.org/basedir-spec/latest/
-base::FilePath GetDataWriteLocation(base::Environment* env);
-
-// Get the list of paths to search for application data files, in order of
-// preference, as specified in the XDG Base Directory Specification:
-// http://standards.freedesktop.org/basedir-spec/latest/
-// Called on the FILE thread.
-std::vector<base::FilePath> GetDataSearchLocations(base::Environment* env);
 
 // Gets the name for use as the res_name of the window's WM_CLASS property.
 std::string GetProgramClassName();

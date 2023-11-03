@@ -321,7 +321,7 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
   // See this bug on xdg desktop-file-utils
   // https://gitlab.freedesktop.org/xdg/desktop-file-utils/issues/54
   base::FilePath user_applications_dir =
-      shell_integration_linux::GetDataWriteLocation(env).Append("applications");
+      base::nix::GetXDGDataWriteLocation(env).Append("applications");
   argv.clear();
   argv.push_back("update-desktop-database");
   argv.push_back(user_applications_dir.value());
@@ -678,8 +678,7 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
   }
 
   // Delete shortcuts from |kDirectoryFilename|.
-  base::FilePath applications_menu =
-      shell_integration_linux::GetDataWriteLocation(env);
+  base::FilePath applications_menu = base::nix::GetXDGDataWriteLocation(env);
   applications_menu = applications_menu.AppendASCII("applications");
   std::vector<base::FilePath> shortcut_filenames_app_menu =
       shell_integration_linux::GetExistingProfileShortcutFilenames(
