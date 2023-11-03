@@ -28,7 +28,14 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+
+using SidePanelWebUIViewT_HistoryClustersSidePanelUI =
+    SidePanelWebUIViewT<HistoryClustersSidePanelUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_HistoryClustersSidePanelUI,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
     Browser* browser)

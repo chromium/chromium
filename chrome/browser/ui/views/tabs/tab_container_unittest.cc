@@ -23,6 +23,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
@@ -41,6 +43,8 @@ views::View* FindTabView(views::View* view) {
 }
 
 class FakeTabDragContext : public TabDragContextBase {
+  METADATA_HEADER(FakeTabDragContext, TabDragContextBase)
+
  public:
   FakeTabDragContext() = default;
   ~FakeTabDragContext() override = default;
@@ -57,6 +61,9 @@ class FakeTabDragContext : public TabDragContextBase {
  private:
   bool drag_session_active_ = false;
 };
+
+BEGIN_METADATA(FakeTabDragContext)
+END_METADATA
 
 class FakeTabContainerController final : public TabContainerController {
  public:

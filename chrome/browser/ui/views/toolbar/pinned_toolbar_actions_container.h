@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 class BrowserView;
@@ -27,8 +28,12 @@ class BrowserView;
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer {
+  METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
+
  public:
   class PinnedActionToolbarButton : public ToolbarButton {
+    METADATA_HEADER(PinnedActionToolbarButton, ToolbarButton)
+
    public:
     PinnedActionToolbarButton(Browser* browser, actions::ActionId action_id);
     ~PinnedActionToolbarButton() override;

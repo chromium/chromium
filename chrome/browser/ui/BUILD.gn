@@ -5772,6 +5772,7 @@ static_library("ui") {
       "views/tabs/tab_container_controller.h",
       "views/tabs/tab_container_impl.cc",
       "views/tabs/tab_container_impl.h",
+      "views/tabs/tab_drag_context.cc",
       "views/tabs/tab_drag_context.h",
       "views/tabs/tab_drag_controller.cc",
       "views/tabs/tab_drag_controller.h",

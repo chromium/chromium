@@ -26,7 +26,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
+
+using SidePanelWebUIViewT_UserNotesSidePanelUI =
+    SidePanelWebUIViewT<UserNotesSidePanelUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_UserNotesSidePanelUI,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 // static
 void UserNoteUICoordinator::CreateForBrowser(Browser* browser) {

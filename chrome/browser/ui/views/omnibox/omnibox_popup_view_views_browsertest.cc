@@ -33,6 +33,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_utils.h"
@@ -57,6 +59,8 @@ bool contains(std::string str, std::string substr) {
 
 // A View that positions itself over another View to intercept clicks.
 class ClickTrackingOverlayView : public views::View {
+  METADATA_HEADER(ClickTrackingOverlayView, views::View)
+
  public:
   explicit ClickTrackingOverlayView(OmniboxResultView* result) {
     // |result|'s parent is the OmniboxPopupViewViews, which expects that all
@@ -77,6 +81,9 @@ class ClickTrackingOverlayView : public views::View {
  private:
   absl::optional<gfx::Point> last_click_;
 };
+
+BEGIN_METADATA(ClickTrackingOverlayView)
+END_METADATA
 
 class TestAXEventObserver : public views::AXEventObserver {
  public:

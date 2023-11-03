@@ -13,6 +13,13 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/file_select_listener.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+
+using SidePanelWebUIViewT_CompanionSidePanelUntrustedUI =
+    SidePanelWebUIViewT<CompanionSidePanelUntrustedUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_CompanionSidePanelUntrustedUI,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 CompanionSidePanelWebView::CompanionSidePanelWebView(Profile* profile)
     : SidePanelWebUIViewT(
@@ -62,3 +69,6 @@ void CompanionSidePanelWebView::RunFileChooser(
 }
 
 CompanionSidePanelWebView::~CompanionSidePanelWebView() = default;
+
+BEGIN_METADATA(CompanionSidePanelWebView)
+END_METADATA

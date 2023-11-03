@@ -198,4 +198,10 @@
 #define METADATA_PARENT_CLASS_INTERNAL(parent_class_name) \
   SetParentClassMetaData(parent_class_name::MetaData());
 
+#define DECLARE_TEMPLATE_METADATA_INTERNAL(qualified_class_name, \
+                                           metadata_class_name)  \
+  template <>                                                    \
+  ui::metadata::ClassMetaData*                                   \
+      qualified_class_name::metadata_class_name::meta_data_
+
 #endif  // UI_BASE_METADATA_METADATA_MACROS_INTERNAL_H_

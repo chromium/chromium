@@ -4619,6 +4619,8 @@ TEST_F(WidgetTest, NotifyDragControllerWhenDragWillStart) {
 // of a gesture event seen by each View is in the local coordinate space
 // of that View.
 class GestureLocationView : public EventCountView {
+  METADATA_HEADER(GestureLocationView, EventCountView)
+
  public:
   GestureLocationView() = default;
 
@@ -4644,6 +4646,9 @@ class GestureLocationView : public EventCountView {
   // The expected location of a gesture event dispatched to |this|.
   gfx::Point expected_location_;
 };
+
+BEGIN_METADATA(GestureLocationView)
+END_METADATA
 
 // Verifies that the location of a gesture event is always in the local
 // coordinate space of the View receiving the event while bubbling.

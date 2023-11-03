@@ -29,6 +29,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 #endif
@@ -136,6 +138,8 @@ IN_PROC_BROWSER_TEST_F(SingleProcessBrowserTest, MAYBE_Test) {
 namespace {
 
 class LayoutTrackingView : public views::View {
+  METADATA_HEADER(LayoutTrackingView, views::View)
+
  public:
   LayoutTrackingView() = default;
   ~LayoutTrackingView() override = default;
@@ -152,6 +156,9 @@ class LayoutTrackingView : public views::View {
  private:
   int layout_count_ = 0;
 };
+
+BEGIN_METADATA(LayoutTrackingView)
+END_METADATA
 
 }  // namespace
 

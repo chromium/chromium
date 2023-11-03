@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -110,6 +111,11 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   SetEnabled(action_item_->GetEnabled());
   SetVisible(action_item_->GetVisible());
 }
+
+BEGIN_METADATA(PinnedToolbarActionsContainer,
+               PinnedActionToolbarButton,
+               ToolbarButton)
+END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
 // PinnedToolbarActionsContainer:
@@ -337,3 +343,6 @@ SidePanelCoordinator* PinnedToolbarActionsContainer::GetSidePanelCoordinator() {
   return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
       browser_view_->browser());
 }
+
+BEGIN_METADATA(PinnedToolbarActionsContainer)
+END_METADATA

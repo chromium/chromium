@@ -64,23 +64,19 @@ class FooterRow : public FadeWrapper<views::View, T> {
   raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
-template <>
-ui::metadata::ClassMetaData*
-    FadeWrapper<views::View,
-                AlertFooterRowData>::FadeWrapper_MetaData::meta_data_;
+using FadeWrapper_View_AlertFooterRowData =
+    FadeWrapper<views::View, AlertFooterRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper);
 
-template <>
-ui::metadata::ClassMetaData*
-    FadeWrapper<views::View,
-                PerformanceRowData>::FadeWrapper_MetaData::meta_data_;
+using FadeWrapper_View_PerformanceRowData =
+    FadeWrapper<views::View, PerformanceRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper);
 
-template <>
-ui::metadata::ClassMetaData*
-    FooterRow<AlertFooterRowData>::FooterRow_MetaData::meta_data_;
+using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow);
 
-template <>
-ui::metadata::ClassMetaData*
-    FooterRow<PerformanceRowData>::FooterRow_MetaData::meta_data_;
+using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow);
 
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
   using FooterRowAlertFooterRowData = FooterRow<AlertFooterRowData>;

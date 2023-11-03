@@ -58,4 +58,8 @@
   METADATA_ACCESSORS_INTERNAL_BASE(class_name) \
   METADATA_CLASS_INTERNAL(class_name, __FILE__, __LINE__)
 
+#define DECLARE_TEMPLATE_METADATA(class_name_alias, template_name) \
+  DECLARE_TEMPLATE_METADATA_INTERNAL(                              \
+      class_name_alias, METADATA_CLASS_NAME_INTERNAL(template_name))
+
 #endif  // UI_BASE_METADATA_METADATA_HEADER_MACROS_H_

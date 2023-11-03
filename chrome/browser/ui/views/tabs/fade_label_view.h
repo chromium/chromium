@@ -16,10 +16,9 @@ struct FadeLabelViewData {
   bool is_filename = false;
 };
 
-template <>
-ui::metadata::ClassMetaData*
-    FadeWrapper<views::Label,
-                FadeLabelViewData>::FadeWrapper_MetaData::meta_data_;
+using FadeWrapper_Label_FadeLabelViewData =
+    FadeWrapper<views::Label, FadeLabelViewData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_Label_FadeLabelViewData, FadeWrapper);
 
 // Label that is able to fade when used in conjunction with FadeView
 class FadeLabel : public FadeWrapper<views::Label, FadeLabelViewData> {
@@ -56,9 +55,10 @@ class FadeLabel : public FadeWrapper<views::Label, FadeLabelViewData> {
   bool paint_background_ = false;
 };
 
-template <>
-ui::metadata::ClassMetaData* FadeView<FadeLabel, FadeLabel, FadeLabelViewData>::
-    FadeView_MetaData::meta_data_;
+using FadeView_FadeLabel_FadeLabel_FadeLabelViewData =
+    FadeView<FadeLabel, FadeLabel, FadeLabelViewData>;
+DECLARE_TEMPLATE_METADATA(FadeView_FadeLabel_FadeLabel_FadeLabelViewData,
+                          FadeView);
 
 // This view overlays and fades out an old version of the text of a label,
 // while displaying the new text underneath. It is used to fade out the old

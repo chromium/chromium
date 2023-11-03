@@ -65,6 +65,8 @@ class SidePanelWebUIView : public views::WebView,
 
 template <class T>
 class SidePanelWebUIViewT : public SidePanelWebUIView {
+  METADATA_TEMPLATE_HEADER(SidePanelWebUIViewT, SidePanelWebUIView)
+
  public:
   SidePanelWebUIViewT(
       base::RepeatingClosure on_show_cb,

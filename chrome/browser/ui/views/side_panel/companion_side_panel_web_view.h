@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "content/public/browser/file_select_listener.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
 class Profile;
@@ -20,6 +21,11 @@ class Profile;
 // menu support, and opening urls in a new tab.
 class CompanionSidePanelWebView
     : public SidePanelWebUIViewT<CompanionSidePanelUntrustedUI> {
+  using SidePanelWebUIViewT_CompanionSidePanelUntrustedUI =
+      SidePanelWebUIViewT<CompanionSidePanelUntrustedUI>;
+  METADATA_HEADER(CompanionSidePanelWebView,
+                  SidePanelWebUIViewT_CompanionSidePanelUntrustedUI)
+
  public:
   explicit CompanionSidePanelWebView(Profile* profile);
   CompanionSidePanelWebView(const CompanionSidePanelWebView&) = delete;

@@ -18,8 +18,15 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/vector_icons.h"
+
+using SidePanelWebUIViewT_PerformanceSidePanelUI =
+    SidePanelWebUIViewT<PerformanceSidePanelUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_PerformanceSidePanelUI,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 PerformanceSidePanelCoordinator::PerformanceSidePanelCoordinator(
     Browser* browser)

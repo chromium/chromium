@@ -37,6 +37,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace {
@@ -54,6 +55,11 @@ base::TimeDelta GetDelaySeconds() {
 }
 
 }  // namespace
+
+using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
+    SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
+DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
+                          SidePanelWebUIViewT);
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser),

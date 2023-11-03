@@ -22,6 +22,12 @@
 #include "read_anything_side_panel_controller.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_types.h"
+
+using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
+    SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
+DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
+                          SidePanelWebUIViewT);
 
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     content::WebContents* web_contents)

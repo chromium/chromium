@@ -134,6 +134,8 @@ END_METADATA
 // TODO(crbug.com/1354321): ToolbarActionHoverCarBubbleView has the same
 // FadeLabel. Move it to its own shared file.
 class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
+  METADATA_HEADER(FadeLabel, views::View)
+
  public:
   explicit FadeLabel(int context) {
     primary_label_ = AddChildView(std::make_unique<views::Label>(
@@ -217,6 +219,9 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
   double percent_ = 1.0;
   absl::optional<ui::ColorId> background_color_id_;
 };
+
+BEGIN_METADATA(ToolbarActionHoverCardBubbleView, FadeLabel, views::View)
+END_METADATA
 
 // ToolbarActionHoverCardBubbleView:
 // ----------------------------------------------------------
