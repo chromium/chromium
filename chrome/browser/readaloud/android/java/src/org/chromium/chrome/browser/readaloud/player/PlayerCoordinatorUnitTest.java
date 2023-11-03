@@ -20,6 +20,7 @@ import android.view.ViewStub;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,6 +29,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.expanded.Menu;
@@ -45,6 +50,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PlayerCoordinatorUnitTest {
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
+
     @Mock private Activity mActivity;
     @Mock private LayoutInflater mLayoutInflater;
     @Mock private ViewStub mMiniPlayerViewStub;
@@ -72,6 +80,8 @@ public class PlayerCoordinatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
+        doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
         mPlayerCoordinator =
                 new PlayerCoordinator(mMiniPlayer, mMediator, mDelegate, mExpandedPlayer);
     }
@@ -105,6 +115,7 @@ public class PlayerCoordinatorUnitTest {
         PrefService prefs = mMockPrefServiceHelper.getPrefService();
         ReadAloudPrefs.setSpeed(prefs, 2f);
         doReturn(prefs).when(mDelegate).getPrefService();
+        doReturn(Mockito.mock(LayoutManager.class)).when(mDelegate).getLayoutManager();
 
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);
 

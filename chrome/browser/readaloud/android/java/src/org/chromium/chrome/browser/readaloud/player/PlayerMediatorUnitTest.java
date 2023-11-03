@@ -25,6 +25,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -147,6 +149,16 @@ public class PlayerMediatorUnitTest {
         @Override
         public PrefService getPrefService() {
             return mMockPrefServiceHelper.getPrefService();
+        }
+
+        @Override
+        public BrowserControlsSizer getBrowserControlsSizer() {
+            return null;
+        }
+
+        @Override
+        public LayoutManager getLayoutManager() {
+            return null;
         }
     }
 

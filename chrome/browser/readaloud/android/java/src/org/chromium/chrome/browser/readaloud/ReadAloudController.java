@@ -14,6 +14,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -53,10 +55,12 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
     @Nullable private Player mPlayerCoordinator;
+    private final LayoutManager mLayoutManager;
 
     private TabModelTabObserver mTabObserver;
 
     private final BottomSheetController mBottomSheetController;
+    private final BrowserControlsSizer mBrowserControlsSizer;
 
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
@@ -121,12 +125,16 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
             Activity activity,
             ObservableSupplier<Profile> profileSupplier,
             TabModel tabModel,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            BrowserControlsSizer browserControlsSizer,
+            LayoutManager layoutManager) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
         mTabModel = tabModel;
         mBottomSheetController = bottomSheetController;
+        mBrowserControlsSizer = browserControlsSizer;
+        mLayoutManager = layoutManager;
     }
 
     private void onProfileAvailable(Profile profile) {
@@ -135,7 +143,6 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                         ? sReadabilityHooksForTesting
                         : new ReadAloudReadabilityHooksImpl(
                                 mActivity, profile, ReadAloudFeatures.getApiKeyOverride());
-
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
@@ -436,6 +443,16 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     @Override
     public PrefService getPrefService() {
         return UserPrefs.get(mProfileSupplier.get());
+    }
+
+    @Override
+    public BrowserControlsSizer getBrowserControlsSizer() {
+        return mBrowserControlsSizer;
+    }
+
+    @Override
+    public LayoutManager getLayoutManager() {
+        return mLayoutManager;
     }
 
     // Player.Observer

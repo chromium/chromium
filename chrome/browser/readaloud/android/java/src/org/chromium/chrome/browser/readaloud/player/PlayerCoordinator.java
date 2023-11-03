@@ -58,7 +58,13 @@ public class PlayerCoordinator implements Player {
         Context contextForInflation =
                 BundleUtils.createContextForInflation(
                         delegate.getActivity(), "read_aloud_playback");
-        mMiniPlayer = new MiniPlayerCoordinator(delegate.getActivity(), contextForInflation, model);
+        mMiniPlayer =
+                new MiniPlayerCoordinator(
+                        delegate.getActivity(),
+                        contextForInflation,
+                        model,
+                        delegate.getBrowserControlsSizer(),
+                        delegate.getLayoutManager());
         mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
         mDelegate = delegate;

@@ -11,6 +11,9 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,6 +27,9 @@ public class MiniPlayerCoordinator {
             mModelChangeProcessor;
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
+    // Compositor layer to be shown during show and hide while browser controls are
+    // resizing.
+    private final ReadAloudMiniPlayerSceneLayer mSceneLayer;
 
     /**
      * @param activity App activity containing a placeholder FrameLayout with ID
@@ -31,8 +37,18 @@ public class MiniPlayerCoordinator {
      * @param context View-inflation-capable Context for read_aloud_playback isolated split.
      * @param model Player UI property model.
      */
-    public MiniPlayerCoordinator(Activity activity, Context context, PropertyModel model) {
-        this(model, new MiniPlayerMediator(model), inflateLayout(activity, context));
+    public MiniPlayerCoordinator(
+            Activity activity,
+            Context context,
+            PropertyModel model,
+            BrowserControlsSizer browserControlsSizer,
+            LayoutManager layoutManager) {
+        this(
+                model,
+                new MiniPlayerMediator(model, browserControlsSizer),
+                inflateLayout(activity, context),
+                new ReadAloudMiniPlayerSceneLayer(browserControlsSizer),
+                layoutManager);
     }
 
     private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
@@ -45,13 +61,20 @@ public class MiniPlayerCoordinator {
 
     @VisibleForTesting
     MiniPlayerCoordinator(
-            PropertyModel model, MiniPlayerMediator mediator, MiniPlayerLayout layout) {
+            PropertyModel model,
+            MiniPlayerMediator mediator,
+            MiniPlayerLayout layout,
+            ReadAloudMiniPlayerSceneLayer sceneLayer,
+            LayoutManager layoutManager) {
         mModel = model;
-        mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mModel, layout, MiniPlayerViewBinder::bind);
         mMediator = mediator;
         mLayout = layout;
         assert layout != null;
+        mSceneLayer = sceneLayer;
+        layoutManager.addSceneOverlay(mSceneLayer);
+
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(mModel, layout, MiniPlayerViewBinder::bind);
     }
 
     public void destroy() {

@@ -9,9 +9,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,10 +26,13 @@ public class MiniPlayerMediatorUnitTest {
     private PropertyModel mModel;
     private MiniPlayerMediator mMediator;
 
+    @Mock private BrowserControlsSizer mBrowserControlsSizer;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        mMediator = new MiniPlayerMediator(mModel);
+        mMediator = new MiniPlayerMediator(mModel, mBrowserControlsSizer);
     }
 
     @Test

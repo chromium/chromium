@@ -36,7 +36,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -82,6 +84,8 @@ public class ReadAloudControllerUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Highlighter mHighlighter;
     @Mock private PlaybackListener.PhraseTiming mPhraseTiming;
+    @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private LayoutManager mLayoutManager;
 
     MockTabModelSelector mTabModelSelector;
 
@@ -130,7 +134,9 @@ public class ReadAloudControllerUnitTest {
                         mActivity,
                         mProfileSupplier,
                         mTabModelSelector.getModel(false),
-                        mBottomSheetController);
+                        mBottomSheetController,
+                        mBrowserControlsSizer,
+                        mLayoutManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mTab = mTabModelSelector.getCurrentTab();

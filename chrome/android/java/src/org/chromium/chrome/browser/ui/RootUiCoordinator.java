@@ -867,7 +867,9 @@ public class RootUiCoordinator
                             mActivity,
                             mProfileSupplier,
                             mTabModelSelectorSupplier.get().getModel(false),
-                            getBottomSheetController());
+                            getBottomSheetController(),
+                            mBrowserControlsManager,
+                            mLayoutManager);
             mReadAloudControllerSupplier.set(controller);
         }
     }

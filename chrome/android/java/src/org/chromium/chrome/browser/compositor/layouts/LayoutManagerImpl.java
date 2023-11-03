@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -315,16 +316,20 @@ public class LayoutManagerImpl
         mContext = host.getContext();
 
         // Overlays are ordered back (closest to the web content) to front.
-        Class[] overlayOrder = new Class[] {
-                HistoryNavigationCoordinator.getSceneOverlayClass(),
-                TopToolbarOverlayCoordinator.class,
-                // StripLayoutHelperManager should be updated before ScrollingBottomViewSceneLayer
-                // Since ScrollingBottomViewSceneLayer change the container size,
-                // it causes relocation tab strip scene layer.
-                StripLayoutHelperManager.class,
-                ScrollingBottomViewSceneLayer.class,
-                StatusIndicatorCoordinator.getSceneOverlayClass(),
-                ContextualSearchPanel.class};
+        Class[] overlayOrder =
+                new Class[] {
+                    HistoryNavigationCoordinator.getSceneOverlayClass(),
+                    TopToolbarOverlayCoordinator.class,
+                    // StripLayoutHelperManager should be updated before
+                    // ScrollingBottomViewSceneLayer
+                    // Since ScrollingBottomViewSceneLayer change the container size,
+                    // it causes relocation tab strip scene layer.
+                    StripLayoutHelperManager.class,
+                    ScrollingBottomViewSceneLayer.class,
+                    StatusIndicatorCoordinator.getSceneOverlayClass(),
+                    ContextualSearchPanel.class,
+                    ReadAloudMiniPlayerSceneLayer.class
+                };
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
 

@@ -8,6 +8,7 @@ import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -158,8 +159,9 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     @Override
     public void getVirtualViews(List<VirtualView> views) {}
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(ReadAloudMiniPlayerSceneLayer caller);
 
         void destroy(
