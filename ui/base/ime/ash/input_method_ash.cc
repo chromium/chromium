@@ -564,10 +564,8 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
     pending_composition_ = absl::nullopt;
     composition_changed_ = false;
   }
-  if (client &&
-      (client->HasCompositionText() ||
-       (base::FeatureList::IsEnabled(::features::kAlwaysConfirmComposition) &&
-        client->SupportsAlwaysConfirmComposition()))) {
+  if (client && (client->HasCompositionText() ||
+                 client->SupportsAlwaysConfirmComposition())) {
     const size_t characters_committed =
         client->ConfirmCompositionText(/*keep_selection*/ true);
     typing_session_manager_.CommitCharacters(characters_committed);

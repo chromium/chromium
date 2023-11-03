@@ -69,7 +69,6 @@ struct ServerConfig {
   bool surface_submission_in_pixel_coordinates = true;
   bool supports_viewporter_surface_scaling = false;
   bool use_aura_output_manager = false;
-  bool use_ime_keep_selection_fix = false;
 };
 
 class TestWaylandServerThread;

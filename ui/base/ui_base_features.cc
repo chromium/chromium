@@ -101,13 +101,6 @@ BASE_FEATURE(kLacrosResourcesFileSharing,
              "LacrosResourcesFileSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When the input method wants to commit the composition, always call
-// ConfirmCompositionText even if Ash thinks there's no composition.
-// Enabling this fixes b/265853952.
-BASE_FEATURE(kAlwaysConfirmComposition,
-             "AlwaysConfirmComposition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables settings that allow users to remap the F11 and F12 keys in the
 // "Customize keyboard keys" page.
 BASE_FEATURE(kSupportF11AndF12KeyShortcuts,
@@ -485,16 +478,6 @@ BASE_FEATURE(kEnableVariableRefreshRateAlwaysOn,
 bool IsVariableRefreshRateAlwaysOn() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
 }
-
-// Fixes b/267944900.
-BASE_FEATURE(kWaylandKeepSelectionFix,
-             "WaylandKeepSelectionFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Fixes b/267944900.
-BASE_FEATURE(kWaylandCancelComposition,
-             "WaylandCancelComposition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables chrome color management wayland protocol for lacros.
 BASE_FEATURE(kLacrosColorManagement,

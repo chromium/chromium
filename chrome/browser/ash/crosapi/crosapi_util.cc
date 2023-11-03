@@ -190,8 +190,6 @@ constexpr char kSharedStoragePrefsCapability[] = "b/231890240";
 // Capability to register observers for extension controlled prefs via the
 // prefs api.
 constexpr char kExtensionControlledPrefObserversCapability[] = "crbug/1334985";
-// Capability to always use ConfirmComposition for input methods.
-constexpr char kAlwaysConfirmCompositionCapability[] = "b/265853952";
 // Capability to pass testing ash extension keeplist data via ash
 // commandline switch.
 constexpr char kAshExtensionKeeplistCmdlineSwitchCapability[] = "crbug/1409199";
@@ -613,11 +611,6 @@ void InjectBrowserInitParams(
       kExtensionControlledPrefObserversCapability,
       kAshExtensionKeeplistCmdlineSwitchCapability,
   };
-  // TODO(b/265853952): Remove this once kAlwaysConfirmComposition is enabled by
-  // default.
-  if (base::FeatureList::IsEnabled(features::kAlwaysConfirmComposition)) {
-    ash_capabilities.push_back(kAlwaysConfirmCompositionCapability);
-  }
   params->ash_capabilities = {std::move(ash_capabilities)};
 
   params->lacros_selection = GetLacrosSelection(lacros_selection);

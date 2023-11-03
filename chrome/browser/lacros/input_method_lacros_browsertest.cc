@@ -43,26 +43,7 @@ int GetInputMethodTestInterfaceVersion() {
 }
 
 // Used to parameterize these tests.
-struct TestParam {
-  // Enables kExoExtendedConfirmComposition, which uses an extended Wayland API
-  // for ConfirmCompositionText.
-  bool extended_confirm_composition = false;
-
-  // Enables fixes for b/268467697.
-  // Enables the following Lacros feature flags:
-  // - WaylandKeepSelectionFix
-  // - WaylandCancelComposition
-  //
-  // Will not be true if `extended_confirm_composition` is false.
-  bool fix_268467697 = false;
-
-  // Enables fixes for b/265853952.
-  // Enables the following Ash feature flags:
-  // - AlwaysConfirmComposition
-  //
-  // Will not be true if `extended_confirm_composition` is false.
-  bool fix_265853952 = false;
-};
+struct TestParam {};
 
 // Binds an InputMethodTestInterface to Ash-Chrome, which allows these tests to
 // execute IME operations from Ash-Chrome.
@@ -543,22 +524,12 @@ class InputMethodLacrosBrowserTest
  public:
   InputMethodLacrosBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_lacros_features;
-    if (GetParam().fix_268467697) {
-      enabled_lacros_features.push_back(features::kWaylandKeepSelectionFix);
-      enabled_lacros_features.push_back(features::kWaylandCancelComposition);
-    }
     feature_list_override_.InitWithFeatures(enabled_lacros_features,
                                             /*disabled_features=*/{});
   }
 
   void SetUp() override {
     std::vector<std::string> enabled_ash_features;
-    if (GetParam().fix_265853952) {
-      enabled_ash_features.push_back("AlwaysConfirmComposition");
-    }
-    if (GetParam().extended_confirm_composition) {
-      enabled_ash_features.push_back("ExoExtendedConfirmComposition");
-    }
     if (!enabled_ash_features.empty()) {
       StartUniqueAshChrome(
           enabled_ash_features, /*disabled_features=*/{},
@@ -572,20 +543,11 @@ class InputMethodLacrosBrowserTest
   base::test::ScopedFeatureList feature_list_override_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    InputMethodLacrosBrowserTestAllParams,
-    InputMethodLacrosBrowserTest,
-    ::testing::Values(
-        // All features off.
-        TestParam{},
-        // Enable `extended_confirm_composition` first.
-        TestParam{.extended_confirm_composition = true},
-        // Combos of `fix_268467697` and `fix_265853952`.
-        TestParam{.extended_confirm_composition = true, .fix_268467697 = true},
-        TestParam{.extended_confirm_composition = true, .fix_265853952 = true},
-        TestParam{.extended_confirm_composition = true,
-                  .fix_268467697 = true,
-                  .fix_265853952 = true}));
+INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
+                         InputMethodLacrosBrowserTest,
+                         ::testing::Values(
+                             // All features off.
+                             TestParam{}));
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {
@@ -1601,10 +1563,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 // See b/265853952.
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        ConfirmCompositionWithIncorrectSurroundingText) {
-  if (!GetParam().fix_265853952) {
-    return;
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1614,7 +1572,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
           {kInputMethodTestCapabilityConfirmComposition,
-           kInputMethodTestCapabilityAlwaysConfirmComposition,
            kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
@@ -1688,10 +1645,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 // See crbug.com/1434957 for more information.
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        DeleteSurroundingTextAfterResetDeletes) {
-  if (!GetParam().fix_265853952) {
-    return;
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
