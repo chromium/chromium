@@ -819,7 +819,8 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-
+# Suspected i915 image uprev
+crbug.com/1498990 [ chromeos chromeos-board-octopus ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
