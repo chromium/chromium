@@ -317,23 +317,6 @@ class InputMethodPrivateSetCompositionRangeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class InputMethodPrivateGetTextFieldBoundsFunction : public ExtensionFunction {
- public:
-  InputMethodPrivateGetTextFieldBoundsFunction(
-      const InputMethodPrivateGetTextFieldBoundsFunction&) = delete;
-  InputMethodPrivateGetTextFieldBoundsFunction& operator=(
-      const InputMethodPrivateGetTextFieldBoundsFunction&) = delete;
-  InputMethodPrivateGetTextFieldBoundsFunction() = default;
-
- protected:
-  ~InputMethodPrivateGetTextFieldBoundsFunction() override = default;
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.getTextFieldBounds",
-                             INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS)
-};
 class InputMethodPrivateResetFunction : public ExtensionFunction {
  public:
   InputMethodPrivateResetFunction() = default;

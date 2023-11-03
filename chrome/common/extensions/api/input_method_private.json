@@ -546,51 +546,6 @@
         }]
     },
     {
-      "name" : "getTextFieldBounds",
-      "type" : "function",
-      "description" : "Get the bounds of the current text field",
-      "parameters" :[
-        {
-            "name": "parameters",
-            "type": "object",
-            "properties": {
-              "contextID": {
-                "description": "ID of the context.",
-                "type": "integer"
-              }
-            }
-        }
-      ],
-      "returns_async": {
-        "name": "callback",
-        "description": "Called with screen coordinates of the text field when the operation completes. On failure, $(ref:runtime.lastError) is set.",
-        "parameters": [
-          {
-            "name": "textFieldBounds",
-            "type": "object",
-            "properties": {
-              "x": {
-                "description": "The x-coordinate of the text field's bounds.",
-                "type": "integer"
-              },
-              "y": {
-                "description": "The y-coordinate of the text field's bounds.",
-                "type": "integer"
-              },
-              "width": {
-                "description": "The width of the text field's bounds.",
-                "type": "integer"
-              },
-              "height":{
-                "description": "The height of the  bounds.",
-                "type": "integer"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
       "name" : "notifyInputMethodReadyForTesting",
       "type" : "function",
       "description" : "Notifies Chrome that the current input method is ready to accept key events from Tast.",

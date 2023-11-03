@@ -363,21 +363,6 @@ chrome.inputMethodPrivate.reset = function() {};
 chrome.inputMethodPrivate.onAutocorrect = function(parameters) {};
 
 /**
- * Get the bounds of the current text field
- * @param {{
- *   contextID: number
- * }} parameters
- * @param {function({
- *   x: number,
- *   y: number,
- *   width: number,
- *   height: number
- * }): void} callback Called with screen coordinates of the text field when the
- *     operation completes. On failure, $(ref:runtime.lastError) is set.
- */
-chrome.inputMethodPrivate.getTextFieldBounds = function(parameters, callback) {};
-
-/**
  * Notifies Chrome that the current input method is ready to accept key events
  * from Tast.
  */

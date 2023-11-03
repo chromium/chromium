@@ -80,8 +80,6 @@ namespace SetCompositionRange =
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
-namespace GetTextFieldBounds =
-    extensions::api::input_method_private::GetTextFieldBounds;
 namespace GetLanguagePackStatus =
     extensions::api::input_method_private::GetLanguagePackStatus;
 namespace OnLanguagePackStatusChanged =
@@ -450,29 +448,6 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
   return RespondNow(WithArguments(base::Value(true)));
-}
-
-ExtensionFunction::ResponseAction
-InputMethodPrivateGetTextFieldBoundsFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  const auto parent_params = GetTextFieldBounds::Params::Create(args());
-  const auto& params = parent_params->parameters;
-  const gfx::Rect rect =
-      engine->InputMethodEngine::GetTextFieldBounds(params.context_id, &error);
-  if (rect.IsEmpty()) {
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-  }
-  base::Value::Dict ret;
-  ret.Set("x", rect.x());
-  ret.Set("y", rect.y());
-  ret.Set("width", rect.width());
-  ret.Set("height", rect.height());
-  return RespondNow(WithArguments(std::move(ret)));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
