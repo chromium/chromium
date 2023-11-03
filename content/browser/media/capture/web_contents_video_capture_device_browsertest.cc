@@ -14,8 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/features.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
 #include "content/browser/media/capture/fake_video_capture_stack.h"
 #include "content/browser/media/capture/frame_test_util.h"
@@ -28,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -49,36 +46,8 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
-#include "content/browser/compositor/image_transport_factory.h"
-#endif
-
 namespace content {
 namespace {
-
-scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
-#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
-  auto* image_transport_factory = ImageTransportFactory::GetInstance();
-  DCHECK(image_transport_factory);
-
-  auto* ui_context_factory = image_transport_factory->GetContextFactory();
-  if (!ui_context_factory) {
-    return nullptr;
-  }
-
-  return ui_context_factory->SharedMainThreadRasterContextProvider();
-#else
-  return nullptr;
-#endif
-}
-
-bool IsGpuRastrizationEnabled() {
-  auto context_provider = GetContextProvider();
-  if (!context_provider)
-    return false;
-
-  return context_provider->ContextCapabilities().gpu_rasterization;
-}
 
 class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
@@ -158,10 +127,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
-        const int max_color_diff =
-            (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled())
-                ? kVeryLooseMaxColorDifference
-                : kMaxColorDifference;
+        const int max_color_diff = (IsSoftwareCompositingTest())
+                                       ? kVeryLooseMaxColorDifference
+                                       : kMaxColorDifference;
 
         // Determine the average RGB color in the three regions-of-interest in
         // the frame.
@@ -621,8 +589,9 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
                        CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
+
   if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
-    if (IsSoftwareCompositingTest() || !IsGpuRastrizationEnabled()) {
+    if (IsSoftwareCompositingTest()) {
       expected_format = media::VideoPixelFormat::PIXEL_FORMAT_I420;
     } else {
       expected_format = media::VideoPixelFormat::PIXEL_FORMAT_NV12;
