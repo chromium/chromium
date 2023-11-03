@@ -251,13 +251,6 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
 
   CreateTimerView();
 
-  // TODO(b/286931806): remove border inset and add Focus Scene UI.
-  scene_view_ =
-      scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
-          RoundedContainer::Behavior::kAllRounded));
-  scene_view_->SetBorderInsets(gfx::Insets::VH(83, 0));
-  scene_view_->SetProperty(views::kMarginsKey, kDisconnectedContainerMargins);
-
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   const bool in_focus_session = focus_mode_controller->in_focus_session();
 

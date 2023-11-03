@@ -117,9 +117,6 @@ class ASH_EXPORT FocusModeDetailedView
   // A label that displays the end time of the focus session when focus is
   // active.
   raw_ptr<views::Label> end_time_label_ = nullptr;
-  // This view contains controls for selecting the focus scene (background +
-  // audio), as well as volume controls.
-  raw_ptr<RoundedContainer> scene_view_ = nullptr;
 
   // This view contains a toggle for turning on/off DND.
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;
