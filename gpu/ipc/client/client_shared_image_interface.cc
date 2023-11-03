@@ -213,6 +213,13 @@ void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
   proxy_->DestroySharedImage(sync_token, mailbox);
 }
 
+void ClientSharedImageInterface::DestroySharedImage(
+    const SyncToken& sync_token,
+    scoped_refptr<ClientSharedImage> client_shared_image) {
+  CHECK(client_shared_image->HasOneRef());
+  DestroySharedImage(sync_token, client_shared_image->mailbox());
+}
+
 void ClientSharedImageInterface::AddReferenceToSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox,

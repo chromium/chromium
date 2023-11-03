@@ -106,6 +106,9 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
 
   void DestroySharedImage(const gpu::SyncToken& sync_token,
                           const gpu::Mailbox& mailbox) override;
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image) override;
 
   SwapChainMailboxes CreateSwapChain(SharedImageFormat format,
                                      const gfx::Size& size,

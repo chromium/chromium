@@ -121,6 +121,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                          const Mailbox& mailbox) override;
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
+  void DestroySharedImage(
+      const SyncToken& sync_token,
+      scoped_refptr<ClientSharedImage> client_shared_image) override;
   void AddReferenceToSharedImage(const SyncToken& sync_token,
                                  const Mailbox& mailbox,
                                  uint32_t usage) override;

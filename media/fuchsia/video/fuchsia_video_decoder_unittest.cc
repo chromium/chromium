@@ -179,6 +179,13 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     CHECK_EQ(mailboxes_.erase(mailbox), 1U);
   }
 
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image) override {
+    CHECK(client_shared_image->HasOneRef());
+    DestroySharedImage(sync_token, client_shared_image->mailbox());
+  }
+
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,
                                      const gfx::ColorSpace& color_space,

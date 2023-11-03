@@ -251,6 +251,12 @@ class GPU_EXPORT SharedImageInterface {
   virtual void DestroySharedImage(const SyncToken& sync_token,
                                   const Mailbox& mailbox) = 0;
 
+  // Same behavior as the above, except that this version takes
+  // a |client_shared_image| parameter (which holds a mailbox).
+  virtual void DestroySharedImage(
+      const SyncToken& sync_token,
+      scoped_refptr<ClientSharedImage> client_shared_image) = 0;
+
   // Adds another owning reference to the SharedImage. It must be released via
   // DestroySharedImage in the same way as for SharedImages created via
   // CreateSharedImage(). Note: The image must have been created on different

@@ -690,6 +690,13 @@ void SharedImageInterfaceInProcess::DestroySharedImage(
       {sync_token});
 }
 
+void SharedImageInterfaceInProcess::DestroySharedImage(
+    const SyncToken& sync_token,
+    scoped_refptr<ClientSharedImage> client_shared_image) {
+  CHECK(client_shared_image->HasOneRef());
+  DestroySharedImage(sync_token, client_shared_image->mailbox());
+}
+
 void SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread(
     const Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
