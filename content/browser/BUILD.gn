@@ -1858,6 +1858,8 @@ source_set("browser") {
     "renderer_host/navigation_entry_impl.h",
     "renderer_host/navigation_entry_restore_context_impl.cc",
     "renderer_host/navigation_entry_restore_context_impl.h",
+    "renderer_host/navigation_metrics_utils.cc",
+    "renderer_host/navigation_metrics_utils.h",
     "renderer_host/navigation_policy_container_builder.cc",
     "renderer_host/navigation_policy_container_builder.h",
     "renderer_host/navigation_request.cc",

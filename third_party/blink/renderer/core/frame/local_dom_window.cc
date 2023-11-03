@@ -2200,7 +2200,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 
   bool has_user_gesture = LocalFrame::HasTransientUserActivation(GetFrame());
   frame_request.GetResourceRequest().SetHasUserGesture(has_user_gesture);
-  GetFrame()->MaybeLogAdClickNavigation();
 
   if (window_features.attribution_srcs.has_value()) {
     // An impression must be attached prior to the

@@ -497,8 +497,6 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
                  : mojom::blink::TriggeringEventInfo::kFromUntrustedEvent);
   frame_request.SetInputStartTime(platform_time_stamp);
 
-  frame->MaybeLogAdClickNavigation();
-
   if (const AtomicString& attribution_src =
           FastGetAttribute(html_names::kAttributionsrcAttr);
       !attribution_src.IsNull()) {

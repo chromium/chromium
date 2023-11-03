@@ -2995,11 +2995,6 @@ void LocalFrame::DidResume() {
   GetDocument()->DispatchHandleLoadComplete();
 }
 
-void LocalFrame::MaybeLogAdClickNavigation() {
-  if (HasTransientUserActivation(this) && IsAdFrame())
-    UseCounter::Count(GetDocument(), WebFeature::kAdClickNavigation);
-}
-
 void LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
     mojom::WebFeature blocked_cross_origin,
     mojom::WebFeature blocked_same_origin) {

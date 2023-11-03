@@ -506,7 +506,6 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
     upcoming_non_traverse_api_method_tracker_ = api_method_tracker;
   }
 
-  window_->GetFrame()->MaybeLogAdClickNavigation();
   window_->GetFrame()->Navigate(request, frame_load_type);
 
   // DispatchNavigateEvent() will clear

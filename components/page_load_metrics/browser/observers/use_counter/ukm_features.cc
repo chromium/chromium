@@ -90,7 +90,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8MediaCapabilities_DecodingInfo_Method,
           WebFeature::kOpenerNavigationDownloadCrossOrigin,
           WebFeature::kLinkRelPrerender,
-          WebFeature::kAdClickNavigation,
           WebFeature::kV8HTMLVideoElement_RequestPictureInPicture_Method,
           WebFeature::kMediaCapabilitiesDecodingInfoWithKeySystemConfig,
           WebFeature::kTextFragmentAnchor,
@@ -346,6 +345,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory,
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use,
+          WebFeature::kAdClickMainFrameNavigation,
       }));
   return *opt_in_features;
 }

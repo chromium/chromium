@@ -2146,7 +2146,7 @@ enum WebFeature {
   kCSSValueAppearanceSearchCancel = 2820,
   kCSSValueAppearanceTextarea = 2821,
   kCSSValueAppearanceTextFieldForTemporalRendered = 2823,
-  kAdClickNavigation = 2826,
+  kOBSOLETE_AdClickNavigation = 2826,
   kRTCStatsRelativePacketArrivalDelay = 2827,
   // The above items are available in M74 branch.
 
@@ -4055,6 +4055,7 @@ enum WebFeature {
   kElementCheckVisibilityOptionContentVisibilityAuto = 4716,
   kElementCheckVisibilityOptionOpacityProperty = 4717,
   kElementCheckVisibilityOptionVisibilityProperty = 4718,
+  kAdClickMainFrameNavigation = 4719,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

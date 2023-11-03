@@ -119,6 +119,7 @@
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
@@ -8087,6 +8088,9 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     // TODO(crbug.com/1237552): Resolve the discussion of download policy.
     blink::NavigationDownloadPolicy download_policy;
 
+    MaybeRecordAdClickMainFrameNavigationUseCounter(
+        /*initiator_frame=*/this, params->initiator_activation_and_ad_status);
+
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
         target_frame, validated_params_url,
         base::OptionalToPtr(params->initiator_frame_token),
@@ -8107,6 +8111,19 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OpenURL", "url",
                validated_url.possibly_invalid_spec());
+
+  if (params->initiator_frame_token) {
+    RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetID(), params->initiator_frame_token.value());
+
+    // Try recording the AdClickMainFrameNavigation use counter for navigation
+    // targeting this page's main frame, or targeting a new tab.
+    if (params->disposition != WindowOpenDisposition::CURRENT_TAB ||
+        IsOutermostMainFrame()) {
+      MaybeRecordAdClickMainFrameNavigationUseCounter(
+          initiator_frame, params->initiator_activation_and_ad_status);
+    }
+  }
 
   RenderFrameHostOwner* owner = owner_;
   // Inactive documents are not allowed to initiate navigations.
@@ -8357,6 +8374,9 @@ void RenderFrameHostImpl::CreateNewWindow(
                                  was_consumed, cloned_namespace.get());
 
   transient_allow_popup_.Deactivate();
+
+  MaybeRecordAdClickMainFrameNavigationUseCounter(
+      /*initiator_frame=*/this, params->initiator_activation_and_ad_status);
 
   if (is_new_browsing_instance || !new_frame_tree) {
     // Opener suppressed, Javascript access disabled, or delegate did not
@@ -9252,6 +9272,15 @@ void RenderFrameHostImpl::BeginNavigation(
         std::move(blob_url_loader_factory), std::move(navigation_client),
         std::move(renderer_cancellation_listener));
     return;
+  }
+
+  if (begin_params->initiator_frame_token) {
+    RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetID(), begin_params->initiator_frame_token.value());
+    if (IsOutermostMainFrame()) {
+      MaybeRecordAdClickMainFrameNavigationUseCounter(
+          initiator_frame, begin_params->initiator_activation_and_ad_status);
+    }
   }
 
   // We can discard the parameter

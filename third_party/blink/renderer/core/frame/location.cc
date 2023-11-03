@@ -313,7 +313,6 @@ void Location::SetLocation(const String& url,
   if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
-  incumbent_window->GetFrame()->MaybeLogAdClickNavigation();
   dom_window_->GetFrame()->Navigate(request, frame_load_type);
 }
 

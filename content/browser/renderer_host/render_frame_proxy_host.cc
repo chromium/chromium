@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/ipc_utils.h"
+#include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -738,6 +739,15 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   if (!site_instance_group()->IsRelatedSiteInstanceGroup(
           current_rfh->GetSiteInstance()->group())) {
     return;
+  }
+
+  if (params->initiator_frame_token) {
+    RenderFrameHostImpl* initiator_frame = RenderFrameHostImpl::FromFrameToken(
+        GetProcess()->GetID(), params->initiator_frame_token.value());
+    if (current_rfh->IsOutermostMainFrame()) {
+      MaybeRecordAdClickMainFrameNavigationUseCounter(
+          initiator_frame, params->initiator_activation_and_ad_status);
+    }
   }
 
   // Since this navigation targeted a specific RenderFrameProxy, it should stay

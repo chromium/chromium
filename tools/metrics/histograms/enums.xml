@@ -32006,7 +32006,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2823" label="CSSValueAppearanceTextFieldForTemporalRendered"/>
   <int value="2824" label="OBSOLETE_BuiltInModuleKvStorage"/>
   <int value="2825" label="OBSOLETE_BuiltInModuleVirtualScroller"/>
-  <int value="2826" label="AdClickNavigation"/>
+  <int value="2826" label="OBSOLETE_AdClickNavigation"/>
   <int value="2827" label="RTCStatsRelativePacketArrivalDelay"/>
   <int value="2829" label="CSSSelectorHostContextInSnapshotProfile"/>
   <int value="2830" label="CSSSelectorHostContextInLiveProfile"/>
@@ -33998,6 +33998,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4716" label="ElementCheckVisibilityOptionContentVisibilityAuto"/>
   <int value="4717" label="ElementCheckVisibilityOptionOpacityProperty"/>
   <int value="4718" label="ElementCheckVisibilityOptionVisibilityProperty"/>
+  <int value="4719" label="AdClickMainFrameNavigation"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
