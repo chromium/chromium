@@ -62,8 +62,8 @@ class MockBoundSessionCookieRefreshService
               (base::RepeatingClosure updated_callback),
               (override));
   MOCK_METHOD(void,
-              OnRequestBlockedOnCookie,
-              (OnRequestBlockedOnCookieCallback resume_blocked_request),
+              HandleRequestBlockedOnCookie,
+              (HandleRequestBlockedOnCookieCallback resume_blocked_request),
               (override));
   MOCK_METHOD(base::WeakPtr<BoundSessionCookieRefreshService>,
               GetWeakPtr,

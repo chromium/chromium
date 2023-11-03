@@ -17,7 +17,7 @@
 // static
 scoped_refptr<BoundSessionRequestThrottledInRendererManager>
 BoundSessionRequestThrottledInRendererManager::Create(
-    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
         pending_remote) {
   CHECK(pending_remote.is_valid());
   scoped_refptr<BoundSessionRequestThrottledInRendererManager> helper =
@@ -40,7 +40,7 @@ BoundSessionRequestThrottledInRendererManager::
 }
 
 void BoundSessionRequestThrottledInRendererManager::Initialize(
-    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
         pending_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   remote_.Bind(std::move(pending_remote));
@@ -49,8 +49,9 @@ void BoundSessionRequestThrottledInRendererManager::Initialize(
       base::Unretained(this)));
 }
 
-void BoundSessionRequestThrottledInRendererManager::OnRequestBlockedOnCookie(
-    ResumeOrCancelThrottledRequestCallback callback) {
+void BoundSessionRequestThrottledInRendererManager::
+    HandleRequestBlockedOnCookie(
+        ResumeOrCancelThrottledRequestCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   CHECK(remote_.is_bound());
   CHECK(!callback.is_null());
@@ -63,14 +64,14 @@ void BoundSessionRequestThrottledInRendererManager::OnRequestBlockedOnCookie(
 
   resume_or_cancel_deferred_request_callbacks_.push_back(std::move(callback));
   if (resume_or_cancel_deferred_request_callbacks_.size() == 1) {
-    CallRemoteOnRequestBlockedOnCookie();
+    CallRemoteHandleRequestBlockedOnCookie();
   }
 }
 
 void BoundSessionRequestThrottledInRendererManager::
-    CallRemoteOnRequestBlockedOnCookie() {
+    CallRemoteHandleRequestBlockedOnCookie() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  remote_->OnRequestBlockedOnCookie(base::BindOnce(
+  remote_->HandleRequestBlockedOnCookie(base::BindOnce(
       &BoundSessionRequestThrottledInRendererManager::ResumeAllDeferredRequests,
       base::Unretained(this)));
 }

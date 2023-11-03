@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/bound_session_credentials/bound_session_request_throttled_listener_browser_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_request_throttled_handler_browser_impl.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +46,8 @@ class FakeBoundSessionCookieRefreshService
   void SetBoundSessionParamsUpdatedCallbackForTesting(
       base::RepeatingClosure updated_callback) override {}
 
-  void OnRequestBlockedOnCookie(
-      OnRequestBlockedOnCookieCallback resume_blocked_request) override {
+  void HandleRequestBlockedOnCookie(
+      HandleRequestBlockedOnCookieCallback resume_blocked_request) override {
     resume_blocked_request_ = std::move(resume_blocked_request);
   }
 
@@ -68,38 +68,38 @@ class FakeBoundSessionCookieRefreshService
       this};
 };
 
-TEST(BoundSessionRequestThrottledListenerBrowserImplTest, RefreshServiceAlive) {
+TEST(BoundSessionRequestThrottledHandlerBrowserImplTest, RefreshServiceAlive) {
   base::test::SingleThreadTaskEnvironment task_environment;
   FakeBoundSessionCookieRefreshService service;
-  BoundSessionRequestThrottledListenerBrowserImpl listener(service);
+  BoundSessionRequestThrottledHandlerBrowserImpl listener(service);
 
-  base::test::TestFuture<BoundSessionRequestThrottledListener::UnblockAction>
+  base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction>
       future;
-  listener.OnRequestBlockedOnCookie(future.GetCallback());
+  listener.HandleRequestBlockedOnCookie(future.GetCallback());
 
   EXPECT_TRUE(service.IsRequestBlocked());
   EXPECT_FALSE(future.IsReady());
 
   service.SimulateUnblockRequest();
   EXPECT_EQ(future.Get(),
-            BoundSessionRequestThrottledListener::UnblockAction::kResume);
+            BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
-TEST(BoundSessionRequestThrottledListenerBrowserImplTest,
+TEST(BoundSessionRequestThrottledHandlerBrowserImplTest,
      RefreshServiceDestroyed) {
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<FakeBoundSessionCookieRefreshService> service =
       std::make_unique<FakeBoundSessionCookieRefreshService>();
-  BoundSessionRequestThrottledListenerBrowserImpl listener(*service);
+  BoundSessionRequestThrottledHandlerBrowserImpl listener(*service);
 
   // Destory service.
   service.reset();
-  base::test::TestFuture<BoundSessionRequestThrottledListener::UnblockAction>
+  base::test::TestFuture<BoundSessionRequestThrottledHandler::UnblockAction>
       future_cancel;
-  listener.OnRequestBlockedOnCookie(future_cancel.GetCallback());
+  listener.HandleRequestBlockedOnCookie(future_cancel.GetCallback());
   EXPECT_TRUE(future_cancel.IsReady());
   EXPECT_EQ(future_cancel.Get(),
-            BoundSessionRequestThrottledListener::UnblockAction::kCancel);
+            BoundSessionRequestThrottledHandler::UnblockAction::kCancel);
 }
 
 }  // namespace

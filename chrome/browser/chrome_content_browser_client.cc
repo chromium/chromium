@@ -727,8 +727,8 @@
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_request_throttled_listener_browser_impl.h"
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_request_throttled_handler_browser_impl.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5698,13 +5698,13 @@ std::unique_ptr<blink::URLLoaderThrottle> CreateGoogleURLLoaderThrottle(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
       BoundSessionCookieRefreshServiceFactory::GetForProfile(profile);
-  std::unique_ptr<BoundSessionRequestThrottledListener>
-      bound_session_request_throttled_listener;
+  std::unique_ptr<BoundSessionRequestThrottledHandler>
+      bound_session_request_throttled_handler;
   chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params;
 
   if (bound_session_cookie_refresh_service) {
-    bound_session_request_throttled_listener =
-        std::make_unique<BoundSessionRequestThrottledListenerBrowserImpl>(
+    bound_session_request_throttled_handler =
+        std::make_unique<BoundSessionRequestThrottledHandlerBrowserImpl>(
             *bound_session_cookie_refresh_service);
     bound_session_throttler_params =
         bound_session_cookie_refresh_service->GetBoundSessionThrottlerParams();
@@ -5726,7 +5726,7 @@ std::unique_ptr<blink::URLLoaderThrottle> CreateGoogleURLLoaderThrottle(
       client_data_header,
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      std::move(bound_session_request_throttled_listener),
+      std::move(bound_session_request_throttled_handler),
 #endif
       std::move(dynamic_params));
 }

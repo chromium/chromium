@@ -10,32 +10,32 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using UnblockAction = BoundSessionRequestThrottledListener::UnblockAction;
+using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
 
-class FakeBoundSessionRequestThrottledListener
-    : public chrome::mojom::BoundSessionRequestThrottledListener {
+class FakeBoundSessionRequestThrottledHandler
+    : public chrome::mojom::BoundSessionRequestThrottledHandler {
  public:
-  FakeBoundSessionRequestThrottledListener(
-      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+  FakeBoundSessionRequestThrottledHandler(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void OnRequestBlockedOnCookie(
-      OnRequestBlockedOnCookieCallback callback) override {
+  void HandleRequestBlockedOnCookie(
+      HandleRequestBlockedOnCookieCallback callback) override {
     // There shouldn't be more than one notification at a time of requests being
     // blocked.
     EXPECT_FALSE(callback_);
     callback_ = std::move(callback);
   }
 
-  void SimulateOnRequestBlockedOnCookieCompleted() {
+  void SimulateHandleRequestBlockedOnCookieCompleted() {
     EXPECT_TRUE(callback_);
     std::move(callback_).Run();
   }
@@ -43,8 +43,8 @@ class FakeBoundSessionRequestThrottledListener
   bool IsRequestBlocked() { return !callback_.is_null(); }
 
  private:
-  OnRequestBlockedOnCookieCallback callback_;
-  mojo::Receiver<chrome::mojom::BoundSessionRequestThrottledListener> receiver_;
+  HandleRequestBlockedOnCookieCallback callback_;
+  mojo::Receiver<chrome::mojom::BoundSessionRequestThrottledHandler> receiver_;
 };
 }  // namespace
 
@@ -52,9 +52,9 @@ class BoundSessionRequestThrottledInRendererManagerTest
     : public ::testing::Test {
  public:
   BoundSessionRequestThrottledInRendererManagerTest() {
-    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
         remote;
-    listener_ = std::make_unique<FakeBoundSessionRequestThrottledListener>(
+    handler_ = std::make_unique<FakeBoundSessionRequestThrottledHandler>(
         remote.InitWithNewPipeAndPassReceiver());
     manager_ = new BoundSessionRequestThrottledInRendererManager();
     manager_->Initialize(std::move(remote));
@@ -68,26 +68,24 @@ class BoundSessionRequestThrottledInRendererManagerTest
     return manager_.get();
   }
 
-  FakeBoundSessionRequestThrottledListener* listener() {
-    return listener_.get();
-  }
+  FakeBoundSessionRequestThrottledHandler* handler() { return handler_.get(); }
 
-  void ResetListener() { listener_.reset(); }
+  void ResetHandler() { handler_.reset(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<FakeBoundSessionRequestThrottledListener> listener_;
+  std::unique_ptr<FakeBoundSessionRequestThrottledHandler> handler_;
   scoped_refptr<BoundSessionRequestThrottledInRendererManager> manager_;
 };
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest, SingleRequest) {
   base::test::TestFuture<UnblockAction> future;
-  manager()->OnRequestBlockedOnCookie(future.GetCallback());
+  manager()->HandleRequestBlockedOnCookie(future.GetCallback());
 
   RunUntilIdle();
-  EXPECT_TRUE(listener()->IsRequestBlocked());
+  EXPECT_TRUE(handler()->IsRequestBlocked());
 
-  listener()->SimulateOnRequestBlockedOnCookieCompleted();
+  handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   EXPECT_EQ(future.Get(), UnblockAction::kResume);
 }
 
@@ -95,17 +93,17 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
   constexpr size_t kBlockedRequests = 5;
   std::array<base::test::TestFuture<UnblockAction>, kBlockedRequests> futures;
   for (auto& future : futures) {
-    manager()->OnRequestBlockedOnCookie(future.GetCallback());
+    manager()->HandleRequestBlockedOnCookie(future.GetCallback());
   }
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
-  EXPECT_TRUE(listener()->IsRequestBlocked());
+  EXPECT_TRUE(handler()->IsRequestBlocked());
   for (auto& future : futures) {
     EXPECT_FALSE(future.IsReady());
   }
 
-  listener()->SimulateOnRequestBlockedOnCookieCompleted();
+  handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   for (auto& future : futures) {
     EXPECT_EQ(future.Get(), UnblockAction::kResume);
   }
@@ -116,14 +114,14 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
   constexpr size_t kBlockedRequests = 5;
   std::array<base::test::TestFuture<UnblockAction>, kBlockedRequests> futures;
   for (auto& future : futures) {
-    manager()->OnRequestBlockedOnCookie(future.GetCallback());
+    manager()->HandleRequestBlockedOnCookie(future.GetCallback());
   }
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
-  EXPECT_TRUE(listener()->IsRequestBlocked());
+  EXPECT_TRUE(handler()->IsRequestBlocked());
 
-  ResetListener();
+  ResetHandler();
   for (auto& future : futures) {
     EXPECT_EQ(future.Get(), UnblockAction::kCancel);
   }
@@ -131,10 +129,10 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
        RemoteDisconnectedNewBlockedRequestsAreCancelled) {
-  ResetListener();
+  ResetHandler();
 
   base::test::TestFuture<UnblockAction> future;
-  manager()->OnRequestBlockedOnCookie(future.GetCallback());
+  manager()->HandleRequestBlockedOnCookie(future.GetCallback());
 
   EXPECT_EQ(future.Get(), UnblockAction::kCancel);
 }

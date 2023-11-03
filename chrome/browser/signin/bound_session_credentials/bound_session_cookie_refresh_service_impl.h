@@ -53,13 +53,13 @@ class BoundSessionCookieRefreshServiceImpl
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
   chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
       const override;
-  void AddBoundSessionRequestThrottledListenerReceiver(
-      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+  void AddBoundSessionRequestThrottledHandlerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver) override;
 
-  // chrome::mojom::BoundSessionRequestThrottledListener:
-  void OnRequestBlockedOnCookie(
-      OnRequestBlockedOnCookieCallback resume_blocked_request) override;
+  // chrome::mojom::BoundSessionRequestThrottledHandler:
+  void HandleRequestBlockedOnCookie(
+      HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
   void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) override;
@@ -131,8 +131,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
 
-  mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledListener>
-      renderer_request_throttled_listener_;
+  mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledHandler>
+      renderer_request_throttled_handler_;
 
   // There is only one active session registration at a time.
   std::unique_ptr<BoundSessionRegistrationFetcher> active_registration_request_;

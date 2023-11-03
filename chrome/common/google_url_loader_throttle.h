@@ -15,7 +15,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 #endif
 
 // This class changes requests for Google-specific features (e.g. adding &
@@ -30,8 +30,8 @@ class GoogleURLLoaderThrottle
       const std::string& client_data_header,
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      std::unique_ptr<BoundSessionRequestThrottledListener>
-          bound_session_request_throttled_listener,
+      std::unique_ptr<BoundSessionRequestThrottledHandler>
+          bound_session_request_throttled_handler,
 #endif
       chrome::mojom::DynamicParamsPtr dynamic_params);
 
@@ -60,12 +60,12 @@ class GoogleURLLoaderThrottle
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   bool ShouldDeferRequestForBoundSession(const GURL& request_url) const;
   void OnDeferRequestForBoundSessionCompleted(
-      BoundSessionRequestThrottledListener::UnblockAction resume);
+      BoundSessionRequestThrottledHandler::UnblockAction resume);
   void ResumeOrCancelRequest(
-      BoundSessionRequestThrottledListener::UnblockAction resume);
+      BoundSessionRequestThrottledHandler::UnblockAction resume);
 
-  std::unique_ptr<BoundSessionRequestThrottledListener>
-      bound_session_request_throttled_listener_;
+  std::unique_ptr<BoundSessionRequestThrottledHandler>
+      bound_session_request_throttled_handler_;
   absl::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
 #endif
 

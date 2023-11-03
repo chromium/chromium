@@ -21,7 +21,7 @@
 // - Preemptively refreshes bound session cookies
 class BoundSessionCookieRefreshService
     : public KeyedService,
-      public chrome::mojom::BoundSessionRequestThrottledListener {
+      public chrome::mojom::BoundSessionRequestThrottledHandler {
  public:
   using RendererBoundSessionThrottlerParamsUpdaterDelegate =
       base::RepeatingClosure;
@@ -73,8 +73,8 @@ class BoundSessionCookieRefreshService
 
   // Adds a Receiver to `BoundSessionCookieRefreshService` to receive
   // notification when a request is throttled and requires a fresh cookie.
-  virtual void AddBoundSessionRequestThrottledListenerReceiver(
-      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+  virtual void AddBoundSessionRequestThrottledHandlerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver) {}
 };
 

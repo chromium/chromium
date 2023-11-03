@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h"
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h"
 #include <algorithm>
 
 #include "base/functional/bind.h"
@@ -18,9 +18,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using UnblockAction = BoundSessionRequestThrottledListener::UnblockAction;
+using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
 using ResumeOrCancelThrottledRequestCallback =
-    BoundSessionRequestThrottledListener::
+    BoundSessionRequestThrottledHandler::
         ResumeOrCancelThrottledRequestCallback;
 
 using ::testing::_;
@@ -31,15 +31,15 @@ class MockBoundSessionRequestThrottledInRendererManager
  public:
   MockBoundSessionRequestThrottledInRendererManager() {
     sequence_checker_.DetachFromSequence();
-    ON_CALL(*this, OnRequestBlockedOnCookie(_))
+    ON_CALL(*this, HandleRequestBlockedOnCookie(_))
         .WillByDefault(testing::Invoke(
             this, &MockBoundSessionRequestThrottledInRendererManager::
-                      OnRequestBlockedOnCookieCalled));
+                      HandleRequestBlockedOnCookieCalled));
   }
 
   MOCK_METHOD(void,
-              OnRequestBlockedOnCookie,
-              (BoundSessionRequestThrottledListener::
+              HandleRequestBlockedOnCookie,
+              (BoundSessionRequestThrottledHandler::
                    ResumeOrCancelThrottledRequestCallback callback),
               (override));
 
@@ -50,19 +50,19 @@ class MockBoundSessionRequestThrottledInRendererManager
  private:
   ~MockBoundSessionRequestThrottledInRendererManager() override = default;
 
-  void OnRequestBlockedOnCookieCalled(
+  void HandleRequestBlockedOnCookieCalled(
       ResumeOrCancelThrottledRequestCallback callback) {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
     std::move(callback).Run(UnblockAction::kResume);
   }
 
-  // Used to verify `OnRequestBlockedOnCookie()` is called on the right
+  // Used to verify `HandleRequestBlockedOnCookie()` is called on the right
   // sequence.
   base::SequenceCheckerImpl sequence_checker_;
 };
 
-TEST(BoundSessionRequestThrottledListenerRendererImplTest,
-     OnRequestBlockedOnCookie) {
+TEST(BoundSessionRequestThrottledHandlerRendererImplTest,
+     HandleRequestBlockedOnCookie) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS};
   scoped_refptr<MockBoundSessionRequestThrottledInRendererManager> manager =
@@ -73,8 +73,8 @@ TEST(BoundSessionRequestThrottledListenerRendererImplTest,
 
   // Initialize the mock to ensure the sequence checker is attached to the
   // `io_task_runner`. After initialization,
-  // `MockManager::OnRequestBlockedOnCookie` will always verify, it is called on
-  // the `io_task_runner`.
+  // `MockManager::HandleRequestBlockedOnCookie` will always verify, it is
+  // called on the `io_task_runner`.
   base::RunLoop initialize_mock_run_loop;
   io_task_runner->PostTaskAndReply(
       FROM_HERE,
@@ -86,16 +86,16 @@ TEST(BoundSessionRequestThrottledListenerRendererImplTest,
           initialize_mock_run_loop.QuitClosure()));
   initialize_mock_run_loop.Run();
 
-  EXPECT_CALL(*manager, OnRequestBlockedOnCookie(_));
+  EXPECT_CALL(*manager, HandleRequestBlockedOnCookie(_));
 
   // Used to check that the callback passed to
-  // `BoundSessionRequestThrottledListenerRendererImpl` is executed on the
+  // `BoundSessionRequestThrottledHandlerRendererImpl` is executed on the
   // caller's sequence runner.
   base::SequenceCheckerImpl sequence_checker;
-  BoundSessionRequestThrottledListenerRendererImpl listener(manager,
+  BoundSessionRequestThrottledHandlerRendererImpl listener(manager,
                                                             io_task_runner);
   base::RunLoop run_loop;
-  listener.OnRequestBlockedOnCookie(base::BindOnce(
+  listener.HandleRequestBlockedOnCookie(base::BindOnce(
       [](base::SequenceCheckerImpl checker, base::OnceClosure callback,
          UnblockAction action) {
         EXPECT_TRUE(checker.CalledOnValidSequence());

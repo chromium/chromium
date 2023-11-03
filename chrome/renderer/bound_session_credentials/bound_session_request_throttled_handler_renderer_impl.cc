@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h"
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h"
 
 #include <memory>
 
@@ -13,8 +13,8 @@
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 #include "content/public/child/child_thread.h"
 
-BoundSessionRequestThrottledListenerRendererImpl::
-    BoundSessionRequestThrottledListenerRendererImpl(
+BoundSessionRequestThrottledHandlerRendererImpl::
+    BoundSessionRequestThrottledHandlerRendererImpl(
         scoped_refptr<BoundSessionRequestThrottledInRendererManager>
             bound_session_request_throttled_manager,
         scoped_refptr<base::SequencedTaskRunner> io_task_runner)
@@ -24,11 +24,12 @@ BoundSessionRequestThrottledListenerRendererImpl::
   CHECK(bound_session_request_throttled_manager);
 }
 
-BoundSessionRequestThrottledListenerRendererImpl::
-    ~BoundSessionRequestThrottledListenerRendererImpl() = default;
+BoundSessionRequestThrottledHandlerRendererImpl::
+    ~BoundSessionRequestThrottledHandlerRendererImpl() = default;
 
-void BoundSessionRequestThrottledListenerRendererImpl::OnRequestBlockedOnCookie(
-    ResumeOrCancelThrottledRequestCallback callback) {
+void BoundSessionRequestThrottledHandlerRendererImpl::
+    HandleRequestBlockedOnCookie(
+        ResumeOrCancelThrottledRequestCallback callback) {
   // Bind the callback to the current sequence to ensure invoking `Run()` will
   // run the callback on the current sequence.
   ResumeOrCancelThrottledRequestCallback callback_bound_to_current_sequence =
@@ -38,7 +39,7 @@ void BoundSessionRequestThrottledListenerRendererImpl::OnRequestBlockedOnCookie(
   // the IO thread.
   io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&BoundSessionRequestThrottledInRendererManager::
-                                    OnRequestBlockedOnCookie,
+                                    HandleRequestBlockedOnCookie,
                                 bound_session_request_throttled_manager_,
                                 std::move(callback_bound_to_current_sequence)));
 }

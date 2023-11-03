@@ -77,7 +77,7 @@ bool BoundSessionCookieControllerImpl::IsConnectionTypeAvailableAndOffline() {
          type == network::mojom::ConnectionType::CONNECTION_NONE;
 }
 
-void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
+void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
     base::OnceClosure resume_blocked_request) {
   if (AreAllCookiesFresh()) {
     // Cookie is fresh.

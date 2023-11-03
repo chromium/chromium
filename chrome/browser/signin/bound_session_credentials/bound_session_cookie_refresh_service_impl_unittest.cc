@@ -85,7 +85,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
   const std::vector<uint8_t>& wrapped_key() { return wrapped_key_; }
 
-  void OnRequestBlockedOnCookie(
+  void HandleRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) override {
     resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   }
@@ -308,7 +308,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(cookie_controller());
   base::test::TestFuture<void> future;
-  service->OnRequestBlockedOnCookie(future.GetCallback());
+  service->HandleRequestBlockedOnCookie(future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
   cookie_controller()->SimulateRefreshBoundSessionCompleted();
@@ -322,7 +322,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
   // Unbound session, the callback should be called immediately.
   base::test::TestFuture<void> future;
-  service->OnRequestBlockedOnCookie(future.GetCallback());
+  service->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
 }
 
@@ -438,21 +438,21 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       AddBoundSessionRequestThrottledListenerReceivers) {
+       AddBoundSessionRequestThrottledHandlerReceivers) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   ASSERT_TRUE(cookie_controller());
-  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledListener> listener_1;
-  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledListener> listener_2;
-  service->AddBoundSessionRequestThrottledListenerReceiver(
+  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> listener_1;
+  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> listener_2;
+  service->AddBoundSessionRequestThrottledHandlerReceiver(
       listener_1.BindNewPipeAndPassReceiver());
-  service->AddBoundSessionRequestThrottledListenerReceiver(
+  service->AddBoundSessionRequestThrottledHandlerReceiver(
       listener_2.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<void> future_1;
   base::test::TestFuture<void> future_2;
-  listener_1->OnRequestBlockedOnCookie(future_1.GetCallback());
-  listener_2->OnRequestBlockedOnCookie(future_2.GetCallback());
+  listener_1->HandleRequestBlockedOnCookie(future_1.GetCallback());
+  listener_2->HandleRequestBlockedOnCookie(future_2.GetCallback());
   RunUntilIdle();
 
   EXPECT_FALSE(future_1.IsReady());

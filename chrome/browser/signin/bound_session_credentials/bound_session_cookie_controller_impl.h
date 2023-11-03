@@ -66,7 +66,7 @@ class BoundSessionCookieControllerImpl
   // BoundSessionCookieController:
   void Initialize() override;
 
-  void OnRequestBlockedOnCookie(
+  void HandleRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:

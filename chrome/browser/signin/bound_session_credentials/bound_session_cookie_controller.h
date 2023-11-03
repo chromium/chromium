@@ -55,7 +55,7 @@ class BoundSessionCookieController {
   // The callback will be called once the cookie is fresh or the session is
   // terminated. Note: The callback might be called synchronously if the
   // previous conditions apply.
-  virtual void OnRequestBlockedOnCookie(
+  virtual void HandleRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) = 0;
 
   const GURL& url() const { return url_; }

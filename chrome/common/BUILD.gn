@@ -499,7 +499,7 @@ static_library("common_lib") {
   }
 
   if (enable_bound_session_credentials) {
-    sources += [ "bound_session_request_throttled_listener.h" ]
+    sources += [ "bound_session_request_throttled_handler.h" ]
   }
 }
 

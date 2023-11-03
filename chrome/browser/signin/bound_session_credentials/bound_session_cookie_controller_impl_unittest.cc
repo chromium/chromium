@@ -391,7 +391,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // No fetch should be triggered since the cookie is fresh.
   // The callback should return immediately.
   base::test::TestFuture<void> future;
-  controller->OnRequestBlockedOnCookie(future.GetCallback());
+  controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(cookie_fetcher());
 }
@@ -413,7 +413,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
   // Request blocked on the cookie.
   base::test::TestFuture<void> future;
-  controller->OnRequestBlockedOnCookie(future.GetCallback());
+  controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Simulate refresh complete.
@@ -446,7 +446,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(AreAllCookiesFresh());
   // Request blocked on the cookies.
   base::test::TestFuture<void> future;
-  controller->OnRequestBlockedOnCookie(future.GetCallback());
+  controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // One cookie is fresh.
@@ -493,7 +493,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(cookie_fetcher());
 
   base::test::TestFuture<void> future;
-  controller->OnRequestBlockedOnCookie(future.GetCallback());
+  controller->HandleRequestBlockedOnCookie(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Simulate refresh completes with persistent failure.
@@ -525,7 +525,7 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
   for (auto& result : result_types) {
     SCOPED_TRACE(result);
     base::test::TestFuture<void> future;
-    bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+    bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
         future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     SimulateCompleteRefreshRequest(result, absl::nullopt);
@@ -534,7 +534,7 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
 
   // Subsequent requests are not impacted.
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(cookie_fetcher());
@@ -569,7 +569,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   std::array<base::test::TestFuture<void>, 5> futures;
   for (auto& future : futures) {
-    controller->OnRequestBlockedOnCookie(future.GetCallback());
+    controller->HandleRequestBlockedOnCookie(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
   }
 
@@ -599,7 +599,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->FastForwardBy(base::Minutes(12));
 
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   // Refresh request pending.
   EXPECT_TRUE(cookie_fetcher());
@@ -632,7 +632,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   std::array<base::test::TestFuture<void>, 5> futures;
   for (auto& future : futures) {
-    controller->OnRequestBlockedOnCookie(future.GetCallback());
+    controller->HandleRequestBlockedOnCookie(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
   }
 
@@ -652,7 +652,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -683,7 +683,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   std::array<base::test::TestFuture<void>, kBlockedRequestCount> futures;
 
   for (auto& future : futures) {
-    controller->OnRequestBlockedOnCookie(future.GetCallback());
+    controller->HandleRequestBlockedOnCookie(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     task_environment()->FastForwardBy(kDeltaBetweenRequests);
   }
@@ -705,7 +705,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsTimerReset) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(resume_blocked_requests_timer()->IsRunning());
@@ -721,7 +721,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
   ASSERT_TRUE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(AreAllCookiesFresh());
   EXPECT_TRUE(cookie_fetcher());
@@ -735,7 +735,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
                          network::mojom::ConnectionType::CONNECTION_WIFI);
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(resume_blocked_requests_timer()->IsRunning());
@@ -756,7 +756,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
        ResumePendingBlockedRequestsOnNetworkConnectionChangedToOffline) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
-  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
       future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(resume_blocked_requests_timer()->IsRunning());
