@@ -235,7 +235,7 @@ class TabAddedWaiter : public TabStripModelObserver {
   TabAddedWaiter& operator=(const TabAddedWaiter&) = delete;
   ~TabAddedWaiter() override = default;
 
-  void Wait();
+  content::WebContents* Wait();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -245,6 +245,8 @@ class TabAddedWaiter : public TabStripModelObserver {
 
  private:
   base::RunLoop run_loop_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
+      nullptr;
 };
 
 // Similar to TabAddedWaiter, but will observe tabs added to all Browser

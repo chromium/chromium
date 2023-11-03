@@ -141,9 +141,6 @@ class TabRestoreTest : public InProcessBrowserTest {
   // operation.
   content::WebContents* RestoreMostRecentlyClosed(Browser* browser) {
     ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
-    content::WindowedNotificationObserver tab_loaded_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
     {
       TabRestoreServiceLoadWaiter waiter(
           TabRestoreServiceFactory::GetForProfile(browser->profile()));
@@ -151,7 +148,7 @@ class TabRestoreTest : public InProcessBrowserTest {
       waiter.Wait();
     }
     content::WebContents* new_tab = tab_added_waiter.Wait();
-    tab_loaded_observer.Wait();
+    content::WaitForLoadStop(new_tab);
     return new_tab;
   }
 
@@ -816,13 +813,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabFromClosedWindowByID) {
   // Restore the tab into the current window.
   EXPECT_EQ(1, browser->tab_strip_model()->count());
   ui_test_utils::TabAddedWaiter tab_added_waiter(browser);
-  content::WindowedNotificationObserver tab_loaded_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
   service->RestoreEntryById(browser->live_tab_context(), tab_id_to_restore,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  tab_added_waiter.Wait();
-  tab_loaded_observer.Wait();
+  auto* new_tab = tab_added_waiter.Wait();
+  content::WaitForLoadStop(new_tab);
 
   // Check that the tab was correctly restored.
   EXPECT_EQ(2, browser->tab_strip_model()->count());
@@ -965,15 +959,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
   EXPECT_EQ(window_count - 1, active_browser_list_->size());
 
   // Restore the window.
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   chrome::RestoreTab(active_browser_list_->get(0));
   EXPECT_EQ(window_count, active_browser_list_->size());
 
   Browser* browser = GetBrowser(1);
   EXPECT_EQ(initial_tab_count + 2, browser->tab_strip_model()->count());
-  load_stop_observer.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab_added_waiter.Wait()));
 
   EXPECT_EQ(initial_tab_count + 1, browser->tab_strip_model()->active_index());
   content::WebContents* restored_tab =
@@ -1665,10 +1657,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Restore the window. This should record kTimeBetweenWindowClosedAndRestored
   // histogram.
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   chrome::RestoreTab(active_browser_list_->get(0));
+  EXPECT_TRUE(content::WaitForLoadStop(tab_added_waiter.Wait()));
 
   EXPECT_EQ(histogram_tester.GetAllSamples(kTimeBetweenWindowClosedAndRestored)
                 .size(),
