@@ -167,6 +167,7 @@ class ScopedScriptInjectionTrackerFailureCrashKeys {
       last_committed_origin_crash_key_;
   absl::optional<base::debug::ScopedCrashKeyString>
       last_committed_url_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString> lifecycle_state_crash_key_;
 
   absl::optional<base::debug::ScopedCrashKeyString>
       do_web_view_scripts_match_crash_key_;

@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
@@ -964,6 +965,12 @@ base::debug::CrashKeyString* GetLastCommittedUrlCrashKey() {
   return crash_key;
 }
 
+base::debug::CrashKeyString* GetLifecycleStateCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "lifecycle_state", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
 base::debug::CrashKeyString* GetDoWebViewScriptsMatchCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "do_web_view_scripts_match", base::debug::CrashKeySize::Size32);
@@ -1017,6 +1024,9 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
       frame.GetLastCommittedOrigin().GetDebugString());
   last_committed_url_crash_key_.emplace(GetLastCommittedUrlCrashKey(),
                                         frame_url.possibly_invalid_spec());
+  lifecycle_state_crash_key_.emplace(
+      GetLifecycleStateCrashKey(),
+      base::NumberToString(static_cast<int>(frame.GetLifecycleState())));
 
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(frame.GetBrowserContext());
