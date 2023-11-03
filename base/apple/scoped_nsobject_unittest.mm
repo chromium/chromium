@@ -36,15 +36,11 @@ TEST(ScopedNSObjectTest, ScopedNSObject) {
   ASSERT_EQ(1u, [p1.get() retainCount]);
   base::apple::scoped_nsobject<NSObject> p4([p1.get() retain]);
   ASSERT_EQ(2u, [p1.get() retainCount]);
-  ASSERT_TRUE(p1 == p1.get());
   ASSERT_TRUE(p1 == p1);
   ASSERT_FALSE(p1 != p1);
-  ASSERT_FALSE(p1 != p1.get());
   base::apple::scoped_nsobject<NSObject> p5([[NSObject alloc] init]);
   ASSERT_TRUE(p1 != p5);
-  ASSERT_TRUE(p1 != p5.get());
   ASSERT_FALSE(p1 == p5);
-  ASSERT_FALSE(p1 == p5.get());
 
   base::apple::scoped_nsobject<NSObject> p6 = p1;
   ASSERT_EQ(3u, [p6.get() retainCount]);

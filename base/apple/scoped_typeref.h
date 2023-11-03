@@ -167,9 +167,6 @@ class ScopedTypeRef {
 
   explicit operator bool() const { return object_ != Traits::InvalidValue(); }
 
-  // TODO(https://crbug.com/1495439): Remove.
-  operator element_type() const { return object_; }
-
   element_type get() const { return object_; }
 
   void swap(ScopedTypeRef& that) {
