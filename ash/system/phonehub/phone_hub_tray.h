@@ -125,7 +125,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
-  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
