@@ -74,7 +74,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/compose/buildflags.h"
@@ -194,6 +193,7 @@
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

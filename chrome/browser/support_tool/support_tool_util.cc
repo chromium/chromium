@@ -23,7 +23,6 @@
 #include "chrome/browser/support_tool/signin_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -47,6 +46,7 @@
 #include "chrome/browser/support_tool/ash/system_logs_data_collector.h"
 #include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
