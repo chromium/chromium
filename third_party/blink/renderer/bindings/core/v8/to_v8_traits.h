@@ -389,26 +389,21 @@ template <typename ElementIDLType, typename ContainerType>
 [[nodiscard]] inline v8::MaybeLocal<v8::Value> ToV8HelperSequence(
     ScriptState* script_state,
     const ContainerType& sequence) {
-  v8::LocalVector<v8::Value> converted_vector(script_state->GetIsolate());
-  converted_vector.reserve(sequence.size());
-  typename ContainerType::const_iterator end = sequence.end();
-  for (typename ContainerType::const_iterator iter = sequence.begin();
-       iter != end; ++iter) {
-    v8::Local<v8::Value> v8_value;
-    v8::MaybeLocal<v8::Value> maybe_v8_value;
-    if constexpr (WTF::IsAnyMemberType<decltype(*iter)>::value) {
-      maybe_v8_value =
-          ToV8Traits<ElementIDLType>::ToV8(script_state, iter->Get());
+  auto current_it = sequence.begin();
+  const auto end_it = sequence.end();
+  const auto callback = [&current_it, end_it, script_state]() {
+    DCHECK(end_it != current_it);
+    std::ignore = end_it;
+    if constexpr (WTF::IsAnyMemberType<decltype(*current_it)>::value) {
+      return ToV8Traits<ElementIDLType>::ToV8(script_state,
+                                              (current_it++)->Get());
     } else {
-      maybe_v8_value = ToV8Traits<ElementIDLType>::ToV8(script_state, *iter);
+      return ToV8Traits<ElementIDLType>::ToV8(script_state, *(current_it++));
     }
-    if (!maybe_v8_value.ToLocal(&v8_value)) {
-      return {};
-    }
-    converted_vector.push_back(std::move(v8_value));
-  }
-  return v8::Array::New(script_state->GetIsolate(), converted_vector.data(),
-                        base::checked_cast<int>(converted_vector.size()));
+  };
+  return v8::Array::New(script_state->GetContext(),
+                        base::checked_cast<size_t>(sequence.size()), callback)
+      .template As<v8::Value>();
 }
 
 // Helper function for IDLSequence in order to reduce code size. This avoids
