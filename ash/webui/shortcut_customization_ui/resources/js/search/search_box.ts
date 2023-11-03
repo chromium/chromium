@@ -412,17 +412,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
 
     this.spinnerActive = false;
 
-    /**
-     * Get the search results based on whether customization is allowed.
-     * If customization is allowed:
-     *   - Display all results.
-     *   - For accelerators that are disabled, display a 'No shortcut assigned'
-     * message.
-     * If customization is not allowed:
-     *   - Filter out the disabled accelerators from the search results.
-     */
-    this.searchResults =
-        isCustomizationAllowed() ? results : this.filterSearchResults(results);
+    this.searchResults = this.filterSearchResults(results);
 
     // In `this.fetchSearchResults`, we queried for a multiple of
     // MAX_NUM_RESULTS, so cap the size of the results here after filtering.
@@ -444,18 +434,26 @@ export class SearchBoxElement extends SearchBoxElementBase implements
    */
   private filterSearchResults(searchResults: MojoSearchResult[]):
       MojoSearchResult[] {
-    return searchResults
-        // Hide accelerators that are disabled because the keys are
-        // unavailable.
-        .map(result => ({
-               ...result,
-               acceleratorInfos: result.acceleratorInfos.filter(
-                   a => a.state !==
-                           AcceleratorState.kDisabledByUnavailableKeys &&
-                       a.state !== AcceleratorState.kDisabledByUser),
-             }))
-        // Hide results that don't contain any accelerators.
-        .filter(result => result.acceleratorInfos.length > 0);
+    const enabledSearchResults =
+        searchResults
+            // Hide accelerators that are disabled because the keys are
+            // unavailable.
+            .map(result => ({
+                   ...result,
+                   acceleratorInfos: result.acceleratorInfos.filter(
+                       a => a.state !==
+                               AcceleratorState.kDisabledByUnavailableKeys &&
+                           a.state !== AcceleratorState.kDisabledByUser),
+                 }));
+
+    // If customization is not allowed, hide results that don't contain any
+    // accelerators.
+    if (!isCustomizationAllowed()) {
+      return enabledSearchResults.filter(
+          result => result.acceleratorInfos.length > 0);
+    }
+
+    return enabledSearchResults;
   }
 }
 

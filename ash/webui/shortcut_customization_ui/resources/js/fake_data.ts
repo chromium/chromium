@@ -454,36 +454,6 @@ export const CycleTabsTextSearchResult: MojoSearchResult = {
   relevanceScore: 0.95,
 };
 
-// SearchResult that has disabled accelerators.
-export const OpenCalculatorAppSearchResult: MojoSearchResult = {
-  acceleratorLayoutInfo: {
-    category: AcceleratorCategory.kGeneral,
-    subCategory: AcceleratorSubcategory.kApps,
-    description: stringToMojoString16('Open Calculator app'),
-    style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kAsh,
-    action: 3,
-  },
-  acceleratorInfos: [{
-    type: AcceleratorType.kDefault,
-    state: AcceleratorState.kDisabledByUnavailableKeys,
-    locked: false,
-    layoutProperties: {
-      standardAccelerator: {
-        keyDisplay: stringToMojoString16('LaunchApplication2'),
-        accelerator: {
-          modifiers: Modifier.NONE,
-          keyCode: 183,
-          keyState: 0,
-          timeStamp: fakeTimestamp,
-        },
-      },
-      textAccelerator: undefined,
-    },
-  }],
-  relevanceScore: 0.95,
-};
-
 export const fakeDefaultAccelerators: Accelerator[] = [
   {
     modifiers: Modifier.COMMAND | Modifier.SHIFT,
