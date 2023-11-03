@@ -70,33 +70,15 @@ static const CGFloat kChipVerticalMargin = 4;
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
   self.backgroundView.hidden = !enabled;
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets =
-          enabled ? [self chipNSDirectionalEdgeInsets]
-                  : NSDirectionalEdgeInsetsZero;
-      self.configuration = buttonConfiguration;
-    }
-  } else {
-    UIEdgeInsets contentEdgeInsets =
-        enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
-    SetContentEdgeInsets(self, contentEdgeInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = enabled
+                                          ? [self chipNSDirectionalEdgeInsets]
+                                          : NSDirectionalEdgeInsetsZero;
+  self.configuration = buttonConfiguration;
 }
 
 #pragma mark - Private
-
-// TODO(crbug.com/1418068): Simplify after minimum version required is >=
-// iOS 15.
-- (UIEdgeInsets)chipEdgeInsets {
-  return UIEdgeInsetsMake(kChipVerticalPadding, kChipHorizontalPadding,
-                          kChipVerticalPadding, kChipHorizontalPadding);
-}
 
 - (NSDirectionalEdgeInsets)chipNSDirectionalEdgeInsets {
   return NSDirectionalEdgeInsetsMake(
@@ -129,20 +111,10 @@ static const CGFloat kChipVerticalMargin = 4;
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
 
   [self updateTitleLabelFont];
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
-      self.configuration = buttonConfiguration;
-    }
-  } else {
-    UIEdgeInsets contentEdgeInsets = [self chipEdgeInsets];
-    SetContentEdgeInsets(self, contentEdgeInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
+  self.configuration = buttonConfiguration;
 }
 
 - (void)updateTitleLabelFont {
