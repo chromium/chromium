@@ -97,19 +97,18 @@ settings_api::PrefObject GeneratedPasswordLeakDetectionPref::GetPrefObject()
 
   settings_api::PrefObject pref_object;
   pref_object.key = kGeneratedPasswordLeakDetectionPref;
-  pref_object.type = settings_api::PREF_TYPE_BOOLEAN;
+  pref_object.type = settings_api::PrefType::kBoolean;
   pref_object.value = base::Value(backing_preference->GetValue()->GetBool() &&
                                   IsUserAllowedToUseLeakDetection(profile_));
   pref_object.user_control_disabled =
       !IsSafeBrowsingStandard(profile_) ||
       !IsUserAllowedToUseLeakDetection(profile_);
   if (!backing_preference->IsUserModifiable()) {
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
         &pref_object, backing_preference);
   } else if (backing_preference->GetRecommendedValue()) {
-    pref_object.enforcement =
-        settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
+    pref_object.enforcement = settings_api::Enforcement::kRecommended;
     pref_object.recommended_value =
         base::Value(backing_preference->GetRecommendedValue()->GetBool());
   }

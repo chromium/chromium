@@ -36,20 +36,17 @@ void GeneratedPref::ApplyControlledByFromPref(
     api::settings_private::PrefObject* pref_object,
     const PrefService::Preference* pref) {
   if (pref->IsManaged()) {
-    pref_object->controlled_by =
-        settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
+    pref_object->controlled_by = settings_api::ControlledBy::kDevicePolicy;
     return;
   }
 
   if (pref->IsExtensionControlled()) {
-    pref_object->controlled_by =
-        settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
+    pref_object->controlled_by = settings_api::ControlledBy::kExtension;
     return;
   }
 
   if (pref->IsManagedByCustodian()) {
-    pref_object->controlled_by =
-        settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
+    pref_object->controlled_by = settings_api::ControlledBy::kChildRestriction;
     return;
   }
 
@@ -62,16 +59,14 @@ void GeneratedPref::ApplyControlledByFromContentSettingSource(
     content_settings::SettingSource setting_source) {
   switch (setting_source) {
     case content_settings::SETTING_SOURCE_POLICY:
-      pref_object->controlled_by =
-          settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
+      pref_object->controlled_by = settings_api::ControlledBy::kDevicePolicy;
       break;
     case content_settings::SETTING_SOURCE_EXTENSION:
-      pref_object->controlled_by =
-          settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
+      pref_object->controlled_by = settings_api::ControlledBy::kExtension;
       break;
     case content_settings::SETTING_SOURCE_SUPERVISED:
       pref_object->controlled_by =
-          settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
+          settings_api::ControlledBy::kChildRestriction;
       break;
     default:
       NOTREACHED();
