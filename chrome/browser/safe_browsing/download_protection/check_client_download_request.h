@@ -78,6 +78,7 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   bool ShouldPromptForLocalDecryption(
       bool server_requests_prompt) const override;
   bool ShouldPromptForIncorrectPassword() const override;
+  bool ShouldShowScanFailure() const override;
   void LogDeepScanningPrompt() const override;
 
   // Uploads the binary for deep scanning if the reason and policies indicate

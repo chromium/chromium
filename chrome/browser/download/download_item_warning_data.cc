@@ -262,6 +262,24 @@ void DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(
   GetOrCreate(download)->has_shown_local_decryption_prompt_ = has_shown;
 }
 
+// static
+bool DownloadItemWarningData::IsFullyExtractedArchive(
+    const download::DownloadItem* download) {
+  return GetWithDefault(
+      download, &DownloadItemWarningData::fully_extracted_archive_, false);
+}
+
+// static
+void DownloadItemWarningData::SetIsFullyExtractedArchive(
+    download::DownloadItem* download,
+    bool extracted) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->fully_extracted_archive_ = extracted;
+}
+
 DownloadItemWarningData::DownloadItemWarningData() = default;
 
 DownloadItemWarningData::~DownloadItemWarningData() = default;

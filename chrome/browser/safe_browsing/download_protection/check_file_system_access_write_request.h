@@ -66,6 +66,7 @@ class CheckFileSystemAccessWriteRequest
   bool ShouldPromptForLocalDecryption(
       bool server_requests_prompt) const override;
   bool ShouldPromptForIncorrectPassword() const override;
+  bool ShouldShowScanFailure() const override;
   void NotifyRequestFinished(DownloadCheckResult result,
                              DownloadCheckResultReason reason) override;
   bool IsAllowlistedByPolicy() const override;

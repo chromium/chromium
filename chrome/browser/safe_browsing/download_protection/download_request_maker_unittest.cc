@@ -721,4 +721,55 @@ TEST_F(DownloadRequestMakerTest, UsesPassword) {
             "E11FFA0C9F25234453A9EDD1CB251D46107F34B536AD74642A8584ACA8C1A8CE");
 }
 
+TEST_F(DownloadRequestMakerTest, SetsFullyExtractedArchive) {
+  content::InProcessUtilityThreadHelper utility_thread_helper;
+
+  base::FilePath test_zip;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
+  test_zip = test_zip.AppendASCII(
+      "safe_browsing/download_protection/aes_encrypted_password_12345.zip");
+
+  download::MockDownloadItem mock_download_item;
+  EXPECT_CALL(mock_download_item, GetUrlChain())
+      .WillRepeatedly(ReturnRefOfCopy(
+          std::vector<GURL>{GURL("https://example.com/redirect"),
+                            GURL("https://example.com/download")}));
+  EXPECT_CALL(mock_download_item, GetTabUrl())
+      .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_url")));
+  EXPECT_CALL(mock_download_item, GetTabReferrerUrl())
+      .WillOnce(ReturnRefOfCopy(GURL("https://example.com/tab_referrer_url")));
+  EXPECT_CALL(mock_download_item, GetTargetFilePath())
+      .WillOnce(ReturnRefOfCopy(
+          base::FilePath(FILE_PATH_LITERAL("target_file_path.zip"))));
+  EXPECT_CALL(mock_download_item, GetFullPath())
+      .WillOnce(ReturnRefOfCopy(test_zip));
+  EXPECT_CALL(mock_download_item, GetURL())
+      .WillOnce(ReturnRefOfCopy(GURL("https://example.com/url")));
+  EXPECT_CALL(mock_download_item, GetReferrerUrl())
+      .WillOnce(ReturnRefOfCopy(GURL("https://example.com/referrer_url")));
+  EXPECT_CALL(mock_download_item, GetHash())
+      .WillOnce(ReturnRefOfCopy(std::string("hash")));
+  EXPECT_CALL(mock_download_item, GetReceivedBytes()).WillOnce(Return(123));
+  EXPECT_CALL(mock_download_item, HasUserGesture()).WillOnce(Return(true));
+  EXPECT_CALL(mock_download_item, GetRemoteAddress())
+      .WillRepeatedly(Return(std::string("remote_ip")));
+  content::DownloadItemUtils::AttachInfoForTesting(&mock_download_item, nullptr,
+                                                   nullptr);
+
+  base::RunLoop run_loop;
+  base::FilePath tmp_path(FILE_PATH_LITERAL("full_path.exe"));
+
+  std::unique_ptr<DownloadRequestMaker> request_maker =
+      DownloadRequestMaker::CreateFromDownloadItem(mock_feature_extractor_,
+                                                   &mock_download_item);
+
+  std::unique_ptr<ClientDownloadRequest> request;
+  request_maker->Start(base::IgnoreArgs<std::unique_ptr<ClientDownloadRequest>>(
+      run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_FALSE(
+      DownloadItemWarningData::IsFullyExtractedArchive(&mock_download_item));
+}
+
 }  // namespace safe_browsing

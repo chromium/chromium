@@ -334,6 +334,12 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
     return;
   }
 
+  if (ShouldShowScanFailure()) {
+    FinishRequest(DownloadCheckResult::DEEP_SCANNED_FAILED,
+                  REASON_LOCAL_DECRYPTION_FAILED);
+    return;
+  }
+
   client_download_request_ = std::move(request);
   SanitizeRequest();
 

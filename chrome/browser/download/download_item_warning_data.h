@@ -123,6 +123,11 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static void SetHasShownLocalDecryptionPrompt(download::DownloadItem* download,
                                                bool has_shown);
 
+  // Returns whether an encrypted archive was fully extracted.
+  static bool IsFullyExtractedArchive(const download::DownloadItem* download);
+  static void SetIsFullyExtractedArchive(download::DownloadItem* download,
+                                         bool extracted);
+
  private:
   DownloadItemWarningData();
 
@@ -141,6 +146,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   bool is_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;
   bool has_shown_local_decryption_prompt_ = false;
+  bool fully_extracted_archive_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_

@@ -172,7 +172,12 @@ class CheckClientDownloadRequestBase {
   // provided password was incorrect.
   virtual bool ShouldPromptForIncorrectPassword() const = 0;
 
-  // Source URL being downloaded from. This shuold always be set, but could be
+  // Returns whether we should skip sending a ping to Safe Browsing because
+  // extraction failed in a way that makes the data useless (e.g. disk write
+  // failure).
+  virtual bool ShouldShowScanFailure() const = 0;
+
+  // Source URL being downloaded from. This should always be set, but could be
   // for example an artificial blob: URL if there is no source URL.
   const GURL source_url_;
   const base::FilePath target_file_path_;

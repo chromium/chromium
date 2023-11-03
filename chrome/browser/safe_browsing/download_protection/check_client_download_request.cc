@@ -396,6 +396,11 @@ bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {
          DownloadItemWarningData::HasIncorrectPassword(item_);
 }
 
+bool CheckClientDownloadRequest::ShouldShowScanFailure() const {
+  return DownloadItemWarningData::HasShownLocalDecryptionPrompt(item_) &&
+         !DownloadItemWarningData::IsFullyExtractedArchive(item_);
+}
+
 bool CheckClientDownloadRequest::IsAllowlistedByPolicy() const {
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
   if (!profile)

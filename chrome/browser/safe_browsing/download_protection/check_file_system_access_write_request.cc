@@ -130,6 +130,10 @@ bool CheckFileSystemAccessWriteRequest::ShouldPromptForIncorrectPassword()
   return false;
 }
 
+bool CheckFileSystemAccessWriteRequest::ShouldShowScanFailure() const {
+  return false;
+}
+
 void CheckFileSystemAccessWriteRequest::NotifyRequestFinished(
     DownloadCheckResult result,
     DownloadCheckResultReason reason) {
