@@ -43,6 +43,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
+#include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -64,18 +65,9 @@ namespace {
 // from the backend.
 const size_t kMaxQueryLength = 200;
 
-// TODO(skare): Pull the enum in search_provider.cc into its .h file, and switch
-// this file and zero_suggest_provider.cc to use it.
-enum DocumentRequestsHistogramValue {
-  DOCUMENT_REQUEST_SENT = 1,
-  DOCUMENT_REQUEST_INVALIDATED = 2,
-  DOCUMENT_REPLY_RECEIVED = 3,
-  DOCUMENT_MAX_REQUEST_HISTOGRAM_VALUE
-};
-
-void LogOmniboxDocumentRequest(DocumentRequestsHistogramValue request_value) {
+void LogOmniboxDocumentRequest(RemoteRequestHistogramValue request_value) {
   UMA_HISTOGRAM_ENUMERATION("Omnibox.DocumentSuggest.Requests", request_value,
-                            DOCUMENT_MAX_REQUEST_HISTOGRAM_VALUE);
+                            RemoteRequestHistogramValue::kMaxValue);
 }
 
 void LogTotalTime(base::TimeTicks start_time, bool interrupted) {
@@ -469,7 +461,7 @@ void DocumentProvider::Stop(bool clear_cached_results,
     loader_.reset();
     LogRequestTime(time_request_sent_, true);
     time_request_sent_ = base::TimeTicks();
-    LogOmniboxDocumentRequest(DOCUMENT_REQUEST_INVALIDATED);
+    LogOmniboxDocumentRequest(RemoteRequestHistogramValue::kRequestInvalidated);
   }
 
   // If `Run()` has been invoked, log its duration. It's possible `Stop()` is
@@ -520,7 +512,8 @@ void DocumentProvider::OnURLLoadComplete(
   DCHECK_EQ(loader_.get(), source);
 
   LogRequestTime(time_request_sent_, false);
-  LogOmniboxDocumentRequest(DOCUMENT_REPLY_RECEIVED);
+  LogOmniboxDocumentRequest(
+      RemoteRequestHistogramValue::kRemoteResponseReceived);
 
   // The following are codes that we believe indicate non-transient failures,
   // based on experience working with the owners of the API. Since they are
@@ -571,7 +564,7 @@ void DocumentProvider::OnDocumentSuggestionsLoaderAvailable(
     std::unique_ptr<network::SimpleURLLoader> loader) {
   time_request_sent_ = base::TimeTicks::Now();
   loader_ = std::move(loader);
-  LogOmniboxDocumentRequest(DOCUMENT_REQUEST_SENT);
+  LogOmniboxDocumentRequest(RemoteRequestHistogramValue::kRequestSent);
 }
 
 // static

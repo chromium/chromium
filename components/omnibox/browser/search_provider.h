@@ -41,6 +41,31 @@ namespace network {
 class SimpleURLLoader;
 }
 
+// The provider event types recorded as a result of prefetch and non-prefetch
+// requests for zero-prefix suggestions. Each event must be logged at most once
+// from when the provider is started until it is stopped.
+// These values are written to logs. New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+enum class RemoteRequestHistogramValue {
+  // Cached response was synchronously converted to displayed matches.
+  // Recorded for non-prefetch requests only.
+  kCachedResponseConvertedToMatches = 0,
+  // Remote request was sent.
+  kRequestSent = 1,
+  // Remote request was invalidated.
+  kRequestInvalidated = 2,
+  // Remote response was received asynchronously.
+  kRemoteResponseReceived = 3,
+  // Remote response was cached.
+  kRemoteResponseCached = 4,
+  // Remote response ended up being converted to displayed matches. This may
+  // happen due to an empty displayed result set or an empty remote result set.
+  // Recorded for non-prefetch requests only.
+  kRemoteResponseConvertedToMatches = 5,
+
+  kMaxValue = kRemoteResponseConvertedToMatches,
+};
+
 // Autocomplete provider for searches and suggestions from a search engine.
 //
 // After construction, the autocomplete controller repeatedly calls Start()
