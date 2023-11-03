@@ -69,7 +69,6 @@ import './os_bluetooth_page/os_saved_devices_list_item.js';
 import './os_bluetooth_page/settings_fast_pair_constants.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 /**
  * With the optimize_webui() build step, the generated JS files are bundled
@@ -251,24 +250,7 @@ export {StartupSettingsCardElement} from './system_preferences_page/startup_sett
 export {StorageAndPowerSettingsCardElement} from './system_preferences_page/storage_and_power_settings_card.js';
 export {SettingsSystemPreferencesPageElement} from './system_preferences_page/system_preferences_page.js';
 
-// TODO(b/257329722) After the Jelly experiment is launched, add the CSS link
-// element directly to the HTML.
-const jellyEnabled = loadTimeData.getBoolean('isJellyEnabled');
-if (jellyEnabled) {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-  document.head.appendChild(link);
-  document.body.classList.add('jelly-enabled');
-
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'stylesheet';
-  fontLink.href = 'chrome://theme/typography.css';
-  document.head.appendChild(fontLink);
-}
-
 window.addEventListener('load', () => {
-  if (jellyEnabled) {
-    ColorChangeUpdater.forDocument().start();
-  }
+  // Listen for changes to Jelly dynamic colors.
+  ColorChangeUpdater.forDocument().start();
 });
