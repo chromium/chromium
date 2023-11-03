@@ -84,10 +84,6 @@ public class PageInsightsSheetContentTest {
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         TestThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        FeatureList.setTestValues(testValues);
-
         mScrimCoordinator =
                 new ScrimCoordinator(
                         sTestRule.getActivity(),
@@ -116,6 +112,17 @@ public class PageInsightsSheetContentTest {
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
+    }
+
+    private void createSheetContent() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        createSheetContent(testValues);
+    }
+
+    private void createSheetContent(TestValues testValues) {
+        FeatureList.setTestValues(testValues);
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent =
@@ -154,6 +161,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @SmallTest
     public void backButtonPressed_handlerCalled() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getToolbarViewById(R.id.page_insights_back_button).performClick();
@@ -164,6 +172,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void backButtonNotClicked_handlerNotCalled() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertFalse(mTapHandlerCalled);
@@ -173,6 +182,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @SmallTest
     public void handleBackPress_true() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBackPressHandlerResult = true;
@@ -184,6 +194,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @SmallTest
     public void handleBackPress_false() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBackPressHandlerResult = false;
@@ -195,6 +206,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @SmallTest
     public void showFeedPage() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.showFeedPage();
@@ -223,6 +235,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @SmallTest
     public void initContent() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View testView = new View(sTestRule.getActivity());
@@ -252,8 +265,44 @@ public class PageInsightsSheetContentTest {
     }
 
     @Test
+    @SmallTest
+    public void initContent_fullHeightFromFlag() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PageInsightsSheetContent.PAGE_INSIGHTS_FULL_HEIGHT_RATIO_PARAM,
+                "0.123");
+        createSheetContent(testValues);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()),
+                            /* isPrivacyNoticeRequired= */ true,
+                            /* shouldHavePeekState= */ true);
+                    int expectedHeight =
+                            (int) (mFullHeight * 0.123)
+                                    - sTestRule
+                                            .getActivity()
+                                            .getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen.page_insights_toolbar_height);
+                    assertEquals(
+                            expectedHeight,
+                            getContentViewById(R.id.page_insights_content_container).getHeight());
+                    assertEquals(
+                            expectedHeight,
+                            mSheetContent
+                                    .getContentView()
+                                    .findViewById(R.id.page_insights_feed_content)
+                                    .getHeight());
+                });
+    }
+
+    @Test
     @MediumTest
     public void showChildPage() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String testChildPageText = "People also view";
@@ -292,6 +341,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void showLoadingIndicator() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.showLoadingIndicator();
@@ -321,6 +371,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void privacyNoticeShownForFirstTime() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View testView = new View(sTestRule.getActivity());
@@ -357,7 +408,33 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @MediumTest
+    public void privacyNoticeShownForFirstTime_peekHeightFromFlag() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PageInsightsSheetContent.PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
+                "0.123");
+        createSheetContent(testValues);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View testView = new View(sTestRule.getActivity());
+                    setPrivacyNoticePreferences(
+                            false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
+                    mSheetContent.initContent(
+                            testView,
+                            /* isPrivacyNoticeRequired= */ true,
+                            /* shouldHavePeekState= */ true);
+                    mSheetContent.showFeedPage();
+                    float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
+                    assertEquals(0.123, ratio, ASSERTION_DELTA);
+                });
+    }
+
+    @Test
+    @MediumTest
     public void privacyNoticeNotShownWhenNotRequired() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View testView = new View(sTestRule.getActivity());
@@ -382,6 +459,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void privacyNoticeCloseButtonPressed() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
@@ -406,6 +484,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void sharedPreferenceSetTruePrivacyNoticeNotShown() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setPrivacyNoticePreferences(
@@ -429,6 +508,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void privacyNoticeOpenedFourTimesDifferentDayNotShownOnFourthDay() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View testView = new View(sTestRule.getActivity());
@@ -465,6 +545,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void privacyNoticeShownOnceEachDay() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setPrivacyNoticePreferences(
@@ -496,6 +577,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void nothingClicked_handlerNotCalled() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
@@ -510,6 +592,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void contentContainerClicked_handlerCalled() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
@@ -526,6 +609,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void toolbarViewClicked_handlerCalled() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
@@ -542,6 +626,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void contentContainerOnInterceptTouchEvent_actionUp_handlerTrue_true() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTapHandlerResult = true;
@@ -564,6 +649,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void contentContainerOnInterceptTouchEvent_actionUp_handlerFalse_false() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTapHandlerResult = false;
@@ -586,6 +672,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void contentContainerOnInterceptTouchEvent_actionDown_handlerTrue_false() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTapHandlerResult = true;
@@ -608,12 +695,14 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void getVerticalScrollOffset_noRecyclerView_returns1() {
+        createSheetContent();
         assertEquals(1, mSheetContent.getVerticalScrollOffset());
     }
 
     @Test
     @MediumTest
     public void getVerticalScrollOffset_recyclerViewInFeedPage_returnsItsOffset() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout feedPage = new FrameLayout(sTestRule.getActivity());
@@ -634,6 +723,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void getVerticalScrollOffset_recyclerViewInChildPage_returnsItsOffset() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout feedPage = new FrameLayout(sTestRule.getActivity());
@@ -657,6 +747,7 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void getPeekHeight_shouldHavePeekState() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
@@ -674,7 +765,29 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @MediumTest
+    public void getPeekHeight_shouldHavePeekState_peekHeightFromFlag() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PageInsightsSheetContent.PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
+                "0.123");
+        createSheetContent(testValues);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.initContent(
+                            new FrameLayout(sTestRule.getActivity()),
+                            /* isPrivacyNoticeRequired= */ false,
+                            /* shouldHavePeekState= */ true);
+
+                    assertEquals((int) (mFullHeight * 0.123), mSheetContent.getPeekHeight());
+                });
+    }
+
+    @Test
+    @MediumTest
     public void getPeekHeight_shouldNotHavePeekState() {
+        createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
