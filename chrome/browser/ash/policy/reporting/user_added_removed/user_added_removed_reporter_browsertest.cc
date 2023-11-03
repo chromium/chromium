@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -390,7 +391,6 @@ class UserAddedRemovedReporterKioskBrowserTest
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
 
     ChromeDeviceSettingsProto& proto(policy_helper_.device_policy()->payload());
@@ -420,11 +420,7 @@ class UserAddedRemovedReporterKioskBrowserTest
 
 IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterKioskBrowserTest,
                        DoesNotReportKioskUser) {
-  test::WaitForPrimaryUserSessionStart();
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  ASSERT_TRUE(user_manager->IsLoggedInAsKioskApp());
-
+  ASSERT_TRUE(::ash::LoginState::Get()->IsKioskSession());
   const absl::optional<Record> record =
       MaybeGetEnqueuedUserAddedRemovedRecord();
   ASSERT_FALSE(record.has_value());
