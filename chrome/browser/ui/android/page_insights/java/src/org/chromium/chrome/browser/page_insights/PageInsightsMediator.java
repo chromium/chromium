@@ -183,7 +183,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mProfileSupplier = profileSupplier;
         mSheetContent =
                 new PageInsightsSheetContent(
-                        mContext, layoutView, view -> loadMyActivityUrl(tabObservable));
+                        mContext,
+                        layoutView,
+                        view -> loadMyActivityUrl(tabObservable),
+                        this::handleBottomSheetTap);
         mSheetController = bottomSheetController;
         mBottomUiController = bottomUiController;
         mCurrentTime = System::currentTimeMillis;
@@ -203,15 +206,20 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mExpandedSheetHelper = expandedSheetHelper;
         mHandler = new Handler(Looper.getMainLooper());
         mBrowserControlsSizer = browserControlsSizer;
-        mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
-            @Override
-            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                bottomSheetController.setBrowserControlsHiddenRatio(
-                        controlsStateProvider.getBrowserControlHiddenRatio());
-                if (mAutoTriggerReady) maybeAutoTriggerPageInsights();
-            }
-        };
+        mBrowserControlsObserver =
+                new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onControlsOffsetChanged(
+                            int topOffset,
+                            int topControlsMinHeightOffset,
+                            int bottomOffset,
+                            int bottomControlsMinHeightOffset,
+                            boolean needsAnimate) {
+                        bottomSheetController.setBrowserControlsHiddenRatio(
+                                controlsStateProvider.getBrowserControlHiddenRatio());
+                        maybeAutoTriggerPageInsights();
+                    }
+                };
         controlsStateProvider.addObserver(mBrowserControlsObserver);
         bottomSheetController.addObserver(this);
         mBottomUiObserver = new EmptyBottomSheetObserver() {
@@ -271,6 +279,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         return !MathUtils.areFloatsEqual(mControlsStateProvider.getBrowserControlHiddenRatio(), 0f);
     }
 
+    private boolean handleBottomSheetTap() {
+        if (mSheetController.getSheetState() == BottomSheetController.SheetState.PEEK) {
+            mSheetController.expandSheet();
+            return true;
+        }
+        return false;
+    }
+
     // TabObserver
 
     private void autoTriggerPageInsightsFromTimer() {
@@ -287,7 +303,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     public void onPageLoadStarted(Tab tab, GURL url) {
         resetAutoTriggerTimer();
         if (mSheetContent == mSheetController.getCurrentSheetContent()) {
-            mSheetController.hideContent(mSheetContent, false);
+            mSheetController.hideContent(mSheetContent, true);
         }
     }
 
@@ -415,12 +431,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             handleDismissal(mOldState);
         } else if (newState == SheetState.PEEK) {
             setBottomControlsHeight(mSheetController.getCurrentOffset());
-            setDrawableBackgroundColor(/* ratioOfCompletionFromPeekToExpanded */ .0f);
+            setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ .0f);
             logPageInsightsEvent(PageInsightsEvent.STATE_PEEK);
             // We don't log peek state to XSurface here, as its BOTTOM_SHEET_PEEKING event is only
             // intended for when the feature initially auto-peeks.
         } else if (newState == SheetState.FULL) {
-            setDrawableBackgroundColor(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
+            setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
             logPageInsightsEvent(PageInsightsEvent.STATE_EXPANDED);
             getSurfaceRenderer().onEvent(BOTTOM_SHEET_EXPANDED);
         }
@@ -480,7 +496,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
         float ratioOfCompletionFromPeekToExpanded =
                 (heightFraction - peekHeightRatio) / (1.f - peekHeightRatio);
-        setDrawableBackgroundColor(ratioOfCompletionFromPeekToExpanded);
+        setBackgroundColors(ratioOfCompletionFromPeekToExpanded);
         if (0 <= ratioOfCompletionFromPeekToExpanded
                 && ratioOfCompletionFromPeekToExpanded <= 1.f) {
             setCornerRadiusPx((int) (ratioOfCompletionFromPeekToExpanded * mMaxCornerRadiusPx));
@@ -498,7 +514,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
     }
 
-    void setDrawableBackgroundColor(float ratioOfCompletionFromPeekToExpanded) {
+    void setBackgroundColors(float ratioOfCompletionFromPeekToExpanded) {
         float colorRatio = 1.0f;
         if (0 <= ratioOfCompletionFromPeekToExpanded
                 && ratioOfCompletionFromPeekToExpanded <= 0.5f) {
@@ -506,10 +522,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         } else if (ratioOfCompletionFromPeekToExpanded <= 0) {
             colorRatio = 0;
         }
-        int toolbarRenderingColor = ColorUtils.getColorWithOverlay(
-                mContext.getColor(R.color.gm3_baseline_surface_container),
-                mContext.getColor(R.color.gm3_baseline_surface), colorRatio, false);
-        mBackgroundDrawable.setColor(toolbarRenderingColor);
+        int surfaceColor = mContext.getColor(R.color.gm3_baseline_surface);
+        int surfaceContainerColor = mContext.getColor(R.color.gm3_baseline_surface_container);
+        mBackgroundDrawable.setColor(
+                ColorUtils.getColorWithOverlay(
+                        surfaceContainerColor, surfaceColor, colorRatio, false));
+        mSheetContent.setPrivacyCardColor(
+                ColorUtils.getColorWithOverlay(
+                        surfaceColor, surfaceContainerColor, colorRatio, false));
     }
 
     @Override
