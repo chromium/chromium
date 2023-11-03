@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -93,11 +92,7 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       /*optional_fields=*/{},
       /*delegate=*/nullptr);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    notification.set_accent_color_id(cros_tokens::kCrosSysPrimary);
-  } else {
-    notification.set_accent_color(ash::kSystemNotificationColorNormal);
-  }
+  notification.set_accent_color_id(cros_tokens::kCrosSysPrimary);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (features::IsNameEnabled()) {
     notification.set_vector_small_image(kNearbyShareInternalIcon);
