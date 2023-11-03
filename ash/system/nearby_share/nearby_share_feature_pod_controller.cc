@@ -123,15 +123,18 @@ void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
 
 void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
   tile_->SetToggled(enabled);
-  tile_->SetVectorIcon(enabled ? kQuickSettingsNearbyShareOnIcon
-                               : kQuickSettingsNearbyShareOffIcon);
 
+  auto& icon = nearby_share_delegate_->GetIcon(/*on_icon=*/enabled);
   if (enabled) {
+    tile_->SetVectorIcon(icon.is_empty() ? kQuickSettingsNearbyShareOnIcon
+                                         : icon);
     tile_->SetSubLabel(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_ON_STATE,
         RemainingTimeString(RemainingHighVisibilityTime())));
 
   } else {
+    tile_->SetVectorIcon(icon.is_empty() ? kQuickSettingsNearbyShareOffIcon
+                                         : icon);
     tile_->SetSubLabel(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_OFF_STATE));
   }
