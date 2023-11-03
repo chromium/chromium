@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 

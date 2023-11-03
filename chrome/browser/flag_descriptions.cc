@@ -7390,6 +7390,12 @@ const char kOneGroupPerRendererName[] =
 const char kOneGroupPerRendererDescription[] =
     "Places each Chrome foreground renderer into its own cgroup";
 
+const char kPlatformKeysAesEncryptionName[] = "Platform Keys AES encryption";
+const char kPlatformKeysAesEncryptionDescription[] =
+    "Enables AES keys support in the chrome.enterprise.platformKeys and "
+    "chrome.platformKeys APIs. For instance, the new operations include sign, "
+    "encrypt, and decrypt.";
+
 const char kPreinstalledWebAppWindowExperimentName[] =
     "Preinstalled web app window experiment.";
 const char kPreinstalledWebAppWindowExperimentDescription[] =

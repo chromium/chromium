@@ -58,6 +58,15 @@ BASE_FEATURE(kNukeProfileBeforeCreateMultiAsync,
              "NukeProfileBeforeCreateMultiAsync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables AES keys support in the chrome.enterprise.platformKeys and
+// chrome.platformKeys APIs. The new operations include `sign`, `encrypt` and
+// `decrypt`. For additional details, see the proposal tracked in b/288880151.
+BASE_FEATURE(kPlatformKeysAesEncryption,
+             "PlatformKeysAesEncryption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Enables executing the browser commands sent by the NTP promos.
 BASE_FEATURE(kPromoBrowserCommands,
              "PromoBrowserCommands",

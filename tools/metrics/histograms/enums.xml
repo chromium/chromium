@@ -53506,6 +53506,7 @@ from previous Chrome versions.
   <int value="1197336536" label="printing-ppd-channel"/>
   <int value="1197363734" label="force-companion-pinned-state:disabled"/>
   <int value="1197439314" label="SwapBackquoteKeysInISOKeyboard:disabled"/>
+  <int value="1198019369" label="PlatformKeysAesEncryption:enabled"/>
   <int value="1198604672" label="DiscardExceptionsImprovements:disabled"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
   <int value="1199200896" label="FileTransferEnterpriseConnectorUI:enabled"/>
@@ -54450,6 +54451,7 @@ from previous Chrome versions.
   <int value="1650453540" label="ChipLocationIconOverride:disabled"/>
   <int value="1651030066" label="WebAppEnableProtocolHandlers:enabled"/>
   <int value="1651141490" label="SaveEditedPDFForm:enabled"/>
+  <int value="1652700594" label="PlatformKeysAesEncryption:disabled"/>
   <int value="1652798696"
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:disabled"/>
   <int value="1654445970" label="EphemeralTabUsingBottomSheet:enabled"/>

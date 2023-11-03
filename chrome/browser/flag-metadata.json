@@ -6304,6 +6304,15 @@
     "expiry_milestone": 120
   },
   {
+    "name": "platform-keys-aes-encryption",
+    "owners": [
+      "fsandrade@chromium.org",
+      "slutskii@google.com",
+      "cros-3pidp@google.com"
+    ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "policy-logs-page-android",
     "owners": [ "esalma@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 120

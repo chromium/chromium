@@ -11107,7 +11107,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"coral-feature-key", flag_descriptions::kCoralFeatureKeyName,
      flag_descriptions::kCoralFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kCoralFeatureKey, "")},
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -11175,6 +11174,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kUseGMSCoreForBrandingInfo)},
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"platform-keys-aes-encryption",
+     flag_descriptions::kPlatformKeysAesEncryptionName,
+     flag_descriptions::kPlatformKeysAesEncryptionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kPlatformKeysAesEncryption)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

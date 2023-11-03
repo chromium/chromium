@@ -4234,6 +4234,9 @@ extern const char kLacrosColorManagementDescription[];
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
 
+extern const char kPlatformKeysAesEncryptionName[];
+extern const char kPlatformKeysAesEncryptionDescription[];
+
 extern const char kPreinstalledWebAppWindowExperimentName[];
 extern const char kPreinstalledWebAppWindowExperimentDescription[];
 
