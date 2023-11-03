@@ -131,7 +131,6 @@
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
-#include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
@@ -1150,10 +1149,6 @@ void PopulateBinderMapWithContext(
           blink::features::kBrowsingTopicsDocumentAPI)) {
     map->Add<blink::mojom::BrowsingTopicsDocumentService>(
         base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
-  }
-  if (base::FeatureList::IsEnabled(blink::features::kWebEnvironmentIntegrity)) {
-    map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
-        &EmptyBinderForFrame<blink::mojom::EnvironmentIntegrityService>));
   }
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {

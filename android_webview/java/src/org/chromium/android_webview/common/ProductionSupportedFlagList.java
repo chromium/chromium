@@ -695,10 +695,6 @@ public final class ProductionSupportedFlagList {
                     + " stack. Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault)"
                     + " signals are propagated."),
         Flag.baseFeature(
-                BlinkFeatures.WEB_ENVIRONMENT_INTEGRITY,
-                "Enables Web Environment Integrity APIs. "
-                        + "See https://chromestatus.com/feature/5796524191121408."),
-        Flag.baseFeature(
                 ContentFeatures.PREFETCH_NEW_LIMITS,
                 "Enables new limits policy for SpeculationRules Prefetch."),
         Flag.baseFeature(

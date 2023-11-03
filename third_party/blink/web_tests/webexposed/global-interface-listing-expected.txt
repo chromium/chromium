@@ -6499,7 +6499,6 @@ interface Navigator
     method deprecatedReplaceInURN
     method deprecatedURNToURL
     method getBattery
-    method getEnvironmentIntegrity
     method getGamepads
     method getInstalledRelatedApps
     method getUserMedia
