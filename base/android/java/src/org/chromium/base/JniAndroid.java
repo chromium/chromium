@@ -81,13 +81,14 @@ public final class JniAndroid {
         // information to the crash handler as we can.
         //
         // To that end, we try to call the global uncaught exception handler. Hopefully that will
-        // eventually reach the default Android uncaught exception handler, which will terminate the
-        // process. If for any reason that doesn't happen (e.g. the app set up a different handler),
-        // then we just give up and return - the native code we're returning to will terminate the
-        // process for us. (Note that, even then, there is still a case where we might not terminate
-        // the process: if the uncaught exception handler deliberately terminates the current thread
-        // but not the entire process. This is very contrived though, and protecting against this
-        // would be complicated, so we don't even try.)
+        // eventually reach the default Android uncaught exception handler (possibly going through
+        // JavaExceptionReporter first, if we set one up), which will terminate the process. If for
+        // any reason that doesn't happen (e.g. the app set up a different handler), then we just
+        // give up and return - the native code we're returning to will terminate the process for
+        // us. (Note that, even then, there is still a case where we might not terminate the
+        // process: if the uncaught exception handler deliberately terminates the current thread but
+        // not the entire process. This is very contrived though, and protecting against this would
+        // be complicated, so we don't even try.)
         //
         // Log profusely along the way so that someone looking at the system log can easily
         // reconstruct the above sequence of events.

@@ -331,16 +331,17 @@ void CheckException(JNIEnv* env) {
   // it doesn't delete the reference, which is why this call is valid.
   auto throwable = ScopedJavaLocalRef<jthrowable>::Adopt(env, raw_throwable);
 
-  // TODO: arguably this is redundant with JavaExceptionReporter, which already
-  // installs a Java global uncaught exception handler that does the same thing.
-  // Maybe we should get rid of this so that fewer things can go wrong. One
-  // downside is that JavaExceptionReporter will not run if the app removed it
-  // as a global uncaught exception handler.
-  base::android::SetJavaException(GetJavaExceptionInfo(env, throwable).c_str());
+  if (!handle_exception_in_java) {
+    base::android::SetJavaException(
+        GetJavaExceptionInfo(env, throwable).c_str());
+    LOG(FATAL)
+        << "Uncaught Java exception in native code. Please include the Java "
+           "exception stack from the Android log in your crash report.";
+  }
 
-  CHECK(handle_exception_in_java)
-      << "Uncaught Java exception in native code. Please include the Java "
-         "exception stack from the Android log in your crash report.";
+  // We don't need to call SetJavaException() in this branch because we
+  // expect handleException() to eventually call JavaExceptionReporter through
+  // the global uncaught exception handler.
 
   const std::string native_stack_trace = base::debug::StackTrace().ToString();
   LOG(ERROR) << "Native stack trace:" << std::endl << native_stack_trace;
