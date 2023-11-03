@@ -2224,12 +2224,14 @@ SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
 void SplitViewController::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
   CHECK(split_view_divider_);
-  if (IsLayoutHorizontal(root_window_))
+  if (IsLayoutHorizontal(root_window_)) {
     divider_position_ += location_in_screen.x() -
                          split_view_divider_->previous_event_location_.x();
-  else
+  } else {
     divider_position_ += location_in_screen.y() -
                          split_view_divider_->previous_event_location_.y();
+  }
+
   divider_position_ = std::max(0, divider_position_);
 }
 
@@ -2670,8 +2672,9 @@ void SplitViewController::FinishWindowResizing(aura::Window* window) {
   if (window != nullptr) {
     WindowState* window_state = WindowState::Get(window);
     if (window_state->is_dragged()) {
-      window_state->OnCompleteDrag(gfx::PointF(
-          GetEndDragLocationInScreen(window, previous_event_location_)));
+      CHECK(split_view_divider_);
+      window_state->OnCompleteDrag(gfx::PointF(GetEndDragLocationInScreen(
+          window, split_view_divider_->previous_event_location_)));
       window_state->DeleteDragDetails();
     }
   }
@@ -2753,7 +2756,8 @@ void SplitViewController::EndResizeWithDividerImpl() {
 
 void SplitViewController::OnResizeTimer() {
   if (InSplitViewMode() && split_view_divider_) {
-    split_view_divider_->ResizeWithDivider(previous_event_location_);
+    split_view_divider_->ResizeWithDivider(
+        split_view_divider_->previous_event_location_);
   }
 }
 
@@ -2764,11 +2768,11 @@ void SplitViewController::UpdateTabletResizeMode(
   presentation_time_recorder_->RequestNext();
 
   if (IsLayoutHorizontal(root_window_)) {
-    accumulated_drag_distance_ +=
-        std::abs(event_location.x() - previous_event_location_.x());
+    accumulated_drag_distance_ += std::abs(
+        event_location.x() - split_view_divider_->previous_event_location_.x());
   } else {
-    accumulated_drag_distance_ +=
-        std::abs(event_location.y() - previous_event_location_.y());
+    accumulated_drag_distance_ += std::abs(
+        event_location.y() - split_view_divider_->previous_event_location_.y());
   }
 
   const base::TimeDelta chunk_time_ticks =

@@ -720,9 +720,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // changes.
   float divider_closest_ratio_ = std::numeric_limits<float>::quiet_NaN();
 
-  // The location of the previous mouse/gesture event in screen coordinates.
-  gfx::Point previous_event_location_;
-
   // The animation that animates the divider to a fixed position after resizing.
   std::unique_ptr<DividerSnapAnimation> divider_snap_animation_;
 
