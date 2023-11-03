@@ -91,6 +91,8 @@ struct MEDIA_EXPORT AudioDeviceDescription {
 
   ~AudioDeviceDescription() = default;
 
+  bool operator==(const AudioDeviceDescription& other) const;
+
   std::string device_name;  // Friendly name of the device.
   std::string unique_id;    // Unique identifier for the device.
   std::string group_id;     // Group identifier.

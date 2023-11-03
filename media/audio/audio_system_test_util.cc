@@ -9,12 +9,6 @@
 
 namespace media {
 
-bool operator==(const AudioDeviceDescription& lhs,
-                const AudioDeviceDescription& rhs) {
-  return lhs.device_name == rhs.device_name && lhs.unique_id == rhs.unique_id &&
-         lhs.group_id == rhs.group_id;
-}
-
 AudioSystem::OnAudioParamsCallback
 AudioSystemCallbackExpectations::GetAudioParamsCallback(
     const base::Location& location,
