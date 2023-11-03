@@ -264,6 +264,16 @@ extern const char kUserDefaultsSuiteName[];
 inline constexpr int kCustomInstallErrorBase =
     static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE);
 
+// Running the application installer failed.
+inline constexpr int kErrorApplicationInstallerFailed =
+    kCustomInstallErrorBase + 3;
+
+// The errors below are reported in the `extra_code1` in the
+// `CrxInstaller::Result` structure, with the `error` reported as
+// `GOOPDATEINSTALL_E_FILENAME_INVALID`. `GOOPDATEINSTALL_E_FILENAME_INVALID` is
+// used to avoid overlaps of the specific error codes below with Windows error
+// codes.
+
 // The install params are missing. This usually means that the update
 // response does not include the name of the installer and its command line
 // arguments.
@@ -273,9 +283,9 @@ inline constexpr int kErrorMissingInstallParams = kCustomInstallErrorBase + 1;
 // inside the CRX.
 inline constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
 
-// Running the application installer failed.
-inline constexpr int kErrorApplicationInstallerFailed =
-    kCustomInstallErrorBase + 3;
+// The file extension for the installer is not supported. For instance, on
+// Windows, only `.exe` and `.msi` extensions are supported.
+inline constexpr int kErrorInvalidFileExtension = kCustomInstallErrorBase + 4;
 
 // Error codes.
 //

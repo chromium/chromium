@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/configurator.h"
@@ -423,10 +424,13 @@ INSTANTIATE_TEST_SUITE_P(
          true},
         {UpdateService::ErrorCategory::kInstall,
          GOOPDATEINSTALL_E_FILENAME_INVALID,
-         base::WideToUTF8(
-             GetLocalizedString(IDS_INVALID_INSTALLER_FILENAME_BASE)),
-         {},
-         true},
+         base::WideToUTF8(base::StrCat(
+             {GetLocalizedString(IDS_INVALID_INSTALLER_FILENAME_BASE), L"\n",
+              GetLocalizedStringF(IDS_EXTRA_CODE_BASE,
+                                  base::UTF8ToWide(base::StringPrintf(
+                                      "%#x",
+                                      kErrorMissingInstallParams)))})),
+         kErrorMissingInstallParams, true},
         {UpdateService::ErrorCategory::kInstall,
          GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
          base::WideToUTF8(base::StrCat(

@@ -1935,8 +1935,8 @@ Permissions you've already given to websites and apps may apply to this account.
           Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
         </message>
         <message name="IDS_INVALID_INSTALLER_FILENAME"
-                 desc="Error message displayed in the main dialog when the application installer's filename extension is not recognized.">
-          Install error: The installer filename extension is unsupported.
+                 desc="Error message displayed in the main dialog when the application installer's filename or extension is invalid or unsupported.">
+          Install error: The installer filename is invalid or unsupported.
         </message>
         <message name="IDS_INSTALLER_FAILED_TO_START"
                  desc="Error message displayed in the main dialog when the application installer process fails to start.">
