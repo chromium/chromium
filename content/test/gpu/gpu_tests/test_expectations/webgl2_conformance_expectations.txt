@@ -648,7 +648,6 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
 
 
-crbug.com/1450355 [ amd angle-opengl mac ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 ## Mac Intel ##
 
