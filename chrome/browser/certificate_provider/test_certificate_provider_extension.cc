@@ -50,10 +50,10 @@ constexpr base::FilePath::CharType kExtensionPemPath[] =
 // List of algorithms that the extension claims to support for the returned
 // certificates.
 constexpr extensions::api::certificate_provider::Algorithm
-    kSupportedAlgorithms[] = {extensions::api::certificate_provider::Algorithm::
-                                  ALGORITHM_RSASSA_PKCS1_V1_5_SHA256,
-                              extensions::api::certificate_provider::Algorithm::
-                                  ALGORITHM_RSASSA_PKCS1_V1_5_SHA1};
+    kSupportedAlgorithms[] = {
+        extensions::api::certificate_provider::Algorithm::
+            kRsassaPkcs1V1_5Sha256,
+        extensions::api::certificate_provider::Algorithm::kRsassaPkcs1V1_5Sha1};
 
 base::Value ConvertBytesToValue(base::span<const uint8_t> bytes) {
   base::Value::List value;
@@ -277,13 +277,14 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
           *sign_request.GetDict().FindString("algorithm"));
   int openssl_signature_algorithm = 0;
   if (algorithm == extensions::api::certificate_provider::Algorithm::
-                       ALGORITHM_RSASSA_PKCS1_V1_5_SHA256) {
+                       kRsassaPkcs1V1_5Sha256) {
     openssl_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA256;
   } else if (algorithm == extensions::api::certificate_provider::Algorithm::
-                              ALGORITHM_RSASSA_PKCS1_V1_5_SHA1) {
+                              kRsassaPkcs1V1_5Sha1) {
     openssl_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA1;
   } else {
-    LOG(FATAL) << "Unexpected signature request algorithm: " << algorithm;
+    LOG(FATAL) << "Unexpected signature request algorithm: "
+               << extensions::api::certificate_provider::ToString(algorithm);
   }
 
   if (should_fail_sign_digest_requests_) {
