@@ -76,10 +76,10 @@ class AssistiveTechnologyControllerImpl
   void AddInterfaceForTest(mojom::AssistiveTechnologyType type,
                            std::unique_ptr<InterfaceBinder> test_interface);
 
-  V8Manager* GetV8Manager(mojom::AssistiveTechnologyType type);
+  V8Manager& GetOrCreateV8Manager(mojom::AssistiveTechnologyType type);
 
  private:
-  void CreateV8ManagerForType(mojom::AssistiveTechnologyType type);
+  void CreateV8ManagerForTypeIfNoneExists(mojom::AssistiveTechnologyType type);
 
   std::map<mojom::AssistiveTechnologyType, V8Manager> enabled_ATs_;
 
