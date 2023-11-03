@@ -127,10 +127,9 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   }
   int64_t action_latency =
       (base::Time::Now() - data->warning_first_shown_time_).InMilliseconds();
-  bool is_terminal_action =
-      (action == WarningAction::PROCEED || action == WarningAction::DISCARD)
-          ? true
-          : false;
+  bool is_terminal_action = action == WarningAction::PROCEED ||
+                            action == WarningAction::DISCARD ||
+                            action == WarningAction::PROCEED_DEEP_SCAN;
   DCHECK_NE(WarningAction::SHOWN, action);
   data->action_events_.emplace_back(surface, action, action_latency,
                                     is_terminal_action);
@@ -233,6 +232,10 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
       break;
     case DownloadItemWarningData::WarningAction::SHOWN:
       NOTREACHED();
+      break;
+    case DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN:
+      action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
+                            PROCEED_DEEP_SCAN);
       break;
   }
   action.set_is_terminal_action(event.is_terminal_action);

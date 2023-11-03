@@ -289,8 +289,13 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::CANCEL:
       model->SetActionedOn(true);
       [[fallthrough]];
-    case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+      DownloadItemWarningData::AddWarningActionEvent(
+          model->GetDownloadItem(), warning_surface,
+          DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN);
+      commands.ExecuteCommand(command);
+      break;
+    case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::RESUME:
     case DownloadCommands::PAUSE:
     case DownloadCommands::OPEN_WHEN_COMPLETE:

@@ -1700,7 +1700,8 @@ message ClientSafeBrowsingReportRequest {
       SURFACE_UNSPECIFIED = 0;
       // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
-      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
+      // PROCEED_DEEP_SCAN
       BUBBLE_SUBPAGE = 2;
       // Applicable actions: DISCARD, KEEP
       DOWNLOADS_PAGE = 3;
@@ -1731,6 +1732,8 @@ message ClientSafeBrowsingReportRequest {
       BACK = 7;
       // The user has opened the subpage from the main page.
       OPEN_SUBPAGE = 8;
+      // The user bypassed a deep scanning prompt
+      PROCEED_DEEP_SCAN = 9;
     }
     optional Action action = 2;
 

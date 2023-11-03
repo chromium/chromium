@@ -27,7 +27,8 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   enum class WarningSurface {
     // Applicable actions: DISCARD, OPEN_SUBPAGE
     BUBBLE_MAINPAGE = 1,
-    // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+    // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
+    // PROCEED_DEEP_SCAN
     BUBBLE_SUBPAGE = 2,
     // Applicable actions: DISCARD, KEEP
     DOWNLOADS_PAGE = 3,
@@ -64,7 +65,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     BACK = 7,
     // The user has opened the subpage from the main page.
     OPEN_SUBPAGE = 8,
-    kMaxValue = OPEN_SUBPAGE
+    // The user clicks proceed on a prompt for deep scanning.
+    PROCEED_DEEP_SCAN = 9,
+    kMaxValue = PROCEED_DEEP_SCAN
   };
 
   struct WarningActionEvent {

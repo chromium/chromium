@@ -1524,6 +1524,10 @@ base::Value::Dict SerializeDownloadWarningAction(
     case ClientSafeBrowsingReportRequest::DownloadWarningAction::OPEN_SUBPAGE:
       action = "OPEN_SUBPAGE";
       break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        PROCEED_DEEP_SCAN:
+      action = "PROCEED_DEEP_SCAN";
+      break;
   }
   action_dict.Set("action", action);
   action_dict.Set("is_terminal_action",
