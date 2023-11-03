@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PHOTOS_PHOTOS_POLICY_H_
-#define IOS_CHROME_BROWSER_PHOTOS_PHOTOS_POLICY_H_
+#ifndef IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_POLICY_H_
+#define IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_POLICY_H_
 
 // Values for the ContextMenuPhotoSharingSettings policy.
 // VALUES MUST COINCIDE WITH THE ContextMenuPhotoSharingSettings POLICY
@@ -17,4 +17,4 @@ enum class SaveToPhotosPolicySettings {
   kDisabled,
 };
 
-#endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_POLICY_H_
+#endif  // IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_POLICY_H_

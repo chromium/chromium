@@ -7,7 +7,7 @@
 
 #import "base/cancelable_callback.h"
 #import "base/functional/callback_helpers.h"
-#import "ios/chrome/browser/photos/photos_service.h"
+#import "ios/chrome/browser/photos/model/photos_service.h"
 
 class TestPhotosService final : public PhotosService {
  public:

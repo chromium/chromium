@@ -2,73 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1498935): Remove these source sets once they are not referred anymore.
+
 source_set("photos") {
   sources = [
     "photos_service.h",
-    "photos_service.mm",
     "photos_service_configuration.h",
-    "photos_service_configuration.mm",
   ]
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//ios/chrome/browser/photos/model",
   ]
-}
-
-source_set("policy") {
-  sources = [ "photos_policy.h" ]
 }
 
 source_set("metrics") {
-  sources = [
-    "photos_metrics.h",
-    "photos_metrics.mm",
-  ]
-}
-
-source_set("photos_service_factory") {
-  sources = [
-    "photos_service_factory.h",
-    "photos_service_factory.mm",
-  ]
-  deps = [
-    ":photos",
-    "//base",
-    "//components/keyed_service/ios",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/photos:photos_api",
-  ]
-}
-
-source_set("photos_availability") {
-  sources = [
-    "photos_availability.h",
-    "photos_availability.mm",
-  ]
-  deps = [
-    ":photos",
-    ":photos_service_factory",
-    ":policy",
-    "//components/prefs",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin",
-    "//url",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "photos_service_factory_unittest.mm" ]
-  deps = [
-    ":photos_service_factory",
-    "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//testing/gtest",
-  ]
+  sources = [ "photos_metrics.h" ]
+  public_deps = [ "//ios/chrome/browser/photos/model:metrics" ]
 }

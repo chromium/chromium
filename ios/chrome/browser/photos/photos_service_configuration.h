@@ -5,28 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_CONFIGURATION_H_
 
-#import <Foundation/Foundation.h>
-
-class ChromeAccountManagerService;
-class PrefService;
-@protocol SingleSignOnService;
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
-// Configuration object used by the PhotosService.
-@interface PhotosServiceConfiguration : NSObject
-
-// The SingleSignOnService instance to use by PhotosService.
-@property(nonatomic, strong) id<SingleSignOnService> ssoService;
-// PrefService to check the state of Save to Photos preferences.
-@property(nonatomic, assign) PrefService* prefService;
-// IdentityManager to check whether the user is signed-in.
-@property(nonatomic, assign) signin::IdentityManager* identityManager;
-// ChromeAccountManagerService to get list of accounts on the device.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-
-@end
+// TODO(crbug.com/1498935): Remove this file once it is not imported anymore.
+#import "ios/chrome/browser/photos/model/photos_service_configuration.h"
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_CONFIGURATION_H_

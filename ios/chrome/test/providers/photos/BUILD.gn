@@ -11,7 +11,7 @@ source_set("photos") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/photos",
+    "//ios/chrome/browser/photos/model",
     "//ios/public/provider/chrome/browser/photos:photos_api",
   ]
 }

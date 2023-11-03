@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PHOTOS_PHOTOS_AVAILABILITY_H_
-#define IOS_CHROME_BROWSER_PHOTOS_PHOTOS_AVAILABILITY_H_
+#ifndef IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_AVAILABILITY_H_
+#define IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_AVAILABILITY_H_
 
 class ChromeBrowserState;
 
@@ -11,4 +11,4 @@ class ChromeBrowserState;
 // browser state.
 bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state);
 
-#endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_AVAILABILITY_H_
+#endif  // IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_AVAILABILITY_H_

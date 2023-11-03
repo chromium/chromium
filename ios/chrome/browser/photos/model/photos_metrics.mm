@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/photos/photos_metrics.h"
+#import "ios/chrome/browser/photos/model/photos_metrics.h"
 
 const char kSaveToPhotosActionsHistogram[] = "IOS.SaveToPhotos";
 

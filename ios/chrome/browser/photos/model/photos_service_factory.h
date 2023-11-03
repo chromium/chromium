@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_SERVICE_FACTORY_H_
 
 #import <memory>
 
@@ -34,4 +34,4 @@ class PhotosServiceFactory : public BrowserStateKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserState() const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_SERVICE_FACTORY_H_

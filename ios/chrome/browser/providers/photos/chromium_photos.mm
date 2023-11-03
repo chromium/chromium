@@ -5,7 +5,7 @@
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/photos/photos_service.h"
+#import "ios/chrome/browser/photos/model/photos_service.h"
 
 class ChromiumPhotosService final : public PhotosService {
  public:
