@@ -2196,8 +2196,7 @@ component("base") {
     all_dependent_configs += linux_configs
     sources += [ "system/sys_info_linux.cc" ]
     if (!is_cronet_build) {
-      # These dependencies are not required on Android, and in the case
-      # of xdg_mime must be excluded due to licensing restrictions.
+      # These dependencies are not required on Android.
       sources += [
         "nix/mime_util_xdg.cc",
         "nix/mime_util_xdg.h",
@@ -2207,7 +2206,6 @@ component("base") {
       defines += [ "USE_SYMBOLIZE" ]
       deps += [
         "//base/third_party/symbolize",
-        "//base/third_party/xdg_mime",
         "//base/third_party/xdg_user_dirs",
       ]
     }
@@ -3620,6 +3618,7 @@ test("base_unittests") {
     sources += [
       "debug/proc_maps_linux_unittest.cc",
       "files/scoped_file_linux_unittest.cc",
+      "nix/mime_util_xdg_unittest.cc",
     ]
 
     if (!is_nacl) {
