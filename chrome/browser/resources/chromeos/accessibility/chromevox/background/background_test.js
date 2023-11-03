@@ -2798,12 +2798,12 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusOnUnknown', async function() {
 
   const evt2 = new CustomAutomationEvent(EventType.FOCUS, group2);
   const currentRange = ChromeVoxRange.current;
-  DesktopAutomationInterface.instance.onFocus(evt2);
+  DesktopAutomationInterface.instance.onFocus_(evt2);
   assertEquals(currentRange, ChromeVoxRange.current);
 
   const evt1 = new CustomAutomationEvent(EventType.FOCUS, group1);
   mockFeedback
-      .call(DesktopAutomationInterface.instance.onFocus.bind(
+      .call(DesktopAutomationInterface.instance.onFocus_.bind(
           DesktopAutomationInterface.instance, evt1))
       .expectSpeech('hello');
   await mockFeedback.replay();

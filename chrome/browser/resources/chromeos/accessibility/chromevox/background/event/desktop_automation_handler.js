@@ -98,8 +98,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.addListener_(EventType.ALERT, event => this.onAlert_(event));
     this.addListener_(EventType.BLUR, event => this.onBlur_(event));
     this.addListener_(
-        EventType.DOCUMENT_SELECTION_CHANGED, this.onDocumentSelectionChanged);
-    this.addListener_(EventType.FOCUS, this.onFocus);
+        EventType.DOCUMENT_SELECTION_CHANGED,
+        event => this.onDocumentSelectionChanged_(event));
+    this.addListener_(EventType.FOCUS, event => this.onFocus_(event));
 
     // Note that live region changes from views are really announcement
     // events. Their target nodes contain no live region semantics and have no
@@ -142,7 +143,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       const event = new CustomAutomationEvent(
           EventType.FOCUS, focus,
           {eventFrom: 'page', eventFromAction: ActionType.FOCUS});
-      this.onFocus(event);
+      this.onFocus_(event);
     }
   }
 
@@ -263,8 +264,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
   /**
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onDocumentSelectionChanged(evt) {
+  onDocumentSelectionChanged_(evt) {
     let selectionStart = evt.target.selectionStartObject;
 
     // No selection.
@@ -281,7 +283,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Editable selection.
     if (selectionStart.state[StateType.EDITABLE]) {
       selectionStart =
-          AutomationUtil.getEditableRoot(selectionStart) || selectionStart;
+          AutomationUtil.getEditableRoot(selectionStart) ?? selectionStart;
       this.onEditableChanged_(
           new CustomAutomationEvent(evt.type, selectionStart, {
             eventFrom: evt.eventFrom,
@@ -296,8 +298,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   /**
    * Provides all feedback once a focus event fires.
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onFocus(evt) {
+  onFocus_(evt) {
     let node = evt.target;
     const isRootWebArea = node.role === RoleType.ROOT_WEB_AREA;
     const isFrame = isRootWebArea && node.parent && node.parent.root &&
@@ -341,7 +344,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     // Update the focused root url, which gets used as part of focus recovery.
-    this.lastRootUrl_ = node.root.docUrl || '';
+    this.lastRootUrl_ = node.root.docUrl ?? '';
 
     // Consider the case when a user presses tab rapidly. The key events may
     // come in far before the accessibility focus events. We therefore must
@@ -736,7 +739,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // after you close them.
     chrome.automation.getFocus(focus => {
       if (focus) {
-        // Directly output the node here; do not go through |onFocus| as it
+        // Directly output the node here; do not go through |onFocus_| as it
         // contains a lot of logic that can move the selection (if in an
         // editable).
         const range = CursorRange.fromNode(focus);
