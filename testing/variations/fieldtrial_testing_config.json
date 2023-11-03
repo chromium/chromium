@@ -9201,8 +9201,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_InputDeviceSettingsSplit",
+                    "name": "Enabled",
                     "enable_features": [
+                        "AltClickAndSixPackCustomization",
                         "InputDeviceSettingsSplit"
                     ]
                 }
