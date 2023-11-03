@@ -204,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
           api::extension_types::DocumentLifecycle::kPrerender;
       event_details.frame_type =
           api::extension_types::FrameType::kOutermostFrame;
-      event_details.transition_type = api::web_navigation::TRANSITION_TYPE_LINK;
+      event_details.transition_type =
+          api::web_navigation::TransitionType::kLink;
       event_router->BroadcastEvent(std::make_unique<Event>(
           events::FOR_TEST, "webNavigation.onCommitted",
           api::web_navigation::OnCommitted::Create(event_details)));

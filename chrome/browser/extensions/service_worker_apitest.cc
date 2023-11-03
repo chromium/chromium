@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Add minimal details required to dispatch webNavigation.onCommitted event:
   extensions::api::web_navigation::OnCommitted::Details details;
   details.transition_type =
-      extensions::api::web_navigation::TRANSITION_TYPE_TYPED;
+      extensions::api::web_navigation::TransitionType::kTyped;
   details.frame_type = api::extension_types::FrameType::kOutermostFrame;
   details.document_lifecycle = api::extension_types::DocumentLifecycle::kActive;
 
