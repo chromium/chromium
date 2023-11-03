@@ -762,7 +762,6 @@
   "userScripts": {
     "dependencies": [ "permission:userScripts" ],
     "contexts": [ "blessed_extension" ],
-    "channel": "stable",
     "developer_mode_only": true,
     "feature_flag": "ApiUserScripts"
   },
