@@ -16,8 +16,8 @@ orca::mojom::ContextPtr CreateContext(const std::u16string& text,
       base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
 
   auto context = orca::mojom::Context::New();
-  context->surrounding_text =
-      orca::mojom::SurroundingText::New(text_utf8, range);
+  context->surrounding_text = orca::mojom::SurroundingText::New(
+      text_utf8, gfx::Range(offsets[0], offsets[1]));
   return context;
 }
 
