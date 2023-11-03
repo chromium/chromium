@@ -96,8 +96,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
   PendingScreencastMangerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kProjectorUpdateIndexableText},
-        {ash::features::kFilesInlineSyncStatus});
+        {features::kProjectorUpdateIndexableText}, {});
   }
   PendingScreencastMangerBrowserTest(
       const PendingScreencastMangerBrowserTest&) = delete;
@@ -917,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   app_client->NotifyAppUIActive(false);
   SimulateSyncingEvent(syncing_status);
   WaitForPendingStatusUpdateToBeFinished();
-  VerifyNotificationCount(1);
+  VerifyNotificationCount(0);
 
   // When app is open, the notification gets suppressed again:
   app_client->NotifyAppUIActive(true);
@@ -931,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                                  /*transferred_bytes=*/0, syncing_status);
   SimulateSyncingEvent(syncing_status);
   WaitForPendingStatusUpdateToBeFinished();
-  VerifyNotificationCount(1);
+  VerifyNotificationCount(0);
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {

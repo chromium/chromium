@@ -3689,12 +3689,6 @@ extern const char kFilesConflictDialogDescription[];
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 
-extern const char kFilesInlineSyncStatusName[];
-extern const char kFilesInlineSyncStatusDescription[];
-
-extern const char kFilesInlineSyncStatusProgressEventsName[];
-extern const char kFilesInlineSyncStatusProgressEventsDescription[];
-
 extern const char kFilesNewDirectoryTreeName[];
 extern const char kFilesNewDirectoryTreeDescription[];
 

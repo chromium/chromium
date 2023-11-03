@@ -50,7 +50,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
@@ -1563,11 +1562,6 @@ void DriveIntegrationService::GetSyncingPaths(
   if (DriveFs* const drivefs = GetDriveFsInterface()) {
     drivefs->GetSyncingPaths(std::move(callback));
   }
-}
-
-drivefs::SyncState DriveIntegrationService::GetSyncStateForPath(
-    const base::FilePath& drive_path) {
-  return GetDriveFsHost()->GetSyncStateForPath(drive_path);
 }
 
 void DriveIntegrationService::PollHostedFilePinStates() {

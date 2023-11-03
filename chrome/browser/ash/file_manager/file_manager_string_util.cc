@@ -1341,8 +1341,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("DRIVEFS_MIRRORING", ash::features::IsDriveFsMirroringEnabled());
 
-  dict->Set("INLINE_SYNC_STATUS", ash::features::IsInlineSyncStatusEnabled());
-
   dict->Set("GUEST_OS", true);
 
   dict->Set("JELLY", chromeos::features::IsJellyEnabled());

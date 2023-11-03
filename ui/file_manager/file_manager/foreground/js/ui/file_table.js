@@ -9,7 +9,7 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {isDlpEnabled, isInlineSyncStatusEnabled, isJellyEnabled} from '../../../common/js/flags.js';
+import {isDlpEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -1038,18 +1038,6 @@ export class FileTable extends Table {
       inlineStatus.classList.add('tast-inline-status');
       label.appendChild(inlineStatus);
     }
-    if (!isJellyEnabled() && !isInlineSyncStatusEnabled()) {
-      // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
-      const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
-      if (isEncrypted) {
-        label.appendChild(this.renderEncryptedIcon_());
-      }
-      if (isDlpEnabled()) {
-        label.appendChild(
-            // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
-            this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
-      }
-    }
     return label;
   }
 
@@ -1156,30 +1144,25 @@ export class FileTable extends Table {
         // type 'FileTable'.
         (this.ownerDocument.createElement('div'));
 
-    if (isJellyEnabled() || isInlineSyncStatusEnabled()) {
-      div.className = 'dateholder';
-      const label = /** @type {!HTMLDivElement} */
-          // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist
-          // on type 'FileTable'.
-          (this.ownerDocument.createElement('div'));
-      div.appendChild(label);
-      label.className = 'date';
-      this.updateDate_(label, entry);
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      const metadata = this.metadataModel_.getCache(
-          [entry], ['contentMimeType', 'isDlpRestricted'])[0];
+    div.className = 'dateholder';
+    const label = /** @type {!HTMLDivElement} */
+        // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist
+        // on type 'FileTable'.
+        (this.ownerDocument.createElement('div'));
+    div.appendChild(label);
+    label.className = 'date';
+    this.updateDate_(label, entry);
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    const metadata = this.metadataModel_.getCache(
+        [entry], ['contentMimeType', 'isDlpRestricted'])[0];
+    // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
+    const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
+    if (isEncrypted) {
+      div.appendChild(this.renderEncryptedIcon_());
+    }
+    if (isDlpEnabled()) {
       // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
-      const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);
-      if (isEncrypted) {
-        div.appendChild(this.renderEncryptedIcon_());
-      }
-      if (isDlpEnabled()) {
-        // @ts-ignore: error TS18048: 'metadata' is possibly 'undefined'.
-        div.appendChild(this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
-      }
-    } else {
-      div.className = 'date';
-      this.updateDate_(div, entry);
+      div.appendChild(this.renderDlpManagedIcon_(!!metadata.isDlpRestricted));
     }
     return div;
   }

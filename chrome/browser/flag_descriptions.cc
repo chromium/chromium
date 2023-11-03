@@ -6416,19 +6416,6 @@ const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";
 
-const char kFilesInlineSyncStatusName[] =
-    "Enable inline sync status in Files app.";
-const char kFilesInlineSyncStatusDescription[] =
-    "Enable displaying the sync status of each file next to its name in Files "
-    "app.";
-
-const char kFilesInlineSyncStatusProgressEventsName[] =
-    "Enable inline sync status in Files app to work with a new source of "
-    "progress events.";
-const char kFilesInlineSyncStatusProgressEventsDescription[] =
-    "An improvement for inline sync status that will eventually allow it to "
-    "display progress for downsyncing operations.";
-
 const char kFilesNewDirectoryTreeName[] =
     "New directory tree implementation in Files app";
 const char kFilesNewDirectoryTreeDescription[] =

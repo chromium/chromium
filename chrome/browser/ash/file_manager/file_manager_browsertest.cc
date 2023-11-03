@@ -1029,7 +1029,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree(),
         TestCase("driveOfflineInfoBanner").NewDirectoryTree(),
         TestCase("driveInlineSyncStatusParentFolderProgressEvents")
-            .EnableInlineSyncStatusProgressEvents()
             .NewDirectoryTree(),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
             .EnableBulkPinning()
@@ -1071,12 +1070,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveEncryptionBadge"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
-        TestCase("driveInlineSyncStatusSingleFile").EnableInlineSyncStatus(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineSyncStatus(),
-        TestCase("driveInlineSyncStatusSingleFileProgressEvents")
-            .EnableInlineSyncStatusProgressEvents(),
-        TestCase("driveInlineSyncStatusParentFolderProgressEvents")
-            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("driveInlineSyncStatusSingleFileProgressEvents"),
+        TestCase("driveInlineSyncStatusParentFolderProgressEvents"),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
@@ -1087,18 +1082,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin")
             .EnableBulkPinning(),
         TestCase("driveItemsOutOfViewportShouldUpdateTheirSyncStatus")
-            .EnableBulkPinning()
-            .EnableInlineSyncStatusProgressEvents(),
+            .EnableBulkPinning(),
         TestCase("driveAllItemsShouldBeQueuedIfTrackedByPinningManager")
-            .EnableBulkPinning()
-            .EnableInlineSyncStatusProgressEvents(),
-        TestCase("driveDirtyItemsShouldBeDisplayedAsQueued")
-            .EnableInlineSyncStatusProgressEvents(),
-        TestCase("openDriveDocWhenOffline")
-            .EnableBulkPinning()
-            .EnableInlineSyncStatusProgressEvents(),
-        TestCase("completedSyncStatusDismissesAfter300Ms")
-            .EnableInlineSyncStatusProgressEvents(),
+            .EnableBulkPinning(),
+        TestCase("driveDirtyItemsShouldBeDisplayedAsQueued"),
+        TestCase("openDriveDocWhenOffline").EnableBulkPinning(),
+        TestCase("completedSyncStatusDismissesAfter300Ms"),
         TestCase("driveOutOfOrganizationSpaceBanner")
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),

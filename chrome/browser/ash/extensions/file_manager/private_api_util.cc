@@ -37,7 +37,6 @@
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
@@ -357,11 +356,9 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
 
   file_manager::EventRouter* event_router =
       file_manager::EventRouterFactory::GetForProfile(running_profile_);
-  if (ash::features::IsInlineSyncStatusEnabled() && event_router) {
+  if (event_router) {
     drivefs::SyncState sync_state =
-        ash::features::IsInlineSyncStatusProgressEventsEnabled()
-            ? event_router->GetDriveSyncStateForPath(file_system_url_.path())
-            : integration_service->GetSyncStateForPath(file_system_url_.path());
+        event_router->GetDriveSyncStateForPath(file_system_url_.path());
     properties_->progress = sync_state.progress;
     switch (sync_state.status) {
       using enum drivefs::SyncStatus;

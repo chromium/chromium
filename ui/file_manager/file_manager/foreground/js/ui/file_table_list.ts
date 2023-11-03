@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isInlineSyncStatusEnabled} from '../../../common/js/flags.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -997,16 +997,14 @@ export function updateInlineStatus(
   li.classList.toggle('pinned', pinned);
   inlineStatus.toggleAttribute('available-offline', pinned && !dimOffline);
 
-  if (isInlineSyncStatusEnabled()) {
-    let actualSyncStatus = syncStatus;
-    let actualProgress = progress;
-    // Force sync status as completed if it has been less than 300ms since
-    // the file has completed syncing.
-    if (Date.now() - (syncCompletedTime ?? 0) < 300) {
-      actualSyncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
-      actualProgress = 1;
-    }
-    inlineStatus.setAttribute('sync-status', String(actualSyncStatus));
-    inlineStatus.setAttribute('progress', String(actualProgress));
+  let actualSyncStatus = syncStatus;
+  let actualProgress = progress;
+  // Force sync status as completed if it has been less than 300ms since
+  // the file has completed syncing.
+  if (Date.now() - (syncCompletedTime ?? 0) < 300) {
+    actualSyncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
+    actualProgress = 1;
   }
+  inlineStatus.setAttribute('sync-status', String(actualSyncStatus));
+  inlineStatus.setAttribute('progress', String(actualProgress));
 }

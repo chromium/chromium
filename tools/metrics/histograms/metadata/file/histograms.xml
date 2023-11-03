@@ -1603,6 +1603,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.SyncStatusTrackerMemoryUsage" units="KiB"
     expires_after="2024-08-30">
+  <obsolete>
+    Became obsolete on M120 as the Sync Status Tracker has been permanently
+    removed from the codebase.
+  </obsolete>
   <owner>msalomao@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Memory used by the Sync Status Tracker.</summary>

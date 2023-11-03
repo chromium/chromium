@@ -1146,17 +1146,6 @@ BASE_FEATURE(kFilesConflictDialog,
              "FilesConflictDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable inline sync status in Files app.
-BASE_FEATURE(kFilesInlineSyncStatus,
-             "FilesInlineSyncStatus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable inline sync status in Files app to consume events from the new more
-// robust ProgressEvents (enables inline sync status for downsync events).
-BASE_FEATURE(kFilesInlineSyncStatusProgressEvents,
-             "FilesInlineSyncStatusProgressEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables new directory tree implementation in files.
 BASE_FEATURE(kFilesNewDirectoryTree,
              "FilesNewDirectoryTree",
@@ -3268,20 +3257,6 @@ bool IsDriveFsMirroringEnabled() {
 int GetDriveFsBulkPinningQueueSize() {
   return base::GetFieldTrialParamByFeatureAsInt(kDriveFsBulkPinningExperiment,
                                                 "queue_size", 5);
-}
-
-bool IsInlineSyncStatusEnabled() {
-  return base::FeatureList::IsEnabled(kFilesInlineSyncStatus);
-}
-
-bool IsInlineSyncStatusProgressEventsEnabled() {
-  return base::FeatureList::IsEnabled(kFilesInlineSyncStatus) &&
-         base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
-}
-
-bool IsInlineSyncStatusOldEventsEnabled() {
-  return base::FeatureList::IsEnabled(kFilesInlineSyncStatus) &&
-         !base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
 }
 
 bool IsEapGtcWifiAuthenticationEnabled() {

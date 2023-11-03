@@ -24,7 +24,7 @@ import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../.
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isGuestOsEnabled, isInlineSyncStatusEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isGuestOsEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
@@ -724,12 +724,10 @@ export class FileManager extends EventTarget {
     assert(this.fileOperationManager_);
     assert(this.dialogDom_);
 
-    if (isInlineSyncStatusEnabled()) {
-      // @ts-ignore: error TS2322: Type 'MetadataModel | null' is not assignable
-      // to type 'Object'.
-      this.fileBrowserBackground_.driveSyncHandler.metadataModel =
-          assert(this.metadataModel_);
-    }
+    // @ts-ignore: error TS2322: Type 'MetadataModel | null' is not assignable
+    // to type 'Object'.
+    this.fileBrowserBackground_.driveSyncHandler.metadataModel =
+        assert(this.metadataModel_);
     this.scanController_ = new ScanController(
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_, this.ui_.listContainer, this.spinnerController_,

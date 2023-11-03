@@ -63,13 +63,6 @@ export function isSinglePartitionFormatEnabled() {
 }
 
 /**
- * Returns true if InlineSyncStatus feature flag is enabled.
- */
-export function isInlineSyncStatusEnabled() {
-  return isFlagEnabled('INLINE_SYNC_STATUS');
-}
-
-/**
  * Returns whether the DriveFsBulkPinning feature flag is enabled.
  */
 export function isDriveFsBulkPinningEnabled() {

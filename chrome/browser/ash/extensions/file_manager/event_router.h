@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"

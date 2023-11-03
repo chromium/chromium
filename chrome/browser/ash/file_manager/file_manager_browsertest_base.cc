@@ -2289,20 +2289,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kDriveFsMirroring);
   }
 
-  if (options.enable_inline_sync_status) {
-    enabled_features.push_back(ash::features::kFilesInlineSyncStatus);
-  } else {
-    disabled_features.push_back(ash::features::kFilesInlineSyncStatus);
-  }
-
-  if (options.enable_inline_sync_status_progress_events) {
-    enabled_features.push_back(
-        ash::features::kFilesInlineSyncStatusProgressEvents);
-  } else {
-    disabled_features.push_back(
-        ash::features::kFilesInlineSyncStatusProgressEvents);
-  }
-
   if (options.enable_upload_office_to_cloud) {
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
   } else {
@@ -3670,17 +3656,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "isInlineSyncStatusEnabled") {
-    *output = options.enable_inline_sync_status ? "true" : "false";
-    return;
-  }
-
-  if (name == "isInlineSyncStatusProgressEventsEnabled") {
-    *output =
-        options.enable_inline_sync_status_progress_events ? "true" : "false";
-    return;
-  }
-
   if (name == "isFilesExperimentalEnabled") {
     *output = options.files_experimental ? "true" : "false";
     return;
@@ -3806,23 +3781,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     drive_volume_->DisplayConfirmDialog(drivefs::mojom::DialogReason::New(
         drivefs::mojom::DialogReason::Type::kEnableDocsOffline,
         base::FilePath()));
-    return;
-  }
-
-  if (name == "setDriveFileSyncStatus") {
-    auto* sync_status = value.FindString("syncStatus");
-    auto* path = value.FindString("path");
-    ASSERT_TRUE(sync_status);
-    ASSERT_TRUE(path);
-    drive_volume_->SetFileSyncStatus(
-        path,
-        *sync_status == "in_progress"
-            ? drivefs::mojom::ItemEvent::State::kInProgress
-        : *sync_status == "queued" ? drivefs::mojom::ItemEvent::State::kQueued
-        : *sync_status == "completed"
-            ? drivefs::mojom::ItemEvent::State::kCompleted
-            : drivefs::mojom::ItemEvent::State::kFailed,
-        drivefs::mojom::ItemEventReason::kTransfer, 50, 100);
     return;
   }
 
