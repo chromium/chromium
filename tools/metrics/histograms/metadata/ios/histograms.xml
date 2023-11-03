@@ -3691,6 +3691,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
+    expires_after="2024-03-10">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <summary>The number of clicked What's New items per impression</summary>
+</histogram>
+
 <histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
     expires_after="2024-04-28">
   <owner>cheickcisse@google.com</owner>

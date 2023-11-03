@@ -46,6 +46,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 @property(nonatomic, assign) base::TimeTicks whatsNewStartTime;
 // Browser coordinator command handler.
 @property(nonatomic, readonly) id<BrowserCoordinatorCommands> handler;
+// Number of clicked items in What's New
+@property(nonatomic, assign) int clicksOnWhatsNewItemsCount;
 
 @end
 
@@ -54,6 +56,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  self.clicksOnWhatsNewItemsCount = 0;
   base::RecordAction(base::UserMetricsAction("WhatsNew.Started"));
   self.mediator = [[WhatsNewMediator alloc] init];
   self.mediator.urlLoadingAgent =
@@ -101,6 +104,8 @@ NSString* const kTableViewNavigationDismissButtonId =
   base::RecordAction(base::UserMetricsAction("WhatsNew.Dismissed"));
   UmaHistogramMediumTimes("IOS.WhatsNew.TimeSpent",
                           base::TimeTicks::Now() - self.whatsNewStartTime);
+  base::UmaHistogramCounts10000("IOS.WhatsNew.ItemsClickedCount",
+                                self.clicksOnWhatsNewItemsCount);
 
   [self.promosUIHandler promoWasDismissed];
 
@@ -143,6 +148,7 @@ NSString* const kTableViewNavigationDismissButtonId =
     openDetailViewControllerForItem:(WhatsNewItem*)item {
   DCHECK_EQ(self.tableViewController, whatsNewTableviewController);
 
+  ++self.clicksOnWhatsNewItemsCount;
   self.whatsNewDetailCoordinator = [[WhatsNewDetailCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:self.browser
