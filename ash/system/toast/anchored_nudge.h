@@ -49,13 +49,6 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;
 
-  // Getters for `system_nudge_view_` elements.
-  views::ImageView* GetImageView();
-  const std::u16string& GetBodyText();
-  const std::u16string& GetTitleText();
-  views::LabelButton* GetFirstButton();
-  views::LabelButton* GetSecondButton();
-
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,

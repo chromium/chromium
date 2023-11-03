@@ -1505,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, ClickBubble) {
                   ::testing::Eq(scalable_iph::ActionType::kOpenGoogleDocs)));
 
   views::View* nudge_button =
-      ash::Shell::Get()->anchored_nudge_manager()->GetNudgeFirstButtonForTest(
+      ash::Shell::Get()->anchored_nudge_manager()->GetNudgePrimaryButtonForTest(
           kTestBubbleId);
   ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
   event_generator.MoveMouseTo(nudge_button->GetBoundsInScreen().CenterPoint());

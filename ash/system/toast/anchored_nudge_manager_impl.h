@@ -61,8 +61,8 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
 
   const std::u16string& GetNudgeBodyTextForTest(const std::string& id);
   views::View* GetNudgeAnchorViewForTest(const std::string& id);
-  views::LabelButton* GetNudgeFirstButtonForTest(const std::string& id);
-  views::LabelButton* GetNudgeSecondButtonForTest(const std::string& id);
+  views::LabelButton* GetNudgePrimaryButtonForTest(const std::string& id);
+  views::LabelButton* GetNudgeSecondaryButtonForTest(const std::string& id);
   AnchoredNudge* GetShownNudgeForTest(const std::string& id);
 
   // TODO(b/297619385): Move constants to a new constants file.
@@ -100,7 +100,8 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   void RecordNudgeShown(NudgeCatalogName catalog_name);
 
   // Records button pressed metrics.
-  void RecordButtonPressed(NudgeCatalogName catalog_name, bool first_button);
+  void RecordButtonPressed(NudgeCatalogName catalog_name,
+                           bool is_primary_button);
 
   // Closes all `shown_nudges_` immediately. Used for shutdown, when a scoped
   // nudge pause is activated, or when the session state changes.
@@ -112,7 +113,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   base::RepeatingClosure ChainCancelCallback(base::RepeatingClosure callback,
                                              NudgeCatalogName catalog_name,
                                              const std::string& id,
-                                             bool first_button);
+                                             bool is_primary_button);
 
   // AnchoredNudgeManager:
   void Pause() override;

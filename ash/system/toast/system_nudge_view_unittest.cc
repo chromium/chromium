@@ -13,8 +13,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -33,8 +36,33 @@ AnchoredNudgeData CreateBaseNudgeData() {
 }
 
 views::ImageButton* GetCloseButton(views::View* nudge_view) {
-  return static_cast<views::ImageButton*>(
+  return views::AsViewClass<views::ImageButton>(
       nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_CLOSE_BUTTON));
+}
+
+views::ImageView* GetImageView(views::View* nudge_view) {
+  return views::AsViewClass<views::ImageView>(
+      nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_IMAGE_VIEW));
+}
+
+views::Label* GetTitleLabel(views::View* nudge_view) {
+  return views::AsViewClass<views::Label>(
+      nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_TITLE_LABEL));
+}
+
+views::Label* GetBodyLabel(views::View* nudge_view) {
+  return views::AsViewClass<views::Label>(
+      nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_BODY_LABEL));
+}
+
+views::LabelButton* GetPrimaryButton(views::View* nudge_view) {
+  return views::AsViewClass<views::LabelButton>(
+      nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_PRIMARY_BUTTON));
+}
+
+views::LabelButton* GetSecondaryButton(views::View* nudge_view) {
+  return views::AsViewClass<views::LabelButton>(
+      nudge_view->GetViewByID(VIEW_ID_SYSTEM_NUDGE_SECONDARY_BUTTON));
 }
 
 }  // namespace
@@ -51,70 +79,87 @@ class SystemNudgeViewTest : public AshTestBase {
 
 TEST_F(SystemNudgeViewTest, TextOnly) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  const std::u16string body_text = u"Body text";
 
   // Set up base nudge data which will create a text-only nudge.
   auto nudge_data = CreateBaseNudgeData();
+  nudge_data.body_text = body_text;
 
-  SystemNudgeView* system_nudge_view =
+  SystemNudgeView* nudge_view =
       widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
 
   // Test that appropriate nudge elements were created.
-  EXPECT_FALSE(system_nudge_view->image_view());
-  EXPECT_FALSE(system_nudge_view->title_label());
-  ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_FALSE(system_nudge_view->first_button());
-  EXPECT_FALSE(system_nudge_view->second_button());
+  EXPECT_FALSE(GetImageView(nudge_view));
+  EXPECT_FALSE(GetTitleLabel(nudge_view));
+  ASSERT_TRUE(GetBodyLabel(nudge_view));
+  EXPECT_FALSE(GetPrimaryButton(nudge_view));
+  EXPECT_FALSE(GetSecondaryButton(nudge_view));
+
+  // Test that view contents are properly set.
+  EXPECT_EQ(body_text, GetBodyLabel(nudge_view)->GetText());
 
   // Test that text labels max width is set correctly.
   EXPECT_EQ(kNudgeLabelWidth_TextOnlyNudge,
-            system_nudge_view->body_label()->GetMaximumWidth());
+            GetBodyLabel(nudge_view)->GetMaximumWidth());
 }
 
 TEST_F(SystemNudgeViewTest, WithButtons) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  const std::u16string primary_button_text = u"Primary";
+  const std::u16string secondary_button_text = u"Secondary";
 
   // Set up base nudge data and add two buttons.
   auto nudge_data = CreateBaseNudgeData();
-  nudge_data.first_button_text = u"Button";
-  nudge_data.second_button_text = u"Button";
+  nudge_data.primary_button_text = primary_button_text;
+  nudge_data.secondary_button_text = secondary_button_text;
 
-  SystemNudgeView* system_nudge_view =
+  SystemNudgeView* nudge_view =
       widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
 
   // Test that appropriate nudge elements were created.
-  EXPECT_FALSE(system_nudge_view->image_view());
-  EXPECT_FALSE(system_nudge_view->title_label());
-  ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_TRUE(system_nudge_view->first_button());
-  EXPECT_TRUE(system_nudge_view->second_button());
+  EXPECT_FALSE(GetImageView(nudge_view));
+  EXPECT_FALSE(GetTitleLabel(nudge_view));
+  ASSERT_TRUE(GetBodyLabel(nudge_view));
+  ASSERT_TRUE(GetPrimaryButton(nudge_view));
+  ASSERT_TRUE(GetSecondaryButton(nudge_view));
+
+  // Test that view contents are properly set.
+  EXPECT_EQ(primary_button_text, GetPrimaryButton(nudge_view)->GetText());
+  EXPECT_EQ(secondary_button_text, GetSecondaryButton(nudge_view)->GetText());
 
   // Test that text labels max width is set correctly.
   EXPECT_EQ(kNudgeLabelWidth_NudgeWithoutLeadingImage,
-            system_nudge_view->body_label()->GetFixedWidth());
+            GetBodyLabel(nudge_view)->GetFixedWidth());
 }
 
 TEST_F(SystemNudgeViewTest, TitleAndLeadingImage) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  const std::u16string title_text = u"Title text";
+  const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
+      vector_icons::kDogfoodIcon, kColorAshIconColorPrimary, /*icon_size=*/60);
 
   // Set up base nudge data and add a title and an image model.
   auto nudge_data = CreateBaseNudgeData();
-  nudge_data.title_text = u"Title";
-  nudge_data.image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kDogfoodIcon, kColorAshIconColorPrimary, /*icon_size=*/60);
+  nudge_data.title_text = title_text;
+  nudge_data.image_model = image_model;
 
-  SystemNudgeView* system_nudge_view =
+  SystemNudgeView* nudge_view =
       widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
 
   // Test that appropriate nudge elements were created.
-  EXPECT_TRUE(system_nudge_view->image_view());
-  EXPECT_TRUE(system_nudge_view->title_label());
-  ASSERT_TRUE(system_nudge_view->body_label());
-  EXPECT_FALSE(system_nudge_view->first_button());
-  EXPECT_FALSE(system_nudge_view->second_button());
+  ASSERT_TRUE(GetImageView(nudge_view));
+  ASSERT_TRUE(GetTitleLabel(nudge_view));
+  ASSERT_TRUE(GetBodyLabel(nudge_view));
+  EXPECT_FALSE(GetPrimaryButton(nudge_view));
+  EXPECT_FALSE(GetSecondaryButton(nudge_view));
+
+  // Test that view contents are properly set.
+  EXPECT_EQ(title_text, GetTitleLabel(nudge_view)->GetText());
+  EXPECT_EQ(image_model, GetImageView(nudge_view)->GetImageModel());
 
   // Test that text labels max width is set correctly.
   EXPECT_EQ(kNudgeLabelWidth_NudgeWithLeadingImage,
-            system_nudge_view->body_label()->GetFixedWidth());
+            GetBodyLabel(nudge_view)->GetFixedWidth());
 }
 
 // Test that the nudge close button is properly created / made visible in
@@ -129,7 +174,7 @@ TEST_F(SystemNudgeViewTest, CloseButton) {
   EXPECT_FALSE(GetCloseButton(widget->GetContentsView()));
 
   // Test that a non-text-only nudge will have a close button.
-  nudge_data.first_button_text = u"Button";
+  nudge_data.primary_button_text = u"Button";
   widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
   ASSERT_TRUE(GetCloseButton(widget->GetContentsView()));
   EXPECT_FALSE(GetCloseButton(widget->GetContentsView())->GetVisible());

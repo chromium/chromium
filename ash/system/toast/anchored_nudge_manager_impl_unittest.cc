@@ -37,10 +37,10 @@ namespace {
 constexpr NudgeCatalogName kTestCatalogName =
     NudgeCatalogName::kTestCatalogName;
 
-constexpr char kFirstButtonPressed[] =
-    "Ash.NotifierFramework.Nudge.FirstButtonPressed";
-constexpr char kSecondButtonPressed[] =
-    "Ash.NotifierFramework.Nudge.SecondButtonPressed";
+constexpr char kPrimaryButtonPressed[] =
+    "Ash.NotifierFramework.Nudge.PrimaryButtonPressed";
+constexpr char kSecondaryButtonPressed[] =
+    "Ash.NotifierFramework.Nudge.SecondaryButtonPressed";
 constexpr char kNudgeShownCount[] = "Ash.NotifierFramework.Nudge.ShownCount";
 constexpr char kNudgeTimeToActionWithin1m[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.Within1m";
@@ -87,6 +87,18 @@ class AnchoredNudgeManagerImplTest : public AshTestBase {
     return anchored_nudge_manager()->shown_nudges_;
   }
 
+  const std::u16string& GetNudgeBodyText(const std::string& id) {
+    return anchored_nudge_manager()->GetNudgeBodyTextForTest(id);
+  }
+
+  views::LabelButton* GetNudgePrimaryButton(const std::string& id) {
+    return anchored_nudge_manager()->GetNudgePrimaryButtonForTest(id);
+  }
+
+  views::LabelButton* GetNudgeSecondaryButton(const std::string& id) {
+    return anchored_nudge_manager()->GetNudgeSecondaryButtonForTest(id);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -97,9 +109,9 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
 
   // Set up nudge data contents.
   const std::string id = "id";
-  const std::u16string text = u"text";
+  const std::u16string body_text = u"Body text";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
-  auto nudge_data = CreateBaseNudgeData(id, anchor_view, text);
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view, body_text);
 
   // Show a nudge.
   anchored_nudge_manager()->Show(nudge_data);
@@ -108,7 +120,6 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   AnchoredNudge* nudge = GetShownNudges()[id];
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
-  EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Ensure the nudge widget was not activated when shown.
@@ -166,12 +177,12 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   // Set up nudge data contents.
   const std::string id = "id";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
-  const std::u16string first_button_text = u"first";
-  const std::u16string second_button_text = u"second";
+  const std::u16string primary_button_text = u"Primary";
+  const std::u16string secondary_button_text = u"Secondary";
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
-  // Add a first button with no callbacks.
-  nudge_data.first_button_text = first_button_text;
+  // Add a primary button with no callbacks.
+  nudge_data.primary_button_text = primary_button_text;
 
   // Show the nudge.
   anchored_nudge_manager()->Show(nudge_data);
@@ -179,62 +190,66 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
 
   // Ensure the nudge is visible and has set the provided contents.
   ASSERT_TRUE(nudge);
-  ASSERT_TRUE(nudge->GetFirstButton());
-  EXPECT_EQ(first_button_text, nudge->GetFirstButton()->GetText());
-  EXPECT_FALSE(nudge->GetSecondButton());
+  ASSERT_TRUE(GetNudgePrimaryButton(id));
+  EXPECT_FALSE(GetNudgeSecondaryButton(id));
 
-  // Press the first button, the nudge should have dismissed.
-  LeftClickOn(nudge->GetFirstButton());
+  // Press the primary button, the nudge should have dismissed.
+  LeftClickOn(GetNudgePrimaryButton(id));
   EXPECT_FALSE(GetShownNudges()[id]);
-  histogram_tester.ExpectBucketCount(kFirstButtonPressed, kTestCatalogName, 1);
+  histogram_tester.ExpectBucketCount(kPrimaryButtonPressed, kTestCatalogName,
+                                     1);
 
-  // Add callbacks for the first button.
-  bool first_button_callback_ran = false;
-  nudge_data.first_button_callback = base::BindLambdaForTesting(
-      [&first_button_callback_ran] { first_button_callback_ran = true; });
+  // Add callbacks for the primary button.
+  bool primary_button_callback_ran = false;
+  nudge_data.primary_button_callback = base::BindLambdaForTesting(
+      [&primary_button_callback_ran] { primary_button_callback_ran = true; });
 
   // Show the nudge again.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
 
-  // Press the first button, `first_button_callback` should have executed, and
-  // the nudge should have dismissed.
-  LeftClickOn(nudge->GetFirstButton());
-  EXPECT_TRUE(first_button_callback_ran);
+  // Press the primary button, `primary_button_callback` should have executed,
+  // and the nudge should have dismissed.
+  LeftClickOn(GetNudgePrimaryButton(id));
+  EXPECT_TRUE(primary_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
-  histogram_tester.ExpectBucketCount(kFirstButtonPressed, kTestCatalogName, 2);
+  histogram_tester.ExpectBucketCount(kPrimaryButtonPressed, kTestCatalogName,
+                                     2);
 
-  // Add a second button with no callbacks.
-  nudge_data.second_button_text = second_button_text;
+  // Add a secondary button with no callbacks.
+  nudge_data.secondary_button_text = secondary_button_text;
 
-  // Show the nudge again, now with a second button.
+  // Show the nudge again, now with a secondary button.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
 
-  // Ensure the nudge has a second button.
-  ASSERT_TRUE(nudge->GetSecondButton());
-  EXPECT_EQ(second_button_text, nudge->GetSecondButton()->GetText());
+  // Ensure the nudge has a secondary button.
+  ASSERT_TRUE(GetNudgeSecondaryButton(id));
 
-  // Press the second button, the nudge should have dismissed.
-  LeftClickOn(nudge->GetSecondButton());
+  // Press the secondary button, the nudge should have dismissed.
+  LeftClickOn(GetNudgeSecondaryButton(id));
   EXPECT_FALSE(GetShownNudges()[id]);
-  histogram_tester.ExpectBucketCount(kSecondButtonPressed, kTestCatalogName, 1);
+  histogram_tester.ExpectBucketCount(kSecondaryButtonPressed, kTestCatalogName,
+                                     1);
 
-  // Add a callback for the second button.
-  bool second_button_callback_ran = false;
-  nudge_data.second_button_callback = base::BindLambdaForTesting(
-      [&second_button_callback_ran] { second_button_callback_ran = true; });
+  // Add a callback for the secondary button.
+  bool secondary_button_callback_ran = false;
+  nudge_data.secondary_button_callback =
+      base::BindLambdaForTesting([&secondary_button_callback_ran] {
+        secondary_button_callback_ran = true;
+      });
 
   // Show the nudge again.
   anchored_nudge_manager()->Show(nudge_data);
   nudge = GetShownNudges()[id];
 
-  // Press the second button, `second_button_callback` should have executed, and
-  // the nudge should have dismissed.
-  LeftClickOn(nudge->GetSecondButton());
-  EXPECT_TRUE(second_button_callback_ran);
+  // Press the secondary button, `secondary_button_callback` should have
+  // executed, and the nudge should have dismissed.
+  LeftClickOn(GetNudgeSecondaryButton(id));
+  EXPECT_TRUE(secondary_button_callback_ran);
   EXPECT_FALSE(GetShownNudges()[id]);
-  histogram_tester.ExpectBucketCount(kSecondButtonPressed, kTestCatalogName, 2);
+  histogram_tester.ExpectBucketCount(kSecondaryButtonPressed, kTestCatalogName,
+                                     2);
 }
 
 // Tests that a nudge without an anchor view is shown on its default location.
@@ -433,7 +448,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
   // First nudge contents should be set.
   AnchoredNudge* nudge = GetShownNudges()[id];
   ASSERT_TRUE(nudge);
-  EXPECT_EQ(text, nudge->GetBodyText());
+  EXPECT_EQ(text, GetNudgeBodyText(id));
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Attempt to show a nudge with different contents but with the same id.
@@ -442,7 +457,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
   // The previous nudge should be cancelled and replaced with the new nudge.
   nudge = GetShownNudges()[id];
   ASSERT_TRUE(nudge);
-  EXPECT_EQ(text_2, nudge->GetBodyText());
+  EXPECT_EQ(text_2, GetNudgeBodyText(id));
   EXPECT_EQ(anchor_view_2, nudge->GetAnchorView());
 }
 
@@ -798,7 +813,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeDefaultDurationIsUpdated) {
   const std::string id = "id";
   const std::u16string long_body_text =
       u"This is just a body text that has more than sixty characters.";
-  const std::u16string first_button_text = u"first";
+  const std::u16string primary_button_text = u"first";
   auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
@@ -829,7 +844,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeDefaultDurationIsUpdated) {
 
   // Clear body text, add a button and show the nudge again.
   nudge_data.body_text = std::u16string();
-  nudge_data.first_button_text = first_button_text;
+  nudge_data.primary_button_text = primary_button_text;
   anchored_nudge_manager()->Show(nudge_data);
   EXPECT_TRUE(GetShownNudges()[id]);
 

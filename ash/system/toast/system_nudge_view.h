@@ -13,9 +13,6 @@
 
 namespace views {
 class ImageButton;
-class ImageView;
-class Label;
-class LabelButton;
 class Widget;
 }  // namespace views
 
@@ -38,14 +35,6 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;
   ~SystemNudgeView() override;
 
-  // TODO(b/306466133): Use `GetViewByID` when applicable in tests instead of
-  // exposing nudge child views.
-  views::ImageView* image_view() const { return image_view_; }
-  views::Label* body_label() const { return body_label_; }
-  views::Label* title_label() const { return title_label_; }
-  views::LabelButton* first_button() const { return first_button_; }
-  views::LabelButton* second_button() const { return second_button_; }
-
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
@@ -59,11 +48,6 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
 
  private:
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView> image_view_ = nullptr;
-  raw_ptr<views::Label> body_label_ = nullptr;
-  raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::LabelButton> first_button_ = nullptr;
-  raw_ptr<views::LabelButton> second_button_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;

@@ -104,7 +104,7 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
 
   const bool nudge_is_text_only = nudge_data.image_model.IsEmpty() &&
                                   nudge_data.title_text.empty() &&
-                                  nudge_data.first_button_text.empty();
+                                  nudge_data.primary_button_text.empty();
 
   // Nudges without an anchor view that are not text-only will have a close
   // button that is visible on view hovered.
@@ -158,12 +158,13 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
   }
 
   if (!nudge_data.image_model.IsEmpty()) {
-    image_view_ = image_and_text_container->AddChildView(
+    auto* image_view = image_and_text_container->AddChildView(
         views::Builder<views::ImageView>()
+            .SetID(VIEW_ID_SYSTEM_NUDGE_IMAGE_VIEW)
             .SetPreferredSize(gfx::Size(kImageViewSize, kImageViewSize))
             .SetImage(nudge_data.image_model)
             .Build());
-    SetupViewCornerRadius(image_view_, kImageViewCornerRadius);
+    SetupViewCornerRadius(image_view, kImageViewCornerRadius);
 
     AddPaddingView(image_and_text_container, kImageViewTrailingPadding,
                    kImageViewSize);
@@ -179,8 +180,9 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
                          : kNudgeLabelWidth_NudgeWithLeadingImage;
 
   if (!nudge_data.title_text.empty()) {
-    title_label_ = text_container->AddChildView(
+    auto* title_label = text_container->AddChildView(
         views::Builder<views::Label>()
+            .SetID(VIEW_ID_SYSTEM_NUDGE_TITLE_LABEL)
             .SetText(nudge_data.title_text)
             .SetTooltipText(nudge_data.title_text)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -192,11 +194,12 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
             .SetMaximumWidthSingleLine(label_width)
             .Build());
 
-    AddPaddingView(text_container, title_label_->width(), kTitleBottomPadding);
+    AddPaddingView(text_container, title_label->width(), kTitleBottomPadding);
   }
 
-  body_label_ = text_container->AddChildView(
+  auto* body_label = text_container->AddChildView(
       views::Builder<views::Label>()
+          .SetID(VIEW_ID_SYSTEM_NUDGE_BODY_LABEL)
           .SetText(nudge_data.body_text)
           .SetTooltipText(nudge_data.body_text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -211,15 +214,15 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
           .Build());
 
   // Return early if there are no buttons.
-  if (nudge_data.first_button_text.empty()) {
-    CHECK(nudge_data.second_button_text.empty());
+  if (nudge_data.primary_button_text.empty()) {
+    CHECK(nudge_data.secondary_button_text.empty());
 
     // Update nudge margins and body label max width if nudge only has text.
     if (nudge_is_text_only) {
       SetInteriorMargin(kTextOnlyNudgeInteriorMargin);
       // `SizeToFit` is reset to zero so a maximum width can be set.
-      body_label_->SizeToFit(0);
-      body_label_->SetMaximumWidth(kNudgeLabelWidth_TextOnlyNudge);
+      body_label->SizeToFit(0);
+      body_label->SetMaximumWidth(kNudgeLabelWidth_TextOnlyNudge);
     }
     return;
   }
@@ -240,28 +243,29 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
           .Build());
   buttons_container->SetDefault(views::kMarginsKey, kButtonsMargins);
 
-  const bool has_second_button = !nudge_data.second_button_text.empty();
+  const bool has_secondary_button = !nudge_data.secondary_button_text.empty();
 
-  first_button_ = buttons_container->AddChildView(
+  buttons_container->AddChildView(
       views::Builder<PillButton>()
-          .SetCallback(std::move(nudge_data.first_button_callback))
-          .SetText(nudge_data.first_button_text)
-          .SetTooltipText(nudge_data.first_button_text)
-          .SetPillButtonType(has_second_button
-                                 ? PillButton::Type::kSecondaryWithoutIcon
-                                 : PillButton::Type::kPrimaryWithoutIcon)
+          .SetID(VIEW_ID_SYSTEM_NUDGE_PRIMARY_BUTTON)
+          .SetCallback(std::move(nudge_data.primary_button_callback))
+          .SetText(nudge_data.primary_button_text)
+          .SetTooltipText(nudge_data.primary_button_text)
+          .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
           .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
           .Build());
 
-  if (has_second_button) {
-    second_button_ = buttons_container->AddChildView(
+  if (has_secondary_button) {
+    buttons_container->AddChildViewAt(
         views::Builder<PillButton>()
-            .SetCallback(std::move(nudge_data.second_button_callback))
-            .SetText(nudge_data.second_button_text)
-            .SetTooltipText(nudge_data.second_button_text)
-            .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
+            .SetID(VIEW_ID_SYSTEM_NUDGE_SECONDARY_BUTTON)
+            .SetCallback(std::move(nudge_data.secondary_button_callback))
+            .SetText(nudge_data.secondary_button_text)
+            .SetTooltipText(nudge_data.secondary_button_text)
+            .SetPillButtonType(PillButton::Type::kSecondaryWithoutIcon)
             .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
-            .Build());
+            .Build(),
+        0);
   }
 }
 

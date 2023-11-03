@@ -380,8 +380,8 @@ void ScalableIphDelegateImpl::ShowBubble(
   }
 
   if (!params.button.text.empty()) {
-    nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
-    nudge_data.first_button_callback = base::BindRepeating(
+    nudge_data.primary_button_text = base::UTF8ToUTF16(params.button.text);
+    nudge_data.primary_button_callback = base::BindRepeating(
         &ScalableIphDelegateImpl::OnNudgeButtonClicked,
         weak_ptr_factory_.GetWeakPtr(), params.bubble_id, params.button.action);
   }

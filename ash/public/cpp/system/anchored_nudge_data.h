@@ -83,16 +83,16 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // Optional system nudge buttons. If the text is not empty, the respective
   // button will be created. Pressing the button will execute its callback, if
-  // any, followed by the nudge being closed. `second_button_text` should only
-  // be set if `first_button_text` has also been set.
+  // any, followed by the nudge being closed. `secondary_button_text` should
+  // only be set if `primary_button_text` has also been set.
   // TODO(b/285023559): Add a `ChainedCancelCallback` class instead of a
   // `RepeatingClosure` so we don't have to manually modify the provided
   // callbacks in the manager.
-  std::u16string first_button_text;
-  base::RepeatingClosure first_button_callback = base::DoNothing();
+  std::u16string primary_button_text;
+  base::RepeatingClosure primary_button_callback = base::DoNothing();
 
-  std::u16string second_button_text;
-  base::RepeatingClosure second_button_callback = base::DoNothing();
+  std::u16string secondary_button_text;
+  base::RepeatingClosure secondary_button_callback = base::DoNothing();
 
   // Used to set the nudge's placement in relation to the anchor view, if any.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;

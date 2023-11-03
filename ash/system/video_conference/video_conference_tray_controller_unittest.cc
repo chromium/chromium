@@ -73,12 +73,13 @@ views::View* GetNudgeAnchorView(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->GetNudgeAnchorViewForTest(id);
 }
 
-views::LabelButton* GetNudgeFirstButton(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeFirstButtonForTest(id);
+views::LabelButton* GetNudgePrimaryButton(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetNudgePrimaryButtonForTest(
+      id);
 }
 
-views::LabelButton* GetNudgeSecondButton(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeSecondButtonForTest(
+views::LabelButton* GetNudgeSecondaryButton(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeSecondaryButtonForTest(
       id);
 }
 
@@ -738,7 +739,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptOut) {
   EXPECT_TRUE(IsNudgeShown(nudge_id));
 
   // Opt out of speak-on-mute. Nudge should be dismissed and never shown again.
-  LeftClickOn(GetNudgeFirstButton(nudge_id));
+  LeftClickOn(GetNudgeSecondaryButton(nudge_id));
   EXPECT_FALSE(IsNudgeShown(nudge_id));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));
@@ -775,7 +776,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptIn) {
   EXPECT_TRUE(IsNudgeShown(nudge_id));
 
   // Opt in to speak-on-mute. Nudge should be dismissed and never shown again.
-  LeftClickOn(GetNudgeSecondButton(nudge_id));
+  LeftClickOn(GetNudgePrimaryButton(nudge_id));
   EXPECT_FALSE(IsNudgeShown(nudge_id));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));
@@ -821,7 +822,7 @@ TEST_F(VideoConferenceTrayControllerTest, NudgeBlocksOtherNudges) {
   EXPECT_FALSE(IsNudgeShown(use_while_disabled_nudge_id));
 
   // Opt in to speak-on-mute, opt-in nudge should be dismissed.
-  LeftClickOn(GetNudgeSecondButton(opt_in_nudge_id));
+  LeftClickOn(GetNudgePrimaryButton(opt_in_nudge_id));
   EXPECT_FALSE(IsNudgeShown(opt_in_nudge_id));
 
   // Wait for 60 seconds to simulate that the mic mute cool down has passed. The

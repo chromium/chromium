@@ -4865,6 +4865,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.NotifierFramework.Nudge.{FirstOrSecond}ButtonPressed"
     enum="NudgeCatalogName" expires_after="2024-07-15">
+  <obsolete>
+    Deprecated Oct 2023. Replaced by
+    Ash.NotifierFramework.Nudge.{PrimaryOrSecondary}ButtonPressed since the
+    first button was the primary action when there was only one button, but
+    secondary when there were two buttons.
+  </obsolete>
   <owner>kradtke@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -4874,6 +4880,20 @@ chromium-metrics-reviews@google.com.
   <token key="FirstOrSecond">
     <variant name="First"/>
     <variant name="Second"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.NotifierFramework.Nudge.{PrimaryOrSecondary}ButtonPressed"
+    enum="NudgeCatalogName" expires_after="2024-11-01">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the nudge catalog name when a user presses one of the nudge's
+    buttons.
+  </summary>
+  <token key="PrimaryOrSecondary">
+    <variant name="Primary"/>
+    <variant name="Secondary"/>
   </token>
 </histogram>
 

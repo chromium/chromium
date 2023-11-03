@@ -97,28 +97,6 @@ AnchoredNudge::~AnchoredNudge() {
   }
 }
 
-views::ImageView* AnchoredNudge::GetImageView() {
-  return system_nudge_view_->image_view();
-}
-
-const std::u16string& AnchoredNudge::GetBodyText() {
-  CHECK(system_nudge_view_->body_label());
-  return system_nudge_view_->body_label()->GetText();
-}
-
-const std::u16string& AnchoredNudge::GetTitleText() {
-  CHECK(system_nudge_view_->title_label());
-  return system_nudge_view_->title_label()->GetText();
-}
-
-views::LabelButton* AnchoredNudge::GetFirstButton() {
-  return system_nudge_view_->first_button();
-}
-
-views::LabelButton* AnchoredNudge::GetSecondButton() {
-  return system_nudge_view_->second_button();
-}
-
 gfx::Rect AnchoredNudge::GetBubbleBounds() {
   auto* root_window = GetWidget()->GetNativeWindow();
 
