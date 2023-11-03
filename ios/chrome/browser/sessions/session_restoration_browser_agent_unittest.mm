@@ -158,7 +158,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     // constructor.
     browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_.get(),
-        std::make_unique<BrowserWebStateListDelegate>());
+        std::make_unique<BrowserWebStateListDelegate>(
+            /* force_realization_on_activation */ true));
   }
 
   void TearDown() override {

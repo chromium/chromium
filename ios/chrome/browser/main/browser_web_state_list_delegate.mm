@@ -7,7 +7,9 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/web_state.h"
 
-BrowserWebStateListDelegate::BrowserWebStateListDelegate() = default;
+BrowserWebStateListDelegate::BrowserWebStateListDelegate(
+    bool force_realization_on_activation)
+    : force_realization_on_activation_(force_realization_on_activation) {}
 
 BrowserWebStateListDelegate::~BrowserWebStateListDelegate() = default;
 
@@ -20,9 +22,11 @@ void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
 
 void BrowserWebStateListDelegate::WillActivateWebState(
     web::WebState* web_state) {
-  // Do not trigger a CheckForOverRealization here as some user actions
-  // (such as side swipe over multiple tab in the tab strip) can cause
-  // rapid change of the active WebState.
-  web::IgnoreOverRealizationCheck();
-  web_state->ForceRealized();
+  if (force_realization_on_activation_) {
+    // Do not trigger a CheckForOverRealization here as some user actions
+    // (such as side swipe over multiple tab in the tab strip) can cause
+    // rapid change of the active WebState.
+    web::IgnoreOverRealizationCheck();
+    web_state->ForceRealized();
+  }
 }

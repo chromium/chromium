@@ -23,7 +23,10 @@ BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
   DCHECK(browser_state_);
   DCHECK(active_browser_);
 
-  web_state_list_delegate_ = std::make_unique<BrowserWebStateListDelegate>();
+  // Only realize the WebState on activation for the active Browser.
+  const bool force_realization_on_activation = active_browser_ == this;
+  web_state_list_delegate_ = std::make_unique<BrowserWebStateListDelegate>(
+      force_realization_on_activation);
   web_state_list_ =
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 
