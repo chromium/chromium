@@ -29,7 +29,8 @@ namespace {
 void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
     LOG(ERROR) << "TabOrganizationResponse model execution failed ";
     std::move(on_failure).Run();

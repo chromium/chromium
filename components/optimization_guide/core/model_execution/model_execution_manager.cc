@@ -76,9 +76,11 @@ void ModelExecutionManager::ExecuteModel(
 
   if (active_model_execution_fetchers_.find(feature) !=
       active_model_execution_fetchers_.end()) {
-    std::move(callback).Run(base::unexpected(
-        OptimizationGuideModelExecutionError::FromModelExecutionError(
-            ModelExecutionError::kGenericFailure)));
+    std::move(callback).Run(
+        base::unexpected(
+            OptimizationGuideModelExecutionError::FromModelExecutionError(
+                ModelExecutionError::kGenericFailure)),
+        nullptr);
     return;
   }
 
@@ -100,16 +102,20 @@ void ModelExecutionManager::OnModelExecuteResponse(
                    OptimizationGuideModelExecutionError> execute_response) {
   active_model_execution_fetchers_.erase(feature);
   if (!execute_response.has_value()) {
-    std::move(callback).Run(base::unexpected(execute_response.error()));
+    std::move(callback).Run(base::unexpected(execute_response.error()),
+                            nullptr);
     return;
   }
   if (!execute_response->has_response_metadata()) {
-    std::move(callback).Run(base::unexpected(
-        OptimizationGuideModelExecutionError::FromModelExecutionError(
-            ModelExecutionError::kGenericFailure)));
+    std::move(callback).Run(
+        base::unexpected(
+            OptimizationGuideModelExecutionError::FromModelExecutionError(
+                ModelExecutionError::kGenericFailure)),
+        nullptr);
     return;
   }
-  std::move(callback).Run(base::ok(execute_response->response_metadata()));
+  std::move(callback).Run(base::ok(execute_response->response_metadata()),
+                          nullptr);
 }
 
 }  // namespace optimization_guide

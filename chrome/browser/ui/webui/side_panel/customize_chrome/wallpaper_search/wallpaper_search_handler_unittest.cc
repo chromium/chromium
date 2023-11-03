@@ -421,7 +421,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
-  std::move(done_callback).Run(base::ok(result));
+  std::move(done_callback).Run(base::ok(result), nullptr);
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
@@ -541,11 +541,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
   std::move(done_callback)
-      .Run(base::unexpected(
-          optimization_guide::OptimizationGuideModelExecutionError::
-              FromModelExecutionError(
-                  optimization_guide::OptimizationGuideModelExecutionError::
-                      ModelExecutionError::kGenericFailure)));
+      .Run(
+          base::unexpected(
+              optimization_guide::OptimizationGuideModelExecutionError::
+                  FromModelExecutionError(
+                      optimization_guide::OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kGenericFailure)),
+          nullptr);
 
   EXPECT_EQ(status,
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
@@ -592,7 +594,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
 
-  std::move(done_callback).Run(base::ok(result));
+  std::move(done_callback).Run(base::ok(result), nullptr);
 
   EXPECT_EQ(status,
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
@@ -676,7 +678,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
       images;
   EXPECT_CALL(callback, Run(_, _)).WillOnce(MoveArg<1>(&images));
 
-  std::move(done_callback).Run(base::ok(result));
+  std::move(done_callback).Run(base::ok(result), nullptr);
 
   std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
   std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));

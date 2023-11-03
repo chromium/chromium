@@ -95,7 +95,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
  private:
   void ProcessError(compose::mojom::ComposeStatus status);
   void ModelExecutionCallback(
-      optimization_guide::OptimizationGuideModelExecutionResult result);
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;

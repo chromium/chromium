@@ -63,7 +63,8 @@ class WallpaperSearchHandler
                                data_decoder::DataDecoder::ValueOrError result);
   void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
-      optimization_guide::OptimizationGuideModelExecutionResult result);
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void OnWallpaperSearchResultsDecoded(
       GetWallpaperSearchResultsCallback callback,
       std::vector<SkBitmap> bitmaps);

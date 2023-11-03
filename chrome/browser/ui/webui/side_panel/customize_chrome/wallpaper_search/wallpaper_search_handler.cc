@@ -290,7 +290,8 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
 
 void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     GetWallpaperSearchResultsCallback callback,
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
     return;
   }

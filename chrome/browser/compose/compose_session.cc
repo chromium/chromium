@@ -103,7 +103,8 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
 }
 
 void ComposeSession::ModelExecutionCallback(
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   current_state_->has_pending_request = false;
 
   compose::mojom::ComposeStatus status =

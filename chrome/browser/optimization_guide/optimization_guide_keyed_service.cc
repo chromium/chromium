@@ -411,11 +411,13 @@ void OptimizationGuideKeyedService::ExecuteModel(
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_manager_) {
-    std::move(callback).Run(base::unexpected(
-        optimization_guide::OptimizationGuideModelExecutionError::
-            FromModelExecutionError(
-                optimization_guide::OptimizationGuideModelExecutionError::
-                    ModelExecutionError::kGenericFailure)));
+    std::move(callback).Run(
+        base::unexpected(
+            optimization_guide::OptimizationGuideModelExecutionError::
+                FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kGenericFailure)),
+        nullptr);
     return;
   }
   model_execution_manager_->ExecuteModel(feature, request_metadata,

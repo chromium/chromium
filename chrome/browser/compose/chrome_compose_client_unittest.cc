@@ -250,7 +250,8 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -278,7 +279,8 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -301,12 +303,14 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
       .WillOnce(testing::WithArg<2>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
-            std::move(callback).Run(base::unexpected(
-                optimization_guide::OptimizationGuideModelExecutionError::
-                    FromModelExecutionError(
-                        optimization_guide::
-                            OptimizationGuideModelExecutionError::
-                                ModelExecutionError::kGenericFailure)));
+            std::move(callback).Run(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -332,7 +336,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             optimization_guide::proto::Any any;
-            std::move(callback).Run(any);
+            std::move(callback).Run(base::ok(any), nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -402,7 +406,8 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -462,7 +467,8 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr>
@@ -616,7 +622,8 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -701,7 +708,8 @@ TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
@@ -738,7 +746,8 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
@@ -786,7 +795,8 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
@@ -836,7 +846,8 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
@@ -884,7 +895,8 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
   EXPECT_CALL(compose_dialog(), ResponseReceived(_));
 
@@ -931,7 +943,8 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
           [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
             std::move(callback).Run(
-                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
+                nullptr);
           })));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))

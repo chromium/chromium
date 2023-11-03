@@ -56,8 +56,10 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
       proto::MODEL_EXECUTION_FEATURE_COMPOSE, test_message,
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             OptimizationGuideModelExecutionResult result) {
+             OptimizationGuideModelExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
             ASSERT_FALSE(result.has_value());
+            ASSERT_EQ(log_entry.get(), nullptr);
             run_loop->Quit();
           },
           &run_loop));
