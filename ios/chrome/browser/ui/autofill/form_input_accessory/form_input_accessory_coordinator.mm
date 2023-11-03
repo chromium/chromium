@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -375,6 +376,16 @@ const CGFloat kIPHVerticalOffset = -5;
 - (void)openPasswordManager {
   [self reset];
   [self.navigator openPasswordManager];
+
+  // The keyboard and keyboard accessory unexpectedly appear after
+  // authentication when entering the Password Manager. Resigning the first
+  // responder here fixes the issue without removing the focus on the underlying
+  // web view's field. See crbug.com/1494929.
+  if (password_manager::features::IsAuthOnEntryEnabled() ||
+      password_manager::features::IsAuthOnEntryV2Enabled()) {
+    [GetFirstResponder() resignFirstResponder];
+  }
+
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
