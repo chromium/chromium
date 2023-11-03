@@ -28,12 +28,14 @@ import {PrefControlMixin} from './pref_control_mixin.js';
 import {getTemplate} from './settings_dropdown_menu.html.js';
 
 /**
- * The |name| is shown in the gui.  The |value| us use to set or compare with
- * the preference value.
+ * |name| is shown in the UI. |value| is used to set or compare with the
+ * preference value. |hidden| specifies whether to hide this option from the
+ * user.
  */
 interface DropdownMenuOption {
   name: string;
   value: number|string;
+  hidden?: boolean;
 }
 
 export type DropdownMenuOptionList = DropdownMenuOption[];
