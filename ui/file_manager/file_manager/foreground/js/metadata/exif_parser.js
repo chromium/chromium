@@ -6,7 +6,7 @@ import {ExifEntry} from '../../../externs/exif_entry.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
 import {ByteReader} from './byte_reader.js';
-import {Exif} from './exif_constants.js';
+import {ExifAlign, ExifMark, ExifTag} from './exif_constants.js';
 import {ImageParser} from './metadata_parser.js';
 
 
@@ -73,7 +73,7 @@ export class ExifParser extends ImageParser {
       if (filePos === 0) {
         // First slice, check for the SOI mark.
         const firstMark = this.readMark(br);
-        if (firstMark !== Exif.Mark.SOI) {
+        if (firstMark !== ExifMark.SOI) {
           throw new Error('Invalid file header: ' + firstMark.toString(16));
         }
       }
@@ -98,7 +98,7 @@ export class ExifParser extends ImageParser {
         }
 
         const mark = this.readMark(br);
-        if (mark === Exif.Mark.SOS) {
+        if (mark === ExifMark.SOS) {
           throw new Error('SOS marker found before SOF');
         }
 
@@ -115,7 +115,7 @@ export class ExifParser extends ImageParser {
           return;
         }
 
-        if (mark === Exif.Mark.EXIF) {
+        if (mark === ExifMark.EXIF) {
           this.parseExifSection(metadata, buf, br);
         } else if (ExifParser.isSOF_(mark)) {
           // The most reliable size information is encoded in the SOF section.
@@ -143,7 +143,7 @@ export class ExifParser extends ImageParser {
   static isSOF_(mark) {
     // There are 13 variants of SOF fragment format distinguished by the last
     // hex digit of the mark, but the part we want is always the same.
-    if ((mark & ~0xF) !== Exif.Mark.SOF) {
+    if ((mark & ~0xF) !== ExifMark.SOF) {
       return false;
     }
 
@@ -172,22 +172,22 @@ export class ExifParser extends ImageParser {
     br = new ByteReader(buf, br.tell());
 
     const order = br.readScalar(2);
-    if (order === Exif.Align.LITTLE) {
+    if (order === ExifAlign.LITTLE) {
       br.setByteOrder(ByteReader.LITTLE_ENDIAN);
-    } else if (order !== Exif.Align.BIG) {
+    } else if (order !== ExifAlign.BIG) {
       this.log('Invalid alignment value: ' + order.toString(16));
       return;
     }
 
     const tag = br.readScalar(2);
-    if (tag !== Exif.Tag.TIFF) {
+    if (tag !== ExifTag.TIFF) {
       this.log('Invalid TIFF tag: ' + tag.toString(16));
       return;
     }
 
     // @ts-ignore: error TS2339: Property 'littleEndian' does not exist on type
     // 'Object'.
-    metadata.littleEndian = (order === Exif.Align.LITTLE);
+    metadata.littleEndian = (order === ExifAlign.LITTLE);
     // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
     metadata.ifd = {
       image: {},
@@ -225,11 +225,11 @@ export class ExifParser extends ImageParser {
 
     // EXIF Directory may be specified as a tag in the image directory.
     // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    if (Exif.Tag.EXIFDATA in metadata.ifd.image) {
+    if (ExifTag.EXIFDATA in metadata.ifd.image) {
       this.vlog('Read EXIF directory');
       // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
       // 'Object'.
-      directoryOffset = metadata.ifd.image[Exif.Tag.EXIFDATA].value;
+      directoryOffset = metadata.ifd.image[ExifTag.EXIFDATA].value;
       br.seek(directoryOffset);
       // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
       // 'Object'.
@@ -241,11 +241,11 @@ export class ExifParser extends ImageParser {
 
     // GPS Directory may also be linked from the image directory.
     // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    if (Exif.Tag.GPSDATA in metadata.ifd.image) {
+    if (ExifTag.GPSDATA in metadata.ifd.image) {
       this.vlog('Read GPS directory');
       // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
       // 'Object'.
-      directoryOffset = metadata.ifd.image[Exif.Tag.GPSDATA].value;
+      directoryOffset = metadata.ifd.image[ExifTag.GPSDATA].value;
       br.seek(directoryOffset);
       // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
       // 'Object'.
@@ -257,20 +257,20 @@ export class ExifParser extends ImageParser {
 
     // Thumbnail may be linked from the image directory.
     // @ts-ignore: error TS2339: Property 'ifd' does not exist on type 'Object'.
-    if (Exif.Tag.JPG_THUMB_OFFSET in metadata.ifd.thumbnail &&
+    if (ExifTag.JPG_THUMB_OFFSET in metadata.ifd.thumbnail &&
         // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
         // 'Object'.
-        Exif.Tag.JPG_THUMB_LENGTH in metadata.ifd.thumbnail) {
+        ExifTag.JPG_THUMB_LENGTH in metadata.ifd.thumbnail) {
       this.vlog('Read thumbnail image');
       // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
       // 'Object'.
-      br.seek(metadata.ifd.thumbnail[Exif.Tag.JPG_THUMB_OFFSET].value);
+      br.seek(metadata.ifd.thumbnail[ExifTag.JPG_THUMB_OFFSET].value);
       // @ts-ignore: error TS2339: Property 'thumbnailURL' does not exist on
       // type 'Object'.
       metadata.thumbnailURL =
           // @ts-ignore: error TS2339: Property 'ifd' does not exist on type
           // 'Object'.
-          br.readImage(metadata.ifd.thumbnail[Exif.Tag.JPG_THUMB_LENGTH].value);
+          br.readImage(metadata.ifd.thumbnail[ExifTag.JPG_THUMB_LENGTH].value);
     } else {
       this.vlog('Image has EXIF data, but no JPG thumbnail');
     }
@@ -327,7 +327,7 @@ export class ExifParser extends ImageParser {
     const entryCount = br.readScalar(2);
     for (let i = 0; i < entryCount; i++) {
       // @ts-ignore: error TS2315: Type 'Tag' is not generic.
-      const tagId = /** @type {!Exif.Tag<number>} */ (br.readScalar(2));
+      const tagId = /** @type {!ExifTag<number>} */ (br.readScalar(2));
       const tag = tags[tagId] = {id: tagId};
       // @ts-ignore: error TS2339: Property 'format' does not exist on type '{
       // id: any; }'.
@@ -496,10 +496,10 @@ export class ExifParser extends ImageParser {
   parseOrientation(ifd) {
     // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
     // expression of type 'number' can't be used to index type 'Object'.
-    if (ifd[Exif.Tag.ORIENTATION]) {
+    if (ifd[ExifTag.ORIENTATION]) {
       // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
       // expression of type 'number' can't be used to index type 'Object'.
-      const index = (ifd[Exif.Tag.ORIENTATION].value || 1) - 1;
+      const index = (ifd[ExifTag.ORIENTATION].value || 1) - 1;
       return {
         scaleX: ExifParser.SCALEX[index],
         scaleY: ExifParser.SCALEY[index],

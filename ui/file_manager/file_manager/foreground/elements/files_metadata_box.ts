@@ -6,7 +6,7 @@ import './files_metadata_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Exif} from '../js/metadata/exif_constants.js';
+import {ExifTag} from '../js/metadata/exif_constants.js';
 
 import {getTemplate} from './files_metadata_box.html.js';
 
@@ -71,7 +71,7 @@ export interface RawIfd {
 
 interface Ifd {
   raw?: RawIfd;
-  image?: {[K in Exif.Tag]: {value: string}};
+  image?: {[K in ExifTag]: {value: string}};
   gps?: [
     ExifData<[number, number, number, number]>,  // GPS Version number.
     ExifData<string>,        // Latitude reference (i.e. N or S).
@@ -263,7 +263,7 @@ export class FilesMetadataBox extends PolymerElement {
       return ifd.raw.cameraModel || '';
     }
 
-    const id = 272;
+    const id = ExifTag.MODEL;
     const model = (ifd.image && ifd.image[id] && ifd.image[id].value) || '';
     return model.replace(/\0+$/, '').trim();
   }

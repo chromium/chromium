@@ -8,7 +8,7 @@ import {ExifEntry} from '../../../externs/exif_entry.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
 import {ByteReader} from './byte_reader.js';
-import {Exif} from './exif_constants.js';
+import {ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
 
 class ByteWriter {
@@ -27,7 +27,7 @@ class ByteWriter {
 
   /**
    * If key is a number, format it in hex style.
-   * @param {!(string|Exif.Tag)} key A key.
+   * @param {!(string|ExifTag)} key A key.
    * @return {string} Formatted representation.
    */
   static prettyKeyFormat(key) {
@@ -127,7 +127,7 @@ class ByteWriter {
   /**
    * Allocate the space for 'width' bytes for the value that will be set later.
    * To be followed by a 'resolve' call with the same key.
-   * @param {(string|Exif.Tag)} key A key to identify the value.
+   * @param {(string|ExifTag)} key A key to identify the value.
    * @param {number} width Width of the value in bytes.
    */
   forward(key, width) {
@@ -146,7 +146,7 @@ class ByteWriter {
 
   /**
    * Set the value previously allocated with a 'forward' call.
-   * @param {(string|Exif.Tag)} key A key to identify the value.
+   * @param {(string|ExifTag)} key A key to identify the value.
    * @param {number} value value to write in pre-allocated space.
    */
   resolve(key, value) {
@@ -167,7 +167,7 @@ class ByteWriter {
 
   /**
    * A shortcut to resolve the value to the current write position.
-   * @param {(string|Exif.Tag)} key A key to identify pre-allocated position.
+   * @param {(string|ExifTag)} key A key to identify pre-allocated position.
    */
   resolveOffset(key) {
     this.resolve(key, this.tell());
@@ -250,7 +250,7 @@ class ConsoleLogger {
 /**
  * Parses exif data bytes (with logging) and returns the parsed tags.
  * @param {!ArrayBufferView} bytes Bytes to be read.
- * @return {!Object<!Exif.Tag, !ExifEntry>} Tags.
+ * @return {!Object<!ExifTag, !ExifEntry>} Tags.
  */
 function parseExifData_(bytes) {
   const exifParser = new ExifParser(new ConsoleLogger());
@@ -270,7 +270,7 @@ export function testWithoutNullCharacterTermination() {
   // Create exif with a value that does not end with null character.
   const data = new Uint8Array(0x10000);
   writeDirectory_(data, /** @type {!ExifEntry} */ ({
-                    id: 0x10f,          // Manufacturer Id.
+                    id: ExifTag.MAKE,   // Manufacturer Id.
                     format: 2,          // String format.
                     componentCount: 8,  // Length of value 'Manufact'.
                     value: 'Manufact',
@@ -280,7 +280,7 @@ export function testWithoutNullCharacterTermination() {
   const tags = parseExifData_(data);
 
   // The parsed value should end in a null character.
-  const parsedTag = tags[/** @type {!Exif.Tag} */ (0x10f)];
+  const parsedTag = tags[ExifTag.MAKE];
   assertEquals(9, parsedTag.componentCount);
   assertEquals('Manufact\0', parsedTag.value);
 }

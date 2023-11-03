@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Exif} from '../foreground/js/metadata/exif_constants.js';
+import {ExifTag} from '../foreground/js/metadata/exif_constants.js';
 
 /**
  * Type definition of exif entry.
- * @typedef {{id:!Exif.Tag, format:number, componentCount:number,
+ * @typedef {{id:!ExifTag, format:number, componentCount:number,
  *     value:(undefined|*)}}
  */
 // @ts-ignore: error TS7005: Variable 'ExifEntry' implicitly has an 'any' type.
