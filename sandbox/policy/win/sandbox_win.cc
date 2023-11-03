@@ -509,6 +509,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     AddCapabilitiesFromString(
         container,
         command_line.GetSwitchValueNative(switches::kAddGpuAppContainerCaps));
+    container->SetEnableLowPrivilegeAppContainer(
+        base::FeatureList::IsEnabled(features::kGpuLPAC));
   }
 
   if (sandbox_type == Sandbox::kXrCompositing) {
@@ -516,6 +518,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->AddCapability(kLpacPnpNotifications);
     AddCapabilitiesFromString(container, command_line.GetSwitchValueNative(
                                              switches::kAddXrAppContainerCaps));
+    // Note: does not use LPAC.
   }
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm) {
@@ -536,6 +539,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->AddCapability(kLpacEnterprisePolicyChangeNotifications);
     container->AddCapability(kMediaFoundationCdmFiles);
     container->AddCapability(kMediaFoundationCdmData);
+    container->SetEnableLowPrivilegeAppContainer(true);
   }
 
   if (sandbox_type == Sandbox::kNetwork) {
@@ -553,21 +557,13 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
     container->AddImpersonationCapability(kChromeInstallFiles);
     container->AddCapability(kLpacPnpNotifications);
+    container->SetEnableLowPrivilegeAppContainer(true);
   }
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(kLpacServicesManagement);
     container->AddCapability(kLpacEnterprisePolicyChangeNotifications);
-  }
-
-  // Enable LPAC for the following processes. Notably not for the kXrCompositing
-  // service.
-  if ((sandbox_type == Sandbox::kGpu &&
-       base::FeatureList::IsEnabled(features::kGpuLPAC)) ||
-      sandbox_type == Sandbox::kMediaFoundationCdm ||
-      sandbox_type == Sandbox::kWindowsSystemProxyResolver ||
-      sandbox_type == Sandbox::kOnDeviceModelExecution) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
