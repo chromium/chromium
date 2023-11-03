@@ -114,9 +114,6 @@ extern const char kForceAppMode[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kForceDevToolsAvailable[];
 #endif
-#if BUILDFLAG(IS_LINUX)
-extern const char kForceEnableKerberosOnFirstRun[];
-#endif  // BUILDFLAG(IS_LINUX)
 extern const char kForceFirstRun[];
 extern const char kForceWhatsNew[];
 extern const char kHideCrashRestoreBubble[];

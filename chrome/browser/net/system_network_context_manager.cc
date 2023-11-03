@@ -675,16 +675,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
-  // prefs::kReceivedHttpAuthNegotiateHeader controls whether the network
-  // service is restarted when kerberos auth is first attempted. Sometimes
-  // this restart is undesired (e.g. automation, see https://crbug.com/1493257),
-  // so allow a command line flag which will automatically set the pref to true,
-  // which prevents the network service restart.
-  bool default_received_http_auth_negotiate_value =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceEnableKerberosOnFirstRun);
-  registry->RegisterBooleanPref(prefs::kReceivedHttpAuthNegotiateHeader,
-                                default_received_http_auth_negotiate_value);
+  registry->RegisterBooleanPref(prefs::kReceivedHttpAuthNegotiateHeader, false);
 #endif  // BUILDFLAG(IS_LINUX)
 
   registry->RegisterBooleanPref(prefs::kZstdContentEncodingEnabled, true);
