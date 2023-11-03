@@ -4687,11 +4687,6 @@ const char kCastMirroringTargetPlayoutDelay250ms[] = "250ms.";
 const char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
 const char kCastMirroringTargetPlayoutDelay350ms[] = "3500ms.";
 
-const char kCopyLinkToTextName[] = "Copy Link To Text";
-const char kCopyLinkToTextDescription[] =
-    "Adds an item to the context menu to allow a user to copy a link to the "
-    "page with the selected text highlighted.";
-
 const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
 const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "

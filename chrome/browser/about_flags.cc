@@ -8422,13 +8422,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableMediaFoundationVideoCaptureDescription, kOsWin,
      FEATURE_VALUE_TYPE(media::kMediaFoundationVideoCapture)},
 #endif  // BUILDFLAG(IS_WIN)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"copy-link-to-text", flag_descriptions::kCopyLinkToTextName,
-     flag_descriptions::kCopyLinkToTextDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCopyLinkToText)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"shared-highlighting-manager",
      flag_descriptions::kSharedHighlightingManagerName,
      flag_descriptions::kSharedHighlightingManagerDescription, kOsAll,

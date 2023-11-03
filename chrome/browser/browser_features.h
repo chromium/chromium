@@ -40,7 +40,6 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kCopyLinkToText);
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
 #endif
 

@@ -87,12 +87,6 @@ BASE_FEATURE(kDoubleTapToZoomInTabletMode,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// Adds an item to the context menu that copies a link to the page with the
-// selected text highlighted.
-BASE_FEATURE(kCopyLinkToText,
-             "CopyLinkToText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Adds a "Snooze" action to mute notifications during screen sharing sessions.
 BASE_FEATURE(kMuteNotificationSnoozeAction,
              "MuteNotificationSnoozeAction",

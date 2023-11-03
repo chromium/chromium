@@ -1116,10 +1116,7 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY)) {
     DCHECK(!editable);
     AppendCopyItem();
-
-    if (base::FeatureList::IsEnabled(features::kCopyLinkToText)) {
-      AppendLinkToTextItems();
-    }
+    AppendLinkToTextItems();
   }
 
   if (content_type_->SupportsGroup(
