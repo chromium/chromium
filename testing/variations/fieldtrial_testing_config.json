@@ -732,6 +732,21 @@
             ]
         }
     ],
+    "AppStreamingAccessibilityIntegration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EcheSWAProcessAndroidAccessibilityTree"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApplyNativeOcclusionToCompositor": [
         {
             "platforms": [
