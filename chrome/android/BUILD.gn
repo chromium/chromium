@@ -434,6 +434,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/omnibox:java",
       "//chrome/browser/ui/android/page_info:java",
       "//chrome/browser/ui/android/page_insights:java",
+      "//chrome/browser/ui/android/page_insights:proto_java",
       "//chrome/browser/ui/android/plus_addresses:java",
       "//chrome/browser/ui/android/quickactionsearchwidget:java",
       "//chrome/browser/ui/android/searchactivityutils:java",

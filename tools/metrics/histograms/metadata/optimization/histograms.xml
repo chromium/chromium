@@ -191,6 +191,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Bookmarks" summary="Batch update of hints for bookmarks"/>
   <variant name="Journeys" summary="Journeys surface"/>
   <variant name="NewTabPage" summary="New tab page"/>
+  <variant name="NonPersonalizedPageInsightsHub"
+      summary="Non personalized page insights hub"/>
   <variant name="PageInsightsHub" summary="Page insights hub"/>
   <variant name="PageNavigation" summary="Page navigation"/>
 </variants>

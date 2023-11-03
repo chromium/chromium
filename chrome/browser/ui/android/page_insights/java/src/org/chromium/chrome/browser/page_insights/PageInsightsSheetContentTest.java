@@ -222,7 +222,7 @@ public class PageInsightsSheetContentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View testView = new View(sTestRule.getActivity());
-                    mSheetContent.initContent(testView);
+                    mSheetContent.initContent(testView, /* isPrivacyNoticeRequired= */ true);
                     ViewGroup feedView =
                             mSheetContent
                                     .getContentView()
@@ -310,7 +310,7 @@ public class PageInsightsSheetContentTest {
                     View testView = new View(sTestRule.getActivity());
                     setPrivacyNoticePreferences(
                             false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
-                    mSheetContent.initContent(testView);
+                    mSheetContent.initContent(testView, /* isPrivacyNoticeRequired= */ true);
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
@@ -338,10 +338,32 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @MediumTest
+    public void privacyNoticeNotShownWhenNotRequired() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View testView = new View(sTestRule.getActivity());
+                    setPrivacyNoticePreferences(
+                            false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
+                    mSheetContent.initContent(testView, /* isPrivacyNoticeRequired= */ false);
+                    mSheetContent.showFeedPage();
+                    float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
+                    assertEquals(
+                            PageInsightsSheetContent.PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE,
+                            ratio,
+                            ASSERTION_DELTA);
+                    assertEquals(
+                            View.GONE,
+                            getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+                });
+    }
+
+    @Test
+    @MediumTest
     public void privacyNoticeCloseButtonPressed() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
                     mSheetContent.showFeedPage();
                     getContentViewById(R.id.page_insights_privacy_notice_close_button)
                             .performClick();
@@ -364,7 +386,8 @@ public class PageInsightsSheetContentTest {
                 () -> {
                     setPrivacyNoticePreferences(
                             true, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 1);
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
@@ -394,7 +417,7 @@ public class PageInsightsSheetContentTest {
                         sharedPreferencesManager.writeLong(
                                 ChromePreferenceKeys.PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
                                 System.currentTimeMillis() + i * MILLIS_IN_ONE_DAY);
-                        mSheetContent.initContent(testView);
+                        mSheetContent.initContent(testView, /* isPrivacyNoticeRequired= */ true);
                         mSheetContent.showFeedPage();
                         if (i <= 3) {
                             assertEquals(
@@ -419,14 +442,14 @@ public class PageInsightsSheetContentTest {
                             false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
                     View testView = new View(sTestRule.getActivity());
 
-                    mSheetContent.initContent(testView);
+                    mSheetContent.initContent(testView, /* isPrivacyNoticeRequired= */ true);
                     mSheetContent.showFeedPage();
 
                     assertEquals(
                             View.VISIBLE,
                             getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
 
-                    mSheetContent.initContent(testView);
+                    mSheetContent.initContent(testView, /* isPrivacyNoticeRequired= */ true);
                     mSheetContent.showFeedPage();
 
                     assertEquals(
@@ -440,7 +463,8 @@ public class PageInsightsSheetContentTest {
     public void nothingClicked_handlerNotCalled() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
 
                     assertEquals(false, mTapHandlerCalled);
                 });
@@ -451,7 +475,8 @@ public class PageInsightsSheetContentTest {
     public void contentContainerClicked_handlerCalled() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
 
                     getContentViewById(R.id.page_insights_content_container).callOnClick();
 
@@ -464,7 +489,8 @@ public class PageInsightsSheetContentTest {
     public void toolbarViewClicked_handlerCalled() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
 
                     mSheetContent.getToolbarView().callOnClick();
 
@@ -478,7 +504,8 @@ public class PageInsightsSheetContentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTapHandlerResult = true;
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
 
                     assertEquals(
                             true,
@@ -497,7 +524,8 @@ public class PageInsightsSheetContentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTapHandlerResult = false;
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
 
                     assertEquals(
                             false,
@@ -516,7 +544,8 @@ public class PageInsightsSheetContentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTapHandlerResult = true;
-                    mSheetContent.initContent(new View(sTestRule.getActivity()));
+                    mSheetContent.initContent(
+                            new View(sTestRule.getActivity()), /* isPrivacyNoticeRequired= */ true);
 
                     assertEquals(
                             false,
