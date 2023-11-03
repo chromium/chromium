@@ -84,6 +84,18 @@
       "Cast Android (dbg)": {
         "_default": "_default"
       },
+      "Cast Audio Linux": {
+        "_default": "_default"
+      },
+      "Cast Linux": {
+        "_default": "_default"
+      },
+      "Cast Linux ARM64": {
+        "_default": "_default"
+      },
+      "Cast Linux Debug": {
+        "_default": "_default"
+      },
       "Centipede Upload Linux ASan": {
         "_default": "_default"
       },
@@ -240,6 +252,15 @@
       "Deterministic Android (dbg)": {
         "_default": "_default"
       },
+      "Deterministic Fuchsia (dbg)": {
+        "_default": "_default"
+      },
+      "Deterministic Linux": {
+        "_default": "_default"
+      },
+      "Deterministic Linux (dbg)": {
+        "_default": "_default"
+      },
       "GPU Linux Builder": {
         "_default": "_default"
       },
@@ -256,6 +277,9 @@
         "_default": "_default"
       },
       "GPU Win x64 Builder (dbg)": {
+        "_default": "_default"
+      },
+      "Leak Detection Linux": {
         "_default": "_default"
       },
       "Libfuzzer Upload Chrome OS ASan": {
@@ -297,10 +321,61 @@
       "Libfuzzer Upload iOS Catalyst Debug": {
         "_default": "_default"
       },
+      "Linux ASan LSan Builder": {
+        "_default": "_default"
+      },
+      "Linux ASan LSan Tests (1)": {
+        "_default": "_default"
+      },
+      "Linux Builder": {
+        "_default": "_default"
+      },
+      "Linux Builder (Wayland)": {
+        "_default": "_default"
+      },
+      "Linux Builder (dbg)": {
+        "_default": "_default"
+      },
+      "Linux CFI": {
+        "_default": "_default"
+      },
+      "Linux Chromium OS ASan LSan Builder": {
+        "_default": "_default"
+      },
+      "Linux Chromium OS ASan LSan Tests (1)": {
+        "_default": "_default"
+      },
+      "Linux ChromiumOS MSan Builder": {
+        "_default": "_default"
+      },
+      "Linux ChromiumOS MSan Tests": {
+        "_default": "_default"
+      },
       "Linux Debug (NVIDIA)": {
         "_default": "_default"
       },
+      "Linux MSan Builder": {
+        "_default": "_default"
+      },
+      "Linux MSan Tests": {
+        "_default": "_default"
+      },
       "Linux Release (NVIDIA)": {
+        "_default": "_default"
+      },
+      "Linux TSan Builder": {
+        "_default": "_default"
+      },
+      "Linux TSan Tests": {
+        "_default": "_default"
+      },
+      "Linux Tests": {
+        "_default": "_default"
+      },
+      "Linux Tests (Wayland)": {
+        "_default": "_default"
+      },
+      "Linux Tests (dbg)(1)": {
         "_default": "_default"
       },
       "MSAN Release (chained origins)": {
@@ -313,6 +388,12 @@
         "_default": "_default"
       },
       "Mac ASAN Release Media": {
+        "_default": "_default"
+      },
+      "Mac ASan 64 Builder": {
+        "_default": "_default"
+      },
+      "Mac ASan 64 Tests (1)": {
         "_default": "_default"
       },
       "Mac Builder": {
@@ -346,6 +427,9 @@
         "_default": "_default"
       },
       "Mac13 Tests (dbg)": {
+        "_default": "_default"
+      },
+      "Network Service Linux": {
         "_default": "_default"
       },
       "Oreo Phone Tester": {
@@ -723,16 +807,52 @@
       "UBSan vptr Release": {
         "_default": "_default"
       },
+      "WebKit Linux ASAN": {
+        "_default": "_default"
+      },
+      "WebKit Linux Leak": {
+        "_default": "_default"
+      },
+      "WebKit Linux MSAN": {
+        "_default": "_default"
+      },
+      "WebKit Win10": {
+        "_default": "_default"
+      },
       "Win ASan Release": {
         "_default": "_default"
       },
       "Win ASan Release Media": {
         "_default": "_default"
       },
+      "Win Builder": {
+        "_default": "_default"
+      },
+      "Win Builder (dbg)": {
+        "_default": "_default"
+      },
+      "Win x64 Builder": {
+        "_default": "_default"
+      },
+      "Win x64 Builder (dbg)": {
+        "_default": "_default"
+      },
+      "Win10 Tests x64": {
+        "_default": "_default"
+      },
+      "Win10 Tests x64 (dbg)": {
+        "_default": "_default"
+      },
       "Win10 x64 Debug (NVIDIA)": {
         "_default": "_default"
       },
       "Win10 x64 Release (NVIDIA)": {
+        "_default": "_default"
+      },
+      "Win11 Tests x64": {
+        "_default": "_default"
+      },
+      "Windows deterministic": {
         "_default": "_default"
       },
       "android-10-arm64-rel": {
@@ -750,6 +870,12 @@
       "android-13-x64-rel": {
         "_default": "_default"
       },
+      "android-angle-chromium-arm64-builder": {
+        "_default": "_default"
+      },
+      "android-angle-chromium-arm64-nexus5x": {
+        "_default": "_default"
+      },
       "android-archive-rel": {
         "_default": "_default"
       },
@@ -757,6 +883,9 @@
         "_default": "_default"
       },
       "android-arm64-proguard-rel": {
+        "_default": "_default"
+      },
+      "android-asan": {
         "_default": "_default"
       },
       "android-bfcache-rel": {
@@ -1046,7 +1175,34 @@
           "p50_mins": 20
         }
       },
+      "fuchsia-angle-builder": {
+        "_default": "_default"
+      },
+      "fuchsia-arm64-cast-receiver-rel": {
+        "_default": "_default"
+      },
+      "fuchsia-arm64-rel": {
+        "_default": "_default"
+      },
       "fuchsia-official": {
+        "_default": "_default"
+      },
+      "fuchsia-x64-cast-receiver-rel": {
+        "_default": "_default"
+      },
+      "fuchsia-x64-dbg": {
+        "_default": "_default"
+      },
+      "fuchsia-x64-rel": {
+        "_default": "_default"
+      },
+      "ios-angle-builder": {
+        "_default": "_default"
+      },
+      "ios-angle-intel": {
+        "_default": "_default"
+      },
+      "ios-asan": {
         "_default": "_default"
       },
       "ios-catalyst": {
@@ -1157,6 +1313,15 @@
       "lacros64-archive-rel": {
         "_default": "_default"
       },
+      "linux-angle-chromium-builder": {
+        "_default": "_default"
+      },
+      "linux-angle-chromium-intel": {
+        "_default": "_default"
+      },
+      "linux-angle-chromium-nvidia": {
+        "_default": "_default"
+      },
       "linux-archive-rel": {
         "_default": "_default"
       },
@@ -1176,6 +1341,9 @@
         "pending_time": {
           "p50_mins": 20
         }
+      },
+      "linux-bfcache-rel": {
+        "_default": "_default"
       },
       "linux-cfm-rel": {
         "build_time": {
@@ -1222,7 +1390,16 @@
           "p50_mins": 20
         }
       },
+      "linux-extended-tracing-rel": {
+        "_default": "_default"
+      },
+      "linux-gcc-rel": {
+        "_default": "_default"
+      },
       "linux-lacros-archive-rel": {
+        "_default": "_default"
+      },
+      "linux-lacros-asan-lsan-rel": {
         "_default": "_default"
       },
       "linux-lacros-builder-rel": {
@@ -1284,6 +1461,27 @@
       "linux-rel-cft": {
         "_default": "_default"
       },
+      "linux-swangle-chromium-x64": {
+        "_default": "_default"
+      },
+      "linux-swangle-chromium-x64-exp": {
+        "_default": "_default"
+      },
+      "linux-swangle-tot-swiftshader-x64": {
+        "_default": "_default"
+      },
+      "linux-swangle-x64": {
+        "_default": "_default"
+      },
+      "linux-swangle-x64-exp": {
+        "_default": "_default"
+      },
+      "linux-ubsan-vptr": {
+        "_default": "_default"
+      },
+      "linux-v4l2-codec-rel": {
+        "_default": "_default"
+      },
       "linux-win_cross-rel": {
         "build_time": {},
         "infra_fail_rate": {
@@ -1292,6 +1490,15 @@
         "pending_time": {
           "p50_mins": 20
         }
+      },
+      "mac-angle-chromium-amd": {
+        "_default": "_default"
+      },
+      "mac-angle-chromium-builder": {
+        "_default": "_default"
+      },
+      "mac-angle-chromium-intel": {
+        "_default": "_default"
       },
       "mac-archive-rel": {
         "_default": "_default"
@@ -1317,6 +1524,9 @@
       "mac-rel-cft": {
         "_default": "_default"
       },
+      "mac-swangle-chromium-x64": {
+        "_default": "_default"
+      },
       "mac11-arm64-rel-tests": {
         "_default": "_default"
       },
@@ -1326,13 +1536,43 @@
       "mac13-arm64-rel-tests": {
         "_default": "_default"
       },
+      "win-angle-chromium-x64-builder": {
+        "_default": "_default"
+      },
+      "win-angle-chromium-x86-builder": {
+        "_default": "_default"
+      },
       "win-archive-rel": {
+        "_default": "_default"
+      },
+      "win-asan": {
         "_default": "_default"
       },
       "win-official": {
         "_default": "_default"
       },
       "win-rel-cft": {
+        "_default": "_default"
+      },
+      "win-swangle-chromium-x86": {
+        "_default": "_default"
+      },
+      "win-swangle-tot-swiftshader-x64": {
+        "_default": "_default"
+      },
+      "win-swangle-tot-swiftshader-x86": {
+        "_default": "_default"
+      },
+      "win-swangle-x64": {
+        "_default": "_default"
+      },
+      "win-swangle-x86": {
+        "_default": "_default"
+      },
+      "win10-angle-chromium-x64-intel": {
+        "_default": "_default"
+      },
+      "win10-angle-chromium-x64-nvidia": {
         "_default": "_default"
       },
       "win32-archive-rel": {
