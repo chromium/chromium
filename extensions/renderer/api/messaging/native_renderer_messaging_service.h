@@ -183,8 +183,15 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   void CloseMessagePort(ScriptContext* script_context,
                         const PortId& port_id,
                         bool close_channel);
+  // Returns the associated MessagePortHost. This method asserts that it
+  // exists.
   mojom::MessagePortHost* GetMessagePortHost(ScriptContext* script_context,
                                              const PortId& port_id);
+  // Similar to `GetMessagePortHost` but will return null if the port
+  // no longer exists.
+  mojom::MessagePortHost* GetMessagePortHostIfExists(
+      ScriptContext* script_context,
+      const PortId& port_id);
 #endif
 
  private:

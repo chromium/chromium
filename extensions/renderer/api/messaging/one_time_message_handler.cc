@@ -561,13 +561,16 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   bool close_channel = true;
   ipc_sender->SendCloseMessagePort(routing_id, port_id, close_channel);
 #else
+  // If the MessagePortHost is still alive return the response. But the listener
+  // might be replying after the channel has been closed.
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
-  mojom::MessagePortHost* message_port_host =
-      bindings_system_->messaging_service()->GetMessagePortHost(script_context,
-                                                                port_id);
-  message_port_host->PostMessage(*message);
-  bindings_system_->messaging_service()->CloseMessagePort(
-      script_context, port_id, /*close_channel=*/true);
+  if (auto* message_port_host =
+          bindings_system_->messaging_service()->GetMessagePortHostIfExists(
+              script_context, port_id)) {
+    message_port_host->PostMessage(*message);
+    bindings_system_->messaging_service()->CloseMessagePort(
+        script_context, port_id, /*close_channel=*/true);
+  }
 #endif
 }
 
