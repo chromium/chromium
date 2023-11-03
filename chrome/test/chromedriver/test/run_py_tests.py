@@ -6600,6 +6600,22 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
     })
     self.assertRegex(response['sessionId'], '\\w+')
 
+  def testSessionNewWithUnknownBrowserName(self):
+    """Tests that unknown browserName in the capabilities is treated as error
+    """
+    conn = self.createWebSocketConnection()
+    with self.assertRaises(chromedriver.SessionNotCreated):
+      conn.SendCommand({
+        'method': 'session.new',
+        'params': {
+            'capabilities': {
+                'alwaysMatch': {
+                    'browserName': 'quick-brown-dog',
+                }
+            }
+        }
+      })
+
   def testStatusInActiveSession(self):
     conn = self.createWebSocketConnection()
     conn.SendCommand({

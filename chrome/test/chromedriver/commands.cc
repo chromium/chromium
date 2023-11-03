@@ -122,7 +122,12 @@ void ExecuteBidiSessionNew(SessionThreadMap* session_thread_map,
                  resource, kW3CDefault);
     return;
   }
-  base::Value::Dict new_params = params.Clone();
+  base::Value::Dict new_params;
+  const base::Value::Dict* capabilities =
+      params.FindDictByDottedPath("params.capabilities");
+  if (capabilities) {
+    new_params.Set("capabilities", capabilities->Clone());
+  }
   new_params.SetByDottedPath("capabilities.alwaysMatch.webSocketUrl", true);
   ExecuteCreateSession(session_thread_map, init_session_cmd, new_params,
                        resource, callback);
