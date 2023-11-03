@@ -113,7 +113,11 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         }
 
         boolean shouldDrawToEdge = alwaysDrawToEdgeForTabKind(tab);
-        if (!shouldDrawToEdge && tab != null) shouldDrawToEdge = getWasViewportFitCover(tab);
+        if (!shouldDrawToEdge && tab != null) {
+            shouldDrawToEdge = getWasViewportFitCover(tab);
+            // TODO(https://crbug.com/1499319) Clean up this info-level logging, here and below.
+            Log.i(TAG, "getWasViewportFitCover: %s", shouldDrawToEdge);
+        }
         drawToEdge(ROOT_UI_VIEW_ID, shouldDrawToEdge, tab == null ? null : tab.getWebContents());
     }
 
@@ -130,6 +134,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 new WebContentsObserver(tab.getWebContents()) {
                     @Override
                     public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
+                        Log.i(TAG, "viewportFitChanged: %s", value);
                         boolean shouldDrawToEdge = alwaysDrawToEdgeForTabKind(tab);
                         if (value == ViewportFit.COVER
                                 || value == ViewportFit.COVER_FORCED_BY_USER_AGENT) {
@@ -152,10 +157,13 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     @RequiresApi(VERSION_CODES.R)
     @SuppressWarnings("WrongConstant") // For WindowInsets.Type on U+
     private void drawToEdge(int viewId, boolean toEdge, @Nullable WebContents webContents) {
-        if (toEdge == mIsActivityToEdge) return;
+        if (toEdge == mIsActivityToEdge) {
+            Log.i(TAG, "drawToEdge unchanged: %s", mIsActivityToEdge);
+            return;
+        }
 
         mIsActivityToEdge = toEdge;
-        Log.v(TAG, "Switching " + (toEdge ? "ToEdge" : "ToNormal"));
+        Log.i(TAG, "Switching " + (toEdge ? "ToEdge" : "ToNormal"));
         View rootView = mActivity.findViewById(viewId);
         assert rootView != null : "Root view for Edge To Edge not found!";
 
@@ -207,6 +215,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 mSystemInsets.top,
                 mSystemInsets.right,
                 bottomInset);
+        Log.i(TAG, "Set bottom padding to %s", bottomInset);
 
         // We only make the Nav Bar transparent because it's the only thing we want to draw
         // underneath.
@@ -231,7 +240,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // SafeAreaInsetsTracker.
         assert mSystemInsets != null : "Error, trying to notify Blink without system insets set";
         Rect insetsRect = new Rect(0, 0, 0, toEdge ? scale(mSystemInsets.bottom) : 0);
-        Log.v(TAG, "Pushing back insets to Blink %s", insetsRect);
+        Log.i(TAG, "Pushing back insets to Blink %s", insetsRect);
         webContents.setDisplayCutoutSafeArea(insetsRect);
     }
 
@@ -277,6 +286,14 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         assert tab != null;
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);
+        // TODO(https://crbug.com/1499319) remove this debug logging.
+        Log.i(
+                TAG,
+                "Tracker for tab '%s' %s",
+                tab.getTitle(),
+                (safeAreaInsetsTracker == null
+                        ? "is null"
+                        : "has cover: " + safeAreaInsetsTracker.isViewportFitCover()));
         return safeAreaInsetsTracker == null ? false : safeAreaInsetsTracker.isViewportFitCover();
     }
 
