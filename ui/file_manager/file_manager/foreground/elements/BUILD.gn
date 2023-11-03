@@ -13,7 +13,6 @@ visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
-    "xf_button.js",
     "xf_display_panel.js",
     "xf_panel_item.js",
   ]

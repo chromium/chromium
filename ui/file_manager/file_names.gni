@@ -182,6 +182,7 @@ static_js_files = [
 
 ts_files = [
   "file_manager/foreground/elements/files_spinner.ts",
+  "file_manager/foreground/elements/xf_button.ts",
   "file_manager/foreground/elements/xf_circular_progress.ts",
 
   # Common.
@@ -346,6 +347,7 @@ ts_polymer = [
 # HTML template files that are used to generate the ".html.ts"
 ts_templates = [
   "file_manager/foreground/elements/files_spinner.html",
+  "file_manager/foreground/elements/xf_button.html",
   "file_manager/foreground/elements/xf_circular_progress.html",
   "file_manager/widgets/xf_conflict_dialog.html",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
@@ -497,7 +499,6 @@ generated_js_files = [
   "file_manager/common/js/file_types_data.js",
 
   # Elements:
-  "file_manager/foreground/elements/xf_button.js",
   "file_manager/foreground/elements/xf_display_panel.js",
   "file_manager/foreground/elements/xf_panel_item.js",
 ]
