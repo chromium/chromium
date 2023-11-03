@@ -342,15 +342,7 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_audible) {
   auto frame_it = frames_.find(render_frame_host);
-  // Ideally this would be a DCHECK, but RenderFrameHost sends out one last
-  // notification in its destructor; at this point we've already torn down the
-  // FrameNode in response to the RenderFrameDeleted which comes *before* the
-  // destructor is run.
-  if (frame_it == frames_.end()) {
-    // We should only ever see this for a frame transitioning to *not* audible.
-    DCHECK(!is_audible);
-    return;
-  }
+  CHECK(frame_it != frames_.end());
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&FrameNodeImpl::SetIsAudible,

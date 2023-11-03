@@ -1758,6 +1758,18 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
 
   g_token_frame_map.Get().erase(frame_token_);
 
+  // Ensure that the render process host has been notified that all audio
+  // streams from this frame have terminated. This is required to ensure the
+  // process host has the correct media stream count, which affects its
+  // background priority.
+  if (is_audible_) {
+    OnAudibleStateChanged(false);
+  }
+
+  while (video_stream_count_) {
+    OnVideoStreamRemoved();
+  }
+
   auto* process = GetProcess();
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "si_exists", !!site_instance_);
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "sig_exists", !!site_instance_->group());
@@ -1771,18 +1783,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   render_frame_state_ = RenderFrameState::kDeleted;
   if (was_created)
     delegate_->RenderFrameDeleted(this);
-
-  // Ensure that the render process host has been notified that all audio
-  // streams from this frame have terminated. This is required to ensure the
-  // process host has the correct media stream count, which affects its
-  // background priority.
-  if (is_audible_) {
-    OnAudibleStateChanged(false);
-  }
-
-  while (video_stream_count_) {
-    OnVideoStreamRemoved();
-  }
 
   // Resetting `document_associated_data_` destroys live `DocumentService` and
   // `DocumentUserData` instances. It is important for them to be
