@@ -4,12 +4,14 @@
 
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
+#include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -21,12 +23,64 @@
 
 namespace autofill {
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+namespace {
+
+constexpr char kLegalMessageLines[] =
+    "{"
+    "  \"line\" : [ {"
+    "     \"template\": \"The legal documents are: {0} and {1}.\","
+    "     \"template_parameter\" : [ {"
+    "        \"display_text\" : \"Terms of Service\","
+    "        \"url\": \"http://www.example.com/tos\""
+    "     }, {"
+    "        \"display_text\" : \"Privacy Policy\","
+    "        \"url\": \"http://www.example.com/pp\""
+    "     } ]"
+    "  } ]"
+    "}";
+
+constexpr char kInvalidLegalMessageLines[] =
+    "{"
+    "  \"line\" : [ {"
+    "     \"template\": \"Panda {0}.\","
+    "     \"template_parameter\": [ {"
+    "        \"display_text\": \"bear\""
+    "     } ]"
+    "  } ]"
+    "}";
+
+}  // namespace
+
+class MockTestPaymentsClient : public payments::TestPaymentsClient {
+ public:
+  MockTestPaymentsClient()
+      : payments::TestPaymentsClient(
+            /*url_loader_factory=*/nullptr,
+            /*identity_manager=*/nullptr,
+            /*personal_data_manager=*/nullptr) {}
+  MockTestPaymentsClient(const MockTestPaymentsClient&) = delete;
+  MockTestPaymentsClient& operator=(const MockTestPaymentsClient&) = delete;
+
+  MOCK_METHOD(void,
+              GetIbanUploadDetails,
+              (const std::string&,
+               int64_t,
+               int,
+               (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                        const std::u16string&,
+                                        std::unique_ptr<base::Value::Dict>)>)),
+              (override));
+};
+
 class IbanSaveManagerTest : public testing::Test {
  public:
   IbanSaveManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_personal_data_manager(
         std::make_unique<TestPersonalDataManager>());
+    autofill_client_.set_test_payments_client(
+        std::make_unique<MockTestPaymentsClient>());
     autofill_client_.set_sync_service(&sync_service_);
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
@@ -43,15 +97,47 @@ class IbanSaveManagerTest : public testing::Test {
                          /*strike_database=*/nullptr,
                          /*image_fetcher=*/nullptr);
     iban_save_manager_ =
-        std::make_unique<IbanSaveManager>(&autofill_client_, &personal_data());
+        std::make_unique<IbanSaveManager>(&personal_data(), &autofill_client_);
   }
 
   IbanSaveManager& GetIbanSaveManager() { return *iban_save_manager_; }
+
+  void SetUpGetIbanUploadDetailsResponse(
+      bool is_successful,
+      bool includes_invalid_legal_message = false) {
+    ON_CALL(*payments_client(), GetIbanUploadDetails)
+        .WillByDefault(
+            [is_successful, includes_invalid_legal_message](
+                const std::string& app_locale, int64_t billing_customer_number,
+                int billable_service_number,
+                base::OnceCallback<void(
+                    AutofillClient::PaymentsRpcResult, const std::u16string&,
+                    std::unique_ptr<base::Value::Dict>)> callback) {
+              std::move(callback).Run(
+                  is_successful
+                      ? AutofillClient::PaymentsRpcResult::kSuccess
+                      : AutofillClient::PaymentsRpcResult::kPermanentFailure,
+                  u"this is a context token",
+                  includes_invalid_legal_message
+                      ? std::make_unique<base::Value::Dict>(
+                            base::JSONReader::ReadDict(
+                                kInvalidLegalMessageLines)
+                                .value())
+                      : std::make_unique<base::Value::Dict>(
+                            base::JSONReader::ReadDict(kLegalMessageLines)
+                                .value()));
+            });
+  }
 
  protected:
   TestPersonalDataManager& personal_data() {
     return static_cast<TestPersonalDataManager&>(
         *autofill_client_.GetPersonalDataManager());
+  }
+
+  MockTestPaymentsClient* payments_client() {
+    return static_cast<MockTestPaymentsClient*>(
+        autofill_client_.GetPaymentsClient());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -64,7 +150,6 @@ class IbanSaveManagerTest : public testing::Test {
       features::kAutofillEnableServerIban};
 };
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(IbanSaveManagerTest,
        AttemptToOfferIbanLocalSave_NewIban_ShouldOfferSave) {
   Iban iban;
@@ -347,6 +432,83 @@ TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_SyncServiceLocalSyncOnly) {
 
 TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_Enabled) {
   EXPECT_TRUE(IbanSaveManager::IsIbanUploadEnabled(&sync_service_));
+}
+
+// Test that upload save should be offered to a new IBAN when the preflight
+// call succeeded and the `legal_message` is parsed successfully.
+TEST_F(IbanSaveManagerTest, OfferUploadSave_NewIban_Success) {
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+
+  EXPECT_TRUE(GetIbanSaveManager().OfferUploadSaveForTesting(iban));
+  EXPECT_TRUE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_FALSE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
+}
+
+// Test that upload save should not be offered when the preflight call failed.
+// In this case, local save should be offered because the extracted IBAN is a
+// new IBAN.
+TEST_F(IbanSaveManagerTest,
+       OfferUploadSave_NewIban_Failure_ThenOfferLocalSave) {
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/false);
+
+  EXPECT_TRUE(GetIbanSaveManager().OfferUploadSaveForTesting(iban));
+  EXPECT_FALSE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_TRUE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
+}
+
+// Test that upload save should not be offered when the preflight call succeeded
+// but the `legal_message` is not parsed successfully. In this case, local save
+// should be offered because the extracted IBAN is a new IBAN.
+TEST_F(IbanSaveManagerTest,
+       OfferUploadSave_NewIban_InvalidLegalMessage_ThenOfferLocalSave) {
+  Iban iban;
+  iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true,
+                                    /*includes_invalid_legal_message=*/true);
+
+  EXPECT_TRUE(GetIbanSaveManager().OfferUploadSaveForTesting(iban));
+  EXPECT_FALSE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_TRUE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
+}
+
+// Test that upload save should be offered to a local IBAN when the preflight
+// call succeeded and the `legal_message` is parsed successfully.
+TEST_F(IbanSaveManagerTest, OfferUploadSave_LocalIban_Success) {
+  Iban local_iban;
+  local_iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  personal_data().AddIban(local_iban);
+  Iban another_iban;
+  another_iban.set_value(local_iban.value());
+
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
+
+  EXPECT_TRUE(GetIbanSaveManager().OfferUploadSaveForTesting(another_iban));
+  EXPECT_TRUE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_FALSE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
+}
+
+// Test that upload save should not be offered when the preflight call failed
+// and the `legal_message` is parsed successfully. Then Local save should not be
+// offered because the extracted IBAN already exists.
+TEST_F(IbanSaveManagerTest,
+       OfferUploadSave_LocalIban_Failure_LocalSaveNotOffered) {
+  Iban local_iban;
+  local_iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  personal_data().AddIban(local_iban);
+  Iban another_iban;
+  another_iban.set_value(local_iban.value());
+
+  SetUpGetIbanUploadDetailsResponse(/*is_successful=*/false);
+
+  EXPECT_TRUE(GetIbanSaveManager().OfferUploadSaveForTesting(another_iban));
+  EXPECT_FALSE(GetIbanSaveManager().HasContextTokenForTesting());
+  EXPECT_FALSE(autofill_client_.ConfirmSaveIbanLocallyWasCalled());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

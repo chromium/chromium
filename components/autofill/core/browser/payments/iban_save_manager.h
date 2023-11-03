@@ -30,8 +30,8 @@ class IbanSaveManager {
     virtual void OnDeclineSaveIbanComplete() {}
   };
 
-  IbanSaveManager(AutofillClient* client,
-                  PersonalDataManager* personal_data_manager);
+  IbanSaveManager(PersonalDataManager* personal_data_manager,
+                  AutofillClient* client);
   IbanSaveManager(const IbanSaveManager&) = delete;
   IbanSaveManager& operator=(const IbanSaveManager&) = delete;
   virtual ~IbanSaveManager();
@@ -48,8 +48,11 @@ class IbanSaveManager {
   // Note that on desktop if this returns false, the show save prompt will not
   // be popped up but the omnibox icon still will be shown so the user can
   // trigger the save prompt manually.
-  [[nodiscard]] bool AttemptToOfferIbanLocalSave(
-      const Iban& iban_import_candidate);
+  // TODO(b/296651801): Refactor to make only an `AttemptToOfferIbanSave`
+  // method public, so that FormDataImporter remains unaware of the internal
+  // logic managed by this class. Once possible, add `[[nodiscard]]` to the
+  // method exposed to FormDataImporter.
+  bool AttemptToOfferIbanLocalSave(const Iban& iban_import_candidate);
 
   void OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIbanOfferUserDecision user_decision,
@@ -71,6 +74,12 @@ class IbanSaveManager {
     return ShouldOfferUploadSave(iban_import_candidate);
   }
 
+  bool OfferUploadSaveForTesting(const Iban& iban) {
+    return OfferUploadSave(iban);
+  }
+
+  bool HasContextTokenForTesting() const { return !context_token_.empty(); }
+
  private:
   // Returns true if local save should be offered for the
   // `iban_import_candidate`.
@@ -79,6 +88,12 @@ class IbanSaveManager {
   // Returns true if upload save should be offered for the
   // `iban_import_candidate`.
   bool ShouldOfferUploadSave(const Iban& iban_import_candidate) const;
+
+  // Asynchronously attempts to offer an upload save prompt to the user. Will
+  // fall back to a local save prompt if unable to offer server save.
+  // Returns true if there will likely be a save prompt shown, and false if we
+  // will definitely not be showing one.
+  bool OfferUploadSave(const Iban& import_candidate);
 
   // Returns the IbanSaveStrikeDatabase for `client_`;
   IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabase();
@@ -90,20 +105,34 @@ class IbanSaveManager {
       AutofillClient::SaveIbanOfferUserDecision user_decision,
       std::optional<std::u16string> nickname = absl::nullopt);
 
+  // Called when a GetIbanUploadDetails call is completed. The
+  // `legal_message` will be used for displaying the Terms of Service and
+  // Privacy Notice within the upload-save IBAN bubble view. The `context_token`
+  // will serve as the token to initiate the actual Upload IBAN request.
+  // The upload flow will be executed only when there is a successful result and
+  // the `legal_message` is parsed successfully. In all other cases, local save
+  // will be offered if applicable.
+  void OnDidGetUploadDetails(AutofillClient::PaymentsRpcResult result,
+                             const std::u16string& context_token,
+                             std::unique_ptr<base::Value::Dict> legal_message);
+
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty. The record type of this IBAN candidate is
   // initially set to `kUnknown`.
   Iban iban_save_candidate_;
 
-  // The associated autofill client. Weak reference.
-  const raw_ptr<AutofillClient> client_;
-
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   const raw_ptr<PersonalDataManager> personal_data_manager_;
 
+  // The associated autofill client.
+  const raw_ptr<AutofillClient> client_;
+
   // StrikeDatabase used to check whether to offer to save the IBAN or not.
   std::unique_ptr<IbanSaveStrikeDatabase> iban_save_strike_database_;
+
+  // The context token returned from GetIbanUploadDetails.
+  std::u16string context_token_;
 
   // May be null.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;

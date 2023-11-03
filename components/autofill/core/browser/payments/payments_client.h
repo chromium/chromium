@@ -542,7 +542,7 @@ class PaymentsClient {
   // does not guarantee that the legal message is valid, callers should parse
   // the legal message and use it to decide if IBAN upload save should be
   // offered.
-  void GetIbanUploadDetails(
+  virtual void GetIbanUploadDetails(
       const std::string& app_locale,
       int64_t billing_customer_number,
       int billable_service_number,

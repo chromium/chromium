@@ -10,15 +10,18 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {
 
-IbanSaveManager::IbanSaveManager(AutofillClient* client,
-                                 PersonalDataManager* personal_data_manager)
-    : client_(client), personal_data_manager_(personal_data_manager) {}
+IbanSaveManager::IbanSaveManager(PersonalDataManager* personal_data_manager,
+                                 AutofillClient* client)
+    : personal_data_manager_(personal_data_manager), client_(client) {}
 
 IbanSaveManager::~IbanSaveManager() = default;
 
@@ -130,6 +133,21 @@ bool IbanSaveManager::ShouldOfferUploadSave(
       });
 }
 
+bool IbanSaveManager::OfferUploadSave(const Iban& import_candidate) {
+  iban_save_candidate_ = import_candidate;
+  // If the max strikes limit has been reached, do not show the save prompt.
+  bool show_save_prompt =
+      !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(GetPartialIbanHashString(
+          base::UTF16ToUTF8(iban_save_candidate_.value())));
+  client_->GetPaymentsClient()->GetIbanUploadDetails(
+      personal_data_manager_->app_locale(),
+      payments::GetBillingCustomerId(personal_data_manager_),
+      payments::kUploadPaymentMethodBillableServiceNumber,
+      base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
+                     weak_ptr_factory_.GetWeakPtr()));
+  return show_save_prompt;
+}
+
 IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
   if (iban_save_strike_database_.get() == nullptr) {
     iban_save_strike_database_ = std::make_unique<IbanSaveStrikeDatabase>(
@@ -172,6 +190,30 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
       }
       break;
   }
+}
+
+void IbanSaveManager::OnDidGetUploadDetails(
+    AutofillClient::PaymentsRpcResult result,
+    const std::u16string& context_token,
+    std::unique_ptr<base::Value::Dict> legal_message) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+    // Upload should only be offered when legal messages are parsed
+    // successfully.
+    std::unique_ptr<LegalMessageLines> parsed_legal_message_lines =
+        std::make_unique<LegalMessageLines>();
+    if (LegalMessageLine::Parse(*legal_message,
+                                parsed_legal_message_lines.get(),
+                                /*escape_apostrophes=*/true)) {
+      context_token_ = context_token;
+      // TODO(b/296651801): Trigger upload bubble via ChromeAutofillClient and
+      // offer upload by using `context_token_` and
+      // `parsed_legal_message_lines`.
+      return;
+    }
+  }
+
+  // If the upload details request failed, attempt to offer local save.
+  AttemptToOfferIbanLocalSave(iban_save_candidate_);
 }
 
 }  // namespace autofill
