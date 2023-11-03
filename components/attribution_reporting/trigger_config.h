@@ -30,6 +30,8 @@ namespace attribution_reporting {
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpec {
  public:
+  TriggerSpec();
+
   explicit TriggerSpec(EventReportWindows);
 
   ~TriggerSpec();
@@ -66,6 +68,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // Creates specs with the default trigger data cardinality for the given
   // source type.
   static TriggerSpecs Default(mojom::SourceType, EventReportWindows);
+
+  static absl::optional<TriggerSpecs> Create(TriggerDataIndices,
+                                             std::vector<TriggerSpec>);
 
   static TriggerSpecs CreateForTesting(TriggerDataIndices,
                                        std::vector<TriggerSpec>);
@@ -104,7 +109,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
     using pointer = void;
 
     reference operator*() const {
-      return value_type(it_->first, specs_->specs_[it_->second]);
+      return value_type(it_->first, specs_->specs()[it_->second]);
     }
 
     Iterator& operator++() {
@@ -122,11 +127,11 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
     // trigger_data.
     uint8_t index() const {
       return base::checked_cast<uint8_t>(
-          std::distance(specs_->trigger_data_indices_.cbegin(), it_));
+          std::distance(specs_->trigger_data_indices().cbegin(), it_));
     }
 
     explicit operator bool() const {
-      return it_ != specs_->trigger_data_indices_.end();
+      return it_ != specs_->trigger_data_indices().end();
     }
 
     friend bool operator==(const Iterator& a, const Iterator& b) {
@@ -156,9 +161,13 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
     return Iterator(*this, trigger_data_indices_.cend());
   }
 
- private:
-  friend Iterator;
+  const TriggerDataIndices& trigger_data_indices() const {
+    return trigger_data_indices_;
+  }
 
+  const std::vector<TriggerSpec>& specs() const { return specs_; }
+
+ private:
   TriggerSpecs(TriggerDataIndices, std::vector<TriggerSpec>);
 
   // These two fields effectively act as a compressed `base::flat_map<uint32_t,

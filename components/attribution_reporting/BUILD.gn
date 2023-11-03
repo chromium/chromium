@@ -312,6 +312,18 @@ mojom("registration_mojom") {
           forward_declaration =
               "namespace attribution_reporting { class TriggerConfig; }"
         },
+        {
+          mojom = "attribution_reporting.mojom.TriggerSpec"
+          cpp = "::attribution_reporting::TriggerSpec"
+          forward_declaration =
+              "namespace attribution_reporting { class TriggerSpec; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.TriggerSpecs"
+          cpp = "::attribution_reporting::TriggerSpecs"
+          forward_declaration =
+              "namespace attribution_reporting { class TriggerSpecs; }"
+        },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
       traits_public_deps = [ ":registration_mojom_traits" ]

@@ -207,6 +207,8 @@ void TriggerConfig::SerializeForTesting(base::Value::Dict& dict) const {
   SerializeTriggerConfig(*this, dict);
 }
 
+TriggerSpec::TriggerSpec() = default;
+
 TriggerSpec::TriggerSpec(EventReportWindows event_report_windows)
     : event_report_windows_(std::move(event_report_windows)) {}
 
@@ -301,6 +303,16 @@ TriggerSpecs TriggerSpecs::Default(SourceType source_type,
   return TriggerSpecs(
       TriggerDataIndices(base::sorted_unique, std::move(trigger_data_indices)),
       std::move(specs));
+}
+
+// static
+absl::optional<TriggerSpecs> TriggerSpecs::Create(
+    TriggerDataIndices trigger_data_indices,
+    std::vector<TriggerSpec> specs) {
+  if (!AreSpecsValid(trigger_data_indices, specs)) {
+    return absl::nullopt;
+  }
+  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs));
 }
 
 // static

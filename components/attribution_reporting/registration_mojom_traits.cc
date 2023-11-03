@@ -168,6 +168,45 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::TriggerSpecDataView,
+                  attribution_reporting::TriggerSpec>::
+    Read(attribution_reporting::mojom::TriggerSpecDataView data,
+         attribution_reporting::TriggerSpec* out) {
+  attribution_reporting::EventReportWindows event_report_windows;
+  if (!data.ReadEventReportWindows(&event_report_windows)) {
+    return false;
+  }
+
+  *out = attribution_reporting::TriggerSpec(std::move(event_report_windows));
+  return true;
+}
+
+// static
+bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
+                  attribution_reporting::TriggerSpecs>::
+    Read(attribution_reporting::mojom::TriggerSpecsDataView data,
+         attribution_reporting::TriggerSpecs* out) {
+  std::vector<attribution_reporting::TriggerSpec> specs;
+  if (!data.ReadSpecs(&specs)) {
+    return false;
+  }
+
+  attribution_reporting::TriggerSpecs::TriggerDataIndices trigger_data_indices;
+  if (!data.ReadTriggerDataIndices(&trigger_data_indices)) {
+    return false;
+  }
+
+  auto result = attribution_reporting::TriggerSpecs::Create(
+      std::move(trigger_data_indices), std::move(specs));
+  if (!result.has_value()) {
+    return false;
+  }
+
+  *out = std::move(*result);
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
                   attribution_reporting::TriggerConfig>::
     Read(attribution_reporting::mojom::TriggerConfigDataView data,

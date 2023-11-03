@@ -131,6 +131,37 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::TriggerSpecDataView,
+                 attribution_reporting::TriggerSpec> {
+  static const attribution_reporting::EventReportWindows& event_report_windows(
+      const attribution_reporting::TriggerSpec& spec) {
+    return spec.event_report_windows();
+  }
+
+  static bool Read(attribution_reporting::mojom::TriggerSpecDataView data,
+                   attribution_reporting::TriggerSpec* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
+                 attribution_reporting::TriggerSpecs> {
+  static const std::vector<attribution_reporting::TriggerSpec>& specs(
+      const attribution_reporting::TriggerSpecs& specs) {
+    return specs.specs();
+  }
+
+  static const attribution_reporting::TriggerSpecs::TriggerDataIndices&
+  trigger_data_indices(const attribution_reporting::TriggerSpecs& specs) {
+    return specs.trigger_data_indices();
+  }
+
+  static bool Read(attribution_reporting::mojom::TriggerSpecsDataView data,
+                   attribution_reporting::TriggerSpecs* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
                  attribution_reporting::TriggerConfig> {
   static attribution_reporting::mojom::TriggerDataMatching
