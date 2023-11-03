@@ -39,8 +39,6 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -499,11 +497,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabInitialFocus) {
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   // Open the new tab, reload.
   {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::NewTab(browser());
-    observer.Wait();
+    auto& contents = chrome::NewTab(browser());
+    content::WaitForLoadStop(&contents);
   }
   content::RunAllPendingInMessageLoop();
 
