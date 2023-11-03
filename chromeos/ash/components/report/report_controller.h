@@ -12,9 +12,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace base {
 class Clock;
@@ -56,7 +58,9 @@ class ObservationImpl;
 struct ChromeDeviceMetadataParameters;
 }  // namespace device_metrics
 
-// Real implementation for creating the PSM client.
+// TODO(hirthanan): Delete in following CL, as this is part of an immediate
+// cleanup.
+// Currently the real implementation for creating the PSM client.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) PsmDelegateImpl
     : public device_metrics::PsmDelegateInterface {
  public:

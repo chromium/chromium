@@ -99,6 +99,7 @@ const char kHistogramsPreservedFileWritten[] =
 
 }  // namespace
 
+// TODO(hirthanan): Remove in subsequent CL as this is part of a cleanup.
 rlwe::StatusOr<std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>>
 PsmDelegateImpl::CreatePsmClient(
     psm_rlwe::RlweUseCase use_case,
