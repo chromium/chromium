@@ -133,12 +133,15 @@ declare_args() {
   # useful option, but it requires sanitizer coverage, and that
   # could conceivably disrupt normal unit testing workflows, so we'll
   # enable it by default only in sanitizer builds.
+  # Also be sure not to enable this on non-Chromium builds where
+  # the required //third_party/fuzztest dependency may be absent.
   # TODO(crbug.com/1495713): enable on component builds
   enable_fuzztest_fuzz =
       !(use_libfuzzer || use_afl || use_centipede ||
         use_external_fuzzing_engine) &&
       (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
-       is_ubsan_vptr || is_ubsan_security) && !is_component_build && is_linux
+       is_ubsan_vptr || is_ubsan_security) && !is_component_build && is_linux &&
+      build_with_chromium
 }
 
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
