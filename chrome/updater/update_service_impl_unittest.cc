@@ -433,6 +433,11 @@ INSTANTIATE_TEST_SUITE_P(
              {GetLocalizedString(IDS_INSTALLER_FAILED_TO_START_BASE), L"\n",
               GetLocalizedStringF(IDS_EXTRA_CODE_BASE, L"0x2")})),
          ERROR_FILE_NOT_FOUND, true},
+        {UpdateService::ErrorCategory::kInstall,
+         GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT,
+         base::WideToUTF8(GetLocalizedString(IDS_INSTALLER_TIMED_OUT_BASE)),
+         {},
+         true},
 
         {UpdateService::ErrorCategory::kInstall,
          ERROR_SUCCESS_REBOOT_INITIATED,

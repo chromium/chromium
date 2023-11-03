@@ -516,12 +516,12 @@ AppInstallerResult RunApplicationInstaller(
     progress_callback.Run(progress);
     if (wait_result) {
       VLOG(1) << "Installer exit code " << exit_code;
-      break;
+      return MakeInstallerResult(
+          GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
     }
   } while (timer.Elapsed() < timeout);
 
-  return MakeInstallerResult(
-      GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
+  return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
 }
 
 std::string LookupString(const base::FilePath& path,

@@ -1897,6 +1897,10 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the application installer process fails to start.">
           Install error: The installer process failed to start.
         </message>
+        <message name="IDS_INSTALLER_TIMED_OUT"
+                 desc="Error message displayed in the main dialog when the application installer does not complete in the allowed amount of time.">
+          Install error: The installer did not complete. The installation has been aborted.
+        </message>
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">

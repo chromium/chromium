@@ -264,9 +264,6 @@ extern const char kUserDefaultsSuiteName[];
 inline constexpr int kCustomInstallErrorBase =
     static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE);
 
-// The install directory for the application could not be created.
-inline constexpr int kErrorCreateAppInstallDirectory = kCustomInstallErrorBase;
-
 // The install params are missing. This usually means that the update
 // response does not include the name of the installer and its command line
 // arguments.
@@ -482,6 +479,7 @@ inline constexpr int GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL =
 inline constexpr int GOOPDATEINSTALL_E_FILENAME_INVALID = 0x80040900;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED_START = 0x80040901;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
+inline constexpr int GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT = 0x80040904;
 
 }  // namespace updater
 
