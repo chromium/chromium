@@ -684,6 +684,7 @@ android_library("browser_java") {
     "//components/content_capture/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",
+    "//components/embedder_support/android:embedder_util_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/embedder_support/android/metrics:java",

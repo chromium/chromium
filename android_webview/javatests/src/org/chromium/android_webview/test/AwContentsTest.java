@@ -11,6 +11,7 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Pair;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
@@ -2028,5 +2030,42 @@ public class AwContentsTest extends AwParameterizedTest {
                         mContentsClient,
                         "window.injectionDemo ? 'exists unexpectedly' : 'does not exist';");
         Assert.assertEquals("\"does not exist\"", result);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @SuppressLint("WrongConstant")
+    // crbug.com/1493531
+    public void testInvalidTouchEventIsRemoved() {
+        mActivityTestRule.startBrowserProcess();
+        AwContents awContents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
+        properties.id = 1;
+        properties.toolType = 20;
+        // Create a motion event with one pointer with tool type set to 20.
+        MotionEvent event =
+                MotionEvent.obtain(
+                        0L,
+                        0L,
+                        0,
+                        1,
+                        new MotionEvent.PointerProperties[] {properties},
+                        new MotionEvent.PointerCoords[] {new MotionEvent.PointerCoords()},
+                        0,
+                        0,
+                        0f,
+                        0f,
+                        0,
+                        0,
+                        0,
+                        0);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Input.UnrecognizedToolType.Android", 20);
+        Assert.assertFalse(awContents.onTouchEvent(event));
+        watcher.assertExpected();
     }
 }

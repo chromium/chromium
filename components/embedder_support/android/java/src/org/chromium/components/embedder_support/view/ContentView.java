@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.SmartClipProvider;
@@ -401,6 +402,7 @@ public class ContentView extends FrameLayout
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (TouchEventFilter.hasInvalidToolType(event)) return false;
         EventForwarder forwarder = getEventForwarder();
         boolean ret = forwarder != null ? forwarder.onTouchEvent(event) : false;
         if (mEventOffsetHandler != null) mEventOffsetHandler.onTouchEvent(event);
