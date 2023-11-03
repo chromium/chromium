@@ -211,7 +211,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1787955149152357925">Išjungta</translation>
 <translation id="1796561540704213354">Svetainės, įskaitant puslapius, kuriuose lankėtės, ir atidarytus puslapius</translation>
 <translation id="181103072419391116">Signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
-<translation id="1815245884418711390">Perjungti viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas išjungtas.</translation>
 <translation id="1816896987747843206">Tai leis pasiekti vaizdo kamerą visoms programoms ir svetainėms, turinčioms vaizdo kameros leidimą</translation>
 <translation id="1823280932251546115">Būsenos dėklas, laikas <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4936329710968938986">Visi, išjungta</translation>
 <translation id="4937170330762390348">Naudodami diktavimo funkciją galite vesti tekstą balsu. Paspauskite diktavimo klavišą arba pasirinkite mikrofono piktogramą ekrano apačioje, kai esate teksto lauke. Jūsų diktavimo kalba nustatyta į <ph name="LANGUAGE" />. Kalbos failai bus atsisiųsti, kad galėtumėte naudoti diktavimo funkciją neprisijungę. Diktavimo kalbą galite bet kada pakeisti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="4938176435186993759">Slėpti visus pasiūlymus</translation>
-<translation id="4943007472417128747">Viešosios interneto prieigos taškas išjungtas, kad būtų galima naudoti „Wi-Fi“. Jei norite naudoti viešosios interneto prieigos tašką, išjunkite „Wi-Fi“.</translation>
 <translation id="4945196315133970626">Išjungti pranešimus</translation>
 <translation id="4946376291507881335">Užfiksuoti</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>
@@ -996,7 +994,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="5009463889040999939">Pervardijamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="5016558321564993266">Perjunkite žymeklį. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Paieškos kategorijos</translation>
-<translation id="5029356738310729434">Prieiga prie įrenginio mikrofono įjungta</translation>
 <translation id="5030659775136592441">Rodyti žymių tvarkytuvę</translation>
 <translation id="5030687792513154421">Laikas baigėsi</translation>
 <translation id="5033299697334913360">Spustelėkite bet kur, kad užfiksuotumėte visą ekraną</translation>
@@ -1342,7 +1339,6 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="643147933154517414">Viskas atlikta</translation>
 <translation id="6431865393913628856">Ekrano įrašas</translation>
 <translation id="643593192654616063">Naudojama saugyklos vieta: <ph name="STORAGE_IN_USE_SIZE" /> iš <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Prieiga prie įrenginio mikrofono išjungta</translation>
 <translation id="6445835306623867477">„<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="6445915701151710649">centrinis procesorius</translation>
 <translation id="6446225358675593408">Raskite vaizdus pagal turinį</translation>
@@ -1468,7 +1464,6 @@ Naujas įdiegimas</translation>
 <translation id="6912841030378044227">Paryškinti adreso juostą</translation>
 <translation id="6912901278692845878">Greita apžvalga</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
-<translation id="6920245099716267363">Perjungti viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, prijungtas vienas įrenginys.</translation>
 <translation id="692135145298539227">ištrinti</translation>
 <translation id="6929081673585394903">Rodyti valdiklius</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
@@ -1564,7 +1559,6 @@ Naujas įdiegimas</translation>
 <translation id="7378203170292176219">Vilkdami pasirinkite norimą įrašyti vietą</translation>
 <translation id="7378594059915113390">Medijos valdikliai</translation>
 <translation id="7378889811480108604">Akumuliatoriaus tausojimo priemonės režimas išjungtas</translation>
-<translation id="7382640522316003298">Perjungti viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, prijungta tiek įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Įjungta</translation>
 <translation id="7384028040782072252">Norėdami pertvarkyti programas, spustelėkite bet kur dešiniuoju klavišu</translation>
 <translation id="7386767620098596324">Perjungti tinklo ryšį. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1728,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8036504271468642248">Ankstesnis sakinys</translation>
 <translation id="8042893070933512245">Atidaryti pritaikomumo nustatymų meniu</translation>
 <translation id="8044457332620420407">Klaviatūra foninis apšvietimas išjungtas</translation>
-<translation id="8048077032188362328">Administratorius išjungė viešosios interneto prieigos tašką.</translation>
 <translation id="8048123526339889627">„Bluetooth“ nustatymai</translation>
 <translation id="8051716679295756675">Šablonas pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>
@@ -1755,7 +1748,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8131994907636310308">Uždaryti rūšiavimo iššokantįjį pranešimą</translation>
 <translation id="8132793192354020517">Prisijungta prie „<ph name="NAME" />“</translation>
-<translation id="8135163608236671037">Perjungti viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, nėra susieto įrenginio.</translation>
 <translation id="8138705869659070104">Suaktyvinti po įrenginio sąrankos</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8142441511840089262">Dukart spustelėti</translation>

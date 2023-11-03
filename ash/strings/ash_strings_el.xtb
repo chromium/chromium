@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Ενεργό</translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Χρησιμοποιήστε τα πλήκτρα βέλους για να πλοηγηθείτε στις ημερομηνίες.</translation>
+<translation id="141170878022560212">Μεσαίο κουμπί</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή</translation>
 <translation id="1414919006379339073">Κλείσιμο τρέχοντος παραθύρου</translation>
 <translation id="1415846719612499304">Εμφάνιση λίστας δικτύων. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">Ανενεργό</translation>
 <translation id="1796561540704213354">Ιστότοποι, συμπεριλαμβανομένων σελίδων που έχετε επισκεφτεί και ανοικτών σελίδων</translation>
 <translation id="181103072419391116">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
-<translation id="1815245884418711390">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ανενεργό.</translation>
 <translation id="1816896987747843206">Αυτό επιτρέπει την πρόσβαση στην κάμερα για όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας</translation>
 <translation id="1823280932251546115">Περιοχή κατάστασης, ώρα <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">Άνοιγμα εργαλείου επιλογής emoji</translation>
 <translation id="2088116547584365419">παιχνίδια</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
+<translation id="2107581415810719320">Άλλο κουμπί <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Το καλώδιο USB-C που έχετε δεν υποστηρίζει συσκευές Thunderbolt. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
 <translation id="2108303511227308752">Η συντόμευση πληκτρολογίου Alt + Backspace άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Delete, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Νέο γραφείο</translation>
@@ -975,7 +976,6 @@
 <translation id="4936329710968938986">Όλοι, απενεργοποιημένο</translation>
 <translation id="4937170330762390348">Με την υπαγόρευση, μπορείτε να πληκτρολογείτε χρησιμοποιώντας τη φωνή σας. Πατήστε το πλήκτρο υπαγόρευσης ή επιλέξτε το εικονίδιο μικροφώνου στο κάτω μέρος της οθόνης όταν βρίσκεστε σε ένα πεδίο κειμένου. Η γλώσσα υπαγόρευσης έχει οριστεί σε <ph name="LANGUAGE" />. Θα γίνει λήψη αρχείων ομιλίας, ώστε να μπορείτε να χρησιμοποιείτε την υπαγόρευση εκτός σύνδεσης. Μπορείτε να αλλάξετε τη γλώσσα υπαγόρευσης ανά πάσα στιγμή από το μενού Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="4938176435186993759">Απόκρυψη όλων των προτάσεων</translation>
-<translation id="4943007472417128747">Το σημείο πρόσβασης Wi-Fi απενεργοποιήθηκε για να χρησιμοποιηθεί το Wi-Fi. Για να χρησιμοποιήσετε το σημείο πρόσβασης Wi-Fi, απενεργοποιήστε το Wi-Fi.</translation>
 <translation id="4945196315133970626">Απενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4946376291507881335">Λήψη</translation>
 <translation id="495046168593986294">Κύλιση προς τα επάνω</translation>
@@ -996,7 +996,6 @@
 <translation id="5009463889040999939">Η μετονομασία του προφίλ βρίσκεται σε εξέλιξη. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="5016558321564993266">Επιλέξτε τον μαρκαδόρο. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Κατηγορίες αναζήτησης</translation>
-<translation id="5029356738310729434">Η πρόσβαση στο μικρόφωνο της συσκευής είναι ενεργοποιημένη</translation>
 <translation id="5030659775136592441">Εμφάνιση διαχείρισης σελιδοδεικτών</translation>
 <translation id="5030687792513154421">Τέλος χρόνου</translation>
 <translation id="5033299697334913360">Κάντε κλικ σε οποιοδήποτε σημείο για εγγραφή ολόκληρης της οθόνης.</translation>
@@ -1342,7 +1341,6 @@
 <translation id="643147933154517414">Όλα έτοιμα</translation>
 <translation id="6431865393913628856">Εγγραφή οθόνης</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> αποθηκευτικού χώρου σε χρήση από σύνολο <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Η πρόσβαση στο μικρόφωνο της συσκευής είναι απενεργοποιημένη</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Βρείτε τις εικόνες σας βάσει του περιεχομένου</translation>
@@ -1468,7 +1466,6 @@
 <translation id="6912841030378044227">Εστίαση στη γραμμή διευθύνσεων</translation>
 <translation id="6912901278692845878">Γρήγορη περιήγηση</translation>
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
-<translation id="6920245099716267363">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ενεργό. 1 συνδεδεμένη συσκευή.</translation>
 <translation id="692135145298539227">διαγραφή</translation>
 <translation id="6929081673585394903">Εμφάνιση στοιχείων ελέγχου</translation>
 <translation id="6931576957638141829">Αποθήκευση σε</translation>
@@ -1564,7 +1561,6 @@
 <translation id="7378203170292176219">Σύρετε, για να επιλέξετε μια περιοχή για εγγραφή</translation>
 <translation id="7378594059915113390">Στοιχεία ελέγχου μέσων</translation>
 <translation id="7378889811480108604">Η λειτουργία εξοικονόμησης μπαταρίας είναι απενεργοποιημένη</translation>
-<translation id="7382640522316003298">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ενεργό, <ph name="DEVICECOUNT" /> συνδεδεμένες συσκευές.</translation>
 <translation id="7382680553121047388">Ενεργή</translation>
 <translation id="7384028040782072252">Κάντε δεξί κλικ οπουδήποτε για να αναδιατάξετε τις εφαρμογές σας</translation>
 <translation id="7386767620098596324">Εναλλαγή σύνδεσης δικτύου. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@
 <translation id="8036504271468642248">Προηγούμενη πρόταση</translation>
 <translation id="8042893070933512245">Άνοιγμα μενού ρυθμίσεων προσβασιμότητας</translation>
 <translation id="8044457332620420407">Ο οπίσθιος φωτισμός πληκτρολογίου είναι ανενεργός.</translation>
-<translation id="8048077032188362328">Ο διαχειριστής σας απενεργοποίησε το σημείο πρόσβασης Wi-Fi.</translation>
 <translation id="8048123526339889627">Ρυθμίσεις Bluetooth</translation>
 <translation id="8051716679295756675">Το πρότυπο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /> υπάρχει ήδη.</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
@@ -1755,7 +1750,6 @@
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8131994907636310308">Κλείσιμο αναδυόμενης ειδοποίησης ταξινόμησης</translation>
 <translation id="8132793192354020517">Έγινε σύνδεση με το δίκτυο <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ενεργό, δεν υπάρχει συνδεδεμένη συσκευή.</translation>
 <translation id="8138705869659070104">Ενεργοποίηση μετά τη ρύθμιση της συσκευής</translation>
 <translation id="813913629614996137">Εκκίνηση…</translation>
 <translation id="8142441511840089262">Διπλό κλικ</translation>

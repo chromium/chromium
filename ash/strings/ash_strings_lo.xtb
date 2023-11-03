@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">ປິດ</translation>
 <translation id="1796561540704213354">ເວັບໄຊຮວມມີໜ້າຕ່າງໆທີ່ທ່ານເຄີຍເຂົ້າ ແລະ ໜ້າທີ່ເປີດໄວ້</translation>
 <translation id="181103072419391116">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
-<translation id="1815245884418711390">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດປິດຢູ່.</translation>
 <translation id="1816896987747843206">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໃຫ້ແກ່ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດການອະນຸຍາດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1823280932251546115">ຖາດສະຖານະ, ເວລາ <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
 <translation id="3341303451326249809">ຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
 <translation id="334252345105450327">ຖ່າຍຮູບໜ້າຈໍ</translation>
+<translation id="3346728094401457853">ລະບຸລະຫັດຜ່ານຂອງອຸປະກອນສຳລັບ <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">ເລືອກຂໍ້ຄວາມຈາກເຄີເຊີໄປຈົນຮອດທ້າຍແຖວ</translation>
 <translation id="3349345708646875009">ເປີດຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="3364721542077212959">ເຄື່ອງມືປາຍປາກກາ</translation>
@@ -975,7 +975,6 @@
 <translation id="4936329710968938986">ທຸກຄົນ, ປິດ</translation>
 <translation id="4937170330762390348">ດ້ວຍການປ້ອນຂໍ້ມູນດ້ວຍສຽງ, ທ່ານຈະສາມາດພິມໂດຍໃຊ້ສຽງຂອງທ່ານໄດ້. ກົດປຸ່ມການປ້ອນຂໍ້ມູນດ້ວຍສຽງ ຫຼື ເລືອກໄອຄອນໄມໂຄຣໂຟນຢູ່ລຸ່ມສຸດຂອງໜ້າຈໍຕອນທີ່ທ່ານຢູ່ຊ່ອງຂໍ້ມູນຂໍ້ຄວາມ. ຕັ້ງພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງຂອງທ່ານເປັນ <ph name="LANGUAGE" /> ແລ້ວ. ໄຟລ໌ການເວົ້າຂອງທ່ານຈະຖືກດາວໂຫຼດເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ການປ້ອນຂໍ້ມູນດ້ວຍສຽງແບບອອບລາຍໄດ້ ທ່ານສາມາດປ່ຽນພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="4938176435186993759">ເຊື່ອງການແນະນຳທັງໝົດ</translation>
-<translation id="4943007472417128747">ປິດຮັອດສະປອດເພື່ອໃຊ້ Wi-Fi ແລ້ວ. ເພື່ອໃຊ້ຮັອດສະປອດ, ໃຫ້ປິດ Wi-Fi.</translation>
 <translation id="4945196315133970626">ປິດການແຈ້ງເຕືອນ</translation>
 <translation id="4946376291507881335">ຖ່າຍຮູບ</translation>
 <translation id="495046168593986294">ເລື່ອນຂຶ້ນ</translation>
@@ -996,7 +995,6 @@
 <translation id="5009463889040999939">ກຳລັງປ່ຽນຊື່ໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="5016558321564993266">ສະຫຼັບຕົວໝາຍ. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">ຊອກຫາໝວດໝູ່</translation>
-<translation id="5029356738310729434">ເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນອຸປະກອນແລ້ວ</translation>
 <translation id="5030659775136592441">ສະແດງຕົວຈັດການບຸກມາກ</translation>
 <translation id="5030687792513154421">ໝົດເວລາແລ້ວ</translation>
 <translation id="5033299697334913360">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອຖ່າຍຮູບແບບເຕັມຈໍ</translation>
@@ -1342,7 +1340,6 @@
 <translation id="643147933154517414">ສໍາເລັດແລ້ວ</translation>
 <translation id="6431865393913628856">ບັນທຶກໜ້າຈໍ</translation>
 <translation id="643593192654616063">ໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນໄປແລ້ວ <ph name="STORAGE_IN_USE_SIZE" /> ຈາກທັງໝົດ <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">ປິດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນອຸປະກອນແລ້ວ</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">ຊອກຫາຮູບຂອງທ່ານຕາມເນື້ອຫາ</translation>
@@ -1468,7 +1465,6 @@
 <translation id="6912841030378044227">ເນັ້ນໃສ່ແຖບທີ່ຢູ່</translation>
 <translation id="6912901278692845878">ການທົວສັ້ນໆ</translation>
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
-<translation id="6920245099716267363">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ 1 ອຸປະກອນ.</translation>
 <translation id="692135145298539227">ລຶບ</translation>
 <translation id="6929081673585394903">ສະແດງການຄວບຄຸມ</translation>
 <translation id="6931576957638141829">ບັນ​ທຶກ​ໄປ​ໃສ່</translation>
@@ -1564,7 +1560,6 @@
 <translation id="7378203170292176219">ລາກເພື່ອເລືອກພື້ນທີ່ເພື່ອບັນທຶກ</translation>
 <translation id="7378594059915113390">ການຄວບຄຸມສື່</translation>
 <translation id="7378889811480108604">ໂໝດຕົວປະຢັດແບັດເຕີຣີປິດຢູ່</translation>
-<translation id="7382640522316003298">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ <ph name="DEVICECOUNT" /> ອຸປະກອນ.</translation>
 <translation id="7382680553121047388">ເປີດ</translation>
 <translation id="7384028040782072252">ຄລິກຂວາໃສ່ບ່ອນໃດກໍໄດ້ເພື່ອຈັດຮຽງແອັບຂອງທ່ານຄືນໃໝ່</translation>
 <translation id="7386767620098596324">ສະຫຼັບການເຊື່ອມຕໍ່ເຄືອຂ່າຍ. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1583,7 @@
 <translation id="7489261257412536105">ເຂົ້າ ຫຼື ອອກໂໝດເຕັມຈໍ</translation>
 <translation id="7490360161041035804">ທ່ານສາມາດປັກໝຸດໄຟລ໌ສຳຄັນ, ຮວມທັງໄຟລ໌ Google Drive ໄດ້. ເພື່ອປັດໝຸດ, ໃຫ້ເລື່ອນໄປໃສ່ລາຍການໃດໜຶ່ງ ຫຼື ເປີດໄຟລ໌ແລ້ວຄລິກຂວາໃສ່ລາຍການໃດໜຶ່ງ.</translation>
 <translation id="7497767806359279797">ເລືອກພາສາ ແລະ ແປ້ນພິມ</translation>
+<translation id="7507162824403726948">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານໃຫ້ສຳເລັດ</translation>
 <translation id="7508690557411636492">ເປີດເດືອນແລ້ວ</translation>
 <translation id="7509246181739783082">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ</translation>
 <translation id="7512509370370076552">ອັບເດດທາງລັດສຳລັບການຄລິກຂວາຈາກ alt + ຄລິກເປັນປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ຄລິກແລ້ວ</translation>
@@ -1734,7 +1730,6 @@
 <translation id="8036504271468642248">ປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="8042893070933512245">ເປີດເມນູການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="8044457332620420407">ປິດແສງໄຟແປ້ນພິມແລ້ວ</translation>
-<translation id="8048077032188362328">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານປິດຮັອດສະປອດແລ້ວ.</translation>
 <translation id="8048123526339889627">ການຕັ້ງຄ່າ Bluetooth</translation>
 <translation id="8051716679295756675">ມີແມ່ແບບຊື່ <ph name="DESK_TEMPLATE_NAME" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="8052898407431791827">ສຳເນົາໃສ່ຄລິບບອດແລ້ວ</translation>
@@ -1755,7 +1750,6 @@
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8131994907636310308">ປິດຂໍ້ຄວາມໂທສການຈັດຮຽງ</translation>
 <translation id="8132793192354020517">ເຊື່ອມຕໍ່ກັບ <ph name="NAME" /> ແລ້ວ</translation>
-<translation id="8135163608236671037">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ບໍ່ມີອຸປະກອນເຊື່ອມຕໍ່.</translation>
 <translation id="8138705869659070104">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8142441511840089262">ຄລິກສອງຄັ້ງ</translation>

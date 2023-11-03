@@ -1890,6 +1890,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2428978615149723410">šie krepšeliai</translation>
 <translation id="2431027948063157455">Nepavyko įkelti „Google“ padėjėjo, patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
 <translation id="243179355394256322">Jūsų organizacija leidžia užregistruoti įrenginius tik prieigos teisę turintiems naudotojams. Šis naudotojas neturi teisės užregistruoti įrenginių. Įsitikinkite, kad administratoriaus pulto skiltyje „Naudotojai“ naudotojui priskirta administratoriaus privilegija „Užregistruoti „Google Meet“ aparatūrinę įrangą“.</translation>
+<translation id="243275146591958220">Atšaukti atsisiuntimą</translation>
 <translation id="2433452467737464329">Pridėkite užklausos parametrą prie URL, kad puslapis būtų automatiškai atnaujinamas: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Išvaizda</translation>
 <translation id="2433836460518180625">Atrakinti tik įrenginį</translation>
@@ -9082,7 +9083,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />, <ph name="PRINTER_STATUS" />. <ph name="ITEM_POSITION" /> spausdintuvas iš <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energijos taupymo priemonė įjungta</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />“ patikrintose vietovėse gali nuskaityti ir ištrinti vaizdus, vaizdo įrašus ir garso failus.</translation>
-<translation id="8180826593917851025">Konfigūruoti „<ph name="DEVICE_TYPE" />“ viešosios interneto prieigos tašką</translation>
 <translation id="8181215761849004992">Nepavyko prisijungti prie domeno. Patikrinkite paskyrą, kad sužinotumėte, ar turite pakankamai teisių pridėti įrenginius.</translation>
 <translation id="8182105986296479640">Programa nereaguoja.</translation>
 <translation id="8182412589359523143">Norėdami ištrinti visus šio įrenginio (<ph name="DEVICE_TYPE" />) duomenis, <ph name="BEGIN_LINK" />spustelėkite čia<ph name="END_LINK" />.</translation>
@@ -10082,6 +10082,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8968527460726243404">„ChromeOS“ sistemos turinio kopijos rašymo priemonė</translation>
 <translation id="8968766641738584599">Išsaugoti kortelę</translation>
 <translation id="8968906873893164556">Pasirinkite paskyrą, kurią norite naudoti nustatydami</translation>
+<translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="89720367119469899">Grįžimo klavišas</translation>
 <translation id="8972513834460200407">Paklauskite tinklo administratoriaus, kad įsitikintumėte, jog užkarda neblokuoja atsisiuntimų iš „Google“ serverių.</translation>
 <translation id="8973263196882835828">&amp;Įgalinti Subtitrų realiuoju laiku funkciją</translation>

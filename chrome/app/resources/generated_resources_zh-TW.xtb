@@ -1872,6 +1872,7 @@
 <translation id="2428978615149723410">這些購物車</translation>
 <translation id="2431027948063157455">無法載入 Google 助理，請檢查網路連線狀態並重試。</translation>
 <translation id="243179355394256322">貴機構限制只有授權使用者可以註冊裝置。這位使用者未獲授權，因此無法註冊裝置。請前往管理控制台的「使用者」專區，確認該使用者具有「註冊 Google Meet 設備」的管理員權限。</translation>
+<translation id="243275146591958220">取消下載</translation>
 <translation id="2433452467737464329">在網址中新增查詢參數即可自動重新整理網頁：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外觀</translation>
 <translation id="2433836460518180625">僅限解鎖裝置</translation>
@@ -8985,6 +8986,7 @@
 <translation id="81238879832906896">黃色和白色花朵</translation>
 <translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理化 ONC</translation>
+<translation id="8125651784723647184">分享密碼功能是由系統管理員管理</translation>
 <translation id="8129265306888404830">如要使用貴機構的電子郵件地址 (<ph name="EMAIL_DOMAIN" />)，你必須進行企業註冊程序。假如這是你的個人裝置，請登入個人 Google 帳戶。</translation>
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -9051,7 +9053,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。第 <ph name="ITEM_POSITION" /> 台印表機，共 <ph name="NUM_PRINTERS" /> 台。</translation>
 <translation id="8180785270975217276">節能模式已開啟</translation>
 <translation id="8180786512391440389">「<ph name="EXTENSION" />」可以讀取及刪除勾選位置中的圖片、影片和音訊檔案。</translation>
-<translation id="8180826593917851025">設定 <ph name="DEVICE_TYPE" /> 無線基地台</translation>
 <translation id="8181215761849004992">無法加入網域。請檢查你的帳戶是否有新增裝置的必要權限。</translation>
 <translation id="8182105986296479640">應用程式無回應。</translation>
 <translation id="8182412589359523143">如要從這部「<ph name="DEVICE_TYPE" />」刪除所有資料，<ph name="BEGIN_LINK" />請按一下這裡<ph name="END_LINK" />。</translation>
@@ -10048,6 +10049,7 @@
 <translation id="8968527460726243404">Chrome 作業系統映像檔寫入工具</translation>
 <translation id="8968766641738584599">儲存卡片</translation>
 <translation id="8968906873893164556">選擇要用來設定的帳戶</translation>
+<translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">請與網路管理員聯絡，確認防火牆並未封鎖從 Google 伺服器下載的內容。</translation>
 <translation id="8973263196882835828">啟用即時字幕 (&amp;E)</translation>

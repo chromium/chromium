@@ -1871,6 +1871,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2428978615149723410">estes carros</translation>
 <translation id="2431027948063157455">Non se puido cargar o Asistente de Google. Comproba a conexión de rede e volve tentalo.</translation>
 <translation id="243179355394256322">A túa organización só lles permite inscribir dispositivos aos usuarios autorizados. Este usuario non está autorizado para inscribir dispositivos. Comproba que o usuario teña o privilexio de administrador Inscribir hardware de Google Meet, na sección da consola de administración Usuarios.</translation>
+<translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2433452467737464329">Engade un parámetro de consulta no URL para actualizar a páxina automaticamente: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aparencia</translation>
 <translation id="2433836460518180625">Desbloquear só o dispositivo</translation>
@@ -9053,7 +9054,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />: <ph name="PRINTER_STATUS" />. Impresora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Aforro de enerxía está activado</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" pode ler e eliminar ficheiros de imaxes, vídeo e son nas localizacións seleccionadas.</translation>
-<translation id="8180826593917851025">Configurar zona wifi de <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">O dispositivo non se puido vincular ao dominio. Comproba a túa conta para ver se tes privilexios suficientes para engadir dispositivos.</translation>
 <translation id="8182105986296479640">A aplicación non responde.</translation>
 <translation id="8182412589359523143">Se queres, podes <ph name="BEGIN_LINK" />eliminar todos os datos<ph name="END_LINK" /> deste dispositivo (<ph name="DEVICE_TYPE" />).</translation>
@@ -10050,6 +10050,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8968527460726243404">Escritor de imaxes do sistema ChromeOS</translation>
 <translation id="8968766641738584599">Gardar tarxeta</translation>
 <translation id="8968906873893164556">Seleccionar a conta que queres usar para a configuración</translation>
+<translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Consulta ao administrador da rede para asegurarte de que o firewall non estea bloqueando as descargas dos servidores de Google.</translation>
 <translation id="8973263196882835828">&amp;Activar Subtítulos instantáneos</translation>

@@ -212,7 +212,6 @@
 <translation id="1787955149152357925">خاموش</translation>
 <translation id="1796561540704213354">وب‌سایت‌ها شامل صفحه‌های که از آن‌ها بازدید کرده‌اید و صفحه‌های باز می‌شود</translation>
 <translation id="181103072419391116">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
-<translation id="1815245884418711390">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال خاموش است.</translation>
 <translation id="1816896987747843206">با این کار، دسترسی به دوربین برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="1823280932251546115">سینی وضعیت، زمان <ph name="TIME" />،
         <ph name="BATTERY" />
@@ -565,6 +564,7 @@
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3341303451326249809">نماگرفت گرفته شد</translation>
 <translation id="334252345105450327">گرفتن نماگرفت</translation>
+<translation id="3346728094401457853">گذرواژه دستگاه را برای <ph name="EMAIL" /> وارد کنید</translation>
 <translation id="334927402682780278">انتخاب متن از نشانگر تا انتهای خط</translation>
 <translation id="3349345708646875009">باز کردن مدیر وظایف</translation>
 <translation id="3364721542077212959">ابزارهای قلم</translation>
@@ -977,7 +977,6 @@
 <translation id="4936329710968938986">همه، خاموش</translation>
 <translation id="4937170330762390348">با ویژگی دیکته می‌توانید با صدایتان تایپ کنید. وقتی در فیلد نوشتاری هستید، کلید دیکته را فشار دهید یا نماد میکروفون را در پایین صفحه انتخاب کنید. زبان دیکته روی <ph name="LANGUAGE" /> تنظیم شده است. فایل‌های گفتاری بارگیری خواهند شد تا بتوانید به‌صورت آفلاین از دیکته استفاده کنید. هرزمان بخواهید می‌توانید زبان دیکته را در «تنظیمات &gt; دسترس‌پذیری» تغییر دهید.</translation>
 <translation id="4938176435186993759">پنهان کردن همه پیشنهادها</translation>
-<translation id="4943007472417128747">‏نقطه اتصال برای استفاده از Wi-Fi خاموش شده است. برای استفاده از نقطه اتصال، Wi-Fi را خاموش کنید.</translation>
 <translation id="4945196315133970626">غیرفعال کردن اعلان‌ها</translation>
 <translation id="4946376291507881335">ضبط</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>
@@ -998,7 +997,6 @@
 <translation id="5009463889040999939">درحال تغییر نام نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5016558321564993266">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">دسته‌های جستجو</translation>
-<translation id="5029356738310729434">دسترسی به میکروفون دستگاه روشن شد</translation>
 <translation id="5030659775136592441">نمایش مدیر نشانک</translation>
 <translation id="5030687792513154421">وقت تمام شد</translation>
 <translation id="5033299697334913360">برای گرفتن عکس از کل صفحه، روی هرجایی که می‌خواهید کلیک کنید</translation>
@@ -1344,7 +1342,6 @@
 <translation id="643147933154517414">کاملاً انجام شد</translation>
 <translation id="6431865393913628856">ضبط کردن صفحه‌نمایش</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> فضای ذخیره‌سازی از مجموع <ph name="STORAGE_TOTAL_SIZE" /> استفاده شده است</translation>
-<translation id="6442259747294754014">دسترسی به میکروفون دستگاه خاموش شد</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">تصاویر را براساس محتوا پیدا کنید</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6912841030378044227">تمرکز در نوار نشانی</translation>
 <translation id="6912901278692845878">گشت سریع</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
-<translation id="6920245099716267363">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال روشن است، یک دستگاه متصل است.</translation>
 <translation id="692135145298539227">حذف</translation>
 <translation id="6929081673585394903">نمایش کنترل‌ها</translation>
 <translation id="6931576957638141829">ذخیره در</translation>
@@ -1566,7 +1562,6 @@
 <translation id="7378203170292176219">برای انتخاب ناحیه ضبط، بکشید</translation>
 <translation id="7378594059915113390">کنترل‌های رسانه</translation>
 <translation id="7378889811480108604">حالت «بهینه‌سازی باتری» خاموش است</translation>
-<translation id="7382640522316003298">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال روشن است، <ph name="DEVICECOUNT" /> دستگاه متصل است.</translation>
 <translation id="7382680553121047388">روشن</translation>
 <translation id="7384028040782072252">برای تغییر ترتیب برنامه‌ها، جایی کلیک راست کنید</translation>
 <translation id="7386767620098596324">روشن/خاموش کردن اتصال شبکه. <ph name="STATE_TEXT" />.</translation>
@@ -1590,6 +1585,7 @@
 <translation id="7489261257412536105">ورود به حالت تمام‌صفحه یا خروج از آن</translation>
 <translation id="7490360161041035804">‏می‌توانید فایل‌های مهم را سنجاق کنید، ازجمله فایل‌های Google Drive. برای سنجاق کردن، نشانگر را روی مورد مدنظر نگه دارید یا Files را باز کنید و روی مورد مدنظر کلیک راست کنید.</translation>
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
+<translation id="7507162824403726948">تأیید هویت خود را تکمیل کنید</translation>
 <translation id="7508690557411636492">ماه گذشته باز شده است</translation>
 <translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
 <translation id="7512509370370076552">میان‌بر کلیک راست از دگرساز + کلیک به کلید <ph name="LAUNCHER_KEY_NAME" /> + کلیک تغییر کرده است</translation>
@@ -1736,7 +1732,6 @@
 <translation id="8036504271468642248">جمله قبلی</translation>
 <translation id="8042893070933512245">باز کردن منوی تنظیمات دسترس‌پذیری</translation>
 <translation id="8044457332620420407">نور پس‌زمینه صفحه‌کلید خاموش شد</translation>
-<translation id="8048077032188362328">سرپرست شما «نقطه اتصال» را خاموش کرده است</translation>
 <translation id="8048123526339889627">تنظیمات بلوتوث</translation>
 <translation id="8051716679295756675">الگویی با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل وجود دارد</translation>
 <translation id="8052898407431791827">در بریده‌دان کپی شد</translation>
@@ -1757,7 +1752,6 @@
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8131994907636310308">بستن پنجره خبری مرتب‌سازی</translation>
 <translation id="8132793192354020517">متصل به <ph name="NAME" /></translation>
-<translation id="8135163608236671037">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال روشن است، هیچ دستگاهی متصل نیست.</translation>
 <translation id="8138705869659070104">فعال‌سازی بعداز راه‌اندازی دستگاه</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8142441511840089262">دوبار کلیک کردن</translation>

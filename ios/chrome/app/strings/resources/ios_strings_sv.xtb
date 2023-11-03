@@ -521,6 +521,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
 <translation id="371398631992790800">Dölj bokmärken</translation>
 <translation id="37207012422556617">Populära sökningar</translation>
+<translation id="3725081662140949903">Om du vill hindra andra från att använda ditt lösenord öppnar du <ph name="APP" />-appen och ändrar lösenordet</translation>
 <translation id="3740397331642243698">Öppnar de angivna webbadresserna i Google Chrome i inkognitoläge.</translation>
 <translation id="374357899112510277">Dölj nedladdningar</translation>
 <translation id="3745190878148784130">Dölj Zooma text</translation>
@@ -637,6 +638,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4389019817280890563">Tryck för att byta språk.</translation>
 <translation id="4405320213589929829">Använd adresser på webbsidor för att få lokal information och vägbeskrivningar.</translation>
 <translation id="4420409367264901497">Redigera bokmärke</translation>
+<translation id="4431224949908513835">Välj en betalningsmetod att fylla i.</translation>
 <translation id="4442550905108052454">Öppna <ph name="BEGIN_BOLD" />Inställningar<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Lägg till språk</translation>
 <translation id="4461286950227634995">Erbjud att spara lösenord</translation>
@@ -1190,6 +1192,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7221173315674413369">Utforska nya funktioner och tips i Nyheter</translation>
 <translation id="7223102419539744003">Stäng fliken</translation>
 <translation id="722454870747268814">Ny inkognitoflik</translation>
+<translation id="7233006041370588369">Välj ett lösenord att fylla i.</translation>
 <translation id="7265758999917665941">Aldrig på den här webbplatsen</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nytt paket spåras}other{Nya paket spåras}}</translation>

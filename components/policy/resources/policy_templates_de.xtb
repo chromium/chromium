@@ -3944,9 +3944,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4380159792986204036">Einer Kiosk-Webanwendung erlauben, mehrere Browserfenster auf beliebigen Bildschirmen zu öffnen</translation>
 <translation id="4381227367939912539">Easter-Egg-Dinosaurierspiel deaktivieren</translation>
 <translation id="4382413175336720282">Die URL-Echtzeitüberprüfung ist deaktiviert.</translation>
-<translation id="4384911996235542086">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> verdächtige Downloads von Nutzern, die Safe Browsing aktiviert haben, zur Prüfung auf Malware an Google senden.
-Ist diese Richtlinie deaktiviert, wird keine Prüfung durchgeführt.
-Diese Richtlinie wirkt sich nicht auf die von Chrome Enterprise Connectors konfigurierte Analyse von heruntergeladenen Inhalten aus.</translation>
 <translation id="4387741272680827493">Wenn die Richtlinie konfiguriert ist, wird eine Liste mit Hostnamen angegeben, die vorab geladene HSTS-Upgrades von http auf https umgehen.
 
       Für diese Richtlinie sind nur Single-Label-Hostnamen zulässig und sie gilt nur für „statische“ HSTS-Preloaded-Eingaben (beispielsweise <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Diese Richtlinie verhindert keine HSTS-Upgrades für Server, die diese „dynamisch“ mit einem <ph name="HSTS_HEADER_NAME" />-Antwortheader anfragen.

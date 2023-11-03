@@ -80,6 +80,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}}</translation>
 <translation id="2410940059315936967">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Kuki yang ditetapkan oleh laman lain ini dipanggil kuki pihak ketiga.</translation>
 <translation id="2434158240863470628">Muat turun selesai: <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Anda membenarkan laman ini menggunakan kuki pihak ketiga secara sementara, bermakna kurang perlindungan penyemakan imbas tetapi ciri laman berkemungkinan besar berfungsi seperti yang dijangkakan. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Ciri pada sesetengah laman mungkin tidak berfungsi dalam mod Inkognito</translation>
 <translation id="2442870161001914531">Sentiasa minta laman desktop</translation>
 <translation id="2469312991797799607">Tindakan ini akan memadamkan semua data dan kuki untuk <ph name="ORIGIN" /> dan semua laman di bawah domain ini</translation>
@@ -208,6 +209,7 @@
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
+<translation id="4673958474310291465">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangkakan</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
 <translation id="4779083564647765204">Zum</translation>
 <translation id="4811450222531576619">Ketahui tentang sumber dan topik halaman ini</translation>
@@ -345,6 +347,7 @@
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> dipilih. Pilihan tersedia berhampiran bahagian atas skrin</translation>
+<translation id="7137403271056944713">Kawalan peranti MIDI / atur cara semula</translation>
 <translation id="7141896414559753902">Sekat tapak daripada memaparkan tetingkap timbul dan ubah hala (disyorkan)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Muat semula</translation>

@@ -1873,6 +1873,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2428978615149723410">estos carritos</translation>
 <translation id="2431027948063157455">No se ha podido cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="243179355394256322">Tu organización solo permite el registro de dispositivos a los usuarios autorizados. Este usuario no tiene autorización para registrar dispositivos. Asegúrate de que el usuario tiene el privilegio de administrador "Registrar hardware de Google Meet" en la sección Usuarios de la consola de administración.</translation>
+<translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2433452467737464329">Añade un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aspecto</translation>
 <translation id="2433836460518180625">Solo bloquear dispositivo</translation>
@@ -9056,7 +9057,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Impresora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Ahorro de energía activado</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" puede leer y eliminar imágenes, vídeos y archivos de sonido en las ubicaciones seleccionadas.</translation>
-<translation id="8180826593917851025">Configurar el punto de acceso de <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">No se puede vincular el dispositivo. Consulta en tu cuenta si tienes permisos suficientes para añadir dispositivos.</translation>
 <translation id="8182105986296479640">La aplicación no responde.</translation>
 <translation id="8182412589359523143">Para eliminar todos los datos de este <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />haz clic aquí<ph name="END_LINK" />.</translation>
@@ -10053,6 +10053,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8968527460726243404">Escritor de imágenes del sistema de Chrome OS</translation>
 <translation id="8968766641738584599">Guardar tarjeta</translation>
 <translation id="8968906873893164556">Elige la cuenta que quieres usar para la configuración</translation>
+<translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Consulta al administrador de tu red para asegurarte de que el cortafuegos no está bloqueando las descargas procedentes de los servidores de Google.</translation>
 <translation id="8973263196882835828">&amp;Habilitar Subtítulos automáticos</translation>

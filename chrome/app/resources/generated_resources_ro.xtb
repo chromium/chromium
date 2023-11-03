@@ -1873,6 +1873,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2428978615149723410">coșurile de cumpărături</translation>
 <translation id="2431027948063157455">Asistentul Google nu s-a putut încărca; încearcă din nou.</translation>
 <translation id="243179355394256322">Organizația ta limitează înregistrarea dispozitivelor doar la utilizatorii autorizați. Acest utilizator nu este autorizat să înregistreze dispozitive. Verifică dacă utilizatorul are privilegiul de administrator „Înregistrează hardware Google Meet” în secțiunea Utilizatori din Consola de administrare.</translation>
+<translation id="243275146591958220">Anulează descărcarea</translation>
 <translation id="2433452467737464329">Pentru actualizarea automată a paginii: chrome://network/?refresh=&lt;sec&gt;, adăugați un parametru de interogare în adresa URL</translation>
 <translation id="2433507940547922241">Aspect</translation>
 <translation id="2433836460518180625">Deblochează numai dispozitivul</translation>
@@ -9059,7 +9060,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Imprimanta <ph name="ITEM_POSITION" /> din <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Economisirea energiei este activată</translation>
 <translation id="8180786512391440389">Extensia „<ph name="EXTENSION" />” poate să citească și să șteargă fișiere imagine, video și audio din locațiile selectate.</translation>
-<translation id="8180826593917851025">Configurează hotspotul pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Dispozitivul nu poate fi asociat domeniului. Verifică-ți contul pentru a vedea dacă ai suficiente privilegii pentru a adăuga dispozitive.</translation>
 <translation id="8182105986296479640">Aplicația nu răspunde.</translation>
 <translation id="8182412589359523143">Ca să ștergi toate datele de pe acest <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />dă clic aici<ph name="END_LINK" />.</translation>
@@ -10057,6 +10057,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8968527460726243404">Instrument de scriere a imaginilor de sistem pentru sistemul de operare Chrome</translation>
 <translation id="8968766641738584599">Salvează cardul</translation>
 <translation id="8968906873893164556">Alege contul de folosit pentru configurare</translation>
+<translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="89720367119469899">Tasta Esc</translation>
 <translation id="8972513834460200407">Contactați administratorul de rețea, pentru a vă asigura că firewallul nu blochează descărcările de pe serverele Google.</translation>
 <translation id="8973263196882835828">&amp;Activează Subtitrări live</translation>

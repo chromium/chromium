@@ -116,6 +116,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
+<translation id="141170878022560212">Middle Button</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installed app</translation>
 <translation id="1414919006379339073">Close current window</translation>
 <translation id="1415846719612499304">Show network list. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
-<translation id="1815245884418711390">Toggle hotspot. Hotspot is off.</translation>
 <translation id="1816896987747843206">This allows camera access for all apps and websites with the camera permission</translation>
 <translation id="1823280932251546115">Status tray, time <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2086334242442703436">Open emoji picker</translation>
 <translation id="2088116547584365419">games</translation>
 <translation id="209965399369889474">Not connected to network</translation>
+<translation id="2107581415810719320">Other Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
 <translation id="2108303511227308752">The Alt + Backspace keyboard shortcut has changed. To use the Delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="2126242104232412123">New desk</translation>
@@ -563,6 +564,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3341303451326249809">Screenshot captured</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
+<translation id="3346728094401457853">Enter device password for <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Select text from cursor to end of line</translation>
 <translation id="3349345708646875009">Open task manager</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
@@ -975,7 +977,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4936329710968938986">Everyone, off</translation>
 <translation id="4937170330762390348">With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="LANGUAGE" />. Speech files will be downloaded so you can use dictation offline. You can change the dictation language at any time in Settings &gt; Accessibility.</translation>
 <translation id="4938176435186993759">Hide all suggestions</translation>
-<translation id="4943007472417128747">Hotspot has been turned off to use Wi-Fi. To use Hotspot, turn Wi-Fi off.</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
 <translation id="495046168593986294">Scroll up</translation>
@@ -996,7 +997,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
 <translation id="5016558321564993266">Toggle marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Search categories</translation>
-<translation id="5029356738310729434">Device microphone access is on</translation>
 <translation id="5030659775136592441">Show bookmark manager</translation>
 <translation id="5030687792513154421">Time is up</translation>
 <translation id="5033299697334913360">Click anywhere to capture full screen</translation>
@@ -1342,7 +1342,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="643147933154517414">All finished</translation>
 <translation id="6431865393913628856">Screen record</translation>
 <translation id="643593192654616063">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use out of <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
-<translation id="6442259747294754014">Device microphone access is off</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Find your images by the content</translation>
@@ -1468,7 +1467,6 @@ New install</translation>
 <translation id="6912841030378044227">Focus on address bar</translation>
 <translation id="6912901278692845878">Quick tour</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
-<translation id="6920245099716267363">Toggle hotspot. Hotspot is on, 1 device connected.</translation>
 <translation id="692135145298539227">delete</translation>
 <translation id="6929081673585394903">Show controls</translation>
 <translation id="6931576957638141829">Save to</translation>
@@ -1564,7 +1562,6 @@ New install</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
-<translation id="7382640522316003298">Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT" /> devices connected.</translation>
 <translation id="7382680553121047388">On</translation>
 <translation id="7384028040782072252">Right-click anywhere to reorder your apps</translation>
 <translation id="7386767620098596324">Toggle network connection. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1585,7 @@ New install</translation>
 <translation id="7489261257412536105">Enter or exit fullscreen</translation>
 <translation id="7490360161041035804">You can pin important files, including Google Drive files. To pin, hover over an item or open Files and right-click an item.</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
+<translation id="7507162824403726948">Finish verifying your identity</translation>
 <translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7512509370370076552">The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME" /> key + click from alt + click</translation>
@@ -1734,7 +1732,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8036504271468642248">Previous sentence</translation>
 <translation id="8042893070933512245">Open accessibility settings menu</translation>
 <translation id="8044457332620420407">Keyboard backlight is off</translation>
-<translation id="8048077032188362328">Your administrator has turned off hotspot.</translation>
 <translation id="8048123526339889627">Bluetooth settings</translation>
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
@@ -1755,7 +1752,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8131994907636310308">Close sort toast</translation>
 <translation id="8132793192354020517">Connected to <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Toggle hotspot. Hotspot is on, no device connected.</translation>
 <translation id="8138705869659070104">Activate after device setup</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8142441511840089262">Double click</translation>

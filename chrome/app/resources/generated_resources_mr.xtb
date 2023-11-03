@@ -1886,6 +1886,7 @@
 <translation id="2428978615149723410">ही कार्ट</translation>
 <translation id="2431027948063157455">Google Assistant लोड होऊ शकले नाही, कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="243179355394256322">तुमची संस्था डिव्हाइसची नोंदणी फक्त अधिकृत वापरकर्त्यांपुरती मर्यादित करते. डिव्हाइसची नोंदणी करण्यासाठी हा वापरकर्ता अधिकृत नाही. कृपया ॲडमिन कन्सोलमधील वापरकर्ते विभागामध्ये वापरकर्त्याकडे "Google Meet हार्डवेअरमध्ये नोंदणी करा" हा अ‍ॅडमिनिस्ट्रेटर विशेषाधिकार असल्याची खात्री करा.</translation>
+<translation id="243275146591958220">डाउनलोड रद्द करा</translation>
 <translation id="2433452467737464329">पेज ऑटो-रिफ्रेश करण्यासाठी URL मध्ये क्वेरी पॅरामीटर जोडा: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">स्वरूप</translation>
 <translation id="2433836460518180625">फक्त डिव्हाइस अनलॉक करा</translation>
@@ -9068,7 +9069,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" /> पैकी <ph name="ITEM_POSITION" /> प्रिंटर.</translation>
 <translation id="8180785270975217276">एनर्जी सेव्हर सुरू झाला आहे</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" चेक केलेल्या स्थानांमधील इमेज, व्हिडिओ आणि ध्वनी फाइल वाचू आणि हटवू शकते.</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> हॉटस्पॉट कॉंफिगर करा</translation>
 <translation id="8181215761849004992">डोमेनशी जोडू शकत नाही. तुम्हाला डिव्हाइस जोडण्याचे पुरेसे विशेषाधिकार आहेत का हे पाहण्यासाठी तुमचे खाते तपासा.</translation>
 <translation id="8182105986296479640">ॲप्लिकेशन प्रतिसाद देत नाही.</translation>
 <translation id="8182412589359523143">या <ph name="DEVICE_TYPE" /> मधून सर्व डेटा हटवण्यासाठी, <ph name="BEGIN_LINK" />येथे क्लिक करा<ph name="END_LINK" />.</translation>
@@ -10066,6 +10066,7 @@
 <translation id="8968527460726243404">ChromeOS प्रणाली इमेज लेखक</translation>
 <translation id="8968766641738584599">कार्ड सेव्ह करा</translation>
 <translation id="8968906873893164556">सेटअपसाठी वापरायचे खाते निवडा</translation>
+<translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">कृपया फायरवॉल Google सर्व्हरवरून डाउनलोड ब्लॉक करत नसल्याची खात्री करण्यासाठी तुमच्या नेटवर्क ॲडमिनिस्ट्रेटरच्या साहाय्याने तपासा.</translation>
 <translation id="8973263196882835828">लाइव्ह कॅप्शन सुरू करा</translation>

@@ -1865,6 +1865,7 @@
 <translation id="2428978615149723410">这些购物车</translation>
 <translation id="2431027948063157455">无法加载 Google 助理。请检查您的网络连接，然后重试。</translation>
 <translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
+<translation id="243275146591958220">取消下载</translation>
 <translation id="2433452467737464329">在网址中添加查询参数以便自动刷新网页：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外观</translation>
 <translation id="2433836460518180625">仅解锁设备</translation>
@@ -8978,6 +8979,7 @@
 <translation id="81238879832906896">黄色和白色花朵</translation>
 <translation id="8123975449645947908">向后滚动</translation>
 <translation id="8124313775439841391">受管理的 ONC</translation>
+<translation id="8125651784723647184">密码分享功能由您的管理员管理</translation>
 <translation id="8129265306888404830">如果想通过贵组织 (<ph name="EMAIL_DOMAIN" />) 使用电子邮件地址，您需要使用企业注册。如果此设备是用于个人用途，请使用您的个人 Google 账号登录。</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
@@ -9044,7 +9046,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。这是第 <ph name="ITEM_POSITION" /> 台打印机，共 <ph name="NUM_PRINTERS" /> 台。</translation>
 <translation id="8180785270975217276">节能模式已开启</translation>
 <translation id="8180786512391440389">“<ph name="EXTENSION" />”可以读取及删除选中位置的图片、视频及音频文件。</translation>
-<translation id="8180826593917851025">配置 <ph name="DEVICE_TYPE" /> 热点</translation>
 <translation id="8181215761849004992">无法加入到该网域中。请检查您的账号以了解您是否有足够的权限来添加设备。</translation>
 <translation id="8182105986296479640">应用无响应。</translation>
 <translation id="8182412589359523143">如需删除这部 <ph name="DEVICE_TYPE" /> 上的所有数据，请<ph name="BEGIN_LINK" />点击此处<ph name="END_LINK" />。</translation>
@@ -10041,6 +10042,7 @@
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>
 <translation id="8968766641738584599">保存卡片</translation>
 <translation id="8968906873893164556">选择要用于设置的账号</translation>
+<translation id="8970887620466824814">出了点问题。</translation>
 <translation id="89720367119469899">转义</translation>
 <translation id="8972513834460200407">请与您的网络管理员联系，确保防火墙没有阻止系统从 Google 服务器下载内容。</translation>
 <translation id="8973263196882835828">启用实时字幕(&amp;E)</translation>

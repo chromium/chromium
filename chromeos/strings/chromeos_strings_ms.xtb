@@ -134,6 +134,7 @@
 <translation id="1852934301711881861">Pasang Chrome OS Flex</translation>
 <translation id="1856388568474281774">Anak panah ke bawah</translation>
 <translation id="1858620243986915808">Lampirkan tangkapan skrin</translation>
+<translation id="1871413952174074704">APN tidak boleh mengandungi lebih daripada <ph name="CHAR_LIMIT" /> aksara</translation>
 <translation id="1871569928317311284">Matikan tema gelap</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Matikan mod gelap</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Merah jambu cerah</translation>
 <translation id="982713511914535780">Jalankan Ujian nyahcas</translation>
 <translation id="987264212798334818">Umum</translation>
+<translation id="995062385528875723">Tidak dapat menggunakan huruf aksen, abjad bukan Latin atau simbol</translation>
 </translationbundle>

@@ -13,7 +13,6 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1058669287135776095">Jy is vanlyn. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="10614374240317010">Nooit gestoor nie</translation>
-<translation id="1062628064301375934">Help ons om 'n meer private web te bou</translation>
 <translation id="107147699690128016">As jy die lêeruitbreiding verander, sal die lêer dalk in 'n ander program oopmaak en sal dit potensieel skadelik wees vir jou toestel.</translation>
 <translation id="1089606299949659462">Kontrolering is afgehandel!</translation>
 <translation id="1095761715416917775">Maak seker dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
@@ -32,6 +31,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1142732900304639782">Moenie aanbied om hierdie werwe te vertaal nie</translation>
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sal in Chrome oopmaak. Deur voort te gaan, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
+<translation id="115483310321669804">Gebruik wagwoord <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1174479719160874822">Chrome sal die mobiele werf versoek wanneer die skerm smal is</translation>
 <translation id="1177863135347784049">Gepasmaak</translation>
@@ -86,7 +86,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> dae gelede aktief</translation>
 <translation id="13931502444227376">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Besoek hierdie werf se <ph name="BEGIN_LINK1" />diensbepalings<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Soek met <ph name="PRODUCT_NAME" /></translation>
-<translation id="139993653570221430">Jy kan enige tyd in Chrome-instellings van plan verander. Die proeflopies werk saam met die huidige manier waarop advertensies gewys word, en daarom sal jy nie dadelik veranderinge sien nie.</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1409879593029778104">Aflaai van <ph name="FILE_NAME" /> is verhinder omdat die lêer reeds bestaan.</translation>
@@ -99,7 +98,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1448440926884431741">Organiseer jou nagespoorde produkte in Boekmerke</translation>
 <translation id="1450753235335490080">Kan nie <ph name="CONTENT_TYPE" /> deel nie</translation>
 <translation id="1466383950273130737">Kies Chrome se taal</translation>
-<translation id="1474893630593443211">Meer beheer oor die advertensies wat jy sien</translation>
 <translation id="1477626028522505441">Kon <ph name="FILE_NAME" /> weens bedienerkwessies nie aflaai nie.</translation>
 <translation id="148482509007564431">Boekmerkstoorvloei</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
@@ -109,7 +107,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1513352483775369820">Boekmerke en webgeskiedenis</translation>
 <translation id="1513814250881909472">Sinkroniseer om jou oortjies van jou ander toestelle af te kry</translation>
 <translation id="1513858653616922153">Vee wagwoord uit</translation>
-<translation id="1514552811327923157">Privacy Sandbox-porboodskap is teen volle hoogte oopgemaak</translation>
 <translation id="1521774566618522728">Aktief vandag</translation>
 <translation id="1544826120773021464">Tik op die "Bestuur rekening"-knoppie om jou Google-rekening te bestuur</translation>
 <translation id="1549000191223877751">Beweeg na 'n ander venster</translation>
@@ -121,7 +118,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1592864538817356322">Standaardbeskerming:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> voorgestelde items op lys hieronder.</translation>
 <translation id="1598163867407640634">Gebruik <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. Of jy kan belangstellings verwyder wat jy wil hê Chrome moenie oorweeg nie.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Verwyder 1 gekose item}other{Verwyder # gekose items}}</translation>
 <translation id="1633659023549081553">Ontdek nuwe inhoud op Chrome se tuisblad</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
@@ -148,11 +144,11 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1779766957982586368">Maak venster toe</translation>
 <translation id="1791662854739702043">Geïnstalleer</translation>
 <translation id="1792959175193046959">Verander enige tyd die verstekaflaailigging</translation>
+<translation id="1796666869097395659">Maak oortjie klein om later daarna terug te keer</translation>
 <translation id="1807246157184219062">Lig</translation>
 <translation id="1810845389119482123">Aanvanklike sinkronisering-opstelling is nie klaar nie</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan nie voortgaan om <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> te gebruik nie</translation>
 <translation id="1829244130665387512">Vind op bladsy</translation>
-<translation id="1832459821645506983">Ja, ek is in</translation>
 <translation id="185383612275551373">Sinkroniseer om die relevantste inhoud van Google af te kry</translation>
 <translation id="1871098866036088250">Maak in Chrome-blaaier oop</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
@@ -185,14 +181,12 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="200114059308480249">Sluit omringende teks by Google-soektogte in?</translation>
 <translation id="2009341475524975924">Om die werkverrigting van ’n advertensie te meet, word beperkte soorte data tussen werwe gedeel, soos die tyd van die dag waarop ’n advertensie vir jou gewys is.</translation>
 <translation id="201060170519281460">Jou profielslot hou jou inligting veilig in die motor, insluitend gesinkroniseerde wagwoorde, betalings en meer.</translation>
-<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# lêer}other{# lêers}}</translation>
 <translation id="2021896219286479412">Volskermwerfkontroles</translation>
 <translation id="2038563949887743358">Skakel Versoek rekenaarwerf aan</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> het ook data in Chrome</translation>
 <translation id="2046634576464120978">Kon nie registreer nie</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie. Jy kan nie hierdie instelling verander nie omdat Gevorderde Beskerming geaktiveer is.</translation>
-<translation id="2053105195397337973">Ons verken tans maniere om nasporing te beperk terwyl ons werwe in staat stel om advertensie-strooipos en -bedrog te stop.</translation>
 <translation id="2056878612599315956">Werf is onderbreek</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Kon 1 item nie aflaai nie}other{Kon # items nie aflaai nie}}</translation>
 <translation id="2067805253194386918">teks</translation>
@@ -304,7 +298,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2650348088770008516">Privaatheidgidsverduideliking is toegemaak</translation>
 <translation id="2650408372219180431">Voer en vee wagwoorde wat op hierdie toestel gestoor is, uit</translation>
 <translation id="2650751991977523696">Laai lêer weer af?</translation>
-<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# oudiolêer}other{# oudiolêers}}</translation>
 <translation id="265156376773362237">Standaardvooraflaai</translation>
 <translation id="2656405586795711023">Webprogramme</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
@@ -315,7 +308,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
 <translation id="2718846868787000099">Die werwe wat jy besoek, kan jou voorkeure sien sodat dit vir jou inhoud in jou voorkeurtale kan wys</translation>
-<translation id="2722945394406572875">Privacy Sandbox-porboodskap is toegemaak</translation>
 <translation id="2723001399770238859">oudio</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> is nie tans beskikbaar nie.</translation>
 <translation id="2760805590727089264">MM/JJ</translation>
@@ -557,7 +549,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3985022125189960801">Voeg ’n werf weer by as jy dit in die poel werwe wil hê wat kan raai waarvan jy hou</translation>
 <translation id="3985215325736559418">Wil jy <ph name="FILE_NAME" /> weer aflaai?</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
-<translation id="3999683152997576765">Jy kan onderwerpe van belangstelling wat werwe gebruik om vir jou advertensies te wys, sien en verwyder. Chrome skat jou belangstellings op grond van jou onlangse blaaigeskiedenis.</translation>
 <translation id="4000212216660919741">Vanlyn tuisblad</translation>
 <translation id="4016425174436051808">Kan nie volg nie. Iets was fout.</translation>
 <translation id="4024768890073681126">Jou ouer bestuur jou blaaier</translation>
@@ -578,7 +569,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4095425503313512126">Blaai en soek is vinniger</translation>
 <translation id="4096227151372679484">Boekmerkstoorvloei is teen halwe hoogte oopgemaak</translation>
 <translation id="4101475238162928417">Sinkroniseer om jou wagwoorde, boekmerke en meer op al jou ander toestelle te kry</translation>
-<translation id="4106587138345390261">Chrome verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="4108314971463891922">Volg</translation>
 <translation id="4108998448622696017">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind.</translation>
 <translation id="4116038641877404294">Laai bladsye af om hulle vanlyn te gebruik</translation>
@@ -611,7 +601,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4250229828105606438">Skermkiekie</translation>
 <translation id="4256782883801055595">Oopbronlisensies</translation>
 <translation id="4257230861809842349">Vee wagwoorde van Google Wagwoordbestuurder af uit?</translation>
-<translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Watter data gebruik word:<ph name="END_BOLD" /> Jou blaaigeskiedenis, 'n rekord van werwe wat jy besoek het deur Chrome op hierdie toestel te gebruik.</translation>
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
 <translation id="4277529130885813215">Gebruik ’n ander toestel</translation>
 <translation id="4283102315569707115">Versoek rekenaarwerwe by verstek?</translation>
@@ -748,11 +737,11 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4910889077668685004">Betalingprogramme</translation>
 <translation id="4912413785358399818">Skuif oortjie</translation>
 <translation id="4913169188695071480">Hou op herlaai</translation>
-<translation id="4921180162323349895">{FILE_COUNT,plural, =1{# bladsy}other{# bladsye}}</translation>
 <translation id="492284538114688557">Prysdaling is opgemerk</translation>
 <translation id="4925120120285606924">Skermkiekie <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Jou wagwoorde sal as 'n tekslêer uitgevoer en afgelaai word. Hulle sal sigbaar wees vir almal en enige program met toegang tot die bestemminglêer.</translation>
 <translation id="4926901776383726965">Jy kan prente en lêers stoor om vanlyn te bekyk of in ander apps te deel</translation>
+<translation id="4928144016283278047">Beskerming teen naspoorders (derdepartywebkoekies, IP-nasporing, indringende skripte en meer)</translation>
 <translation id="4932247056774066048">Jou Chrome-data sal van hierdie toestel af uitgevee word omdat jy uitteken by 'n rekening wat deur <ph name="DOMAIN_NAME" /> bestuur word. Dit sal in jou Google-rekening bly.</translation>
 <translation id="4943703118917034429">Virtuele realiteit</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
@@ -1033,7 +1022,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6437478888915024427">Bladsy-inligting</translation>
 <translation id="6440291723980579689">Bladsye laai slegs nadat jy hulle oopgemaak het</translation>
 <translation id="6441734959916820584">Naam is te lank</translation>
-<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# prent}other{# prente}}</translation>
 <translation id="6447558397796644647">Kan nie daardie boekmerk opspoor nie. Gaan jou spelling na of voeg 'n nuwe boekmerk by.</translation>
 <translation id="6459045781120991510">Opnames</translation>
 <translation id="6461962085415701688">Kan nie lêer oopmaak nie</translation>
@@ -1042,7 +1030,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6475951671322991020">Laai video af</translation>
 <translation id="6477928892249167417">Dit lyk of hierdie werwe vir jou belangrik is:</translation>
 <translation id="6482749332252372425">Kon <ph name="FILE_NAME" /> weens 'n gebrek aan bergingspasie nie aflaai nie.</translation>
-<translation id="6496823230996795692">Koppel aan die internet om <ph name="APP_NAME" /> vir die eerste keer te gebruik.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Lêer is afgelaai}other{# aflaaie is voltooi}}</translation>
 <translation id="6508722015517270189">Herbegin Chrome</translation>
 <translation id="6527303717912515753">Deel</translation>
@@ -1106,7 +1093,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6751521182688001123">Maak vinnig 'n nuwe oortjie oop. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="6756507620369789050">Deel terugvoer</translation>
 <translation id="6767294960381293877">Lys toestelle om 'n oortjie mee te deel, is teen halwe hoogte oopgemaak.</translation>
-<translation id="6770042910635026163">Werwe wat jy besoek wat jou belangstellings definieer</translation>
 <translation id="6770602306803890733">Verbeter sekuriteit vir jou en almal op die web</translation>
 <translation id="6775840696761158817">Wanneer jy op die adresbalk of soekkassie tik of daarin tik, sal jy voorstelle van jou versteksoekenjin sien. Dit is af in Incognito.</translation>
 <translation id="6785476624617658922">Chrome en Chrome-bedryfstelsel se bykomende diensbepalings</translation>
@@ -1185,7 +1171,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7173114856073700355">Maak Instellings oop</translation>
 <translation id="7177466738963138057">Jy kan dit later verander in Instellings</translation>
 <translation id="7177873915659574692">Kan nie QR-kode skep nie. URL is meer as <ph name="CHARACTER_LIMIT" /> karakters.</translation>
-<translation id="7177959540995930968">Jy kan in Chrome-instellings meer oor hierdie kenmerke te wete kom.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7183693674623539380">Oortjiegroep – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is.</translation>
@@ -1195,7 +1180,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7207760545532569765">Stel <ph name="TAB_COUNT" /> oortjies as nuwe agtergrondoortjies terug.</translation>
 <translation id="7217781228893594884">Incognito-oortjies sal gesluit word wanneer jy Chrome verlaat</translation>
 <translation id="7221869452894271364">Herlaai hierdie bladsy</translation>
-<translation id="7222235798733126207">Beperkte deling tussen werwe</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 aflaai hangende}other{# aflaaie hangende}}</translation>
 <translation id="72415438529550637">Wagwoordvoorstel is toe.</translation>
 <translation id="7242755609445462077">Gestileerde nota <ph name="CURRENT_DATE" /></translation>
@@ -1205,6 +1189,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="727288900855680735">Dien <ph name="ONE_TIME_CODE" /> in by <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Geblokkeerde werf</translation>
 <translation id="7276100255011548441">Chrome vee onderwerpe wat ouer as 4 weke is outomaties uit. As jy verder blaai, kan ’n onderwerp weer op die lys verskyn. Of jy kan onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie. Kom meer te wete oor hoe om <ph name="BEGIN_LINK" />jou advertensieprivaatheid in Chrome te bestuur.<ph name="END_LINK" /></translation>
+<translation id="7284878711178835966">Terwyl jy tik, stuur Chrome die inhoud van die adresbalk of soekkassie na jou versteksoekenjin</translation>
 <translation id="7286703216224610554">Deel net reaksie</translation>
 <translation id="7289303553784750393">Jy kan ander maniere probeer om voort te gaan op <ph name="SITE_ETLD_PLUS_ONE" /> as hierdie kwessie aanhou voorkom al is jy aanlyn.</translation>
 <translation id="7290209999329137901">Hernoeming is nie beskikbaar nie</translation>
@@ -1410,6 +1395,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8190358571722158785">1 dag oor</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Hervat</translation>
+<translation id="820568752112382238">Mees besoekte werwe</translation>
 <translation id="8209050860603202033">Maak prent oop</translation>
 <translation id="8210770465353466621">Jy sal jou oortjies hier kry</translation>
 <translation id="8215740705341534369">Kantblad</translation>
@@ -1434,11 +1420,9 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8333340769932050274">Jy kan onderwerpe blokkeer wat jy nie wil hê met werwe gedeel moet word nie. Chrome vee ook jou onderwerpe wat ouer as 4 weke is, outomaties uit. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="834313815369870491">Moet nooit werwe vertaal nie</translation>
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
-<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Werwe kan inligting oor jou belangstellings in Chrome stoor. As jy byvoorbeeld ’n werf besoek om skoene vir ’n marathon te koop, kan die werf jou belangstelling definieer as iemand wat marathons hardloop. As jy later ’n ander werf besoek om vir ’n wedloop te registreer, kan daardie werf vir jou ’n advertensie vir drafskoene op grond van jou belangstellings wys.</translation>
 <translation id="8354977102499939946">Soek vinnig met jou stem. Gaan na Instellings om hierdie kortpad te wysig.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> aflaaie is teruggestel</translation>
 <translation id="8368001212524806591">Spoor prys na</translation>
-<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Chrome kan jou belangstellings skat. 'n Werf wat jy besoek kan Chrome later vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="8387617938027387193">Verifieer dat dit jy is</translation>
 <translation id="8393700583063109961">Stuur boodskap</translation>
 <translation id="8394720698884623075">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg is</translation>
@@ -1446,7 +1430,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8413126021676339697">Wys volle geskiedenis</translation>
 <translation id="8413795581997394485">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. Wanneer jy ’n werf besoek, stuur Chrome ’n verdoeselde gedeelte van die URL na Google deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>
 <translation id="8414396119627470038">Meld aan by <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8416347857511542594">Kom meer te wete oor personalisering in Chrome</translation>
 <translation id="8419244640277402268">Sluit in</translation>
 <translation id="8422250855136581222">Geen oortjies op hierdie toestel nie</translation>
 <translation id="8424781820952413435">Bladsy is gestuur. Maak Chrome op jou <ph name="DEVICE_TYPE" /> oop om dit te sien</translation>
@@ -1479,7 +1462,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8506357771923193001">Jy sal jou aflaaie hier kry</translation>
 <translation id="8514477925623180633">Voer wagwoorde wat met Chrome gestoor word, uit</translation>
 <translation id="8516012719330875537">Prentredigeerder</translation>
-<translation id="8516431725144212809">Jou belangstellings soos geskat deur Chrome</translation>
 <translation id="8523928698583292556">Vee gestoorde wagwoord uit</translation>
 <translation id="8526855376374973824">Kennisgewingtoestemmingvloei</translation>
 <translation id="8540136935098276800">Voer 'n URL in wat reg geformateer is</translation>
@@ -1543,7 +1525,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="885480114717186641">Jy kan die rekenaarwerf vir <ph name="HOST_NAME" /> versoek</translation>
 <translation id="8856607253650333758">Kry beskrywings</translation>
 <translation id="8856931513242997049">Kennisgewingtoestemmingvloei is toegemaak</translation>
-<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Ons vee werwe op die lys wat ouer as 4 weke is outomaties uit om jou privaatheid te beskerm. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy nie wil hê dat daardie werf ooit jou belangstellings moet bepaal nie.</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8909135823018751308">Deel …</translation>
 <translation id="8912362522468806198">Google-rekening</translation>
@@ -1570,7 +1551,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9022774213089566801">Gereeld besoek</translation>
 <translation id="9022871169049522985">Werwe en adverteerders kan die werkverrigting van hul advertensies meet</translation>
 <translation id="9035378196785279980">Skuif na \u2026</translation>
-<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video's}}</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="9050666287014529139">Wagfrase</translation>
 <translation id="9055497320631373736">Werf is weer by potensiële werwe gevoeg</translation>
@@ -1595,7 +1575,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9106148373857059373">Boekmerkstoorvloei is toegemaak</translation>
 <translation id="9108312223223904744">Foon as 'n sekuriteitsleutelvervanging</translation>
 <translation id="9108808586816295166">Veilige DNS is dalk nie die hele tyd beskikbaar nie</translation>
-<translation id="9128984223251192329">Privacy Sandbox-porboodskap is teen halwe hoogte oopgemaak</translation>
 <translation id="9131209053278896908">Geblokkeerde werwe verskyn hier</translation>
 <translation id="9133397713400217035">Verken vanlyn</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>
@@ -1612,7 +1591,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9209888181064652401">Kan nie oproepe maak nie</translation>
 <translation id="9212845824145208577">Kan nie laer gaan nie. Probeer om laer op die bladsy te begin.</translation>
 <translation id="9219103736887031265">Prente</translation>
-<translation id="9219582468404818260">Help ons om 'n beter web te bou</translation>
 <translation id="92381315203627188">Chrome enkripteer en laai bladsye vooraf deur Google-bedieners sonder webkoekies wanneer 'n werf vra om skakels op hul bladsy privaat vooraf te laai. Dit versteek jou identiteit vir die voorafgelaaide werf.</translation>
 <translation id="926205370408745186">Verwyder jou Chrome-aktiwiteit van Digitale Welstand</translation>
 <translation id="927968626442779827">Gebruik Ligte Modus op Google Chrome</translation>

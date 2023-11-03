@@ -116,6 +116,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa i tasti Freccia per spostarti tra le date.</translation>
+<translation id="141170878022560212">Pulsante centrale</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app installata</translation>
 <translation id="1414919006379339073">Chiudi la finestra in uso</translation>
 <translation id="1415846719612499304">Mostra l'elenco di reti. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Siti web che includono le pagine che hai visitato e le pagine aperte</translation>
 <translation id="181103072419391116">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
-<translation id="1815245884418711390">Attiva/disattiva l'hotspot. L'hotspot è disattivato.</translation>
 <translation id="1816896987747843206">Consente l'accesso alla fotocamera per tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="1823280932251546115">Barra di stato, ora <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2086334242442703436">Aprire il selettore di emoji</translation>
 <translation id="2088116547584365419">giochi</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
+<translation id="2107581415810719320">Pulsante Altro <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Il cavo USB-C non supporta Thunderbolt. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="2108303511227308752">La scorciatoia da tastiera Alt + Backspace è cambiata. Per usare il tasto Canc, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
@@ -972,7 +973,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4936329710968938986">Per tutti, off</translation>
 <translation id="4937170330762390348">Con la dettatura, puoi digitare usando la voce. Premi il tasto per la dettatura o seleziona l'icona a forma di microfono nella parte inferiore dello schermo quando è attivo un campo di testo. La lingua di dettatura è impostata su: <ph name="LANGUAGE" />. I file di contenuti vocali verranno scaricati per consentirti di utilizzare la dettatura offline. Puoi cambiare la lingua di dettatura in qualsiasi momento in Impostazioni &gt; Accessibilità.</translation>
 <translation id="4938176435186993759">Nascondi tutti i suggerimenti</translation>
-<translation id="4943007472417128747">L'hotspot è stato disattivato per utilizzare il Wi-Fi. Per utilizzare l'hotspot, disattiva il Wi-Fi.</translation>
 <translation id="4945196315133970626">Disattiva le notifiche</translation>
 <translation id="4946376291507881335">Acquisisci</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
@@ -993,7 +993,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5009463889040999939">Ridenominazione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Cerca nelle categorie</translation>
-<translation id="5029356738310729434">Accesso al microfono del dispositivo attivo</translation>
 <translation id="5030659775136592441">Consente di mostrare Gestione preferiti</translation>
 <translation id="5030687792513154421">Tempo scaduto</translation>
 <translation id="5033299697334913360">Fai clic su un punto qualsiasi per acquisire l'intera schermata</translation>
@@ -1339,7 +1338,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="643147933154517414">Operazioni completate</translation>
 <translation id="6431865393913628856">Registrazione dello schermo</translation>
 <translation id="643593192654616063">Spazio di archiviazione in uso: <ph name="STORAGE_IN_USE_SIZE" /> su un totale di <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Accesso al microfono del dispositivo non attivo</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Trova le tue immagini in base ai contenuti</translation>
@@ -1465,7 +1463,6 @@ Nuova installazione</translation>
 <translation id="6912841030378044227">Imposta lo stato attivo sulla barra degli indirizzi</translation>
 <translation id="6912901278692845878">Tour rapido</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
-<translation id="6920245099716267363">Attiva/disattiva l'hotspot. L'hotspot è attivo, 1 dispositivo connesso.</translation>
 <translation id="692135145298539227">elimina</translation>
 <translation id="6929081673585394903">Mostra controlli</translation>
 <translation id="6931576957638141829">Salva in</translation>
@@ -1561,7 +1558,6 @@ Nuova installazione</translation>
 <translation id="7378203170292176219">Trascina per selezionare l'area da registrare</translation>
 <translation id="7378594059915113390">Controlli multimediali</translation>
 <translation id="7378889811480108604">Modalità risparmio energetico non attiva</translation>
-<translation id="7382640522316003298">Attiva/disattiva l'hotspot. Hotspot attivo, <ph name="DEVICECOUNT" /> dispositivi connessi.</translation>
 <translation id="7382680553121047388">On</translation>
 <translation id="7384028040782072252">Fai clic con il tasto destro del mouse su un punto qualsiasi per riordinare le app</translation>
 <translation id="7386767620098596324">Attiva/disattiva la connessione di rete. <ph name="STATE_TEXT" />.</translation>
@@ -1731,7 +1727,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8036504271468642248">Frase precedente</translation>
 <translation id="8042893070933512245">Apri il menu Impostazioni di accessibilità</translation>
 <translation id="8044457332620420407">La retroilluminazione della tastiera non è attiva</translation>
-<translation id="8048077032188362328">L'amministratore ha disattivato l'hotspot.</translation>
 <translation id="8048123526339889627">Impostazioni Bluetooth</translation>
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
@@ -1752,7 +1747,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8131994907636310308">Chiudi notifica toast di ordinamento</translation>
 <translation id="8132793192354020517">Connesso a <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Attiva/disattiva l'hotspot. L'hotspot è attivo, nessun dispositivo connesso.</translation>
 <translation id="8138705869659070104">Attiva dopo configur. dispos.</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8142441511840089262">Doppio clic</translation>

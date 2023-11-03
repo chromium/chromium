@@ -211,7 +211,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1796561540704213354">Site-urile, inclusiv paginile pe care le-ai accesat și paginile deschise</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
-<translation id="1815245884418711390">Comută hotspotul. Hotspotul este dezactivat.</translation>
 <translation id="1816896987747843206">Astfel, accesul la cameră este permis pentru toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1823280932251546115">Bara de stare, ora: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4936329710968938986">Toți, dezactivat</translation>
 <translation id="4937170330762390348">Cu ajutorul dictării, poți să introduci text cu vocea. Apasă tasta de dictare sau selectează pictograma microfon din partea de jos a ecranului atunci când ești într-un câmp de text. Limba de dictare este setată la <ph name="LANGUAGE" />. Fișierele de redare în scris a vorbirii se vor descărca, astfel încât să poți folosi dictarea offline. Poți schimba limba de dictare oricând în Setări &gt; Accesibilitate.</translation>
 <translation id="4938176435186993759">Ascunde toate sugestiile</translation>
-<translation id="4943007472417128747">Hotspotul a fost dezactivat pentru a folosi conexiunea Wi-Fi. Pentru a folosi hotspotul, dezactivează conexiunea Wi-Fi.</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
 <translation id="4946376291507881335">Capturează</translation>
 <translation id="495046168593986294">Derulează în sus</translation>
@@ -996,7 +994,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5009463889040999939">Se redenumește profilul. Poate dura câteva minute.</translation>
 <translation id="5016558321564993266">Comută marcatorul. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Caută categorii</translation>
-<translation id="5029356738310729434">Accesul la microfonul dispozitivului este activat</translation>
 <translation id="5030659775136592441">Afișează managerul de marcaje</translation>
 <translation id="5030687792513154421">Timpul a expirat</translation>
 <translation id="5033299697334913360">Dă clic oriunde pentru a captura ecranul complet</translation>
@@ -1342,7 +1339,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="643147933154517414">Gata</translation>
 <translation id="6431865393913628856">Înregistrarea ecranului</translation>
 <translation id="643593192654616063">Se folosește un spațiu de stocare de <ph name="STORAGE_IN_USE_SIZE" /> din totalul de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Accesul la microfonul dispozitivului este dezactivat</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Găsește imagini în funcție de conținut</translation>
@@ -1468,7 +1464,6 @@ Instalare nouă</translation>
 <translation id="6912841030378044227">Focalizează bara de adrese</translation>
 <translation id="6912901278692845878">Tur rapid</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
-<translation id="6920245099716267363">Comută hotspotul. Hotspotul este activat, un dispozitiv conectat.</translation>
 <translation id="692135145298539227">șterge</translation>
 <translation id="6929081673585394903">Afișează comenzile</translation>
 <translation id="6931576957638141829">Salvează în</translation>
@@ -1564,7 +1559,6 @@ Instalare nouă</translation>
 <translation id="7378203170292176219">Trage pentru a selecta o zonă de înregistrat</translation>
 <translation id="7378594059915113390">Comenzi media</translation>
 <translation id="7378889811480108604">Modul Economisirea bateriei este dezactivat</translation>
-<translation id="7382640522316003298">Comută hotspotul. Hotspotul este activat, <ph name="DEVICECOUNT" /> dispozitive conectate.</translation>
 <translation id="7382680553121047388">Activat</translation>
 <translation id="7384028040782072252">Dă clic dreapta oriunde ca să-ți reordonezi aplicațiile</translation>
 <translation id="7386767620098596324">Comută conexiunea la rețea. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1728,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8042893070933512245">Deschide meniul cu setări de accesibilitate</translation>
 <translation id="8044457332620420407">Retroiluminarea tastaturii este dezactivată</translation>
-<translation id="8048077032188362328">Administratorul a dezactivat hotspotul.</translation>
 <translation id="8048123526339889627">Setări Bluetooth</translation>
 <translation id="8051716679295756675">Șablonul numit <ph name="DESK_TEMPLATE_NAME" /> există deja</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>
@@ -1755,7 +1748,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8131994907636310308">Închide notificarea toast de sortare</translation>
 <translation id="8132793192354020517">Conectat la <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Comută hotspotul. Hotspotul este activat. Niciun dispozitiv conectat.</translation>
 <translation id="8138705869659070104">Activează după configurare</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8142441511840089262">Dublu clic</translation>

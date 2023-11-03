@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">बंद करें</translation>
 <translation id="1796561540704213354">वेबसाइटों की कैटगरी में वे पेज दिखाए जाते हैं जिन्हें आपने देखा या खोला होता है</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
-<translation id="1815245884418711390">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट बंद है.</translation>
 <translation id="1816896987747843206">यह ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
 <translation id="1823280932251546115">स्टेटस ट्रे, समय <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@
 <translation id="3340978935015468852">सेटिंग</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कैप्चर किया गया</translation>
 <translation id="334252345105450327">स्क्रीनशॉट लो</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> के लिए डिवाइस का पासवर्ड डालें</translation>
 <translation id="334927402682780278">कर्सर जहां मौजूद है, वहां से लेकर लाइन के आखिर तक का टेक्स्ट चुनें</translation>
 <translation id="3349345708646875009">टास्क मैनेजर खोलने के लिए</translation>
 <translation id="3364721542077212959">स्टाइलस टूल</translation>
@@ -976,7 +976,6 @@
 <translation id="4936329710968938986">सभी के लिए, बंद है</translation>
 <translation id="4937170330762390348">लिखवाने की सुविधा की मदद से, बोलकर टाइप किया जा सकता है. जब आप टेक्स्ट फ़ील्ड में हों, तो लिखवाने वाला बटन दबाएं या स्क्रीन पर सबसे नीचे मौजूद माइक्रोफ़ोन आइकॉन को चुनें. लिखवाने की आपकी भाषा <ph name="LANGUAGE" /> पर सेट है. बोली पहचानने वाली फ़ाइलें डाउनलोड की जाएंगी, ताकि आप लिखवाने की सुविधा का ऑफ़लाइन इस्तेमाल कर सकें. आपके पास सेटिंग &gt; सुलभता में जाकर, कभी भी लिखवाने की भाषा बदलने का विकल्प मौजूद है.</translation>
 <translation id="4938176435186993759">सभी सुझाव छिपाएं</translation>
-<translation id="4943007472417128747">हॉटस्पॉट बंद कर दिया गया है, ताकि वाई-फ़ाई का इस्तेमाल किया जा सके. हॉटस्पॉट का इस्तेमाल करने के लिए, वाई-फ़ाई बंद करें.</translation>
 <translation id="4945196315133970626">सूचनाएं पाने की सुविधा बंद करें</translation>
 <translation id="4946376291507881335">कैप्चर करें</translation>
 <translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
@@ -997,7 +996,6 @@
 <translation id="5009463889040999939">प्रोफ़ाइल का नाम बदला जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="5016558321564993266">मार्कर को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">कैटगरी खोजें</translation>
-<translation id="5029356738310729434">डिवाइस का माइक्रोफ़ोन चालू है</translation>
 <translation id="5030659775136592441">बुकमार्क मैनेजर दिखाएं</translation>
 <translation id="5030687792513154421">समय पूरा हो गया</translation>
 <translation id="5033299697334913360">फ़ुल स्क्रीन कैप्चर करने के लिए कहीं पर भी क्लिक करें</translation>
@@ -1343,7 +1341,6 @@
 <translation id="643147933154517414">सभी पूरे हो गए</translation>
 <translation id="6431865393913628856">स्क्रीन रिकॉर्ड</translation>
 <translation id="643593192654616063"><ph name="STORAGE_TOTAL_SIZE" /> में से <ph name="STORAGE_IN_USE_SIZE" /> मेमोरी इस्तेमाल की जा चुकी है</translation>
-<translation id="6442259747294754014">डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">सीपीयू</translation>
 <translation id="6446225358675593408">कॉन्टेंट के हिसाब से अपनी इमेज ढूंढना</translation>
@@ -1469,7 +1466,6 @@
 <translation id="6912841030378044227">पता बार पर फ़ोकस करें</translation>
 <translation id="6912901278692845878">झटपट देखें</translation>
 <translation id="6919251195245069855">आपका स्मार्ट कार्ड पहचाना नहीं जा सका. फिर से कोशिश करें.</translation>
-<translation id="6920245099716267363">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट चालू है, एक डिवाइस कनेक्ट है.</translation>
 <translation id="692135145298539227">मिटाएं</translation>
 <translation id="6929081673585394903">कंट्रोल दिखाएं</translation>
 <translation id="6931576957638141829">यहां सेव करें</translation>
@@ -1565,7 +1561,6 @@
 <translation id="7378203170292176219">रिकॉर्ड की जाने वाली जगह चुनने के लिए खींचें</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रण</translation>
 <translation id="7378889811480108604">बैटरी सेवर मोड बंद है</translation>
-<translation id="7382640522316003298">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट चालू है, <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
 <translation id="7382680553121047388">चालू करें</translation>
 <translation id="7384028040782072252">अपने ऐप्लिकेशन का क्रम बदलने के लिए, स्क्रीन पर कहीं भी दायां क्लिक करें</translation>
 <translation id="7386767620098596324">इंटरनेट को टॉगल करें. <ph name="STATE_TEXT" />.</translation>
@@ -1589,6 +1584,7 @@
 <translation id="7489261257412536105">फ़ुल स्क्रीन में देखें या उससे बाहर निकलें</translation>
 <translation id="7490360161041035804">Google Drive की फ़ाइलों के साथ-साथ, ज़रूरी फ़ाइलों को पिन किया जा सकता है. किसी आइटम को पिन करने के लिए, उस पर कर्सर ले जाएं या Files खोलें और उस आइटम पर दायां क्लिक करें.</translation>
 <translation id="7497767806359279797">भाषा और कीवर्ड चुनें</translation>
+<translation id="7507162824403726948">अपनी पहचान की पुष्टि करें</translation>
 <translation id="7508690557411636492">इसे पिछले महीने खोला गया था</translation>
 <translation id="7509246181739783082">अपनी पहचान की पुष्टि करें</translation>
 <translation id="7512509370370076552">दायां क्लिक करने पर मिलने वाला शॉर्टकट, alt + click से बदलकर <ph name="LAUNCHER_KEY_NAME" /> बटन + क्लिक हो गया है</translation>
@@ -1735,7 +1731,6 @@
 <translation id="8036504271468642248">पिछले वाक्य पर जाएं</translation>
 <translation id="8042893070933512245">सुलभता सेटिंग मेन्यू खोलें</translation>
 <translation id="8044457332620420407">कीबोर्ड की बैकलाइट बंद है</translation>
-<translation id="8048077032188362328">आपके एडमिन ने हॉटस्पॉट बंद कर दिया है.</translation>
 <translation id="8048123526339889627">ब्लूटूथ की सेटिंग</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम का टेंप्लेट पहले से मौजूद है</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
@@ -1756,7 +1751,6 @@
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8131994907636310308">ऐप्लिकेशन को क्रम से लगाने से जुड़ा टोस्ट बंद करें</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> से कनेक्ट है</translation>
-<translation id="8135163608236671037">हॉटस्पॉट का बटन टॉगल करें. हॉटस्पॉट चालू है, लेकिन कोई डिवाइस कनेक्ट नहीं है.</translation>
 <translation id="8138705869659070104">डिवाइस सेटअप के बाद चालू करें</translation>
 <translation id="813913629614996137">शुरू हो रहा है...</translation>
 <translation id="8142441511840089262">दो बार क्लिक करें</translation>

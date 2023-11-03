@@ -1886,6 +1886,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2428978615149723410">nämä ostoskorit</translation>
 <translation id="2431027948063157455">Google Assistantin lataaminen epäonnistui. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="243179355394256322">Organisaatiosi sallii laitteiden rekisteröinnin vain valtuutetuille käyttäjille. Tällä käyttäjällä ei ole lupaa rekisteröidä laitteita. Varmista hallintakonsolin Käyttäjät-kohdasta, että käyttäjällä on lupa rekisteröidä Google Meet ‑laitteita.</translation>
+<translation id="243275146591958220">Peru lataus</translation>
 <translation id="2433452467737464329">Lisää kyselyparametri URL-osoitteeseen, jos haluat päivittää sivun automaattisesti: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Ulkoasu</translation>
 <translation id="2433836460518180625">Avaa vain laitteen lukitus</translation>
@@ -9067,7 +9068,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Tulostin <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Virransäästö päällä</translation>
 <translation id="8180786512391440389"><ph name="EXTENSION" /> voi lukea ja poistaa kuva-, video- ja äänitiedostoja valituissa sijainneissa.</translation>
-<translation id="8180826593917851025">Määritä <ph name="DEVICE_TYPE" />-hotspot</translation>
 <translation id="8181215761849004992">Verkkotunnukseen liittyminen ei onnistu. Katso tililtäsi, onko sinulla laitteiden lisäämisoikeudet.</translation>
 <translation id="8182105986296479640">Sovellus ei vastaa.</translation>
 <translation id="8182412589359523143">Jos haluat, että <ph name="DEVICE_TYPE" /> tyhjennetään kaikista tiedoista, <ph name="BEGIN_LINK" />klikkaa tätä<ph name="END_LINK" />.</translation>
@@ -10064,6 +10064,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8968527460726243404">Chrome-käyttöjärjestelmän näköistiedoston kirjoittaja</translation>
 <translation id="8968766641738584599">Tallenna kortti</translation>
 <translation id="8968906873893164556">Valitse käyttöönotossa käytettävä tili</translation>
+<translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Ota yhteyttä verkon järjestelmänvalvojaan ja varmista, ettei palomuuri estä latauksia Googlen palvelimilta.</translation>
 <translation id="8973263196882835828">&amp;Ota livetekstitys käyttöön</translation>

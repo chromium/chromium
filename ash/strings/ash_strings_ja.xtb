@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
-<translation id="1815245884418711390">アクセス ポイントを切り替えます。アクセス ポイントはオフです。</translation>
 <translation id="1816896987747843206">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1823280932251546115">ステータス トレイ、時間 <ph name="TIME" />、
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> のデバイス パスワードを入力してください</translation>
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
@@ -975,7 +975,6 @@
 <translation id="4936329710968938986">全ユーザー対象（オフ）</translation>
 <translation id="4937170330762390348">音声入力では、声を使って入力できます。テキスト欄にカーソルを置いて、音声入力キーを押すか、画面下部のマイクアイコンを選択します。音声入力の言語は<ph name="LANGUAGE" />に設定されています。音声ファイルがダウンロードされ、オフラインで音声入力を使用できます。音声入力の言語は [設定] &gt; [ユーザー補助] でいつでも変更できます。</translation>
 <translation id="4938176435186993759">すべての候補を非表示</translation>
-<translation id="4943007472417128747">Wi-Fi を使用するためアクセス ポイントがオフになりました。アクセス ポイントを使用するには、Wi-Fi をオフにしてください。</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
 <translation id="495046168593986294">上にスクロール</translation>
@@ -996,7 +995,6 @@
 <translation id="5009463889040999939">プロファイルの名前を変更しています。この処理には数分かかることがあります。</translation>
 <translation id="5016558321564993266">マーカーを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">検索カテゴリ</translation>
-<translation id="5029356738310729434">デバイスのマイクへのアクセスはオンになっています</translation>
 <translation id="5030659775136592441">ブックマーク マネージャーを表示する</translation>
 <translation id="5030687792513154421">時間切れです</translation>
 <translation id="5033299697334913360">全画面をキャプチャするには任意の場所をクリックしてください</translation>
@@ -1342,7 +1340,6 @@
 <translation id="643147933154517414">すべて確認済み</translation>
 <translation id="6431865393913628856">画面録画</translation>
 <translation id="643593192654616063">合計容量 <ph name="STORAGE_TOTAL_SIZE" /> 中 <ph name="STORAGE_IN_USE_SIZE" /> を使用しています</translation>
-<translation id="6442259747294754014">デバイスのマイクへのアクセスはオフになっています</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> に「<ph name="ROUTE_TITLE" />」をキャスト中</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">コンテンツから画像を探す</translation>
@@ -1468,7 +1465,6 @@
 <translation id="6912841030378044227">アドレスバーにフォーカスする</translation>
 <translation id="6912901278692845878">クイックツアー</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
-<translation id="6920245099716267363">アクセス ポイントを切り替えます。アクセス ポイントはオンです。1 台のデバイスが接続されています。</translation>
 <translation id="692135145298539227">削除</translation>
 <translation id="6929081673585394903">コントロールを表示</translation>
 <translation id="6931576957638141829">保存先</translation>
@@ -1565,7 +1561,6 @@
 <translation id="7378203170292176219">録画する領域をドラッグして選択してください</translation>
 <translation id="7378594059915113390">メディアの操作</translation>
 <translation id="7378889811480108604">バッテリー セーバー モードがオフです</translation>
-<translation id="7382640522316003298">アクセス ポイントを切り替えます。アクセス ポイントはオンです。<ph name="DEVICECOUNT" /> 台のデバイスが接続されています。</translation>
 <translation id="7382680553121047388">オン</translation>
 <translation id="7384028040782072252">任意の場所を右クリックしてアプリを並べ替えられます</translation>
 <translation id="7386767620098596324">ネットワーク接続を切り替えます。<ph name="STATE_TEXT" />。</translation>
@@ -1589,6 +1584,7 @@
 <translation id="7489261257412536105">全画面表示を開始または終了する</translation>
 <translation id="7490360161041035804">Google ドライブなどの重要なファイルを固定できます。固定するには、該当のファイルにカーソルを合わせるか、ファイルアプリで該当のファイルを右クリックします。</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
+<translation id="7507162824403726948">本人確認を完了してください</translation>
 <translation id="7508690557411636492">過去 1 か月以内に開いたファイル</translation>
 <translation id="7509246181739783082">本人確認</translation>
 <translation id="7512509370370076552">右クリックのショートカットが、Alt キー+クリックから <ph name="LAUNCHER_KEY_NAME" />キー+クリックに変更されました</translation>
@@ -1735,7 +1731,6 @@
 <translation id="8036504271468642248">前の文</translation>
 <translation id="8042893070933512245">ユーザー補助機能の設定メニューを開く</translation>
 <translation id="8044457332620420407">キーボードのバックライトはオフです</translation>
-<translation id="8048077032188362328">管理者がアクセス ポイントをオフにしています。</translation>
 <translation id="8048123526339889627">Bluetooth 設定</translation>
 <translation id="8051716679295756675">「<ph name="DESK_TEMPLATE_NAME" />」という名前のテンプレートはすでに存在しています</translation>
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
@@ -1756,7 +1751,6 @@
 <translation id="8131740175452115882">確認</translation>
 <translation id="8131994907636310308">並べ替えのトーストを閉じます</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> に接続しました</translation>
-<translation id="8135163608236671037">アクセス ポイントを切り替えます。アクセス ポイントはオンです。接続されているデバイスはありません。</translation>
 <translation id="8138705869659070104">デバイスのセットアップ後に有効にします</translation>
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8142441511840089262">ダブルクリック</translation>

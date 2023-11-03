@@ -116,6 +116,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1391102559483454063">Activé</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilisez les touches fléchées pour naviguer entre les dates.</translation>
+<translation id="141170878022560212">Bouton du centre</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, application installée</translation>
 <translation id="1414919006379339073">Fermer la fenêtre actuelle</translation>
 <translation id="1415846719612499304">Afficher la liste des réseaux. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web comprenant les pages que vous avez visitées et les pages ouvertes</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
-<translation id="1815245884418711390">Activer le point d'accès sans fil. Le point d'accès sans fil est désactivé</translation>
 <translation id="1816896987747843206">Cela donne à l'appareil photo l'accès à toutes les applications et à tous les sites Web disposant de l'autorisation pour l'appareil photo</translation>
 <translation id="1823280932251546115">Barre d'état, heure <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2086334242442703436">Ouvrir le sélecteur d'émoji</translation>
 <translation id="2088116547584365419">jeux</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
+<translation id="2107581415810719320">Autre bouton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Votre câble USB-C ne prend pas en charge la norme Thunderbolt. La performance de l'appareil peut être limitée.</translation>
 <translation id="2108303511227308752">Le raccourci-clavier Alt+Retour arrière a changé. Pour utiliser la touche Suppression, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
@@ -563,6 +564,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Prendre une capture d'écran</translation>
+<translation id="3346728094401457853">Entrez le mot de passe de l'appareil pour <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Sélectionner le texte du curseur à la fin de la ligne</translation>
 <translation id="3349345708646875009">Ouvrir le gestionnaire de tâches</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
@@ -974,7 +976,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4936329710968938986">Tous les utilisateurs, désactiver</translation>
 <translation id="4937170330762390348">Grâce à la Dictée, vous pouvez entrer du texte en utilisant votre voix. Appuyez sur la touche de la Dictée ou sélectionnez l'icône du microphone en bas de l'écran lorsque vous êtes sur un champ de texte. Langue de la Dictée présentement définie à : <ph name="LANGUAGE" />. Les fichiers vocaux seront téléchargés afin que vous puissiez utiliser la Dictée hors ligne. Vous pouvez changer la langue de la Dictée en tout temps dans Paramètres &gt; Accessibilité.</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
-<translation id="4943007472417128747">Le point d'accès sans fil a été désactivé pour utiliser le WiFi. Pour utiliser le point d'accès sans fil, désactivez le Wi-Fi.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
@@ -995,7 +996,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5009463889040999939">Modification du nom du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="5016558321564993266">Basculez le marqueur. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Rechercher des catégories</translation>
-<translation id="5029356738310729434">L'accès au microphone de l'appareil est activé</translation>
 <translation id="5030659775136592441">Afficher le gestionnaire de favoris</translation>
 <translation id="5030687792513154421">Le temps est écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
@@ -1341,7 +1341,6 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="643147933154517414">Tout est terminé</translation>
 <translation id="6431865393913628856">Enregistrement d'écran</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> d'espace de stockage utilisé sur un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">L'accès au microphone de l'appareil est désactivé</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">processeur</translation>
 <translation id="6446225358675593408">Trouver les images au moyen du contenu</translation>
@@ -1467,7 +1466,6 @@ Nouvelle installation</translation>
 <translation id="6912841030378044227">Mettre la barre d'adresse en évidence</translation>
 <translation id="6912901278692845878">Présentation rapide</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
-<translation id="6920245099716267363">Désactiver le point d'accès sans fil. Point d'accès sans fil activé, 1 appareil connecté.</translation>
 <translation id="692135145298539227">supprimer</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>
 <translation id="6931576957638141829">Enregistrer dans</translation>
@@ -1563,7 +1561,6 @@ Nouvelle installation</translation>
 <translation id="7378203170292176219">Faites glisser le curseur pour sélectionner une région à enregistrer</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>
 <translation id="7378889811480108604">Le mode Économiseur de pile est désactivé</translation>
-<translation id="7382640522316003298">Désactiver le point d'accès sans fil. Le point d'accès sans fil est activé, <ph name="DEVICECOUNT" /> appareils connectés.</translation>
 <translation id="7382680553121047388">Activé</translation>
 <translation id="7384028040782072252">Faites un clic droit n'importe où pour réorganiser vos applications</translation>
 <translation id="7386767620098596324">Activer/désactiver la connexion réseau. <ph name="STATE_TEXT" />.</translation>
@@ -1587,6 +1584,7 @@ Nouvelle installation</translation>
 <translation id="7489261257412536105">Passer au mode plein écran ou le quitter</translation>
 <translation id="7490360161041035804">Vous pouvez épingler des fichiers importants, y compris des fichiers Google Drive. Pour épingler, pointez un élément ou ouvrez Fichiers et faites un clic droit sur un élément.</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
+<translation id="7507162824403726948">Terminer la vérification de votre identité</translation>
 <translation id="7508690557411636492">Ouvert au cours du dernier mois</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
 <translation id="7512509370370076552">L'ancien raccourci pour le clic droit (alt+clic) a été mis à jour par touche <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
@@ -1733,7 +1731,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8044457332620420407">Le rétroéclairage du clavier est désactivé</translation>
-<translation id="8048077032188362328">Votre administrateur a désactivé le point d'accès sans fil.</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8051716679295756675">Le modèle intitulé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
@@ -1754,7 +1751,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8131994907636310308">Fermer le message de tri</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Désactiver le point d'accès sans fil. Le point d'accès sans fil est activé, aucun appareil connecté.</translation>
 <translation id="8138705869659070104">Activer après config. app.</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8142441511840089262">Double-clic</translation>

@@ -1873,6 +1873,7 @@
 <translation id="2428978615149723410">આ કાર્ટ</translation>
 <translation id="2431027948063157455">Google Assistant લોડ થવામાં અસમર્થ રહ્યું, કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="243179355394256322">તમારી સંસ્થા ડિવાઇસની નોંધણી માત્ર અધિકૃત વપરાશકર્તાઓ પૂરતી જ મર્યાદિત રાખે છે. આ વપરાશકર્તા ડિવાઇસની નોંધણી કરવા માટે અધિકૃત નથી. કૃપા કરીને ખાતરી કરો કે વપરાશકર્તા વ્યવસ્થાપક કન્સોલના વપરાશકર્તા વિભાગમાં "Google Meet હાર્ડવેરની નોંધણી" કરવા માટે વ્યવસ્થાપકનો વિશેષાધિકાર ધરાવે છે.</translation>
+<translation id="243275146591958220">ડાઉનલોડ રદ કરો</translation>
 <translation id="2433452467737464329">પેજને ઑટો રિફ્રેશ કરવા માટે URLમાં ક્વેરી પરમ ઉમેરો: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">દેખાવ</translation>
 <translation id="2433836460518180625">માત્ર ઉપકરણને અનલૉક કરો</translation>
@@ -9005,6 +9006,7 @@ USB ડિવાઇસ</translation>
 <translation id="81238879832906896">પીળા અને સફેદ ફૂલ</translation>
 <translation id="8123975449645947908">પાછળ સ્ક્રોલ કરો</translation>
 <translation id="8124313775439841391">મેનેજ થયેલ ONC</translation>
+<translation id="8125651784723647184">પાસવર્ડ શેરિંગ ઍડમિનિસ્ટ્રેટર દ્વારા શેર કરવામાં આવે છે</translation>
 <translation id="8129265306888404830">તમારી સંસ્થા (<ph name="EMAIL_DOMAIN" />)ના તમારા ઇમેઇલ ઍડ્રેસનો ઉપયોગ કરવા માટે, તમારે એન્ટરપ્રાઇઝની નોંધણી કરવી જરૂરી છે. જો આ ડિવાઇસ તમારા વ્યક્તિગત ઉપયોગ માટે હોય, તો તમારા વ્યક્તિગત Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
@@ -9071,7 +9073,6 @@ USB ડિવાઇસ</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />માંથી <ph name="ITEM_POSITION" /> પ્રિન્ટર.</translation>
 <translation id="8180785270975217276">એનર્જી સેવર ચાલુ કર્યું</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" આ તપાસાયેલા સ્થાનોમાં ફોટા, વીડિયો અને સાઉન્ડ ફાઇલોને વાંચી શકે છે.</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" />ના હૉટસ્પૉટને ગોઠવો</translation>
 <translation id="8181215761849004992">ડોમેન જોડી શકાતું નથી. અમારી પાસે ઉપકરણો ઉમેરવા માટેના વિશેષાધિકાર છે કે નહીં તે જોવા માટે તમારું એકાઉન્ટ ચેક કરો.</translation>
 <translation id="8182105986296479640">ઍપ્લિકેશન ચાલી રહી નથી.</translation>
 <translation id="8182412589359523143">આ <ph name="DEVICE_TYPE" />માંથી તમામ ડેટા ડિલીટ કરવા માટે, <ph name="BEGIN_LINK" />અહીં ક્લિક કરો<ph name="END_LINK" />.</translation>
@@ -10070,6 +10071,7 @@ USB ડિવાઇસ</translation>
 <translation id="8968527460726243404">ChromeOS સિસ્ટમ છબી લેખક</translation>
 <translation id="8968766641738584599">કાર્ડ સાચવો</translation>
 <translation id="8968906873893164556">સેટઅપ માટે ઉપયોગ કરવા માટે એકાઉન્ટ પસંદ કરો</translation>
+<translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="89720367119469899">બહાર નીકળો</translation>
 <translation id="8972513834460200407">ફાયરવોલ Google સર્વર્સથી ડાઉનલોડ્સ અવરોધિત તો નથી કરતું તેની ખાતરી કરવા માટે કૃપા કરીને તમારા નેટવર્ક વ્યવસ્થાપક સાથે તપાસ કરો.</translation>
 <translation id="8973263196882835828">અને લાઇવ કૅપ્શન ચાલુ કરો</translation>

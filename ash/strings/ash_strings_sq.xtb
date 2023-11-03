@@ -116,6 +116,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1391102559483454063">Aktiv</translation>
 <translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Përdor tastet e shigjetave për të naviguar ndërmjet datave.</translation>
+<translation id="141170878022560212">Butoni i mesit</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplikacion i instaluar</translation>
 <translation id="1414919006379339073">Mbyll dritaren aktuale</translation>
 <translation id="1415846719612499304">Shfaq listën e rrjeteve. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1787955149152357925">Joaktive</translation>
 <translation id="1796561540704213354">Uebsajtet duke përfshirë faqet që ke vizituar dhe faqet e hapura</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
-<translation id="1815245884418711390">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është joaktive.</translation>
 <translation id="1816896987747843206">Kjo lejon qasjen te kamera për të gjitha aplikacionet dhe uebsajtet me lejen e kamerës</translation>
 <translation id="1823280932251546115">Tabakaja e statusit, ora <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2086334242442703436">Hap zgjedhësin e emoji</translation>
 <translation id="2088116547584365419">lojërat</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
+<translation id="2107581415810719320">Butoni tjetër <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kablloja jote USB-C nuk mbështet Thunderbolt. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="2108303511227308752">Shkurtorja për Alt + Backspace është ndryshuar. Për të përdorur tastin Delete, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
@@ -975,7 +976,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4936329710968938986">Të gjithë, veçoria joaktive</translation>
 <translation id="4937170330762390348">Me diktimin, mund të shkruash duke përdorur zërin tënd. Shtyp tastin e diktimit ose zgjidh ikonën e mikrofonit në fund të ekranit kur je në një fushë teksti. Gjuha e diktimit është caktuar në <ph name="LANGUAGE" />. Skedarët e ligjërimit do të shkarkohen që të mund ta përdorësh diktimin offline. Mund ta ndryshosh gjuhën e diktimit në çdo kohë te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="4938176435186993759">Fshihi të gjitha sugjerimet</translation>
-<translation id="4943007472417128747">Zona e qasjes për internet është çaktivizuar për të përdorur WiFi. Për të përdorur zonën e qasjes për internet, çaktivizo WiFi.</translation>
 <translation id="4945196315133970626">Çaktivizo njoftimet</translation>
 <translation id="4946376291507881335">Regjistrimi</translation>
 <translation id="495046168593986294">Lëviz lart</translation>
@@ -996,7 +996,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5009463889040999939">Profili po riemërtohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5016558321564993266">Ndrysho treguesin. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kërko te kategoritë</translation>
-<translation id="5029356738310729434">Qasja te mikrofoni i pajisjes është aktiv</translation>
 <translation id="5030659775136592441">Shfaq menaxherin e faqeshënuesve</translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
 <translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
@@ -1342,7 +1341,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="643147933154517414">Të gjitha në rregull</translation>
 <translation id="6431865393913628856">Regjistrimi i ekranit</translation>
 <translation id="643593192654616063">Hapësira ruajtëse: <ph name="STORAGE_IN_USE_SIZE" /> në përdorim nga <ph name="STORAGE_TOTAL_SIZE" /> në total</translation>
-<translation id="6442259747294754014">Qasja te mikrofoni i pajisjes është joaktiv</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Gjej imazhet e tua sipas përmbajtjes</translation>
@@ -1468,7 +1466,6 @@ Instalim i ri</translation>
 <translation id="6912841030378044227">Fokusohu te shiriti i adresave</translation>
 <translation id="6912901278692845878">Turneu i shpejtë</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
-<translation id="6920245099716267363">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. 1 pajisje e lidhur.</translation>
 <translation id="692135145298539227">fshi</translation>
 <translation id="6929081673585394903">Shfaq kontrollet</translation>
 <translation id="6931576957638141829">Ruaj te</translation>
@@ -1564,7 +1561,6 @@ Instalim i ri</translation>
 <translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
 <translation id="7378889811480108604">Modaliteti i "Kursyesit të baterisë" është joaktiv</translation>
-<translation id="7382640522316003298">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. <ph name="DEVICECOUNT" /> pajisje të lidhura.</translation>
 <translation id="7382680553121047388">Aktiv</translation>
 <translation id="7384028040782072252">Kliko me butonin djathtas kudo për të rirenditur aplikacionet</translation>
 <translation id="7386767620098596324">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
 <translation id="8044457332620420407">Drita e pasme e tastierës është e fikur</translation>
-<translation id="8048077032188362328">Administratori yt e ka çaktivizuar zonën e qasjes për internet.</translation>
 <translation id="8048123526339889627">Cilësimet e Bluetooth-it</translation>
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
@@ -1755,7 +1750,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8131994907636310308">Mbyll njoftimin e renditjes</translation>
 <translation id="8132793192354020517">Lidhur me <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. Asnjë pajisje e lidhur.</translation>
 <translation id="8138705869659070104">Aktivizoje pas konfigurimit të pajisjes</translation>
 <translation id="813913629614996137">Po fillon...</translation>
 <translation id="8142441511840089262">Kliko dy herë</translation>

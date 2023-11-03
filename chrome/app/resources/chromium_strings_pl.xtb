@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1001716830750249114">Otwórz ustawienia wersji Chromium</translation>
 <translation id="1026101648481255140">Wznów instalację</translation>
 <translation id="1029669172902658969">Uruchom ponownie, aby zaktualizować &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium zaleca sprawdzenie tego rozszerzenia</translation>
@@ -21,6 +22,7 @@
 <translation id="1342274909142618978">Usuń też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jesteś zalogowany w Chromium.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
+<translation id="1497802159252041924">Błąd instalacji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Udostępnij kartę Chromium</translation>
 <translation id="1553461853655228091">Aby utworzyć mapę 3D Twojego otoczenia, Chromium potrzebuje uprawnień dostępu do kamery</translation>
 <translation id="1574377791422810894">Narzędzia bezpieczeństwa Chromium</translation>
@@ -31,6 +33,7 @@
 Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Kontami Google możesz zarządzać w <ph name="SETTINGS_LINK_BEGIN" />Ustawieniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
 <translation id="1708666629004767631">Dostępna jest nowa, bezpieczniejsza wersja Chromium.</translation>
+<translation id="1715127912119967311">Aby pomóc w ulepszaniu tych funkcji, Chromium wysyła informacje o Twoich interakcjach z nimi do Google. Weryfikatorzy mogą odczytywać i przetwarzać te dane oraz dodawać do nich adnotacje.</translation>
 <translation id="17264556997921157">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chromium ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
 <translation id="1733725117201708356">Chromium usunie wkrótce dane przeglądania</translation>
 <translation id="1745121272106313518">Chromium uruchomi się ponownie za <ph name="REMAINING_TIME" /></translation>
@@ -153,11 +156,13 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="390528597099634151">W tym profilu Chromium jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Aby umożliwić Ci przeglądanie osobno, Chromium może utworzyć dla Ciebie nowy profil.</translation>
 <translation id="3909353120217047026">To rozszerzenie narusza zasady Chrome Web Store i może być niebezpieczne. Usuń je z Chromium, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też Twoich danych osobowych.</translation>
 <translation id="391789666908693569">Tym kontem zarządza <ph name="MANAGER_NAME" />. Administrator może przeglądać i edytować ten profil przeglądarki Chromium i dane, które się na nim znajdują, w tym zakładki, historię i hasła.</translation>
+<translation id="3922825997980843979">Gdy piszesz, Chromium wysyła zawartość paska adresu lub pola wyszukiwania do domyślnej wyszukiwarki</translation>
 <translation id="3945058413678539331">Chromium próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
 <translation id="3962647064319009959">Jak Chromium dba o Twoje bezpieczeństwo</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing – informacje</translation>
 <translation id="3997429360543082038">System operacyjny Chromium – informacje</translation>
 <translation id="4019629340646866719">Opracowanie Chromium OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Gdy to ustawienie będzie wyłączone, nadal będziesz otrzymywać sugestie, które Chromium udostępnia lokalnie</translation>
 <translation id="4036079820698952681">Pomóż ulepszyć Chromium, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4055805654398742145">Menedżer &amp;haseł</translation>
@@ -249,6 +254,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6003112304606738118">Pobieram… Pozostało: <ph name="HOURS" /> godz.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6055895534982063517">Dostępna jest nowa, szybsza niż kiedykolwiek wersja Chromium.</translation>
+<translation id="6058380562449900225">Aby chronić swoje dane, zezwól Chromium na usunięcie uprawnień witryn, których ostatnio nie odwiedzasz. Powiadomienia nie zostaną wyłączone.</translation>
 <translation id="6063093106622310249">&amp;Otwórz w Chromium</translation>
 <translation id="6072279588547424923">Rozszerzenie <ph name="EXTENSION_NAME" /> zostało dodane do Chromium</translation>
 <translation id="6072463441809498330">Przyspiesz działanie Chromium</translation>

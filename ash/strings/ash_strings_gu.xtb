@@ -212,7 +212,6 @@
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
-<translation id="1815245884418711390">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ બંધ છે</translation>
 <translation id="1816896987747843206">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="1823280932251546115">સ્ટેટસ ટ્રે, સમય <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -565,6 +564,7 @@
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341303451326249809">સ્ક્રીનશૉટ કૅપ્ચર કર્યો</translation>
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> માટે ડિવાઇસનો પાસવર્ડ દાખલ કરો</translation>
 <translation id="334927402682780278">કર્સરથી લાઇનના છેડા સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="3349345708646875009">'કાર્યના મેનેજર' સુવિધા ખોલો</translation>
 <translation id="3364721542077212959">સ્ટાઇલસનાં સાધનો</translation>
@@ -977,7 +977,6 @@
 <translation id="4936329710968938986">પ્રત્યેક, બંધ</translation>
 <translation id="4937170330762390348">ડિક્ટેશનની સુવિધા વડે, તમે તમારા વૉઇસનો ઉપયોગ કરીને ટાઇપ કરી શકો છો. તમે જ્યારે ટેક્સ્ટ ફીલ્ડમાં હો ત્યારે ડિક્ટેશન કી દબાવો અથવા સ્ક્રીનની સૌથી નીચે દેખાતું માઇક્રોફોનનું આઇકન પસંદ કરો. ડિક્ટેશનની તમારી ભાષા <ph name="LANGUAGE" /> પર સેટ કરવામાં આવી. સ્પીચ ફાઇલો ડાઉનલોડ કરવામાં આવશે, જેથી તમે ઑફલાઇન હો, ત્યારે ડિક્ટેશનની સુવિધાનો ઉપયોગ કરી શકો. તમે કોઈપણ સમયે સેટિંગ &gt; ઍક્સેસિબિલિટીમાં જઈને ડિક્ટેશનની ભાષા બદલી શકો છો.</translation>
 <translation id="4938176435186993759">બધા સૂચનો છુપાવો</translation>
-<translation id="4943007472417128747">વાઇ-ફાઇનો ઉપયોગ કરવા માટે હૉટસ્પૉટ બંધ કરવામાં આવ્યું છે. હૉટસ્પૉટનો ઉપયોગ કરવા માટે, વાઇ-ફાઇ બંધ કરો.</translation>
 <translation id="4945196315133970626">નોટિફિકેશન બંધ કરો</translation>
 <translation id="4946376291507881335">કૅપ્ચર કરો</translation>
 <translation id="495046168593986294">ઉપર સ્ક્રોલ કરો</translation>
@@ -998,7 +997,6 @@
 <translation id="5009463889040999939">પ્રોફાઇલનું નામ બદલી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="5016558321564993266">માર્કરને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">શોધની કૅટેગરી</translation>
-<translation id="5029356738310729434">ડિવાઇસના માઇક્રોફોનનો ઍક્સેસ ચાલુ છે</translation>
 <translation id="5030659775136592441">બુકમાર્ક મેનેજર બતાવો</translation>
 <translation id="5030687792513154421">સમય પૂરો થયો</translation>
 <translation id="5033299697334913360">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
@@ -1344,7 +1342,6 @@
 <translation id="643147933154517414">થઈ ગયું</translation>
 <translation id="6431865393913628856">સ્ક્રીન રેકૉર્ડ કરો</translation>
 <translation id="643593192654616063">કુલ <ph name="STORAGE_TOTAL_SIZE" />માંથી <ph name="STORAGE_IN_USE_SIZE" /> સ્ટોરેજનો ઉપયોગ થઈ રહ્યો છે</translation>
-<translation id="6442259747294754014">ડિવાઇસના માઇક્રોફોનનો ઍક્સેસ બંધ છે</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">છબીમાંના કન્ટેન્ટ વડે તમારી છબીઓ શોધો</translation>
@@ -1470,7 +1467,6 @@
 <translation id="6912841030378044227">ઍડ્રેસ બાર પર ફોકસ કરો</translation>
 <translation id="6912901278692845878">ઝડપી ટુર</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
-<translation id="6920245099716267363">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, 1 ડિવાઇસ કનેક્ટેડ છે.</translation>
 <translation id="692135145298539227">કાઢી નાખો</translation>
 <translation id="6929081673585394903">નિયંત્રણો બતાવો</translation>
 <translation id="6931576957638141829">આમાં સાચવો</translation>
@@ -1566,7 +1562,6 @@
 <translation id="7378203170292176219">રેકોર્ડ કરવાના વિસ્તારને પસંદ કરવા માટે ખેંચો</translation>
 <translation id="7378594059915113390">મીડિયા નિયંત્રણો</translation>
 <translation id="7378889811480108604">બૅટરી સેવર મોડ બંધ છે</translation>
-<translation id="7382640522316003298">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, <ph name="DEVICECOUNT" /> ડિવાઇસ કનેક્ટ થયેલા છે.</translation>
 <translation id="7382680553121047388">ચાલુ છે</translation>
 <translation id="7384028040782072252">તમારી ઍપનો ક્રમ બદલવા માટે ગમે ત્યાં રાઇટ ક્લિક કરો</translation>
 <translation id="7386767620098596324">નેટવર્ક કનેક્શન ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
@@ -1590,6 +1585,7 @@
 <translation id="7489261257412536105">પૂર્ણસ્ક્રીનમાં દાખલ થાઓ અથવા તેમાંથી બહાર નીકળો</translation>
 <translation id="7490360161041035804">Google Driveની ફાઇલો સહિત, તમે મહત્ત્વની ફાઇલો પિન કરી શકો છો. પિન કરવા માટે, કોઈ આઇટમ પર કર્સર લઈ જાઓ અથવા Files ખોલો અને કોઈ આઇટમ પર રાઇટ ક્લિક કરો.</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
+<translation id="7507162824403726948">તમારી ઓળખની ચકાસણી પૂર્ણ કરો</translation>
 <translation id="7508690557411636492">ગયા મહિનામાં ખોલેલી</translation>
 <translation id="7509246181739783082">તમારી ઓળખ ચકાસો</translation>
 <translation id="7512509370370076552">રાઇટ ક્લિક શૉર્ટકટને Alt + <ph name="LAUNCHER_KEY_NAME" /> કીની ક્લિપ + click from Alt + ક્લિકની ક્લિક પર અપડેટ કરવામાં આવ્યો છે</translation>
@@ -1736,7 +1732,6 @@
 <translation id="8036504271468642248">પહેલાંનું વાક્ય</translation>
 <translation id="8042893070933512245">ઍક્સેસિબિલિટી સેટિંગ મેનૂ ખોલો</translation>
 <translation id="8044457332620420407">કીબોર્ડની બૅકલાઇટ બંધ છે</translation>
-<translation id="8048077032188362328">તમારા ઍડમિનિસ્ટ્રેટરે હૉટસ્પૉટ બંધ કરી દીધું છે.</translation>
 <translation id="8048123526339889627">બ્લૂટૂથ સેટિંગ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> નામનો નમૂનો પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="8052898407431791827">ક્લિપબોર્ડ પર કૉપિ કર્યો</translation>
@@ -1757,7 +1752,6 @@
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8131994907636310308">સૉર્ટ કરવાનું ટોસ્ટ બંધ કરો</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> થી કનેક્ટેડ છે</translation>
-<translation id="8135163608236671037">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, કોઈ ડિવાઇસ કનેક્ટેડ નથી.</translation>
 <translation id="8138705869659070104">ડિવાઇસના સેટઅપ બાદ સક્રિય કરો</translation>
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
 <translation id="8142441511840089262">ડબલ ક્લિક કરો</translation>

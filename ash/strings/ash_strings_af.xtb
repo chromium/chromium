@@ -116,6 +116,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gebruik pylsleutels om tussen datums te navigeer.</translation>
+<translation id="141170878022560212">Middelste knoppie</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, geïnstalleerde program</translation>
 <translation id="1414919006379339073">Maak huidige venster toe</translation>
 <translation id="1415846719612499304">Wys netwerklys. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1787955149152357925">Af</translation>
 <translation id="1796561540704213354">Webwerwe insluitend bladsye wat jy besoek het en oop bladsye</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
-<translation id="1815245884418711390">Wissel warmkol. Warmkol is af.</translation>
 <translation id="1816896987747843206">Dit gee kameratoegang vir alle apps en webwerwe met die kameratoestemming</translation>
 <translation id="1823280932251546115">Statuslaai, tyd <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2086334242442703436">Maak emosiekoon-kieser oop</translation>
 <translation id="2088116547584365419">speletjies</translation>
 <translation id="209965399369889474">Nie aan 'n netwerk gekoppel nie</translation>
+<translation id="2107581415810719320">Ander knoppie <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Jou USB-C-kabel steun nie Thunderbolt nie. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="2108303511227308752">Die kortpadsleutel Alt + Backspace het verander. Om die Delete-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Backspace druk.</translation>
 <translation id="2126242104232412123">Nuwe lessenaar</translation>
@@ -563,6 +564,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3340978935015468852">instellings</translation>
 <translation id="3341303451326249809">Skermkiekie is geneem</translation>
 <translation id="334252345105450327">Neem 'n skermkiekie</translation>
+<translation id="3346728094401457853">Voer toestelwagwoord vir <ph name="EMAIL" /> in</translation>
 <translation id="334927402682780278">Kies teks van skermpyltjie af tot by einde van reël</translation>
 <translation id="3349345708646875009">Maak taakbestuurder oop</translation>
 <translation id="3364721542077212959">Stilusnutsgoed</translation>
@@ -976,7 +978,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4936329710968938986">Almal, af</translation>
 <translation id="4937170330762390348">Met diktering kan jy jou stem gebruik om te tik. Druk die dikteersleutel of kies die mikrofoonikoon onderaan die skerm wanneer jy op ’n teksveld is. Jou dikteertaal is ingestel op <ph name="LANGUAGE" />. Spraaklêers sal afgelaai word sodat jy diktering vanlyn kan gebruik. Jy kan die dikteertaal enige tyd verander in Instellings &gt; Toeganklikheid.</translation>
 <translation id="4938176435186993759">Versteek alle voorstelle</translation>
-<translation id="4943007472417128747">Warmkol is afgeskakel sodat wi-fi gebruik kan word. Skakel wi-fi af as jy die warmkol wil gebruik.</translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
 <translation id="4946376291507881335">Vang vas</translation>
 <translation id="495046168593986294">Rollees op</translation>
@@ -997,7 +998,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5009463889040999939">Hernoem tans profiel. Dit kan 'n paar minute neem.</translation>
 <translation id="5016558321564993266">Wissel merker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Soekkategorieë</translation>
-<translation id="5029356738310729434">Toestelmikrofoontoegang is aan</translation>
 <translation id="5030659775136592441">Wys boekmerkbestuurder</translation>
 <translation id="5030687792513154421">Die tyd is om</translation>
 <translation id="5033299697334913360">Klik enige plek om volskerm vas te vang</translation>
@@ -1343,7 +1343,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="643147933154517414">Als klaar</translation>
 <translation id="6431865393913628856">Skermopnemer</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> berging in gebruik uit totaal van <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Toestelmikrofoontoegang is af</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">Vind jou prente volgens die inhoud</translation>
@@ -1469,7 +1468,6 @@ Nuwe installasie</translation>
 <translation id="6912841030378044227">Fokus op adresbalk</translation>
 <translation id="6912901278692845878">Vinnige toer</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
-<translation id="6920245099716267363">Wissel warmkol. Warmkol is aan; 1 toestel is gekoppel</translation>
 <translation id="692135145298539227">vee uit</translation>
 <translation id="6929081673585394903">Wys kontroles</translation>
 <translation id="6931576957638141829">Stoor in</translation>
@@ -1565,7 +1563,6 @@ Nuwe installasie</translation>
 <translation id="7378203170292176219">Sleep om 'n area te kies om op te neem</translation>
 <translation id="7378594059915113390">Media-kontroles</translation>
 <translation id="7378889811480108604">Batterybespaardermodus is af</translation>
-<translation id="7382640522316003298">Wissel warmkol. Warmkol is aan; <ph name="DEVICECOUNT" /> toestelle is gekoppel.</translation>
 <translation id="7382680553121047388">Aan</translation>
 <translation id="7384028040782072252">Regsklik op enige plek om jou programme te herrangskik</translation>
 <translation id="7386767620098596324">Wissel netwerkverbinding. <ph name="STATE_TEXT" />.</translation>
@@ -1589,6 +1586,7 @@ Nuwe installasie</translation>
 <translation id="7489261257412536105">Gaan na volskerm of verlaat dit</translation>
 <translation id="7490360161041035804">Jy kan belangrike lêers vasspeld, insluitend Google Drive-lêers. Hou oor ’n item of maak Lêers oop en regsklik ’n item om dit vas te speld.</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
+<translation id="7507162824403726948">Voltooi die verifikasie van jou identiteit</translation>
 <translation id="7508690557411636492">In die afgelope maand oopgemaak</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7512509370370076552">Die regsklikkortpad is opgedateer na <ph name="LAUNCHER_KEY_NAME" />-sleutel + klik vanaf alt + klik</translation>
@@ -1735,7 +1733,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8036504271468642248">Vorige sin</translation>
 <translation id="8042893070933512245">Maak toeganklikheidinstellingskieslys oop</translation>
 <translation id="8044457332620420407">Sleutelbord se agterlig is af</translation>
-<translation id="8048077032188362328">Jou admin het warmkol afgeskakel.</translation>
 <translation id="8048123526339889627">Bluetooth-instellings</translation>
 <translation id="8051716679295756675">Templaat genaamd <ph name="DESK_TEMPLATE_NAME" /> bestaan reeds</translation>
 <translation id="8052898407431791827">Gekopieer na knipbord</translation>
@@ -1756,7 +1753,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8131994907636310308">Maak "sorteer opspringers" toe</translation>
 <translation id="8132793192354020517">Gekoppel aan <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Wissel warmkol. Warmkol is aan; geen toestel is gekoppel nie</translation>
 <translation id="8138705869659070104">Aktiveer ná toestelopstelling</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>

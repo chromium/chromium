@@ -524,6 +524,7 @@
 <translation id="371230970611282515">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="371398631992790800">ซ่อน "บุ๊กมาร์ก"</translation>
 <translation id="37207012422556617">การค้นหาที่มาแรง</translation>
+<translation id="3725081662140949903">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้เปิดแอป <ph name="APP" /> เพื่อเปลี่ยนรหัสผ่าน</translation>
 <translation id="3740397331642243698">เปิด URL ที่ป้อนใน Google Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="374357899112510277">ซ่อน "ดาวน์โหลด"</translation>
 <translation id="3745190878148784130">ซ่อน "ซูมข้อความ"</translation>
@@ -641,6 +642,7 @@
 <translation id="4389019817280890563">แตะเพื่อเปลี่ยนภาษา</translation>
 <translation id="4405320213589929829">ใช้ที่อยู่บนหน้าเว็บเพื่อรับข้อมูลและเส้นทางในพื้นที่</translation>
 <translation id="4420409367264901497">แก้ไขบุ๊กมาร์ก</translation>
+<translation id="4431224949908513835">เลือกวิธีการชำระเงินเพื่อกรอก</translation>
 <translation id="4442550905108052454">เปิด<ph name="BEGIN_BOLD" />การตั้งค่า<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">เพิ่มภาษา</translation>
 <translation id="4461286950227634995">เสนอให้บันทึกรหัสผ่าน</translation>
@@ -1198,6 +1200,7 @@
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
 <translation id="7223102419539744003">ปิดแท็บ</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
+<translation id="7233006041370588369">เลือกรหัสผ่านเพื่อกรอก</translation>
 <translation id="7265758999917665941">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{ติดตามพัสดุใหม่แล้ว}other{ติดตามพัสดุใหม่แล้ว}}</translation>

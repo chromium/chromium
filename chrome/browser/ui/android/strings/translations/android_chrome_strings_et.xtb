@@ -13,7 +13,6 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1058669287135776095">Võrguühendus puudub. Kontrollige internetiühendust ja proovige uuesti.</translation>
 <translation id="10614374240317010">Ei ole kunagi salvestatud</translation>
-<translation id="1062628064301375934">Aidake meil luua privaatsem veeb</translation>
 <translation id="107147699690128016">Kui muudate faililaiendit, võib fail avaneda mõnes teises rakenduses ja teie seadmele ohtu kujutada.</translation>
 <translation id="1089606299949659462">Ülevaatus on lõpetatud!</translation>
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
@@ -86,7 +85,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1386674309198842382">Aktiivne <ph name="LAST_UPDATED" /> päeva tagasi</translation>
 <translation id="13931502444227376">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />teenusetingimusi<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Otsi teenusega <ph name="PRODUCT_NAME" /></translation>
-<translation id="139993653570221430">Chrome'i seadetes saate oma valikuid alati muuta. Prooviversioone käitatakse kõrvuti praeguse reklaamide esitamise viisiga, seega ei näe te kohe muutusi.</translation>
 <translation id="1407069428457324124">Tume teema</translation>
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1409879593029778104">Faili <ph name="FILE_NAME" /> ei laaditud alla, kuna fail on juba olemas.</translation>
@@ -99,7 +97,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1448440926884431741">Korrastage jälgitavaid tooteid teenusega Bookmarks</translation>
 <translation id="1450753235335490080">Üksust <ph name="CONTENT_TYPE" /> ei saa jagada</translation>
 <translation id="1466383950273130737">Valige Chrome'i keel</translation>
-<translation id="1474893630593443211">Suurem kontroll kuvatavate reklaamide üle</translation>
 <translation id="1477626028522505441">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus serveriprobleemide tõttu.</translation>
 <translation id="148482509007564431">Järjehoidja salvestamise voog</translation>
 <translation id="1492417797159476138">Olete selle kasutajanime selle saidi jaoks juba salvestanud</translation>
@@ -109,7 +106,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1513352483775369820">Järjehoidjad ja veebiajalugu</translation>
 <translation id="1513814250881909472">Oma muudest seadmetest vahelehtede hankimiseks sünkroonige</translation>
 <translation id="1513858653616922153">Kustuta parool</translation>
-<translation id="1514552811327923157">Privaatsuse liivakasti viip on avatud täiskõrgusel</translation>
 <translation id="1521774566618522728">Aktiivne täna</translation>
 <translation id="1544826120773021464">Oma Google'i konto haldamiseks puudutage nuppu „Konto haldamine”</translation>
 <translation id="1549000191223877751">Teisalda teise aknasse</translation>
@@ -121,7 +117,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1592864538817356322">Standardne kaitse:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> soovitatud üksust allolevas loendis.</translation>
 <translation id="1598163867407640634">Kasutage saiti <ph name="SITE_ETLD_PLUS_ONE" /> kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame automaatselt huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chrome'il arvesse võtta.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Eemalda 1 valitud üksus}other{Eemalda # valitud üksust}}</translation>
 <translation id="1633659023549081553">Avastage Chrome'i avalehel uut sisu</translation>
 <translation id="1641113438599504367">Ohutu sirvimine</translation>
@@ -152,7 +147,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1810845389119482123">Sünkroonimise algseadistus ei jõudnud lõpule</translation>
 <translation id="1812027881030482584">Sait <ph name="SITE_ETLD_PLUS_ONE" /> ei saa teenuse <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kasutamisega jätkata</translation>
 <translation id="1829244130665387512">Otsi leheküljelt</translation>
-<translation id="1832459821645506983">Jah, sobib</translation>
 <translation id="185383612275551373">Google'ilt kõige asjakohasema sisu hankimiseks sünkroonige</translation>
 <translation id="1871098866036088250">Ava Chrome'i brauseris</translation>
 <translation id="1877026089748256423">Chrome on aegunud</translation>
@@ -185,14 +179,12 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>
 <translation id="2009341475524975924">Reklaami toimivuse mõõtmiseks võidakse saitide vahel jagada piiratud tüüpi andmeid, näiteks kellaaega, mil teile reklaami esitati.</translation>
 <translation id="201060170519281460">Teie profiililukk kaitseb autos teie teavet, sh sünkroonitud paroole, makseid ja palju muud.</translation>
-<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fail}other{# faili}}</translation>
 <translation id="2021896219286479412">Saidi juhtelemendid täisekraanil</translation>
 <translation id="2038563949887743358">Valiku Taotle arvutisaiti sisselülitamine</translation>
 <translation id="204321170514947529">Rakendusel <ph name="APP_NAME" /> on samuti Chrome’i andmeid</translation>
 <translation id="2046634576464120978">Registreerimine ebaõnnestus</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse. Te ei saa seda seadet muuta, kuna täiustatud kaitse on lubatud.</translation>
-<translation id="2053105195397337973">Katsetame uusi viise, kuidas piirata jälgimist, võimaldades saitidel samas blokeerida rämpsreklaamid ja pettused.</translation>
 <translation id="2056878612599315956">Sait on peatatud</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 allalaadimine ebaõnnestus}other{# allalaadimist ebaõnnestusid}}</translation>
 <translation id="2067805253194386918">tekst</translation>
@@ -304,7 +296,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2650348088770008516">Privaatsusjuhendi selgitus on suletud</translation>
 <translation id="2650408372219180431">Sellesse seadmesse salvestatud paroolide eksportimine ja kustutamine</translation>
 <translation id="2650751991977523696">Kas soovite faili uuesti alla laadida?</translation>
-<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# helifail}other{# helifaili}}</translation>
 <translation id="265156376773362237">Standardne eellaadimine</translation>
 <translation id="2656405586795711023">Veebirakendused</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
@@ -315,7 +306,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="271033894570825754">Uus</translation>
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
 <translation id="2718846868787000099">Sisu kuvamiseks teie eelistatud keeltes näevad teie külastatavad saidid teie eelistusi</translation>
-<translation id="2722945394406572875">Privaatsuse liivakasti viip suleti</translation>
 <translation id="2723001399770238859">heli</translation>
 <translation id="2742373789128106053">Teenus <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ei ole praegu saadaval.</translation>
 <translation id="2760805590727089264">KK/AA</translation>
@@ -557,7 +547,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3985022125189960801">Lisage sait tagasi, kui soovite selle kaasata saitide hulka, mis teie huvisid prognoosivad</translation>
 <translation id="3985215325736559418">Kas soovite faili <ph name="FILE_NAME" /> uuesti alla laadida?</translation>
 <translation id="3987993985790029246">Kop. link</translation>
-<translation id="3999683152997576765">Saate vaadata ja eemaldada huvipakkuvaid teemasid, mida saidid teile reklaamide näitamiseks kasutavad. Chrome prognoosib teie huvisid teie hiljutise sirvimisajaloo põhjal.</translation>
 <translation id="4000212216660919741">Võrguühenduseta avaleht</translation>
 <translation id="4016425174436051808">Ei saanud jälgida. Midagi läks valesti.</translation>
 <translation id="4024768890073681126">Sinu brauserit haldab sinu vanem</translation>
@@ -578,7 +567,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4095425503313512126">Sirvimine ja otsimine on kiirem</translation>
 <translation id="4096227151372679484">Järjehoidja salvestamise voog on avatud poolel kõrgusel</translation>
 <translation id="4101475238162928417">Oma muudest seadmetest paroolide, järjehoidjate ja muu hankimiseks sünkroonige</translation>
-<translation id="4106587138345390261">Chrome katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema teabemahu juures samasugust sirvimiskogemust</translation>
 <translation id="4108314971463891922">Jälgi</translation>
 <translation id="4108998448622696017">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad.</translation>
 <translation id="4116038641877404294">Laadige lehed alla, et neid võrguühenduseta kasutada</translation>
@@ -611,7 +599,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="4257230861809842349">Kas soovite Google'i paroolihaldurist paroolid kustutada?</translation>
-<translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="4277529130885813215">Kasuta teist seadet</translation>
 <translation id="4283102315569707115">Kas taotleda vaikimisi arvutisaite?</translation>
@@ -748,7 +735,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4910889077668685004">Makserakendused</translation>
 <translation id="4912413785358399818">Teisalda vaheleht</translation>
 <translation id="4913169188695071480">Peata värskendamine</translation>
-<translation id="4921180162323349895">{FILE_COUNT,plural, =1{# leht}other{# lehte}}</translation>
 <translation id="492284538114688557">Märgati hinnalangust</translation>
 <translation id="4925120120285606924">Ekraanipilt: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Teie paroolid eksporditakse ja laaditakse alla tekstifailina. Need on nähtavad kõigile ja igale rakendusele, kellel/millel on sihtkaustale juurdepääs.</translation>
@@ -1033,7 +1019,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6437478888915024427">Lehe teave</translation>
 <translation id="6440291723980579689">Lehed laaditakse alles pärast nende avamist</translation>
 <translation id="6441734959916820584">Nimi on liiga pikk</translation>
-<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# pilt}other{# pilti}}</translation>
 <translation id="6447558397796644647">Seda järjehoidjat ei leita. Kontrollige õigekirja või lisage uus järjehoidja.</translation>
 <translation id="6459045781120991510">Küsitlused</translation>
 <translation id="6461962085415701688">Faili ei saa avada</translation>
@@ -1042,7 +1027,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6475951671322991020">Laadi video alla</translation>
 <translation id="6477928892249167417">Näib, et need saidid on teile olulised:</translation>
 <translation id="6482749332252372425">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus, kuna salvestusruumi on liiga vähe.</translation>
-<translation id="6496823230996795692">Rakenduse <ph name="APP_NAME" /> esmakordseks kasutamiseks looge ühendus Internetiga.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fail laaditi alla}other{Lõpetati # allalaadimist}}</translation>
 <translation id="6508722015517270189">Taaskäivitage Chrome</translation>
 <translation id="6527303717912515753">Jaga</translation>
@@ -1106,7 +1090,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6751521182688001123">Uue vahelehe kiire avamine. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="6756507620369789050">Tagasiside jagamine</translation>
 <translation id="6767294960381293877">Vahelehe jagamise seadmete loend (poolel kõrgusel avatud).</translation>
-<translation id="6770042910635026163">Külastatavad saidid, mis defineerivad teie huvid</translation>
 <translation id="6770602306803890733">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks</translation>
 <translation id="6775840696761158817">Kui puudutate aadressiriba või otsingukasti või sisestate neile teksti, kuvatakse teie vaikeotsingumootorilt pärinevaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="6785476624617658922">Chrome'i ja Chrome OS-i lisateenusetingimused</translation>
@@ -1185,7 +1168,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7173114856073700355">Ava seaded</translation>
 <translation id="7177466738963138057">Seda saate hiljem muuta jaotises Seaded</translation>
 <translation id="7177873915659574692">QR-koodi ei saa luua. URL on pikem kui <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
-<translation id="7177959540995930968">Nende funktsioonide kohta leiate lisateavet Chrome'i seadetest.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7183693674623539380">Vahelehegrupp – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
@@ -1195,7 +1177,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> vahelehe taastamine uute taustal olevate vahelehtedena.</translation>
 <translation id="7217781228893594884">Chrome'ist lahkumisel lukustatakse inkognito vahelehed</translation>
 <translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
-<translation id="7222235798733126207">Piiratud jagamine saitide vahel</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
 <translation id="72415438529550637">Parooli soovitus on suletud.</translation>
 <translation id="7242755609445462077">Stiliseeritud esiletõst kuupäevast <ph name="CURRENT_DATE" /></translation>
@@ -1410,6 +1391,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8190358571722158785">Jäänud on 1 päev</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Teie seadmed<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Taasta</translation>
+<translation id="820568752112382238">Enim külastatavad saidid</translation>
 <translation id="8209050860603202033">Ava kujutis</translation>
 <translation id="8210770465353466621">Oma vahelehed leiate siit</translation>
 <translation id="8215740705341534369">Külgmine leht</translation>
@@ -1434,11 +1416,9 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8333340769932050274">Saate blokeerida teemad, mida ei soovi saitidega jagada. Samuti kustutab Chrome automaatselt teemad, mis on vanemad kui 4 nädalat. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="834313815369870491">Ära kunagi tõlgi järgmisi saite</translation>
 <translation id="8348430946834215779">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse</translation>
-<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="8354977102499939946">Otsige kiirelt oma hääle abil. Selle otsetee muutmiseks avage menüü Seaded.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> allalaadimist taastati</translation>
 <translation id="8368001212524806591">Jälgi hinda</translation>
-<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Chrome saab teie huvisid prognoosida. Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
 <translation id="8387617938027387193">Kinnitage oma isik</translation>
 <translation id="8393700583063109961">Saatke sõnum</translation>
 <translation id="8394720698884623075">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel.</translation>
@@ -1446,7 +1426,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>
 <translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="8414396119627470038">Logige saidile <ph name="SITE_ETLD_PLUS_ONE" /> sisse teenusega <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8416347857511542594">Lisateave Chrome'is reklaamide isikupärastamise kohta</translation>
 <translation id="8419244640277402268">Kaasa</translation>
 <translation id="8422250855136581222">Selles seadmes pole vahelehti</translation>
 <translation id="8424781820952413435">Leht saadetud. Selle vaatamiseks avage Chrome oma <ph name="DEVICE_TYPE" /></translation>
@@ -1479,7 +1458,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8506357771923193001">Oma allalaadimised leiate siit</translation>
 <translation id="8514477925623180633">Chrome'i salvestatud paroolide eksportimine</translation>
 <translation id="8516012719330875537">Pildiredigeerija</translation>
-<translation id="8516431725144212809">Teie Chrome'i prognoositud huvid</translation>
 <translation id="8523928698583292556">Salvestatud parooli kustutamine</translation>
 <translation id="8526855376374973824">Märguandeloa voog</translation>
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>
@@ -1543,7 +1521,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="885480114717186641">Saate taotleda hosti <ph name="HOST_NAME" /> arvutisaiti</translation>
 <translation id="8856607253650333758">Esita kirjeldusi</translation>
 <translation id="8856931513242997049">Märguandeloa voog on suletud</translation>
-<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame loendist automaatselt saidid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib sait uuesti loendis ilmuda. Võite ka saidi eemaldada, kui te ei soovi, et see sait teie huvisid määratleks.</translation>
 <translation id="8898822736010347272">Saadab mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja mõne lehe sisu Google'ile, et aidata avastada uusi ohte ja veebis kõiki kaitsta.</translation>
 <translation id="8909135823018751308">Jaga ...</translation>
 <translation id="8912362522468806198">Google'i konto</translation>
@@ -1570,7 +1547,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="9022774213089566801">Sageli külastatud</translation>
 <translation id="9022871169049522985">Saidid ja reklaamijad saavad mõõta oma reklaamide toimivust</translation>
 <translation id="9035378196785279980">Teisalda kohta\u2026</translation>
-<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videot}}</translation>
 <translation id="9042893549633094279">Privaatsus ja turvalisus</translation>
 <translation id="9050666287014529139">Parool</translation>
 <translation id="9055497320631373736">Sait lisati tagasi potentsiaalsete saitide hulka</translation>
@@ -1595,7 +1571,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="9106148373857059373">Järjehoidja salvestamise voog on suletud</translation>
 <translation id="9108312223223904744">Tugi telefoni kasutamiseks turvavõtmena</translation>
 <translation id="9108808586816295166">Turvaline DNS ei pruugi alati saadaval olla</translation>
-<translation id="9128984223251192329">Privaatsuse liivakasti viip on avatud poolel kõrgusel</translation>
 <translation id="9131209053278896908">Blokeeritud saidid kuvatakse siin</translation>
 <translation id="9133397713400217035">Uurige võrguühenduseta</translation>
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
@@ -1612,7 +1587,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="9209888181064652401">Ei saa helistada</translation>
 <translation id="9212845824145208577">Madalamale ei saa minna. Alustage lehel altpoolt.</translation>
 <translation id="9219103736887031265">Pildid</translation>
-<translation id="9219582468404818260">Aidake meil luua parem veeb</translation>
 <translation id="92381315203627188">Kui sait palub lehel olevad lingid privaatselt eellaadida, krüpteerib Chrome need lehed ja laadib need Google'i serverite kaudu ilma küpsisefailideta. See peidab teie identiteedi eellaaditud saidi eest.</translation>
 <translation id="926205370408745186">Chrome'i tegevuste eemaldamine teenusest Digitaalne heaolu</translation>
 <translation id="927968626442779827">Kasutage Google Chrome'is lihtsustatud režiimi</translation>

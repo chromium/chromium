@@ -211,7 +211,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="1796561540704213354">Weby, včetně navštívených a otevřených stránek</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
-<translation id="1815245884418711390">Přepnout hotspot. Hotspot je vypnutý.</translation>
 <translation id="1816896987747843206">Umožňuje přístup k fotoaparátu všem aplikacím a webům s příslušným oprávněním</translation>
 <translation id="1823280932251546115">Stavový panel, čas <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4936329710968938986">Všichni, vypnuto</translation>
 <translation id="4937170330762390348">Pomocí diktování můžete psát hlasově. Když jste v textovém poli, stiskněte klávesu diktování nebo vyberte ikonu mikrofonu v dolní části obrazovky. Váš jazyk diktování je nastaven na <ph name="LANGUAGE" />. Soubory řeči se stáhnou, abyste mohli používat diktování offline. Jazyk diktování můžete kdykoli změnit v Nastavení &gt; Usnadnění.</translation>
 <translation id="4938176435186993759">Skrýt všechny návrhy</translation>
-<translation id="4943007472417128747">Hotspot byl za účelem použití Wi-Fi vypnut. Pokud ho chcete použít, vypněte Wi-Fi.</translation>
 <translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
@@ -996,7 +994,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5009463889040999939">Probíhá přejmenování profilu. Může to trvat několik minut.</translation>
 <translation id="5016558321564993266">Přepnout popisovač. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorie vyhledávání</translation>
-<translation id="5029356738310729434">Přístup k mikrofonu zařízení je zapnutý</translation>
 <translation id="5030659775136592441">Zobrazit správce záložek</translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
 <translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
@@ -1342,7 +1339,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="643147933154517414">Vše je hotovo</translation>
 <translation id="6431865393913628856">Rekordér obrazovky</translation>
 <translation id="643593192654616063">Je využito <ph name="STORAGE_IN_USE_SIZE" /> z celkem <ph name="STORAGE_TOTAL_SIZE" /> úložiště</translation>
-<translation id="6442259747294754014">Přístup k mikrofonu zařízení je vypnutý</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
 <translation id="6446225358675593408">Najděte své obrázky podle obsahu</translation>
@@ -1468,7 +1464,6 @@ Nová instalace</translation>
 <translation id="6912841030378044227">Přejít do adresního řádku</translation>
 <translation id="6912901278692845878">Rychlá prohlídka</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
-<translation id="6920245099716267363">Přepnout hotspot. Hotspot je zapnutý, je připojeno 1 zařízení.</translation>
 <translation id="692135145298539227">smazat</translation>
 <translation id="6929081673585394903">Zobrazit ovládací prvky</translation>
 <translation id="6931576957638141829">Uložit do</translation>
@@ -1563,7 +1558,6 @@ Nová instalace</translation>
 <translation id="7378203170292176219">Přetažením vyberte oblast, kterou chcete zaznamenat</translation>
 <translation id="7378594059915113390">Ovládání médií</translation>
 <translation id="7378889811480108604">Režim spořiče baterie je vypnutý</translation>
-<translation id="7382640522316003298">Přepnout hotspot. Hotspot je zapnutý, je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Zapnuto</translation>
 <translation id="7384028040782072252">Pokud chcete změnit pořadí aplikací, klikněte kamkoliv pravým tlačítkem</translation>
 <translation id="7386767620098596324">Přepnout připojení k síti. <ph name="STATE_TEXT" />.</translation>
@@ -1733,7 +1727,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8036504271468642248">Předchozí věta</translation>
 <translation id="8042893070933512245">Otevřít nabídku nastavení usnadnění přístupu</translation>
 <translation id="8044457332620420407">Podsvícení klávesnice je vypnuté</translation>
-<translation id="8048077032188362328">Váš administrátor hotspot vypnul.</translation>
 <translation id="8048123526339889627">Nastavení Bluetooth</translation>
 <translation id="8051716679295756675">Šablona s názvem <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Zkopírováno do schránky</translation>
@@ -1754,7 +1747,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8131994907636310308">Zavřít zprávu o třídění</translation>
 <translation id="8132793192354020517">Připojeno k síti <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Přepnout hotspot. Hotspot je zapnutý, není připojeno žádné zařízení.</translation>
 <translation id="8138705869659070104">Po nastavení zařízení</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
 <translation id="8142441511840089262">Dvojité kliknutí</translation>

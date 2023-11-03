@@ -524,6 +524,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
 <translation id="371398631992790800">Ocultar Marcadores</translation>
 <translation id="37207012422556617">Pesquisas populares</translation>
+<translation id="3725081662140949903">Para impedir que outras pessoas usem a sua palavra-passe, abra a app <ph name="APP" /> para alterar a palavra-passe</translation>
 <translation id="3740397331642243698">Abre os URLs introduzidos no Google Chrome na Navegação anónima.</translation>
 <translation id="374357899112510277">Ocultar Transferências</translation>
 <translation id="3745190878148784130">Ocultar Aplicar zoom no texto</translation>
@@ -641,6 +642,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4389019817280890563">Toque para alterar o idioma.</translation>
 <translation id="4405320213589929829">Use moradas em páginas Web para obter direções e informações locais.</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
+<translation id="4431224949908513835">Selecione um método de pagamento para preencher.</translation>
 <translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Definições<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Adicione um idioma</translation>
 <translation id="4461286950227634995">Propor guardar palavras-passe</translation>
@@ -1198,6 +1200,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7221173315674413369">Explore novas funcionalidades e sugestões em Novidades</translation>
 <translation id="7223102419539744003">Fechar separador</translation>
 <translation id="722454870747268814">Novo separador anónimo</translation>
+<translation id="7233006041370588369">Selecione uma palavra-passe para preencher.</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível validar a sua identidade. Palavra-passe não copiada.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nova embalagem acompanhada}other{Novas embalagens acompanhadas}}</translation>

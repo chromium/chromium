@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Асаалттай</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Огноо хооронд шилжихийн тулд суман товчнуудыг дарна уу.</translation>
+<translation id="141170878022560212">Голын товч</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, суулгасан апп</translation>
 <translation id="1414919006379339073">Одоогийн цонхыг хаах</translation>
 <translation id="1415846719612499304">Сүлжээний жагсаалтыг харуулна уу. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">Унтраалттай</translation>
 <translation id="1796561540704213354">Таны зочилсон хуудас болон нээлттэй хуудаснуудыг оруулсан вебсайтууд</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
-<translation id="1815245884418711390">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг унтраалттай байна.</translation>
 <translation id="1816896987747843206">Энэ нь камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
 <translation id="1823280932251546115">Төлөвийн мэдээллийн хэсэг, цаг <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">Эможи сонгогчийг нээх</translation>
 <translation id="2088116547584365419">тоглоом</translation>
 <translation id="209965399369889474">Сүлжээнд холбогдоогүй байна</translation>
+<translation id="2107581415810719320">Бусад <ph name="BUTTON_NUMBER" /> товч</translation>
 <translation id="2107914222138020205">Таны USB-C кабель Thunderbolt-г дэмждэггүй. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
 <translation id="2108303511227308752">Alt + Ухраах товчлуурын шууд холбоосыг өөрчилсөн байна. Устгах товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + ухраахыг дарна уу.</translation>
 <translation id="2126242104232412123">Шинэ ширээ</translation>
@@ -563,6 +564,7 @@
 <translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3341303451326249809">Дэлгэцийн агшныг авсан</translation>
 <translation id="334252345105450327">Дэлгэцийн агшин авах</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" />-д төхөөрөмжийн нууц үг оруулна уу</translation>
 <translation id="334927402682780278">Курсороос мөрийн төгсгөл хүртэлх текстийг сонгох</translation>
 <translation id="3349345708646875009">Ажлын менежерийг нээх</translation>
 <translation id="3364721542077212959">Мэдрэгч үзэгний хэрэгсэл</translation>
@@ -976,7 +978,6 @@
 <translation id="4936329710968938986">Бүгд, унтраалттай</translation>
 <translation id="4937170330762390348">Дуу хоолойгоор бичихийн тусламжтай та дуу хоолойгоо ашиглан бичих боломжтой. Та текстийн талбарт байх үедээ дуу хоолойгоор бичих товчлуурыг дарах эсвэл дэлгэцийн доод талд байх микрофоны дүрс тэмдгийг сонгоно уу. Таны дуу хоолойгоор бичих хэлийг <ph name="LANGUAGE" /> болгож тохируулсан. Ярианы файлуудыг татах бөгөөд ингэснээр та дуу хоолойгоор бичихийг офлайн үед ашиглах боломжтой. Та дуу хоолойгоор бичих хэлийг хүссэн үедээ Тохиргоо &gt; Хандалт дотор өөрчлөх боломжтой.</translation>
 <translation id="4938176435186993759">Бүх зөвлөмжийг нуух</translation>
-<translation id="4943007472417128747">Wi-Fi-г ашиглахын тулд сүлжээний цэгийг унтраасан. Сүлжээний цэгийг ашиглахын тулд Wi-Fi-г унтраана уу.</translation>
 <translation id="4945196315133970626">Мэдэгдлийг унтраах</translation>
 <translation id="4946376291507881335">Зураг авах</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
@@ -997,7 +998,6 @@
 <translation id="5009463889040999939">Профайлын нэрийг өөрчилж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="5016558321564993266">Тэмдэглэгчийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Хайлтын ангиллууд</translation>
-<translation id="5029356738310729434">Төхөөрөмжийн микрофоны хандалт асаалттай байна</translation>
 <translation id="5030659775136592441">Хавчуургын менежерийг харуулах</translation>
 <translation id="5030687792513154421">Хугацаа дууслаа</translation>
 <translation id="5033299697334913360">Бүтэн дэлгэцийн зургийг авахын тулд дурын газар товшино уу</translation>
@@ -1343,7 +1343,6 @@
 <translation id="643147933154517414">Бүгд дууссан</translation>
 <translation id="6431865393913628856">Дэлгэцийн үйлдэл бичих</translation>
 <translation id="643593192654616063">Нийт <ph name="STORAGE_TOTAL_SIZE" />-н хадгалах сангаас <ph name="STORAGE_IN_USE_SIZE" />-г ашиглаж байна</translation>
-<translation id="6442259747294754014">Төхөөрөмжийн микрофоны хандалт унтраалттай байна</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-д <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">төв процессорын нэгж</translation>
 <translation id="6446225358675593408">Зургуудаа контентоор хайх</translation>
@@ -1469,7 +1468,6 @@
 <translation id="6912841030378044227">Хаяг оруулах хэсгийг сонгох</translation>
 <translation id="6912901278692845878">Шуурхай аялал</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
-<translation id="6920245099716267363">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг асаалттай байна. 1 төхөөрөмж холбогдсон.</translation>
 <translation id="692135145298539227">устгах</translation>
 <translation id="6929081673585394903">Тохиргоог харуулах</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
@@ -1565,7 +1563,6 @@
 <translation id="7378203170292176219">Бичих хэсгийг сонгохын тулд чирнэ үү</translation>
 <translation id="7378594059915113390">Медиа хяналт</translation>
 <translation id="7378889811480108604">Батарей хэмнэгчийн горим унтраалттай байна</translation>
-<translation id="7382640522316003298">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг асаалттай байна. <ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон.</translation>
 <translation id="7382680553121047388">Асаах</translation>
 <translation id="7384028040782072252">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа баруун товшино уу</translation>
 <translation id="7386767620098596324">Сүлжээний холболтыг асаана уу/унтраана уу. <ph name="STATE_TEXT" />.</translation>
@@ -1589,6 +1586,7 @@
 <translation id="7489261257412536105">Бүтэн дэлгэцэд орох эсвэл гарах</translation>
 <translation id="7490360161041035804">Та Google Драйвын файлыг оруулаад чухал файлуудыг бэхлэх боломжтой. Бэхлэхийн тулд зүйл дээгүүр курсорыг зөөх эсвэл Файлсыг нээж, зүйл дээр баруун талыг товшино уу.</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
+<translation id="7507162824403726948">Таниулбараа баталгаажуулж дуусгах</translation>
 <translation id="7508690557411636492">Өнгөрсөн сард зассан</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
 <translation id="7512509370370076552">Баруун талыг товших товчлолыг alt + товшилтоос <ph name="LAUNCHER_KEY_NAME" /> товчлуур болгож шинэчилсэн</translation>
@@ -1735,7 +1733,6 @@
 <translation id="8036504271468642248">Өмнөх өгүүлбэр</translation>
 <translation id="8042893070933512245">Хандалтын тохиргооны цэсийг нээх</translation>
 <translation id="8044457332620420407">Гарын арын гэрэл унтраалттай байна</translation>
-<translation id="8048077032188362328">Таны администратор сүлжээний цэгийг унтраасан.</translation>
 <translation id="8048123526339889627">Bluetooth тохиргоо</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> нэртэй загвар аль хэдийн байна</translation>
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
@@ -1756,7 +1753,6 @@
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8131994907636310308">Эрэмбэлэх toast-г хаах</translation>
 <translation id="8132793192354020517"><ph name="NAME" />-д холбогдсон</translation>
-<translation id="8135163608236671037">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг асаалттай байна. Холбогдсон төхөөрөмж алга.</translation>
 <translation id="8138705869659070104">Төхөөрөмж тохируулаад идэвхжүүл</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
 <translation id="8142441511840089262">2 товших</translation>

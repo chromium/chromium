@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">বন্ধ আছে</translation>
 <translation id="1796561540704213354">যেসব ওয়েবসাইটের পৃষ্ঠা আপনি ঘুরে দেখেছেন ও পৃষ্ঠা খোলা রয়েছে, সেগুলি সহ</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
-<translation id="1815245884418711390">হটস্পট টগল করুন। হটস্পট বন্ধ করা আছে।</translation>
 <translation id="1816896987747843206">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি সব অ্যাপ ও ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="1823280932251546115">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@
 <translation id="4936329710968938986">প্রত্যেকে, বন্ধ আছে</translation>
 <translation id="4937170330762390348">ডিকটেশনের সহায়তায়, আপনার ভয়েস ব্যবহার করে টাইপ করতে পারবেন। আপনি কোনও টেক্সট ফিল্ডে থাকার সময় 'ডিকটেশন কী' প্রেস করুন অথবা স্ক্রিনের একেবারে নিচে থাকা 'মাইক্রোফোন' আইকন বেছে নিন। আপনার ডিকটেশনের ভাষা <ph name="LANGUAGE" /> ভাষায় সেট করা হয়েছে। স্পিচ ফাইল ডাউনলোড হয়ে যাবে তাই আপনি অফলাইন থাকাকালীন 'ডিকটেশন' ব্যবহার করতে পারবেন। যেকোনও সময় আপনি 'সেটিংস &gt; অ্যাক্সেসিবিলিটি' থেকে ডিকটেশনের ভাষা পরিবর্তন করতে পারবেন।</translation>
 <translation id="4938176435186993759">সব সাজেশন লুকান</translation>
-<translation id="4943007472417128747">ওয়াই-ফাই ব্যবহার করার জন্য হটস্পট বন্ধ করা হয়েছে। হটস্পট ব্যবহার করতে, ওয়াই-ফাই বন্ধ করুন।</translation>
 <translation id="4945196315133970626">বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="4946376291507881335">ক্যাপচার করুন</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>
@@ -996,7 +994,6 @@
 <translation id="5009463889040999939">প্রোফাইলের নাম পরিবর্তন করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="5016558321564993266">মার্কার টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">বিভাগ অনুযায়ী সার্চ করুন</translation>
-<translation id="5029356738310729434">ডিভাইস মাইক্রোফোন অ্যাক্সেস চালু আছে</translation>
 <translation id="5030659775136592441">বুকমার্ক পরিচালক দেখান</translation>
 <translation id="5030687792513154421">সময় শেষ</translation>
 <translation id="5033299697334913360">সম্পূর্ণ স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
@@ -1342,7 +1339,6 @@
 <translation id="643147933154517414">সব সম্পন্ন!</translation>
 <translation id="6431865393913628856">স্ক্রিন রেকর্ড</translation>
 <translation id="643593192654616063">মোট <ph name="STORAGE_TOTAL_SIZE" /> স্টোরেজের মধ্যে <ph name="STORAGE_IN_USE_SIZE" /> ব্যবহার করা হচ্ছে</translation>
-<translation id="6442259747294754014">ডিভাইস মাইক্রোফোন অ্যাক্সেস বন্ধ আছে</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">কন্টেন্ট অনুযায়ী আপনার ছবি খুঁজুন</translation>
@@ -1468,7 +1464,6 @@
 <translation id="6912841030378044227">অ্যাড্রেস বারে ফোকাস করুন</translation>
 <translation id="6912901278692845878">দ্রুত ট্যুর</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
-<translation id="6920245099716267363">হটস্পট টগল করুন। হটস্পট চালু করা আছে, ১টি ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="692135145298539227">মুছুন</translation>
 <translation id="6929081673585394903">কন্ট্রোল দেখুন</translation>
 <translation id="6931576957638141829">এখানে সেভ করুন</translation>
@@ -1565,7 +1560,6 @@
 <translation id="7378203170292176219">রেকর্ড করতে ড্র্যাগ করে কিছুটা জায়গা বেছে নিন</translation>
 <translation id="7378594059915113390">মিডিয়ার নিয়ন্ত্রণ</translation>
 <translation id="7378889811480108604">'ব্যাটারি সেভার' মোড বন্ধ আছে</translation>
-<translation id="7382640522316003298">হটস্পট টগল করুন। হটস্পট চালু করা আছে, <ph name="DEVICECOUNT" />টি ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="7382680553121047388">চালু আছে</translation>
 <translation id="7384028040782072252">অ্যাপ নতুন করে সাজাতে, মাউস যেকোনও জায়গায় রেখে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="7386767620098596324">নেটওয়ার্ক কানেকশন টগল করুন। <ph name="STATE_TEXT" />।</translation>
@@ -1735,7 +1729,6 @@
 <translation id="8036504271468642248">আগের বাক্য</translation>
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>
 <translation id="8044457332620420407">কীবোর্ড ব্যাকলাইট বন্ধ আছে</translation>
-<translation id="8048077032188362328">আপনার অ্যাডমিনিস্ট্রেটর হটস্পট বন্ধ করে দিয়েছেন।</translation>
 <translation id="8048123526339889627">ব্লুটুথ সেটিংস</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
@@ -1756,7 +1749,6 @@
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8131994907636310308">'বেছে নেওয়ার সুবিধা বন্ধ করুন' বিজ্ঞপ্তি দেখানো টোস্ট মেসেজ</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> তে সংযুক্ত</translation>
-<translation id="8135163608236671037">হটস্পট টগল করুন। হটস্পট চালু করা আছে, কোনও ডিভাইস কানেক্ট করা নেই।</translation>
 <translation id="8138705869659070104">ডিভাইস সেট-আপ করার পরে চালু করুন</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8142441511840089262">ডবল ক্লিক করুন</translation>

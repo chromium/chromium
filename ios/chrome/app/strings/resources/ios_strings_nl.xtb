@@ -521,6 +521,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="371230970611282515">Voorspelt en waarschuwt je voor gevaarlijke gebeurtenissen voordat deze plaatsvinden.</translation>
 <translation id="371398631992790800">Bookmarks verbergen</translation>
 <translation id="37207012422556617">Trending zoekopdrachten</translation>
+<translation id="3725081662140949903">Als je niet wilt dat anderen je wachtwoord gebruiken, open je de <ph name="APP" />-app om je wachtwoord te wijzigen</translation>
 <translation id="3740397331642243698">Hiermee worden de ingevoerde URL's in Google Chrome geopend in de incognitomodus.</translation>
 <translation id="374357899112510277">Downloads verbergen</translation>
 <translation id="3745190878148784130">Tekst zoomen verbergen</translation>
@@ -637,6 +638,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4389019817280890563">Tik om de taal te wijzigen.</translation>
 <translation id="4405320213589929829">Gebruik adressen op webpagina's om lokale informatie en routes te krijgen.</translation>
 <translation id="4420409367264901497">Bookmark bewerken</translation>
+<translation id="4431224949908513835">Selecteer een betaalmethode om in te vullen.</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Instellingen<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Taal toevoegen</translation>
 <translation id="4461286950227634995">Aanbieden wachtwoorden op te slaan</translation>
@@ -1190,6 +1192,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7221173315674413369">Ontdek nieuwe functies en tips in Wat is er nieuw</translation>
 <translation id="7223102419539744003">Tabblad sluiten</translation>
 <translation id="722454870747268814">Nieuw incognitotabblad</translation>
+<translation id="7233006041370588369">Selecteer een wachtwoord om in te vullen.</translation>
 <translation id="7265758999917665941">Nooit voor deze site</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nieuw pakket gevolgd}other{Nieuwe pakketten gevolgd}}</translation>

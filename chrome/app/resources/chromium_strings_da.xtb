@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1001716830750249114">Gå til indstillingerne for Chromium-versionen</translation>
 <translation id="1026101648481255140">Genoptag installation</translation>
 <translation id="1029669172902658969">Genstart og opdater &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium anbefaler, at du gennemgår denne udvidelse</translation>
@@ -31,6 +32,7 @@
 De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1708666629004767631">Der findes en ny og mere sikker version af Chromium.</translation>
+<translation id="1715127912119967311">Chromium sender dine interaktioner med disse funktioner til Google for at hjælpe med at forbedre dem. Disse data læses, behandles og annoteres muligvis af menneskelige kontrollanter.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chromium estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="1733725117201708356">Chromium sletter snart browserdataene</translation>
 <translation id="1745121272106313518">Chromium genstarter om <ph name="REMAINING_TIME" /></translation>

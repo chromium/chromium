@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Увімкнено</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Використовуйте клавіші зі стрілками, щоб переходити між датами.</translation>
+<translation id="141170878022560212">Середня кнопка</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, установлений додаток</translation>
 <translation id="1414919006379339073">Закрити поточне вікно</translation>
 <translation id="1415846719612499304">Показати список мереж. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">Вимкнено</translation>
 <translation id="1796561540704213354">Веб-сайти, зокрема відвідані й відкриті сторінки</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
-<translation id="1815245884418711390">Увімкнути/вимкнути точку доступу. Точку доступу вимкнено.</translation>
 <translation id="1816896987747843206">Буде надано доступ до камери для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="1823280932251546115">Панель статусу, час: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">Відкрити панель смайлів</translation>
 <translation id="2088116547584365419">ігри</translation>
 <translation id="209965399369889474">Немає з’єднання з мережею</translation>
+<translation id="2107581415810719320">Інша кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не підтримує Thunderbolt. Продуктивність пристрою може бути обмежено.</translation>
 <translation id="2108303511227308752">Комбінацію клавіш Alt + Backspace змінено. Щоб скористатися клавішею Delete, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Новий робочий стіл</translation>
@@ -975,7 +976,6 @@
 <translation id="4936329710968938986">Усі, вимкнено</translation>
 <translation id="4937170330762390348">За допомогою функції диктування ви можете вводити текст голосом. У текстовому полі натисніть клавішу диктування або значок мікрофона внизу екрана. Вибрано таку мову диктування: <ph name="LANGUAGE" />. Буде завантажено файли для розпізнавання мовлення, щоб ви могли користуватися функцією диктування без підключення до мережі. Ви можете будь-коли змінити мову диктування в меню "Налаштування &gt; Функції доступності".</translation>
 <translation id="4938176435186993759">Приховати всі пропозиції</translation>
-<translation id="4943007472417128747">Точку доступу вимкнено, щоб підключитися до Wi-Fi. Щоб використовувати точку доступу, вимкніть Wi-Fi.</translation>
 <translation id="4945196315133970626">Вимкнути сповіщення</translation>
 <translation id="4946376291507881335">Зробити знімок</translation>
 <translation id="495046168593986294">Прокрутити вгору</translation>
@@ -996,7 +996,6 @@
 <translation id="5009463889040999939">Триває перейменування профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="5016558321564993266">Перемкнути маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Пошук за категоріями</translation>
-<translation id="5029356738310729434">Доступ до мікрофона пристрою ввімкнено</translation>
 <translation id="5030659775136592441">Показати диспетчер закладок</translation>
 <translation id="5030687792513154421">Час закінчився</translation>
 <translation id="5033299697334913360">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
@@ -1342,7 +1341,6 @@
 <translation id="643147933154517414">Готово</translation>
 <translation id="6431865393913628856">Запис відео з екрана</translation>
 <translation id="643593192654616063">Використаний обсяг пам’яті: <ph name="STORAGE_IN_USE_SIZE" /> з <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Доступ до мікрофона пристрою вимкнено</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6445915701151710649">ЦП</translation>
 <translation id="6446225358675593408">Шукайте зображення за їх вмістом</translation>
@@ -1468,7 +1466,6 @@
 <translation id="6912841030378044227">Виділити адресний рядок</translation>
 <translation id="6912901278692845878">Короткий огляд</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
-<translation id="6920245099716267363">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. До неї підключено 1 пристрій.</translation>
 <translation id="692135145298539227">видалити</translation>
 <translation id="6929081673585394903">Показати елементи керування</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
@@ -1564,7 +1561,6 @@
 <translation id="7378203170292176219">Потягніть, щоб вибрати область для запису</translation>
 <translation id="7378594059915113390">Елементи керування медіа</translation>
 <translation id="7378889811480108604">Режим енергозбереження вимкнено</translation>
-<translation id="7382640522316003298">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. Кількість підключених пристроїв: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Увімкнути</translation>
 <translation id="7384028040782072252">Натисніть правою кнопкою миші будь-де, щоб змінити порядок додатків</translation>
 <translation id="7386767620098596324">Увімкнути або вимкнути з’єднання з мережею. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@
 <translation id="8036504271468642248">Попереднє речення</translation>
 <translation id="8042893070933512245">Відкрити меню налаштувань спеціальних можливостей</translation>
 <translation id="8044457332620420407">Підсвітку клавіатури вимкнено</translation>
-<translation id="8048077032188362328">Ваш адміністратор вимкнув точку доступу.</translation>
 <translation id="8048123526339889627">Налаштування Bluetooth</translation>
 <translation id="8051716679295756675">Шаблон <ph name="DESK_TEMPLATE_NAME" /> вже існує</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
@@ -1755,7 +1750,6 @@
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8131994907636310308">Закрити підказку сортування</translation>
 <translation id="8132793192354020517">З'єднано з <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. До неї не підключено жодного пристрою.</translation>
 <translation id="8138705869659070104">Потрібно налаштувати пристрій</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8142441511840089262">Двічі натиснути</translation>

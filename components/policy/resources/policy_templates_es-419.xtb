@@ -4069,9 +4069,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4380159792986204036">Permitir que el kiosco web abra más de una ventana del navegador en cualquier pantalla</translation>
 <translation id="4381227367939912539">Inhabilitar el juego del huevo de pascua del dinosaurio</translation>
 <translation id="4382413175336720282">Inhabilita la verificación de URL en tiempo real</translation>
-<translation id="4384911996235542086">Si habilitas esta política o no la estableces, <ph name="PRODUCT_NAME" /> podrá enviar a Google descargas sospechosas de los usuarios que habilitaron la Navegación segura para analizarlas en busca de software malicioso.
-Si la inhabilitas, no se realizará el análisis.
-Esta política no afecta el análisis de contenido de descargas configurado por Chrome Enterprise Connectors.</translation>
 <translation id="4387741272680827493">Si estableces la política, se especifica una lista de nombres de host que evitan las actualizaciones de HSTS precargadas de http a https.
 
       Esta política únicamente admite nombres de host con una sola etiqueta y se aplica a las entradas de HSTS precargadas "estáticas" (por ejemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Esta política no evita las actualizaciones de HSTS para los servidores que hayan solicitado actualizaciones de HSTS "de manera dinámica" con un encabezado de respuesta <ph name="HSTS_HEADER_NAME" />.
@@ -4456,6 +4453,17 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
       Si no estableces esta política, se mostrarán todos los servidores de impresión ya que no se filtrará ninguno.
 
       Esta política es obsoleta; usa la política <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" /> en su lugar.</translation>
+<translation id="4667462525936265103">Esta política controla si los usuarios pueden incorporar datos de navegación existentes en un perfil administrado que se crea después de que acceda una cuenta administrada al área de contenido.
+
+Si no estableces esta política o la estableces como <ph name="USER_OPTIN_DATA_ENUM_NAME" /> (valor 1), el usuario podrá incorporar los datos de navegación existentes en el perfil administrado si lo desea. La casilla de verificación del diálogo de creación del perfil estará visible y desmarcada de forma predeterminada.
+
+Si estableces esta política como <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> (valor 2), el usuario podrá incorporar los datos de navegación existentes en el perfil administrado si lo desea. La casilla de verificación del diálogo de creación del perfil estará visible y marcada de forma predeterminada. Esta opción solo se permite en dispositivos administrados.
+
+Si estableces esta política como <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> (valor 3), el usuario no podrá incorporar ningún dato de navegación existente al perfil administrado. La casilla de verificación del diálogo de creación del perfil no estará visible.
+
+Si se incorporan los datos de navegación existentes al perfil administrado, el perfil actual pasará a ser administrado. No se creará un perfil nuevo.
+
+Si no se incorporan los datos de navegación existentes al perfil administrado, se creará un nuevo perfil sin datos. Los datos de navegación existentes permanecerán en un perfil no administrado al que el usuario seguirá teniendo acceso a través del selector de perfiles.</translation>
 <translation id="4668325077104657568">Configuración de imágenes predeterminadas</translation>
 <translation id="4669083178278833688">Inhabilitar las funciones de cámara, configuración del navegador, configuración del SO, escaneo, Web Store, Canvas, Explorar, Crosh, Galería y Terminal</translation>
 <translation id="4669292863736266737">A menos que establezcas la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> como <ph name="BLOCK_GEOLOCATION_SETTING" />, el parámetro de configuración <ph name="GLS_ENABLED" /> activará los Servicios de ubicación de Google durante la configuración inicial. Si la estableces como <ph name="GLS_DISABLED" /> o no la estableces, los Servicios de ubicación se mantendrán desactivados durante la configuración.
@@ -7224,6 +7232,7 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 
       Actualmente, los idiomas compatibles son los siguientes: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Habilitar la impresión doble con bordes largos</translation>
+<translation id="6929639826067341257">Sugerirles a los usuarios que incorporen sus datos existentes en el perfil administrado, y darles la opción de no hacerlo</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar la sincronización de datos con Google</translation>
 <translation id="6932282102911647185">Color púrpura para la retroiluminación del teclado</translation>
@@ -8557,17 +8566,6 @@ también es seguro.</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
-<translation id="8030797562351896051">Esta política proporciona una lista de búsquedas de sitios en las que el usuario puede realizar una búsqueda en un sitio específico. Para iniciar la búsqueda, los usuarios pueden escribir el atajo o @atajo (p.ej., @trabajo) en la barra de direcciones.
-
-Los siguientes campos son obligatorios para cada entrada: nombre, atajo y URL. Los atajos de la lista deben ser únicos y no deben contener espacios. Es opcional poner @ antes de un atajo, por lo que el atajo resultante se considera igual que el atajo sin @; por ejemplo, "trabajo" y "@trabajo" se consideran el mismo atajo.
-
-Para cada entrada, el campo URL especifica la URL del motor de búsqueda utilizado durante una búsqueda con la palabra clave correspondiente. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario. Se ignoran las entradas no válidas y las entradas con atajos duplicados.
-
-Las entradas de búsquedas en el sitio configuradas como destacadas se muestran en la barra de direcciones cuando el usuario escribe "@". Se pueden seleccionar hasta tres entradas como destacadas.
-
-Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el sitio establecidas por la política, pero pueden agregar nuevos atajos para la misma URL. Además, los usuarios no podrán crear nuevas entradas de búsquedas en el sitio con un atajo creado anteriormente mediante una política.
-
-En caso de conflicto con un atajo creado anteriormente por el usuario, se respeta la configuración del usuario. Sin embargo, los usuarios aún pueden activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya definió "trabajo" como atajo a URL1 y la política define "trabajo" como atajo a URL2, al escribir "trabajo" en la barra de búsqueda se activará una búsqueda en URL1, pero si escribes "@trabajo" en la barra de búsqueda se activará una búsqueda en URL2.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8036284429246268475">Si habilitas la política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> revise si los nombres de usuario y contraseñas ingresados estuvieron en una filtración.
 

@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">አብራ</translation>
 <translation id="1407069428457324124">ጠቆር ያለ ገጽታ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />። በቀኖች መካከል ለማሰስ የቀስት ቁልፎችን ይጠቀሙ።</translation>
+<translation id="141170878022560212">የመሃል አዝራር</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />፣ የተጫነ መተግበሪያ</translation>
 <translation id="1414919006379339073">የአሁኑን መስኮት ዝጋ</translation>
 <translation id="1415846719612499304">የአውታረ መረብ ዝርዝርን አሳይ። <ph name="STATE_TEXT" />።</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="1796561540704213354">የጎበኟቸውን ገፆች እና የተከፈቱ ገፆችን የሚያካትቱ ድር ጣቢያዎች</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
-<translation id="1815245884418711390">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ ጠፍቷል።</translation>
 <translation id="1816896987747843206">ይህ የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
 <translation id="1823280932251546115">የሁኔታ ትሪ፣ ሰዓት <ph name="TIME" />፣
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">ስሜት ገላጭ ምስል መራጭን ይክፈቱ</translation>
 <translation id="2088116547584365419">ጨዋታዎች</translation>
 <translation id="209965399369889474">ከአውታረ መረብ ጋር አልተገናኘም</translation>
+<translation id="2107581415810719320">ሌላ አዝራር <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">የእርስዎ USB-C ገመድ Thunderboltን አይደግፍም። የመሳሪያ አፈጻጸም የተገደበ ሊሆን ይችላል።</translation>
 <translation id="2108303511227308752">የAlt + የኋሊት መደምሰሻ የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የሰርዝ ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የኋሊት መደምሰሻን ይጫኑ።</translation>
 <translation id="2126242104232412123">አዲስ ዴስክ</translation>
@@ -563,6 +564,7 @@
 <translation id="3340978935015468852">ቅንብሮች</translation>
 <translation id="3341303451326249809">ቅጽበታዊ ገፅ ዕይታ ተቀርጿል</translation>
 <translation id="334252345105450327">ቅጽበታዊ ገፅ ዕይታ ያንሱ</translation>
+<translation id="3346728094401457853">ለ<ph name="EMAIL" /> የመሣሪያ የይለፍ ቃል ያስገቡ</translation>
 <translation id="334927402682780278">ጽሁፍን ከጠቋሚ ጀምሮ እስከ መስመሩ መጨረሻ ድረስ ይምረጡ</translation>
 <translation id="3349345708646875009">ተግባር መሪን ክፈት</translation>
 <translation id="3364721542077212959">የስቲለስ መሣሪያዎች</translation>
@@ -975,7 +977,6 @@
 <translation id="4936329710968938986">ሁሉም ሰው፣ ጠፍቷል</translation>
 <translation id="4937170330762390348">በቃል ማስጻፊያ ድምፅዎን በመጠቀም መተየብ ይችላሉ። በቃል ማስጻፍ ቁልፉን ይጫኑ ወይም በጽሁፍ መስክ ላይ ሳይሆኑ ከማያ ገፁ ታች የማይክሮፎን አዶን ይምረጡ። የእርስዎ በቃል ማስጻፍ ቋንቋ ወደ <ph name="LANGUAGE" /> ተቀናብሯል። በቃል ማስጻፍን ከመስመር ውጭ መጠቀም እንዲችሉ የንግግር ፋይሎች ይወርዳሉ። በቃል ማስጻፍ ቋንቋን በማንኛውም ጊዜ ቅንብሮች &gt; ተደራሽነት ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="4938176435186993759">ሁሉንም የአስተያየት ጥቆማዎች ደብቅ</translation>
-<translation id="4943007472417128747">WiFi ለመጠቀም መገናኛ ነጥብ ጠፍቷል። መገናኛ ነጥብን ለመጠቀም Wi-Fiን ያጥፉ።</translation>
 <translation id="4945196315133970626">ማሳወቂያዎችን አጥፋ</translation>
 <translation id="4946376291507881335">አንሳ</translation>
 <translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
@@ -996,7 +997,6 @@
 <translation id="5009463889040999939">መገለጫውን እንደገና በመሰየም ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="5016558321564993266">ምልክት ማድረጊያን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">ምድቦችን ይፈልጉ</translation>
-<translation id="5029356738310729434">የመሣሪያ ማይክሮፎን መዳረሻ በርቷል</translation>
 <translation id="5030659775136592441">የዕልባት አቀናባሪን አሳይ</translation>
 <translation id="5030687792513154421">ሰዓት አልቋል</translation>
 <translation id="5033299697334913360">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
@@ -1342,7 +1342,6 @@
 <translation id="643147933154517414">ሁሉም ተከናውኗል</translation>
 <translation id="6431865393913628856">የማያ ገፅ ቀረጻ</translation>
 <translation id="643593192654616063">ከ<ph name="STORAGE_TOTAL_SIZE" /> አጠቃላይ <ph name="STORAGE_IN_USE_SIZE" /> ማከማቻ ጥቅም ላይ ውሏል</translation>
-<translation id="6442259747294754014">የመሣሪያ ማይክሮፎን መዳረሻ ጠፍቷል</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> በ<ph name="RECEIVER_NAME" /> ላይ</translation>
 <translation id="6445915701151710649">ሲፒዩ</translation>
 <translation id="6446225358675593408">በይዘቱ ምስሎችዎን ያግኙ</translation>
@@ -1468,7 +1467,6 @@
 <translation id="6912841030378044227">በአድራሻ አሞሌ ላይ አተኩር</translation>
 <translation id="6912901278692845878">ፈጣን ጉብኝት</translation>
 <translation id="6919251195245069855">የእርስዎን ዘመናዊ ካርድ ለይቶ ማወቅ አልተቻለም። እንደገና ይሞክሩ።</translation>
-<translation id="6920245099716267363">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ በርቷል፣ 1 መሣሪያ ተገናኝቷል።</translation>
 <translation id="692135145298539227">ሰርዝ</translation>
 <translation id="6929081673585394903">መቆጣጠሪያዎችን አሳይ</translation>
 <translation id="6931576957638141829">አስቀምጥ ወደ</translation>
@@ -1565,7 +1563,6 @@
 <translation id="7378203170292176219">ለመቅዳት አካባቢ ለመምረጥ ይጎትቱ</translation>
 <translation id="7378594059915113390">የሚዲያ መቆጣጠሪያዎች</translation>
 <translation id="7378889811480108604">የባትሪ ኃይል ቆጣቢ ሁነታ ጠፍቷል</translation>
-<translation id="7382640522316003298">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ በርቷል፣ <ph name="DEVICECOUNT" /> መሣሪያዎች ተገናኝተዋል።</translation>
 <translation id="7382680553121047388">በርቷል</translation>
 <translation id="7384028040782072252">መተግበሪያዎችዎን እንደገና ለመደርደር በማንኛውም ቦታ ላይ በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="7386767620098596324">የአውታረ መረብ ግንኙነትን ቀያይር። <ph name="STATE_TEXT" />።</translation>
@@ -1589,6 +1586,7 @@
 <translation id="7489261257412536105">ወደ ሙሉ ገፅ ዕይታ ይግቡ ወይም ከእሱ ይውጡ</translation>
 <translation id="7490360161041035804">የGoogle Drive ፋይሎችን ጨምሮ አስፈላጊ ፋይሎችን ፒን ማድረግ ይችላሉ። ፒን ለማድረግ፣ አንድ ንጥል ላይ ያንዣብቡ ወይም ፋይሎችን ይክፈቱ እና አንድ ንጥል ላይ የቀኝ ጠቅታ ያድርጉ።</translation>
 <translation id="7497767806359279797">ቋንቋ እና ቁልፍ ሰሌዳን ይምረጡ</translation>
+<translation id="7507162824403726948">ማንነትዎን ማረጋገጥ ይጨርሱ</translation>
 <translation id="7508690557411636492">ባለፈው ወር ተከፍቷል</translation>
 <translation id="7509246181739783082">ማንነትዎን ያረጋግጡ</translation>
 <translation id="7512509370370076552">የቀኝ ጠቅታ አቋራጭ ከ<ph name="LAUNCHER_KEY_NAME" /> alt + ጠቅታ ወደ ቁልፍ + ጠቅታ ዘምኗል</translation>
@@ -1735,7 +1733,6 @@
 <translation id="8036504271468642248">ቀዳሚ ዓረፍተ ነገር</translation>
 <translation id="8042893070933512245">የተደራሽነት ቅንብሮች ምናሌን ክፈት</translation>
 <translation id="8044457332620420407">የቁልፍ ሰሌዳ የኋላ ብርሃን ጠፍቷል</translation>
-<translation id="8048077032188362328">አስተዳዳሪዎ መገናኛ ነጥብን አጥፍተውታል።</translation>
 <translation id="8048123526339889627">የብሉቱዝ ቅንብሮች</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ተብሎ የተሰየመ ቅንብር ደንብ አስቀድሞ አለ።</translation>
 <translation id="8052898407431791827">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
@@ -1756,7 +1753,6 @@
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8131994907636310308">የድርድር ቶስትን ዝጋ</translation>
 <translation id="8132793192354020517">ከ<ph name="NAME" /> ጋር ተገናኝቷል</translation>
-<translation id="8135163608236671037">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ በርቷል፣ ምንም መሣሪያ አልተገናኘም።</translation>
 <translation id="8138705869659070104">ከመሣሪያ ውቅረት በኋላ ያግብሩ</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8142441511840089262">ድርብ ጠቅታ</translation>

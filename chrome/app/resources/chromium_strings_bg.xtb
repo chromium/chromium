@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1001716830750249114">Към настройките за версията на Chromium</translation>
 <translation id="1026101648481255140">Възобновяване на инсталацията</translation>
 <translation id="1029669172902658969">Повторно стартиране за актуализиране на &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium ви препоръчва да прегледате това разширение</translation>
@@ -31,6 +32,7 @@
 За този профил може да важат разрешенията, които вече сте предоставили на уебсайтове и приложения. Имате възможност да управлявате профилите си в Google в <ph name="SETTINGS_LINK_BEGIN" />Настройки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Изтегля се...</translation>
 <translation id="1708666629004767631">Налице е нова, по-сигурна версия на Chromium.</translation>
+<translation id="1715127912119967311">С цел подобряване на тези функции Chromium изпраща до Google взаимодействията ви с тях. Възможно е тези данни да бъдат прочетени, обработени и анотирани от проверяващи лица.</translation>
 <translation id="17264556997921157">Можете да виждате и премахвате темите, към които имате интерес и които сайтовете използват, за да ви показват реклами. Chromium прогнозира интересите ви въз основа на скорошната ви история на сърфиране.</translation>
 <translation id="1733725117201708356">Chromium скоро ще изтрие данните за сърфирането</translation>
 <translation id="1745121272106313518">Chromium ще се рестартира след <ph name="REMAINING_TIME" /></translation>

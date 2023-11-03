@@ -347,6 +347,7 @@
 <translation id="1640244768702815859">ລອງ <ph name="BEGIN_LINK" />ເຂົ້າເບິ່ງໜ້າຫຼັກຂອງເວັບໄຊ<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">ເລື່ອນເວລາການພິມຈົນເຖິງ</translation>
 <translation id="164212631332220697">ຈ່າຍດ້ວຍ <ph name="CARD_DETAIL" /> ຢູ່ຈຸດຈ່າຍເງິນ.</translation>
+<translation id="1643651787397909318">ເຂົ້າໄປປຸ່ມການກວດສອບຄວາມປອດໄພຂອງ Chrome, ເປີດນຳໃຊ້ເພື່ອເຂົ້າເບິ່ງໜ້າການກວດສອບຄວາມປອດໄພຂອງ Chrome ໃນການຕັ້ງຄ່າ</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1645368109819982629">ໂປຣໂຕຄໍທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1650602712345345441">ຈັດການການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
@@ -2043,6 +2044,8 @@
 <translation id="5137761395480718572">ແອັບນີ້ກຳລັງຮ້ອງຂໍການອະນຸຍາດເພື່ອຕິດຕັ້ງຂໍ້ມູນການເຂົ້າສູ່ລະບົບ Wi-Fi. ຫຼັງຈາກຕິດຕັ້ງແລ້ວ, <ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະເຊື່ອມຕໍ່ໂດຍອັດຕະໂນມັດກັບເຄືອຂ່າຍ Wi-Fi ທີ່ເຂົ້າຮ່ວມ. ເພື່ອລຶບຂໍ້ມູນການເຂົ້າສູ່ລະບົບເຫຼົ່ານີ້ອອກ, ໃຫ້ຖອນການຕິດຕັ້ງແອັບ. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ບໍ່ສາມາດໃຊ້ບັດສະເໝືອນໄດ້ໃນຕອນນີ້, ກະລຸນາຕິດຕໍ່ຫາທະນາຄານຂອງທ່ານ</translation>
 <translation id="5138227688689900538">ຫຍໍ້ລົງ</translation>
+<translation id="5143309888746105072">Chromium ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ.
+            <ph name="NEW_LINE" />ຫາກຄຸນສົມບັດຂອງເວັບໄຊບໍ່ເຮັດວຽກ ໃຫ້ <ph name="START_LINK" />ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຊົ່ວຄາວ<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">ລະຫັດຄວາມຜິດພາດມີຢູ່ໃນການຕອບຮັບນະໂຍບາຍ</translation>
 <translation id="5146995429444047494">ການແຈ້ງເຕືອນສຳລັບ <ph name="ORIGIN" /> ຖືກບລັອກໄວ້</translation>
 <translation id="514704532284964975"><ph name="URL" /> ຕ້ອງການເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC ທີ່ທ່ານແຕະດ້ວຍໂທລະສັບຂອງທ່ານ</translation>
@@ -2387,6 +2390,7 @@
 <translation id="5873297634595728366">ຍານພາຫະນະກາຊວນ</translation>
 <translation id="5877831137320480913">ສຸຂະພາບ ແລະ ຄວາມງາມ</translation>
 <translation id="5879989559903563723">ບໍ່ອະນຸຍາດໃນໂໝດແຂກ</translation>
+<translation id="5880050725127890683">ເຂົ້າໄປການກວດສອບຄວາມປອດໄພຂອງ Chrome</translation>
 <translation id="5883861433316751031">ຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມອຸປະກອນ MIDI ຄືນໃໝ່ບໍ?</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">ບັນທຶກບັດໄວ້ແລ້ວ</translation>
@@ -2567,6 +2571,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ຍ້າຍ}other{<ph name="FILE_COUNT" /> ໄຟລ໌ຖືກບລັອກບໍ່ໃຫ້ຍ້າຍ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການໄຟລ໌ທີ່ທ່ານດາວໂຫຼດໄວ້ໃນ Chrome</translation>
 <translation id="6254436959401408446">ບໍ່ມີຄວາມຈຳພຽງພໍເພື່ອເປີດໜ້ານີ້</translation>
+<translation id="625463612687472648">ຢຸດການອະນຸຍາດ</translation>
 <translation id="6259156558325130047">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="6263376278284652872">ບຸກມາກສ໌ <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
@@ -2741,6 +2746,8 @@
 <translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
 <translation id="6597665340361269064">90 ອົງສາ</translation>
 <translation id="6599642189720630047">ສິນຄ້າທີ່ຕິດຕາມ</translation>
+<translation id="6606309334576464871">Chrome ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ.
+            <ph name="NEW_LINE" />ຫາກຄຸນສົມບັດຂອງເວັບໄຊບໍ່ເຮັດວຽກ ໃຫ້ <ph name="START_LINK" />ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຊົ່ວຄາວ<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">ຂ່າວເສດຖະກິດ</translation>
 <translation id="6612010098632894193">ວິດີໂອອອນລາຍ</translation>
 <translation id="6613866251791999074">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chrome</translation>
@@ -3409,6 +3416,7 @@
 <translation id="7888575728750733395">ກົນໄກປະສານການສະແດງພາບການພິມ</translation>
 <translation id="7894280532028510793">ຖ້າການສະກົດຄຳຖືກຕ້ອງ, <ph name="BEGIN_LINK" />ລອງເປີດໃຊ້ Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 ນິ້ວ</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອເຂົ້າໄປໜ້າການກວດສອບຄວາມປອດໄພຂອງ Chrome ໃນການຕັ້ງຄ່າ</translation>
 <translation id="7916162853251942238">ເຟລັກໂຊເບສ</translation>
 <translation id="7927971017714848357">ທີ່ດິນ</translation>
 <translation id="793209273132572360">ອັບເດດທີ່ຢູ່ບໍ?</translation>
@@ -3702,6 +3710,7 @@
 <translation id="8460854335417802511">ເປີດໃຊ້ມັນ</translation>
 <translation id="8461694314515752532">ເຂົ້າລະຫັດຂໍ້ມູນທີ່ຊິ້ງດ້ວຍລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານເອງ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ບັດເຄຣດິດ}other{# ບັດເຄຣດິດ}}</translation>
+<translation id="8467494337615822642">ເຂົ້າໄປໜ້າການກວດສອບຄວາມປອດໄພຂອງ Chrome ໃນການຕັ້ງຄ່າ</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8473626140772740486">300 x 450 ມມ</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>

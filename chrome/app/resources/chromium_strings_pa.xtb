@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
+<translation id="1001716830750249114">Chromium ਵਰਜਨ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="1026101648481255140">ਸਥਾਪਨਾ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="1040916596585577953">Chromium ਤੁਹਾਨੂੰ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ</translation>
@@ -23,6 +24,7 @@
 <translation id="1342274909142618978">ਨਾਲ ਹੀ Chromium (<ph name="URL" />) ਤੋਂ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="1414495520565016063">ਤੁਸੀਂ Chromium ਤੇ ਸਾਈਨ ਇਨ ਕੀਤਾ ਹੈ!</translation>
 <translation id="1478370723027452770">Chrome for Testing ਸੰਬੰਧੀ ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="1497802159252041924">ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">ਕੋਈ Chromium ਟੈਬ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="1553461853655228091">Chromium ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਵਾਸਤੇ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="1574377791422810894">Chromium ਦੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਟੂਲ</translation>
@@ -33,6 +35,7 @@
 ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਹਿਲਾਂ ਤੋਂ ਦਿੱਤੀਆਂ ਗਈਆਂ ਇਜਾਜ਼ਤਾਂ ਇਸ ਖਾਤੇ 'ਤੇ ਲਾਗੂ ਹੋ ਸਕਦੀਆਂ ਹਨ। ਤੁਸੀਂ <ph name="SETTINGS_LINK_BEGIN" />ਸੈਟਿੰਗਾਂ<ph name="SETTINGS_LINK_END" /> ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ Google ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1640672724030957280">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1708666629004767631">Chromium ਦਾ ਇੱਕ ਨਵਾਂ, ਵੱਧ ਸੁਰੱਖਿਅਤ ਵਰਜਨ ਉਪਲਬਧ ਹੈ।</translation>
+<translation id="1715127912119967311">ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਲਈ, Chromium ਉਨ੍ਹਾਂ ਨਾਲ ਹੋਈਆਂ ਤੁਹਾਡੀਆਂ ਅੰਤਰਕਿਰਿਆਵਾਂ Google ਨੂੰ ਭੇਜਦਾ ਹੈ। ਮਨੁੱਖੀ ਸਮੀਖਿਅਕ ਇਸ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹ ਸਕਦੇ ਹਨ, ਇਸ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰ ਸਕਦੇ ਹਨ ਅਤੇ ਇਸਦੀ ਐਨੋਟੇਸ਼ਨ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="17264556997921157">ਤੁਸੀਂ ਦਿਲਚਸਪੀ ਵਾਲੇ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਨੂੰ ਦੇਖ ਅਤੇ ਹਟਾ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ ਨੂੰ ਸਾਈਟਾਂ ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। Chromium ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਂਦਾ ਹੈ।</translation>
 <translation id="1733725117201708356">Chromium ਜਲਦ ਹੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾ ਦੇਵੇਗਾ</translation>
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" /> ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ</translation>
@@ -157,11 +160,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇਸ Chromium ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੈ। ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chromium ਤੁਹਾਡੇ ਲਈ ਤੁਹਾਡਾ ਖੁਦ ਦਾ ਪ੍ਰੋਫਾਈਲ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3909353120217047026">ਇਹ ਐਕਸਟੈਂਸ਼ਨ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਨੀਤੀ ਦੀ ਉਲੰਘਣਾ ਕਰਦੀ ਹੈ ਅਤੇ ਇਹ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦੀ ਹੈ। ਇਸਨੂੰ Chromium ਤੋਂ ਹਟਾਓ, ਤਾਂ ਜੋ ਇਹ ਹੁਣ ਤੁਹਾਡੀ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਸਮੇਤ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ 'ਤੇ ਮੌਜੂਦ ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਅਤੇ ਬਦਲ ਨਾ ਸਕੇ।</translation>
 <translation id="391789666908693569">ਤੁਹਾਡਾ ਖਾਤਾ <ph name="MANAGER_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ Chromium ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਇਸਦੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਇਸਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ।</translation>
+<translation id="3922825997980843979">ਟਾਈਪ ਕਰਨ ਵੇਲੇ, Chromium ਪਤਾ ਬਾਰ ਜਾਂ ਖੋਜ ਬਾਕਸ ਦੀ ਸਮੱਗਰੀ ਨੂੰ ਤੁਹਾਡੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਨੂੰ ਭੇਜਦਾ ਹੈ</translation>
 <translation id="3945058413678539331">Chromium ਪਾਸਵਰਡਾਂ ਨੂੰ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਹ ਕਰਨ ਦੇਣ ਲਈ ਆਪਣਾ ਵਿੰਡੋ ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="3962647064319009959">ਜਾਣੋ ਕਿ Chromium ਤੁਹਾਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="3975724895399328945">Google Chrome for Testing ਬਾਰੇ</translation>
 <translation id="3997429360543082038">ChromiumOS ਬਾਰੇ</translation>
 <translation id="4019629340646866719">ChromiumOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
+<translation id="4028143804911941282">ਇਸ ਸੁਵਿਧਾ ਦੇ ਬੰਦ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਹਾਲੇ ਵੀ ਉਹ ਸੁਝਾਅ ਦਿਸਣਗੇ ਜੋ Chromium ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦਾ ਹੈ</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ਵਰਤਮਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਦੀ ਰਿਪੋਰਟ ਕਰਕੇ Chromium ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="4050175100176540509">ਮਹੱਤਵਪੂਰਣ ਸੁਰੱਖਿਆ ਸੁਧਾਰ ਅਤੇ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨਵੇਂ ਰੂਪ ਵਿੱਚ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -253,6 +258,7 @@
 <translation id="6003112304606738118">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ... <ph name="HOURS" /> ਘੰਟੇ ਬਾਕੀ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6055895534982063517">Chromium ਦਾ ਇੱਕ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ ਅਤੇ ਇਹ ਪਹਿਲਾਂ ਨਾਲੋਂ ਵੱਧ ਤੇਜ਼ ਹੈ।</translation>
+<translation id="6058380562449900225">ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Chromium ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਹਟਾਉਣ ਦਿਓ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। ਸੂਚਨਾਵਾਂ ਨੂੰ ਨਹੀਂ ਰੋਕਦਾ ਹੈ।</translation>
 <translation id="6063093106622310249">ਅਤੇ Chromium ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> ਨੂੰ Chromium ਵਿੱਚ ਸ਼ਾਮਲ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6072463441809498330">Chromium ਨੂੰ ਜ਼ਿਆਦਾ ਤੇਜ਼ ਬਣਾਓ</translation>

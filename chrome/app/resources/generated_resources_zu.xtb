@@ -1888,6 +1888,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2428978615149723410">lamakalishi</translation>
 <translation id="2431027948063157455">Umsizi we-Google akakwazanga ukulayisha, sicela uhlole ukuxhumeka kwakho kwenethiwekhi uphinde uzame futhi.</translation>
 <translation id="243179355394256322">Inhlangano yakho ivumela ukubhalisa idivayisi kubasebenzisi abagunyaziwe kuphela. Lo msebenzisi akagunyaziwe ukubhalisa amadivayisi. Sicela uqiniseke ukuthi umsebenzisa unelungelo lomlawuli "Lokubhalisa izingxenyekazi zekhompuyutha ze-Google Meet" esigabeni Sabasebenzisi sekhonsoli Yomphathi.</translation>
+<translation id="243275146591958220">Khansela ukulanda</translation>
 <translation id="2433452467737464329">Engeza i-param yombuzo ku-URL ukuze uvuselele ikhasi: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Ukubonakala</translation>
 <translation id="2433836460518180625">Vula idivayisi kuphela</translation>
@@ -9074,7 +9075,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Iphrinta e-<ph name="ITEM_POSITION" /> kwangu-<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Isilondolozi Samandla sivuliwe</translation>
 <translation id="8180786512391440389">I-"<ph name="EXTENSION" />" ingafunda iphinde isuse izithombe, ividiyo, namafayela womsindo kuzindawo ezithikhiwe.</translation>
-<translation id="8180826593917851025">Lungiselela i-Hotspot ye-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Ayikwazi ukujoyina isizinda. Hlola i-akhawunti yakho ukuze ubone uma unezimvume ezanele ukuze ungeze amadivayisi.</translation>
 <translation id="8182105986296479640">Uhlelo lokusebenza aluphenduli.</translation>
 <translation id="8182412589359523143">Ukuze ususe yonke idatha kusuka kule <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />chofoza lapha<ph name="END_LINK" />.</translation>
@@ -10072,6 +10072,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="8968527460726243404">Umbhali wesithombe sesistimu se-ChromeOS</translation>
 <translation id="8968766641738584599">Londoloza ikhadi</translation>
 <translation id="8968906873893164556">Khetha i-akhawunti ozoyisebenzisela ukusetha</translation>
+<translation id="8970887620466824814">Okuthile akuhambanga kahle.</translation>
 <translation id="89720367119469899">I-Escape</translation>
 <translation id="8972513834460200407">Sicela uhlole nomlawuli wenethiwekhi yakho ukuze uqiniseke ukuthi uhlelo lokuvikela aluvimbeli ukulanda kusuka kumaseva we-Google.</translation>
 <translation id="8973263196882835828">&amp;Nika Amandla Okushuthwe Bukhoma</translation>

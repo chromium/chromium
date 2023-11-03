@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">बंद करा</translation>
 <translation id="1796561540704213354">तुम्ही भेट दिलेल्या आणि उघडलेल्या पेजसह वेबसाइट</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
-<translation id="1815245884418711390">हॉटस्पॉट टॉगल करा. हॉटस्पॉट बंद आहे.</translation>
 <translation id="1816896987747843206">हे कॅमेरा परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="1823280932251546115">स्टेटस ट्रे, वेळ <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@
 <translation id="4936329710968938986">प्रत्येकजण, बंद आहे</translation>
 <translation id="4937170330762390348">डिक्टेशनसह तुम्ही तुमचा आवाज वापरून टाइप करू शकता. तुम्ही मजकूर फील्डवर असताना डिक्टेशन की प्रेस करा किंवा स्क्रीनच्या तळाशी असलेला मायक्रोफोन आयकन निवडा. तुमची डिक्टेशन भाषा <ph name="LANGUAGE" /> वर सेट केली आहे. स्पीच फाइल डाउनलोड केल्या जातील, जेणेकरून तुम्ही डिक्टेशन ऑफलाइन वापरू शकाल. तुम्ही सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये डिक्टेशन भाषा कधीही बदलू शकता.</translation>
 <translation id="4938176435186993759">सर्व सूचना लपवा</translation>
-<translation id="4943007472417128747">वायफाय वापरण्यासाठी हॉटस्पॉट बंद केला आहे. हॉटस्पॉट वापरण्यासाठी, वायफाय बंद करा.</translation>
 <translation id="4945196315133970626">सूचना बंद करा</translation>
 <translation id="4946376291507881335">कॅप्चर करा</translation>
 <translation id="495046168593986294">वर स्क्रोल करा</translation>
@@ -996,7 +994,6 @@
 <translation id="5009463889040999939">प्रोफाइलचे नाव बदलत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5016558321564993266">मार्कर टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">शोधण्याशी संबंधित वर्गवाऱ्या</translation>
-<translation id="5029356738310729434">डिव्हाइसच्या मायक्रोफोनचा अ‍ॅक्सेस सुरू आहे</translation>
 <translation id="5030659775136592441">बुकमार्क व्यवस्थापक दाखवा</translation>
 <translation id="5030687792513154421">वेळ संपली</translation>
 <translation id="5033299697334913360">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही क्लिक करा</translation>
@@ -1342,7 +1339,6 @@
 <translation id="643147933154517414">सर्व पूर्ण झाले</translation>
 <translation id="6431865393913628856">स्क्रीन रेकॉर्ड करा</translation>
 <translation id="643593192654616063">एकूण <ph name="STORAGE_TOTAL_SIZE" /> पैकी <ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज वापरात आहे</translation>
-<translation id="6442259747294754014">डिव्हाइसच्या मायक्रोफोनचा अ‍ॅक्सेस बंद आहे</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">आशयानुसार तुमच्या इमेज शोधा</translation>
@@ -1468,7 +1464,6 @@
 <translation id="6912841030378044227">ॲड्रेस बारवर फोकस करा</translation>
 <translation id="6912901278692845878">झटपट फेरफटका</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
-<translation id="6920245099716267363">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, १ डिव्हाइस कनेक्ट केले आहे.</translation>
 <translation id="692135145298539227">हटवा</translation>
 <translation id="6929081673585394903">नियंत्रणे दाखवा</translation>
 <translation id="6931576957638141829">येथे सेव्ह करा</translation>
@@ -1564,7 +1559,6 @@
 <translation id="7378203170292176219">रेकॉर्ड करायचे असलेले भाग निवडण्यासाठी ड्रॅग करा</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
 <translation id="7378889811480108604">बॅटरी सेव्हर मोड बंद आहे</translation>
-<translation id="7382640522316003298">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत.</translation>
 <translation id="7382680553121047388">सुरू आहे</translation>
 <translation id="7384028040782072252">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही राइट-क्लिक करा</translation>
 <translation id="7386767620098596324">नेटवर्क कनेक्शन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1728,6 @@
 <translation id="8036504271468642248">मागील वाक्य</translation>
 <translation id="8042893070933512245">अ‍ॅक्सेसिबिलिटी सेटिंग्ज मेनू उघडा</translation>
 <translation id="8044457332620420407">कीबोर्ड बॅकलाइट बंद आहे</translation>
-<translation id="8048077032188362328">तुमच्या अ‍ॅडमिनिस्ट्रेटरने हॉटस्पॉट बंद केले आहे.</translation>
 <translation id="8048123526339889627">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नावाचे टेंप्लेट आधीपासून अस्तित्वात आहे</translation>
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
@@ -1755,7 +1748,6 @@
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8131994907636310308">क्रम लावण्यासंबंधित टोस्ट बंद करा</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> शी कनेक्ट केलेले</translation>
-<translation id="8135163608236671037">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, कोणतेही डिव्हाइस कनेक्ट केलेले नाही.</translation>
 <translation id="8138705869659070104">डिव्हाइस सेटअपनंतर सक्रिय करा</translation>
 <translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8142441511840089262">डबल क्लिक करा</translation>

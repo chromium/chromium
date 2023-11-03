@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1001716830750249114">Pāriet uz Chromium versijas iestatījumiem</translation>
 <translation id="1026101648481255140">Atsākt instalēšanu</translation>
 <translation id="1029669172902658969">Atkārtoti palaist, lai atjauninātu &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium komanda iesaka pārskatīt šo paplašinājumu.</translation>
@@ -31,6 +32,7 @@
 Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un lietotnēm. Varat pārvaldīt savus Google kontus sadaļā <ph name="SETTINGS_LINK_BEGIN" />Iestatījumi<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
 <translation id="1708666629004767631">Ir pieejama jauna un drošāka Chromium versija.</translation>
+<translation id="1715127912119967311">Lai palīdzētu uzlabot šīs funkcijas, pārlūks Chromium nosūta Google serveriem datus par jūsu mijiedarbību ar tām. Šos datus var lasīt, apstrādāt un anotēt pārskatītāji.</translation>
 <translation id="17264556997921157">Varat skatīt un noņemt interešu tēmas, kas vietnēs tiek izmantotas reklāmu rādīšanai. Pārlūkā Chromium tiek aptuveni noteiktas jūsu intereses, ņemot vērā neseno pārlūkošanas vēsturi.</translation>
 <translation id="1733725117201708356">Pārlūkā Chromium drīz tiks dzēsti pārlūkošanas dati</translation>
 <translation id="1745121272106313518">Pārlūks Chromium tiks restartēts pēc: <ph name="REMAINING_TIME" /></translation>

@@ -1874,6 +1874,7 @@
 <translation id="2428978615149723410">эти корзины</translation>
 <translation id="2431027948063157455">Не удалось загрузить Google Ассистента. Проверьте подключение к Интернету и повторите попытку.</translation>
 <translation id="243179355394256322">Регистрировать устройства в организации могут только авторизированные пользователи. У этого пользователя нет соответствующего разрешения. Право на регистрацию оборудования Google Meet должно быть указано в разделе "Пользователи" консоли администратора.</translation>
+<translation id="243275146591958220">Отменить скачивание</translation>
 <translation id="2433452467737464329">Добавьте в URL параметр запроса для автоматического обновления страницы: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Внешний вид</translation>
 <translation id="2433836460518180625">Только снимать блокировку устройства</translation>
@@ -9063,7 +9064,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> (<ph name="PRINTER_STATUS" />). Принтер <ph name="ITEM_POSITION" /> из <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Режим энергосбережения включен</translation>
 <translation id="8180786512391440389">Расширение "<ph name="EXTENSION" />" сможет открывать и удалять изображения, видео- и аудиофайлы в отмеченных папках.</translation>
-<translation id="8180826593917851025">Настроить точку доступа <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Не удалось подключить устройства к домену. Убедитесь, что вашему аккаунту разрешено выполнять это действие.</translation>
 <translation id="8182105986296479640">Приложение не отвечает</translation>
 <translation id="8182412589359523143">Чтобы удалить все данные с устройства <ph name="DEVICE_TYPE" />, нажмите <ph name="BEGIN_LINK" />здесь<ph name="END_LINK" />.</translation>
@@ -10063,6 +10063,7 @@
 <translation id="8968527460726243404">Системное средство записи изображений в Chrome OS</translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
 <translation id="8968906873893164556">Выберите аккаунт, который будет использоваться для настройки</translation>
+<translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="89720367119469899">Отключить</translation>
 <translation id="8972513834460200407">Уточните у администратора сети, не блокирует ли брандмауэр скачивание файлов с серверов Google.</translation>
 <translation id="8973263196882835828">&amp;Включить автоматические субтитры</translation>

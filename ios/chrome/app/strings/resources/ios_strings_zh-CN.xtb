@@ -519,6 +519,7 @@
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="371398631992790800">隐藏“书签”</translation>
 <translation id="37207012422556617">热搜字词</translation>
+<translation id="3725081662140949903">为防止他人使用您的密码，请打开“<ph name="APP" />”应用以更改您的密码</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以无痕模式打开输入的网址。</translation>
 <translation id="374357899112510277">隐藏“下载内容”</translation>
 <translation id="3745190878148784130">隐藏“缩放文字”</translation>
@@ -635,6 +636,7 @@
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
 <translation id="4405320213589929829">使用网页上的地址来获取本地信息和路线。</translation>
 <translation id="4420409367264901497">修改书签</translation>
+<translation id="4431224949908513835">选择要填充的付款方式。</translation>
 <translation id="4442550905108052454">打开<ph name="BEGIN_BOLD" />设置<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">添加语言</translation>
 <translation id="4461286950227634995">提示保存密码</translation>
@@ -1186,6 +1188,7 @@
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
 <translation id="7223102419539744003">关闭这个标签页</translation>
 <translation id="722454870747268814">打开新的无痕模式标签页</translation>
+<translation id="7233006041370588369">选择要填充的密码。</translation>
 <translation id="7265758999917665941">一律不保存此网站的密码</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{已跟踪新包裹}other{已跟踪新包裹}}</translation>

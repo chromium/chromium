@@ -350,6 +350,7 @@
 <translation id="1640244768702815859">សាកល្បង<ph name="BEGIN_LINK" />ចូលទៅកាន់ទំព័រដើមរបស់ទំព័រនេះ<ph name="END_LINK" />។</translation>
 <translation id="1641976391427233992">ពន្យារពេល​ធាតុបញ្ចេញ​រហូតដល់</translation>
 <translation id="164212631332220697">បង់ប្រាក់ដោយប្រើ <ph name="CARD_DETAIL" /> នៅពេលបង់ប្រាក់ចេញ។</translation>
+<translation id="1643651787397909318">ចូលទៅកាន់ប៊ូតុងពិនិត្យសុវត្ថិភាព Chrome, បើកដំណើរការ ដើម្បីចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
 <translation id="1645368109819982629">ប្រូតូកូលមិនគាំទ្រ</translation>
 <translation id="1650602712345345441">គ្រប់គ្រង​ការកំណត់ Chrome របស់អ្នក</translation>
@@ -2052,6 +2053,8 @@
 <translation id="5137761395480718572">កម្មវិធី​នេះ​កំពុង​ស្នើសុំ​ការអនុញ្ញាត ដើម្បី​ដំឡើង​ព័ត៌មានផ្ទៀងផ្ទាត់ Wi-Fi។ បន្ទាប់ពីរៀបចំរួច <ph name="DEVICE_TYPE" /> របស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ​ទៅ​បណ្ដាញ Wi-Fi ដែលចូលរួម។ ដើម្បី​ដក​ព័ត៌មានផ្ទៀងផ្ទាត់​ទាំង​នេះ​ចេញ សូម​លុប​កម្មវិធី។ <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">មិនអាចប្រើ​កាតនិម្មិត​នៅពេលនេះបានទេ សូមទាក់ទងធនាគារ​របស់អ្នក</translation>
 <translation id="5138227688689900538">បង្ហាញ​តិច</translation>
+<translation id="5143309888746105072">Chromium ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើប្រាស់​ខូគី​ភាគីទីបី​ដើម្បីតាមដាន​អ្នក នៅពេលដែលអ្នក​រុករក។
+            <ph name="NEW_LINE" />ប្រសិនបើ​មុខងារ​គេហទំព័រ​មិនដំណើរការទេ សូម<ph name="START_LINK" />សាកល្បង​អនុញ្ញាត​ខូគី​ភាគីទីបី​ជាបណ្ដោះអាសន្ន<ph name="END_LINK" />។</translation>
 <translation id="5145883236150621069">លេខកូដកំហុសឆ្គងបង្ហាញនៅក្នុងការឆ្លើយតបគោលការណ៍</translation>
 <translation id="5146995429444047494">ការជូនដំណឹង​សម្រាប់ <ph name="ORIGIN" /> ត្រូវបានទប់ស្កាត់</translation>
 <translation id="514704532284964975"><ph name="URL" /> ចង់មើលឃើញ និងផ្លាស់ប្ដូរព័ត៌មាននៅលើឧបករណ៍ NFC ដែលអ្នកចុចដោយប្រើទូរសព្ទរបស់អ្នក</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5873297634595728366">យានជំនិះ​ប្រើម៉ាស៊ូត</translation>
 <translation id="5877831137320480913">សម្រស់ និង​សម្បទា</translation>
 <translation id="5879989559903563723">មិន​ត្រូវ​បាន​អនុញ្ញាត​នៅ​ក្នុង​មុខងារភ្ញៀវ​ទេ</translation>
+<translation id="5880050725127890683">ចូលទៅកាន់ការពិនិត្យសុវត្ថិភាព Chrome</translation>
 <translation id="5883861433316751031">គ្រប់គ្រង និង​សរសេរ​កម្មវិធី​ឧបករណ៍ MIDI ឡើងវិញ​ឬ?</translation>
 <translation id="5884465125445718607">ស្រោមសំបុត្រចិន #6</translation>
 <translation id="5887400589839399685">បានរក្សាទុក​កាត</translation>
@@ -2578,6 +2582,7 @@
 <translation id="6251906504834538140">{0,plural, =1{បានទប់ស្កាត់​មិនឱ្យ​ផ្លាស់ទី​ឯកសារ}other{បានទប់ស្កាត់​មិនឱ្យ​ផ្លាស់ទី​ឯកសារ <ph name="FILE_COUNT" />}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រង​ឯកសារដែលអ្នក​បានទាញយកនៅ​ក្នុង Chrome</translation>
 <translation id="6254436959401408446">មិនមានទំហំអង្គចងចាំគ្រប់គ្រាន់ដើម្បីបើកទំព័រនេះទេ</translation>
+<translation id="625463612687472648">បញ្ឈប់ការអនុញ្ញាត</translation>
 <translation id="6259156558325130047">ធ្វើការតម្រៀបឡើងវិញ</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ចំណាំ</translation>
 <translation id="6264376385120300461">មិនអីទេ ទាញយកចុះ</translation>
@@ -2753,6 +2758,8 @@
 <translation id="6596325263575161958">ជម្រើសការអ៊ីនគ្រីប</translation>
 <translation id="6597665340361269064">90 ដឺក្រេ</translation>
 <translation id="6599642189720630047">ផលិតផល​ដែលបានតាមដាន</translation>
+<translation id="6606309334576464871">Chrome ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើប្រាស់​ខូគី​ភាគីទីបី​ដើម្បីតាមដាន​អ្នក នៅពេលដែលអ្នក​រុករក។
+            <ph name="NEW_LINE" />ប្រសិនបើ​មុខងារ​គេហទំព័រ​មិនដំណើរការទេ សូម<ph name="START_LINK" />សាកល្បង​អនុញ្ញាត​ខូគី​ភាគីទីបី​ជាបណ្ដោះអាសន្ន<ph name="END_LINK" />។</translation>
 <translation id="6611723696964473273">ព័ត៌មាន​សេដ្ឋកិច្ច</translation>
 <translation id="6612010098632894193">វីដេអូ​លើអ៊ីនធឺណិត</translation>
 <translation id="6613866251791999074">ស្វែងយល់បន្ថែម​អំពី​ម៉ាស៊ីនស្វែងរក​របស់អ្នកនៅក្នុង Chrome</translation>
@@ -3428,6 +3435,7 @@
 <translation id="7888575728750733395">ចេតនានៃ​ការបំប្លែង​ការបោះពុម្ព</translation>
 <translation id="7894280532028510793">ប្រសិនបើ​អក្ខរាវិរុទ្ធគឺត្រឹមត្រូវ <ph name="BEGIN_LINK" />សូមសាកល្បង​ដំណើរការ​ការវិភាគបណ្ដាញ<ph name="END_LINK" />។</translation>
 <translation id="7901831439558593470">ស្រោមសំបុត្រ 7 x 9 អ៊ីង</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច Tab រួចចុច Enter ដើម្បីចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
 <translation id="7916162853251942238">បាត Flexo</translation>
 <translation id="7927971017714848357">ដីឡូត៍ និងដី</translation>
 <translation id="793209273132572360">ធ្វើបច្ចុប្បន្នភាព​អាសយដ្ឋាន​ដែរទេ?</translation>
@@ -3724,6 +3732,7 @@
 <translation id="8460854335417802511">បើក</translation>
 <translation id="8461694314515752532">អ៊ីនគ្រីប​ទិន្នន័យ​ដែលបាន​ធ្វើ​សមកាលកម្ម​ ដោយប្រើឃ្លា​សម្ងាត់​សមកាលកម្មផ្ទាល់​ខ្លួន​របស់​អ្នក</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{កាតឥណទាន 1}other{កាតឥណទាន #}}</translation>
+<translation id="8467494337615822642">ចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
 <translation id="8468358362970107653">ស្រោមសំបុត្រ C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">អាសយដ្ឋាន​ និងច្រើន​ទៀត</translation>

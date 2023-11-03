@@ -212,7 +212,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
-<translation id="1815245884418711390">Togol Tempat liputan. Tempat liputan dimatikan.</translation>
 <translation id="1816896987747843206">Ini membenarkan akses kamera untuk semua apl dan laman web dengan kebenaran kamera</translation>
 <translation id="1823280932251546115">Dulang status, masa <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -565,6 +564,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3340978935015468852">tetapan</translation>
 <translation id="3341303451326249809">Tangkapan skrin ditangkap</translation>
 <translation id="334252345105450327">Ambil tangkapan skrin</translation>
+<translation id="3346728094401457853">Masukkan kata laluan peranti untuk <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Pilih teks daripada kursor di penghujung baris</translation>
 <translation id="3349345708646875009">Buka pengurus tugas</translation>
 <translation id="3364721542077212959">Alatan stilus</translation>
@@ -977,7 +977,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4936329710968938986">Semua orang, dimatikan</translation>
 <translation id="4937170330762390348">Dengan pengimlakan, anda boleh menaip menggunakan suara anda. Tekan kunci pengimlakan atau pilih ikon mikrofon pada bahagian bawah skrin apabila anda berada pada medan teks. Bahasa pengimlakan anda ditetapkan kepada <ph name="LANGUAGE" />. Fail ucapan akan dimuat turun supaya anda boleh menggunakan pengimlakan luar talian. Anda boleh menukar bahasa pengimlakan pada bila-bila masa dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="4938176435186993759">Sembunyikan semua cadangan</translation>
-<translation id="4943007472417128747">Tempat Liputan telah dimatikan untuk menggunakan Wi-Fi. Untuk menggunakan Tempat Liputan, matikan Wi-Fi.</translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
 <translation id="4946376291507881335">Tangkap</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
@@ -998,7 +997,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5009463889040999939">Menamakan semula profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="5016558321564993266">Togol penanda. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Cari kategori</translation>
-<translation id="5029356738310729434">Akses mikrofon peranti dihidupkan</translation>
 <translation id="5030659775136592441">Tunjukkan pengurus penanda halaman</translation>
 <translation id="5030687792513154421">Masa sudah tamat</translation>
 <translation id="5033299697334913360">Klik mana-mana bahagian untuk menangkap skrin penuh</translation>
@@ -1199,6 +1197,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5788127256798019331">Fail Play</translation>
 <translation id="5788535737706478207">Buka semula tab atau tetingkap terakhir yang ditutup</translation>
 <translation id="5790085346892983794">Berjaya</translation>
+<translation id="5802516411616338943">Buka Tetapan Pantas</translation>
 <translation id="5804651031882187592">Matikan tetapan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk aktifkan <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
@@ -1225,6 +1224,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5911231045062997865">Tetingkap Lacros tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Pemberitahuan baharu, jumlah <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5920710855273935292">Mikrofon diredamkan.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> dihidupkan.</translation>
@@ -1344,7 +1344,6 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="643147933154517414">Selesai</translation>
 <translation id="6431865393913628856">Rakaman skrin</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> storan digunakan daripada jumlah <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Akses mikrofon peranti dimatikan</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Cari imej anda berdasarkan kandungan</translation>
@@ -1470,7 +1469,6 @@ Pemasangan baharu</translation>
 <translation id="6912841030378044227">Fokus pada bar alamat</translation>
 <translation id="6912901278692845878">Lawatan pantas</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
-<translation id="6920245099716267363">Togol Tempat liputan. Tempat liputan dihidupkan, 1 peranti disambungkan.</translation>
 <translation id="692135145298539227">padam</translation>
 <translation id="6929081673585394903">Tunjukkan kawalan</translation>
 <translation id="6931576957638141829">Simpan pada</translation>
@@ -1566,7 +1564,6 @@ Pemasangan baharu</translation>
 <translation id="7378203170292176219">Seret untuk memilih kawasan yang hendak dirakam</translation>
 <translation id="7378594059915113390">Kawalan Media</translation>
 <translation id="7378889811480108604">Mod penjimat bateri dimatikan</translation>
-<translation id="7382640522316003298">Togol Tempat liputan. Tempat liputan dihidupkan, <ph name="DEVICECOUNT" /> peranti disambungkan.</translation>
 <translation id="7382680553121047388">Hidup</translation>
 <translation id="7384028040782072252">Klik kanan di mana-mana untuk menyusun semula apl anda</translation>
 <translation id="7386767620098596324">Togol sambungan rangkaian. <ph name="STATE_TEXT" />.</translation>
@@ -1590,6 +1587,7 @@ Pemasangan baharu</translation>
 <translation id="7489261257412536105">Masuk atau keluar daripada skrin penuh</translation>
 <translation id="7490360161041035804">Anda boleh menyematkan fail penting, termasuk fail Google Drive. Untuk menyemat, tuding pada item atau buka Fail dan klik kanan item.</translation>
 <translation id="7497767806359279797">Pilih bahasa dan papan kekunci</translation>
+<translation id="7507162824403726948">Pengesahan identiti anda selesai</translation>
 <translation id="7508690557411636492">Dibuka pada bulan lalu</translation>
 <translation id="7509246181739783082">Sahkan identiti anda</translation>
 <translation id="7512509370370076552">Pintasan klik kanan telah dikemaskinikan kepada kekunci <ph name="LAUNCHER_KEY_NAME" /> + klik daripada Alt + klik</translation>
@@ -1736,7 +1734,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8036504271468642248">Ayat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu tetapan kebolehaksesan</translation>
 <translation id="8044457332620420407">Cahaya belakang papan kekunci dimatikan</translation>
-<translation id="8048077032188362328">Pentadbir anda telah mematikan Tempat liputan.</translation>
 <translation id="8048123526339889627">Tetapan Bluetooth</translation>
 <translation id="8051716679295756675">Templat yang bernama <ph name="DESK_TEMPLATE_NAME" /> sudah wujud</translation>
 <translation id="8052898407431791827">Disalin ke papan keratan</translation>
@@ -1757,7 +1754,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8131994907636310308">Tutup isih ucapan</translation>
 <translation id="8132793192354020517">Disambungkan ke <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Togol Tempat liputan. Tempat liputan dihidupkan, tiada peranti disambungkan.</translation>
 <translation id="8138705869659070104">Aktifkn slps prsediaan pranti</translation>
 <translation id="813913629614996137">Memulakan...</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>

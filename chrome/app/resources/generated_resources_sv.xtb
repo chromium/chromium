@@ -1887,6 +1887,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2428978615149723410">dessa kundvagnar</translation>
 <translation id="2431027948063157455">Det gick inte att läsa in Google Assistent. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="243179355394256322">Organisationen tillåter endast auktoriserade användare att registrera enheter. Den här användaren har inte behörighet att registrera enheter. Se till att användaren har administratörsbehörigheten Registrera Google Meet-maskinvara i avsnittet Användare i administratörskonsolen.</translation>
+<translation id="243275146591958220">Avbryt nedladdning</translation>
 <translation id="2433452467737464329">Lägg till en frågeparameter i webbadressen om du vill uppdatera sidan automatiskt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2433836460518180625">Lås bara upp enheten</translation>
@@ -9006,6 +9007,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="81238879832906896">Gul och vit blomma</translation>
 <translation id="8123975449645947908">Scrolla bakåt</translation>
 <translation id="8124313775439841391">Hanterad ONC</translation>
+<translation id="8125651784723647184">Lösenordsdelning hanteras av administratören</translation>
 <translation id="8129265306888404830">Om du vill använda din e-postadress från organisationen (<ph name="EMAIL_DOMAIN" />) måste du använda företagsregistrering. Om enheten är avsedd för personligt bruk loggar du in med ditt personliga Google-konto.</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
@@ -9072,7 +9074,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Skrivare <ph name="ITEM_POSITION" /> av <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energisparläget har aktiverats</translation>
 <translation id="8180786512391440389"><ph name="EXTENSION" /> kan läsa och ta bort bilder, video och ljudfiler på de markerade platserna.</translation>
-<translation id="8180826593917851025">Konfigurera surfzon med <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Det gick inte att ansluta till domänen. Kontrollera att du använder ett konto med behörighet att lägga till enheter.</translation>
 <translation id="8182105986296479640">Appen svarar inte.</translation>
 <translation id="8182412589359523143"><ph name="BEGIN_LINK" />Klicka här<ph name="END_LINK" /> om du vill radera all data från denna <ph name="DEVICE_TYPE" />.</translation>
@@ -10069,6 +10070,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8968527460726243404">Systemavbildningsskrivare för Chrome OS</translation>
 <translation id="8968766641738584599">Spara kortet</translation>
 <translation id="8968906873893164556">Välj det konto som du vill använda för konfigureringen</translation>
+<translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontrollera med nätverksadministratören att brandväggen inte blockerar nedladdning från Googles servrar.</translation>
 <translation id="8973263196882835828">&amp;Aktivera Live Caption</translation>

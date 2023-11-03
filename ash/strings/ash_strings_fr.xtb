@@ -211,7 +211,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web, y compris les pages que vous avez consultées et celles que vous avez ouvertes</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
-<translation id="1815245884418711390">Activer/Désactiver le point d'accès. Celui-ci est désactivé.</translation>
 <translation id="1816896987747843206">L'accès à l'appareil photo est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="1823280932251546115">Barre d'état, il est <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4936329710968938986">Tout le monde, désactivé</translation>
 <translation id="4937170330762390348">Avec la dictée, vous pouvez saisir du texte par commande vocale. Lorsque vous êtes dans un champ de texte, appuyez sur la touche de dictée ou sélectionnez l'icône représentant un micro située au bas de l'écran. Votre langue de dictée est définie sur <ph name="LANGUAGE" />. Les fichiers vocaux seront téléchargés afin que vous puissiez utiliser la dictée hors connexion. Vous pouvez changer la langue de dictée à tout moment dans Paramètres &gt; Accessibilité.</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
-<translation id="4943007472417128747">Le point d'accès a été désactivé pour utiliser le Wi-Fi. Pour utiliser le point d'accès, désactivez le Wi-Fi.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
@@ -996,7 +994,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5009463889040999939">Changement de nom du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="5016558321564993266">Activer/Désactiver le repère. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Catégories de recherche</translation>
-<translation id="5029356738310729434">L'accès au micro de l'appareil est activé</translation>
 <translation id="5030659775136592441">Afficher le gestionnaire de favoris</translation>
 <translation id="5030687792513154421">Temps écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour effectuer une capture en plein écran</translation>
@@ -1342,7 +1339,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="643147933154517414">Terminé</translation>
 <translation id="6431865393913628856">Enregistrer l'écran</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> d'espace de stockage utilisé sur un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">L'accès au micro de l'appareil est désactivé</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">Trouver des images par contenu</translation>
@@ -1468,7 +1464,6 @@ Nouvelle installation</translation>
 <translation id="6912841030378044227">Placer le curseur sur la barre d'adresse</translation>
 <translation id="6912901278692845878">Visite rapide</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
-<translation id="6920245099716267363">Activer/Désactiver le point d'accès. Celui-ci est activé, 1 appareil est connecté.</translation>
 <translation id="692135145298539227">supprimer</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
@@ -1565,7 +1560,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7378203170292176219">Faire glisser pour sélectionner une zone à enregistrer</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>
 <translation id="7378889811480108604">Économiseur de batterie désactivé</translation>
-<translation id="7382640522316003298">Activer/Désactiver le point d'accès. Celui-ci est activé, <ph name="DEVICECOUNT" /> appareils sont connectés.</translation>
 <translation id="7382680553121047388">Activé</translation>
 <translation id="7384028040782072252">Faites un clic droit n'importe où pour réorganiser les applis</translation>
 <translation id="7386767620098596324">Activer/Désactiver la connexion réseau. <ph name="STATE_TEXT" />.</translation>
@@ -1735,7 +1729,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8044457332620420407">Le rétroéclairage du clavier est désactivé</translation>
-<translation id="8048077032188362328">Votre administrateur a désactivé le point d'accès.</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8051716679295756675">Le modèle "<ph name="DESK_TEMPLATE_NAME" />" existe déjà</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
@@ -1756,7 +1749,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8131994907636310308">Fermer le toast de tri</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Activer/Désactiver le point d'accès. Celui-ci est activé, aucun appareil n'est connecté.</translation>
 <translation id="8138705869659070104">Activer après config. appareil</translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8142441511840089262">Double-clic</translation>

@@ -116,6 +116,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Bruk piltastene for å navigere mellom datoer.</translation>
+<translation id="141170878022560212">Midtre knapp</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" /> – installert app</translation>
 <translation id="1414919006379339073">Lukke gjeldende vindu</translation>
 <translation id="1415846719612499304">Vis nettverksliste. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Nettsteder, inkludert sider du har besøkt, og åpne sider</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
-<translation id="1815245884418711390">Slå av/på wifi-sonen. Wifi-sonen er av.</translation>
 <translation id="1816896987747843206">Dette gir alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
 <translation id="1823280932251546115">Statusfelt, kl. <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2086334242442703436">Åpne emojivelgeren</translation>
 <translation id="2088116547584365419">spill</translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
+<translation id="2107581415810719320">Annen knapp <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabelen din støtter ikke Thunderbolt. Enhetens ytelse kan være begrenset.</translation>
 <translation id="2108303511227308752">Hurtigtasten Alt + tilbaketast er endret. For å bruke Delete-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + tilbaketasten.</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>
@@ -563,6 +564,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
+<translation id="3346728094401457853">Skriv inn enhetspassordet for <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Merk tekst fra markøren til slutten av linjen</translation>
 <translation id="3349345708646875009">Åpne oppgavebehandling.</translation>
 <translation id="3364721542077212959">Pekepennverktøy</translation>
@@ -975,7 +977,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4936329710968938986">Alle, av</translation>
 <translation id="4937170330762390348">Med diktering kan du skrive med stemmen. Trykk på dikteringstasten, eller velg mikrofonikonet nederst på skjermen når du er i et tekstfelt. Dikteringsspråket er satt til <ph name="LANGUAGE" />. Talefiler lastes ned, slik at du kan bruke diktering uten nett. Du kan bytte dikteringsspråk når som helst i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
-<translation id="4943007472417128747">Wifi-sone er slått av for å bruke wifi. Slå av wifi for å bruke wifi-sone.</translation>
 <translation id="4945196315133970626">Slå av varsler</translation>
 <translation id="4946376291507881335">Ta bilde</translation>
 <translation id="495046168593986294">Rull opp</translation>
@@ -996,7 +997,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5009463889040999939">Gir profilen nytt navn. Dette kan ta noen minutter.</translation>
 <translation id="5016558321564993266">Slå av/på markøren. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Søkekategorier</translation>
-<translation id="5029356738310729434">Tilgang til enhetsmikrofonen er på</translation>
 <translation id="5030659775136592441">Vis bokmerkebehandlingen</translation>
 <translation id="5030687792513154421">Tiden er ute</translation>
 <translation id="5033299697334913360">Klikk hvor som helst for å ta bilde i fullskjerm</translation>
@@ -1342,7 +1342,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="643147933154517414">Ingen varsler</translation>
 <translation id="6431865393913628856">Skjermopptak</translation>
 <translation id="643593192654616063">Lagringsplass: <ph name="STORAGE_IN_USE_SIZE" /> er i bruk av totalt <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Tilgang til enhetsmikrofonen er av</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">prosessor</translation>
 <translation id="6446225358675593408">Finn bildene dine basert på innhold</translation>
@@ -1468,7 +1467,6 @@ Nylig installert</translation>
 <translation id="6912841030378044227">Fokuser på adressefeltet</translation>
 <translation id="6912901278692845878">Hurtiginnføring</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
-<translation id="6920245099716267363">Slå av/på wifi-sonen. Wifi-sonen er på. 1 enhet er tilkoblet.</translation>
 <translation id="692135145298539227">slett</translation>
 <translation id="6929081673585394903">Vis kontroller</translation>
 <translation id="6931576957638141829">Lagre i</translation>
@@ -1564,7 +1562,6 @@ Nylig installert</translation>
 <translation id="7378203170292176219">Dra for å velge området du vil ta opp</translation>
 <translation id="7378594059915113390">Mediekontroller</translation>
 <translation id="7378889811480108604">Batterisparing er av</translation>
-<translation id="7382640522316003298">Slå av/på wifi-sonen. Wifi-sonen er på. <ph name="DEVICECOUNT" /> enheter er koblet til.</translation>
 <translation id="7382680553121047388">På</translation>
 <translation id="7384028040782072252">Høyreklikk hvor som helst for å endre rekkefølge på appene</translation>
 <translation id="7386767620098596324">Slå av eller på nettverkstilkobling. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1585,7 @@ Nylig installert</translation>
 <translation id="7489261257412536105">Start eller avslutt fullskjerm</translation>
 <translation id="7490360161041035804">Du kan feste viktige filer, inkludert Google Disk-filer. For å feste et element, hold markøren over det eller åpne Filer og høyreklikk på det.</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
+<translation id="7507162824403726948">Fullfør bekreftelsen av identiteten din</translation>
 <translation id="7508690557411636492">Åpnet den siste måneden</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7512509370370076552">Høyreklikk-hurtigtasten er endret til <ph name="LAUNCHER_KEY_NAME" />-tasten + klikk fra Alt + klikk</translation>
@@ -1734,7 +1732,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8036504271468642248">Forrige setning</translation>
 <translation id="8042893070933512245">Åpne menyen for tilgjengelighetsinnstillinger</translation>
 <translation id="8044457332620420407">Tastaturets bakgrunnsbelysning er av</translation>
-<translation id="8048077032188362328">Administratoren din har slått av wifi-sonen.</translation>
 <translation id="8048123526339889627">Bluetooth-innstillinger</translation>
 <translation id="8051716679295756675">Det finnes allerede en mal med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>
@@ -1755,7 +1752,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8131994907636310308">Lukk brukervarsel om sortering</translation>
 <translation id="8132793192354020517">Koblet til <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Slå av/på wifi-sonen. Wifi-sonen er på. Ingen enheter er tilkoblet.</translation>
 <translation id="8138705869659070104">Aktiver etter enhetsoppsett</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8142441511840089262">Dobbeltklikk</translation>

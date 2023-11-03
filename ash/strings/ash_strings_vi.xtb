@@ -116,6 +116,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1391102559483454063">Đang bật</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Dùng các phím mũi tên để di chuyển giữa các ngày.</translation>
+<translation id="141170878022560212">Nút giữa</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Ứng dụng đã được cài đặt</translation>
 <translation id="1414919006379339073">Đóng cửa sổ hiện tại</translation>
 <translation id="1415846719612499304">Hiện danh sách mạng. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1787955149152357925">Tắt</translation>
 <translation id="1796561540704213354">Trang web, bao gồm các trang bạn đã truy cập và các trang đang mở</translation>
 <translation id="181103072419391116">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
-<translation id="1815245884418711390">Bật/tắt điểm phát sóng. Điểm phát sóng đang tắt.</translation>
 <translation id="1816896987747843206">Điều này cho phép sử dụng máy ảnh đối với tất cả ứng dụng và trang web có quyền sử dụng máy ảnh</translation>
 <translation id="1823280932251546115">Khay trạng thái, thời gian <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2086334242442703436">Mở Bộ chọn biểu tượng cảm xúc</translation>
 <translation id="2088116547584365419">trò chơi</translation>
 <translation id="209965399369889474">Chưa kết nối với mạng</translation>
+<translation id="2107581415810719320">Nút khác: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cáp USB-C của bạn không hỗ trợ Thunderbolt. Hiệu suất của thiết bị có thể bị hạn chế.</translation>
 <translation id="2108303511227308752">Phím tắt Alt + Backspace đã thay đổi. Để sử dụng phím Delete, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Không gian làm việc mới</translation>
@@ -563,6 +564,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3340978935015468852">cài đặt</translation>
 <translation id="3341303451326249809">Đã chụp ảnh màn hình</translation>
 <translation id="334252345105450327">Chụp ảnh màn hình</translation>
+<translation id="3346728094401457853">Nhập mật khẩu của thiết bị cho <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Chọn văn bản từ vị trí con trỏ đến cuối dòng</translation>
 <translation id="3349345708646875009">Mở trình quản lý tác vụ</translation>
 <translation id="3364721542077212959">Công cụ bút cảm ứng</translation>
@@ -975,7 +977,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4936329710968938986">Mọi người, đang tắt</translation>
 <translation id="4937170330762390348">Tính năng nhập bằng giọng nói giúp bạn nhập liệu bằng giọng nói. Nhấn phím nhập bằng giọng nói hoặc chọn biểu tượng micrô ở cuối màn hình khi bạn đang ở một trường văn bản. Ngôn ngữ nhập bằng giọng nói đã được đặt thành <ph name="LANGUAGE" />. Các tệp lời nói sẽ được tải xuống để bạn có thể sử dụng tính năng nhập bằng giọng nói khi không có mạng. Bạn có thể thay đổi ngôn ngữ nhập bằng giọng nói bất cứ lúc nào trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="4938176435186993759">Ẩn tất cả đề xuất</translation>
-<translation id="4943007472417128747">Điểm phát sóng đã bị tắt để sử dụng Wi-Fi. Để sử dụng Điểm phát sóng, hãy tắt Wi-Fi.</translation>
 <translation id="4945196315133970626">Tắt thông báo</translation>
 <translation id="4946376291507881335">Chụp</translation>
 <translation id="495046168593986294">Cuộn lên</translation>
@@ -996,7 +997,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5009463889040999939">Đang đổi tên hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="5016558321564993266">Bật/tắt tính năng đánh dấu. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Danh mục kết quả tìm kiếm</translation>
-<translation id="5029356738310729434">Quyền truy cập vào micrô trên thiết bị đang bật</translation>
 <translation id="5030659775136592441">Hiển thị trình quản lý dấu trang</translation>
 <translation id="5030687792513154421">Đã hết thời gian</translation>
 <translation id="5033299697334913360">Nhấp vào bất cứ đâu để chụp toàn màn hình</translation>
@@ -1342,7 +1342,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="643147933154517414">Đã xong</translation>
 <translation id="6431865393913628856">Ghi màn hình</translation>
 <translation id="643593192654616063">Đã sử dụng <ph name="STORAGE_IN_USE_SIZE" /> trong tổng số <ph name="STORAGE_TOTAL_SIZE" /> bộ nhớ</translation>
-<translation id="6442259747294754014">Quyền truy cập vào micrô trên thiết bị đang tắt</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Tìm hình ảnh theo nội dung</translation>
@@ -1468,7 +1467,6 @@ Mới cài đặt</translation>
 <translation id="6912841030378044227">Tập trung vào thanh địa chỉ</translation>
 <translation id="6912901278692845878">Tìm hiểu nhanh</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
-<translation id="6920245099716267363">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có 1 thiết bị đã kết nối.</translation>
 <translation id="692135145298539227">xoá</translation>
 <translation id="6929081673585394903">Hiện các nút điều khiển</translation>
 <translation id="6931576957638141829">Lưu vào</translation>
@@ -1564,7 +1562,6 @@ Mới cài đặt</translation>
 <translation id="7378203170292176219">Kéo để chọn một vùng sẽ quay</translation>
 <translation id="7378594059915113390">Các chức năng điều khiển nội dung đa phương tiện</translation>
 <translation id="7378889811480108604">Chế độ trình tiết kiệm pin đang tắt</translation>
-<translation id="7382640522316003298">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có <ph name="DEVICECOUNT" /> thiết bị đã kết nối.</translation>
 <translation id="7382680553121047388">Bật</translation>
 <translation id="7384028040782072252">Nhấp chuột phải vào vị trí bất kỳ để sắp xếp lại ứng dụng</translation>
 <translation id="7386767620098596324">Bật/tắt kết nối mạng. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1585,7 @@ Mới cài đặt</translation>
 <translation id="7489261257412536105">Chuyển sang hoặc thoát chế độ toàn màn hình</translation>
 <translation id="7490360161041035804">Bạn có thể ghim các tệp quan trọng, kể cả tệp trên Google Drive. Để ghim một mục, hãy di chuột lên mục đó hoặc mở ứng dụng Files rồi nhấp chuột phải vào mục đó.</translation>
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
+<translation id="7507162824403726948">Hoàn tất quy trình xác minh danh tính</translation>
 <translation id="7508690557411636492">Mở tháng trước</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>
 <translation id="7512509370370076552">Phím tắt cho thao tác nhấp chuột phải đã chuyển từ alt + nhấp thành phím <ph name="LAUNCHER_KEY_NAME" /> + nhấp</translation>
@@ -1734,7 +1732,6 @@ Mới cài đặt</translation>
 <translation id="8036504271468642248">Câu trước</translation>
 <translation id="8042893070933512245">Mở trình đơn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8044457332620420407">Đèn nền bàn phím đang tắt</translation>
-<translation id="8048077032188362328">Quản trị viên của bạn đã tắt Điểm phát sóng.</translation>
 <translation id="8048123526339889627">Cài đặt Bluetooth</translation>
 <translation id="8051716679295756675">Mẫu có tên <ph name="DESK_TEMPLATE_NAME" /> đã tồn tại</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>
@@ -1755,7 +1752,6 @@ Mới cài đặt</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8131994907636310308">Đóng thông báo sắp xếp</translation>
 <translation id="8132793192354020517">Đã kết nối với <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, chưa có thiết bị nào kết nối.</translation>
 <translation id="8138705869659070104">Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8142441511840089262">Nhấp đúp</translation>

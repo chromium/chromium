@@ -1874,6 +1874,7 @@
 <translation id="2428978615149723410">یہ کارٹس</translation>
 <translation id="2431027948063157455">‏Google اسسٹنٹ لوڈ نہیں ہو سکا، براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="243179355394256322">‏آپ کی تنظیم آلہ کے اندراج کو صرف مجاز صارفین تک محدود کرتی ہے۔ یہ صارف آلات کے اندراج کیلئے مجاز نہیں ہے۔ براہ کرم یقینی بنائیں کہ صارف کے پاس منتظم کونسول کے صارفین سیکشن میں "Google Meet ہارڈویئر کا اندراج کریں" کا حق ہے جو کہ صرف منتظم کو حاصل ہوتا ہے۔</translation>
+<translation id="243275146591958220">ڈاؤن لوڈ منسوخ کریں</translation>
 <translation id="2433452467737464329">‏صفحہ کو خودکار طور پر ریفریش کرنے کیلئے URL میں ایک استفسار پیرامیٹر شامل کریں: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433507940547922241">موجودگی</translation>
 <translation id="2433836460518180625">صرف آلہ غیر مقفل کریں</translation>
@@ -8989,6 +8990,7 @@
 <translation id="81238879832906896">زرد اور سفید پھول</translation>
 <translation id="8123975449645947908">پیچھے اسکرول کریں</translation>
 <translation id="8124313775439841391">‏نظم کردہ ONC</translation>
+<translation id="8125651784723647184">پاس ورڈ کا اشتراک آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="8129265306888404830">‏اپنی تنظیم (<ph name="EMAIL_DOMAIN" />) کے اپنے ای میل پتے کا استعمال کرنے کے لیے، آپ کو انٹرپرائز اندراج کو استعمال کرنے کی ضرورت ہے۔ اگر یہ آلہ آپ کے ذاتی استعمال کے لیے تو اپنے ذاتی Google اکاؤنٹ سے سائن ان کریں۔</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
@@ -9055,7 +9057,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />۔ <ph name="NUM_PRINTERS" /> میں سے <ph name="ITEM_POSITION" /> پرنٹر۔</translation>
 <translation id="8180785270975217276">انرجی سیور آن ہو گیا</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" نشان زد مقامات میں تصاویر، ویڈیوز اور آواز والی فائلیں پڑھ اور حذف کر سکتی ہے۔</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> ہاٹ اسپاٹ کنفیگر کریں</translation>
 <translation id="8181215761849004992">ڈومین میں شامل نہیں کیا جا سکا۔ آلات شامل کرنے کی اپنی کافی مراعات دیکھنے کے لیے اپنا اکاؤنٹ چیک کریں۔</translation>
 <translation id="8182105986296479640">ایپلیکیشن جواب نہیں دے رہی ہے۔</translation>
 <translation id="8182412589359523143">اس <ph name="DEVICE_TYPE" /> کا تمام ڈیٹا حذف کرنے کے لئے، <ph name="BEGIN_LINK" />یہاں کلک کریں<ph name="END_LINK" />۔</translation>
@@ -10052,6 +10053,7 @@
 <translation id="8968527460726243404">‏ChromeOS سسٹم امیج رائٹر</translation>
 <translation id="8968766641738584599">کارڈ کو محفوظ کریں</translation>
 <translation id="8968906873893164556">سیٹ اپ کی خاطر استعمال کرنے کے لیے اکاؤنٹ کا انتخاب کریں</translation>
+<translation id="8970887620466824814">کچھ غلط ہو گیا۔</translation>
 <translation id="89720367119469899">چھوڑیں</translation>
 <translation id="8972513834460200407">‏براہ کرم اپنے نیٹ ورک کے منتظم سے چیک کر کے یقینی بنائیں کہ فائر وال Google سرورز سے ڈاؤن لوڈز کو مسدود نہیں کر رہا ہے۔</translation>
 <translation id="8973263196882835828">لائیو کیپشن کو &amp;فعال کریں</translation>

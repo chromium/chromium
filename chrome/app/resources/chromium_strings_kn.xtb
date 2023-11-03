@@ -22,6 +22,7 @@
 <translation id="1342274909142618978">Chromium (<ph name="URL" />) ನಿಂದ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸಿ</translation>
 <translation id="1414495520565016063">ನೀವು Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ!</translation>
 <translation id="1478370723027452770">Chrome for Testing ನ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
+<translation id="1497802159252041924">ಇನ್‌ಸ್ಟಾಲ್ ದೋಷ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium ಟ್ಯಾಬ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1553461853655228091">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ ಪರಿಸರದ 3D ನಕ್ಷೆಯನ್ನು ರಚಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು Chromium ಗೆ ಅನುಮತಿ ಬೇಕಾಗಿದೆ</translation>
 <translation id="1574377791422810894">Chromium ನ ಸುರಕ್ಷತೆ ಟೂಲ್‌ಗಳು</translation>
@@ -155,11 +156,13 @@
 <translation id="390528597099634151">ಈ Chromium ಪ್ರೊಫೈಲ್‌ಗೆ ಈಗಾಗಲೇ <ph name="EXISTING_USER" /> ಅವರು ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದಾರೆ. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿರಿಸಲು, Chromium ನಿಮಗಾಗಿ ನಿಮ್ಮ ಸ್ವಂತ ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸಬಹುದು.</translation>
 <translation id="3909353120217047026">ಈ ವಿಸ್ತರಣೆಯು Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನ ಕಾರ್ಯನೀತಿಯನ್ನು ಉಲ್ಲಂಘಿಸುತ್ತದೆ ಮತ್ತು ಸುರಕ್ಷಿತ ಆಗಿಲ್ಲದಿರಬಹುದು. Chromium ನಿಂದ ವಿಸ್ತರಣೆಯನ್ನು ತೆಗೆದುಹಾಕಿ ಇದರಿಂದ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಒಳಗೊಂಡಂತೆ ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಇನ್ನು ಮುಂದೆ ವೀಕ್ಷಿಸಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="391789666908693569">ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="MANAGER_NAME" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ Chromium ಬ್ರೌಸರ್ ಪ್ರೊಫೈಲ್ ಹಾಗೂ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ಅದರ ಡೇಟಾವನ್ನು ನೋಡಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
+<translation id="3922825997980843979">ನೀವು ಟೈಪ್ ಮಾಡಿದಂತೆ, Chromium ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್‌ಗೆ ವಿಳಾಸ ಪಟ್ಟಿ ಅಥವಾ ಸರ್ಚ್ ಬಾಕ್ಸ್‌ನ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="3945058413678539331">Chromium, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಕಲಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="3962647064319009959">Chromium ನಿಮ್ಮನ್ನು ಹೇಗೆ ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>
 <translation id="3975724895399328945">Google Chrome for Testing ಕುರಿತು</translation>
 <translation id="3997429360543082038">ChromiumOS ಕುರಿತು</translation>
 <translation id="4019629340646866719">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ನ ರಚನೆ, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್<ph name="END_LINK_LINUX_OSS" /> ರಚನೆ ಸಹ ಸಾಧ್ಯವಾಯಿತು.</translation>
+<translation id="4028143804911941282">ಆಫ್ ಮಾಡಿದಾಗ, ಸ್ಥಳೀಯವಾಗಿ Chromium ಒದಗಿಸಿದ ಸಲಹೆಗಳನ್ನು ನೀವು ಇನ್ನೂ ನೋಡುತ್ತೀರಿ</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ಪ್ರಸ್ತುತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ವರದಿ ಮಾಡುವ ಮೂಲಕ Chromium ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="4050175100176540509">ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಪ್ರಮುಖವಾದ ಭದ್ರತಾ ಸುಧಾರಣೆಗಳು ಮತ್ತು ಹೊಸ ವೈಶಿಷ್ಟ್ಯಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -251,6 +254,7 @@
 <translation id="6003112304606738118">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ… <ph name="HOURS" /> ಗಂಟೆ(ಗಳು) ಬಾಕಿಯಿವೆ.</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6055895534982063517">Chromium ನ ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆ, ಮತ್ತು ಇದು ಎಂದಿಗಿಂತಲೂ ವೇಗವಾಗಿದೆ.</translation>
+<translation id="6058380562449900225">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ರಕ್ಷಿಸಲು, ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲು Chromium ಗೆ ಅನುಮತಿಸಿ. ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ನಿಲ್ಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="6063093106622310249">&amp;Chromium ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6072279588547424923">Chromium ಗೆ <ph name="EXTENSION_NAME" /> ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="6072463441809498330">Chromium ವೇಗ ಹೆಚ್ಚಿಸಿ</translation>

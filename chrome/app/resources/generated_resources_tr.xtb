@@ -1870,6 +1870,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2428978615149723410">bu alışveriş sepetleri</translation>
 <translation id="2431027948063157455">Google Asistan yüklenemedi, lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="243179355394256322">Kuruluşunuz, cihaz kaydını yalnızca yetkili kullanıcılarla sınırlıyor. Bu kullanıcının cihaz kaydetme yetkisi yok. Lütfen kullanıcının, Yönetici konsolunun Kullanıcılar bölümünde "Google Meet hardware cihazlarını kaydetme" yönetici ayrıcalıklarına sahip olduğundan emin olun.</translation>
+<translation id="243275146591958220">İndirmeyi iptal et</translation>
 <translation id="2433452467737464329">Sayfayı otomatik olarak yenilemek için URL'ye bir sorgu parametresi ekleyin: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Görünüm</translation>
 <translation id="2433836460518180625">Yalnızca cihazın kilidini aç</translation>
@@ -8988,6 +8989,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="81238879832906896">Sarı ve beyaz çiçek</translation>
 <translation id="8123975449645947908">Geriye kaydırma</translation>
 <translation id="8124313775439841391">Yönetilen ONC</translation>
+<translation id="8125651784723647184">Şifre paylaşımı, yöneticiniz tarafından yönetiliyor</translation>
 <translation id="8129265306888404830">Kuruluşunuzun e-posta adresini (<ph name="EMAIL_DOMAIN" />) kullanmak için kurumsal kayıt yapmanız gerekir. Bu cihaz kişisel kullanımınız içinse kişisel Google Hesabınızla oturum açın.</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
 <translation id="8131740175452115882">Onayla</translation>
@@ -9054,7 +9056,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />, <ph name="PRINTER_STATUS" />. Yazıcı <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Enerji Tasarrufu açık</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />", işaretli konumlardaki resimleri, videoları ve ses dosyalarını okuyabilir ve silebilir.</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> hotspot'unu yapılandırın</translation>
 <translation id="8181215761849004992">Alan adına katılınamıyor. Hesabınızı kontrol ederek, cihazları eklemek için yeterli ayrıcalıklara sahip olduğunuzdan emin olun.</translation>
 <translation id="8182105986296479640">Uygulama yanıt vermiyor.</translation>
 <translation id="8182412589359523143">Bu <ph name="DEVICE_TYPE" /> üzerindeki tüm verileri silmek için <ph name="BEGIN_LINK" />burayı tıklayın<ph name="END_LINK" />.</translation>
@@ -10051,6 +10052,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8968527460726243404">ChromeOS Sistemi Görsel Yazıcı</translation>
 <translation id="8968766641738584599">Kartı kaydet</translation>
 <translation id="8968906873893164556">Kurulum için kullanılacak hesabı seçin</translation>
+<translation id="8970887620466824814">Bir hata oluştu.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Güvenlik duvarının, Google sunucularından yapılan indirme işlemlerini engellemediğinden emin olmak için lütfen ağ yöneticinizle görüşün.</translation>
 <translation id="8973263196882835828">Canlı Altyazıyı &amp;Etkinleştir</translation>

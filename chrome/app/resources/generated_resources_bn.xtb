@@ -1888,6 +1888,7 @@
 <translation id="2428978615149723410">এই কার্টগুলি</translation>
 <translation id="2431027948063157455">Google অ্যাসিস্ট্যান্চ লোড করা যায়নি, আপনার ইন্টারনেট সংযোগ দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="243179355394256322">আপনার সংস্থাটি কেবল অনুমোদিত ব্যবহারকারীদের মধ্যেই ডিভাইস নথিভুক্ত করার বিষয়টি সীমাবদ্ধ করে। এই ব্যবহারকারীর ডিভাইসের নাম প্রবেশ করার অনুমতি নেই। অ্যাডমিন কনসোলের ব্যবহারকারী বিভাগে ব্যবহারকারীর "Google Meet হার্ডওয়্যার নথিভুক্ত করুন" বিভাগে অ্যাডমিনিস্ট্রেটর সুবিধা রয়েছে কিনা তা নিশ্চিত করুন।</translation>
+<translation id="243275146591958220">ডাউনলোড বাতিল করুন</translation>
 <translation id="2433452467737464329">এই পৃষ্ঠাটিকে অটো-রিফ্রেশ করতে URL-এ একটি কোয়েরি param যোগ করুন: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">উপস্থিতি</translation>
 <translation id="2433836460518180625">শুধুমাত্র ডিভাইস আনলক করুন</translation>
@@ -9077,7 +9078,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />। <ph name="NUM_PRINTERS" />-এর মধ্যে <ph name="ITEM_POSITION" /> নম্বর প্রিন্টার।</translation>
 <translation id="8180785270975217276">পাওয়ার সেভার চালু আছে</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" উল্লিখিত অবস্থানগুলিতে ছবি, ভিডিও এবং শব্দের ফাইলগুলি পড়তে ও মুছতে পারে৷</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> হটস্পট কনফিগার করুন</translation>
 <translation id="8181215761849004992">ডোমেনে যোগ করা যাবে না। আপনার অ্যাকাউন্টে ডিভাইস যোগ করার সুবিধাগুলি যথাযথ আছে কিনা তা যাচাই করুন।</translation>
 <translation id="8182105986296479640">অ্যাপ্লিকেশন উত্তর দিচ্ছে না।</translation>
 <translation id="8182412589359523143">এই <ph name="DEVICE_TYPE" /> থেকে সব ডেটা মুছে দিতে, <ph name="BEGIN_LINK" />এখানে ক্লিক করুন<ph name="END_LINK" />।</translation>
@@ -10075,6 +10075,7 @@
 <translation id="8968527460726243404">ChromeOS সিস্টেম ছবি রচয়িতা</translation>
 <translation id="8968766641738584599">কার্ড সেভ করুন</translation>
 <translation id="8968906873893164556">সেট-আপ করার জন্য যে অ্যাকাউন্ট ব্যবহার করবেন তা বেছে নিন</translation>
+<translation id="8970887620466824814">কিছু সমস্যা হয়েছে।</translation>
 <translation id="89720367119469899">অব্যাহতি</translation>
 <translation id="8972513834460200407">Google সার্ভারগুলি থেকে ডাউনলোডগুলিকে ফায়ারওয়াল ব্লক করছে না তা নিশ্চিত করতে অনুগ্রহ করে আপনার নেটওয়ার্ক অ্যাডমিনিস্ট্রেটরের মাধ্যমে পরীক্ষা করুন৷</translation>
 <translation id="8973263196882835828">&amp;লাইভ ক্যাপশন চালু করুন</translation>

@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你瀏覽過的網頁和目前開啟的頁面</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
-<translation id="1815245884418711390">切換熱點。熱點已關閉。</translation>
 <translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1823280932251546115">狀態列，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">擷取咗螢幕畫面</translation>
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
+<translation id="3346728094401457853">輸入「<ph name="EMAIL" />」的裝置密碼</translation>
 <translation id="334927402682780278">選取從游標到該行末之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
@@ -975,7 +975,6 @@
 <translation id="4936329710968938986">所有人，已關閉</translation>
 <translation id="4937170330762390348">語音聽寫功能可讓你透過語音輸入文字。請在文字欄位中，按下語音聽寫鍵或選取畫面底部的「麥克風」圖示。你的語音聽寫語言已設定為<ph name="LANGUAGE" />。系統會下載語音檔案，方便你離線使用語音聽寫功能。你可隨時在「設定」&gt; [無障礙設定] 變更語音聽寫語言。</translation>
 <translation id="4938176435186993759">隱藏所有建議</translation>
-<translation id="4943007472417128747">已關閉熱點以使用 Wi-Fi。如要使用熱點，請關閉 Wi-Fi。</translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
@@ -995,7 +994,6 @@
 <translation id="5009463889040999939">正在重新命名設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="5016558321564993266">切換標記。<ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">搜尋類別</translation>
-<translation id="5029356738310729434">裝置的麥克風存取權已開啟</translation>
 <translation id="5030659775136592441">顯示書籤管理員</translation>
 <translation id="5030687792513154421">使用時間結束</translation>
 <translation id="5033299697334913360">點擊任何一處即可擷取全螢幕畫面</translation>
@@ -1341,7 +1339,6 @@
 <translation id="643147933154517414">沒有通知</translation>
 <translation id="6431865393913628856">螢幕錄影</translation>
 <translation id="643593192654616063">用咗 <ph name="STORAGE_IN_USE_SIZE" /> 儲存空間 (總空間 <ph name="STORAGE_TOTAL_SIZE" />)</translation>
-<translation id="6442259747294754014">裝置的麥克風存取權已關閉</translation>
 <translation id="6445835306623867477">在<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">按內容搜尋圖片</translation>
@@ -1466,7 +1463,6 @@
 <translation id="6912841030378044227">聚焦在網址列</translation>
 <translation id="6912901278692845878">快速導覽</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
-<translation id="6920245099716267363">切換熱點。熱點已開啟，並連接 1 部裝置。</translation>
 <translation id="692135145298539227">刪除</translation>
 <translation id="6929081673585394903">顯示控制項</translation>
 <translation id="6931576957638141829">儲存至</translation>
@@ -1562,7 +1558,6 @@
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">「慳電模式」已關閉</translation>
-<translation id="7382640522316003298">切換熱點。熱點已開啟，並連接 <ph name="DEVICECOUNT" /> 部裝置。</translation>
 <translation id="7382680553121047388">開啟</translation>
 <translation id="7384028040782072252">在任何地方按一下右鍵，即可將應用程式重新排序</translation>
 <translation id="7386767620098596324">切換網絡連線。<ph name="STATE_TEXT" />。</translation>
@@ -1586,6 +1581,7 @@
 <translation id="7489261257412536105">進入或離開全螢幕</translation>
 <translation id="7490360161041035804">您可以將重要檔案固定，包括「Google 雲端硬碟」檔案。如要固定項目，請將滑鼠游標移至項目或開啟「檔案」應用程式，並在項目上按一下右鍵。</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
+<translation id="7507162824403726948">完成身分驗證</translation>
 <translation id="7508690557411636492">上個月開啟過</translation>
 <translation id="7509246181739783082">驗證您的身分</translation>
 <translation id="7512509370370076552">「按一下右鍵」快速鍵已由「Alt 鍵 + 按一下」更新為「<ph name="LAUNCHER_KEY_NAME" />鍵 + 按一下」</translation>
@@ -1732,7 +1728,6 @@
 <translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">開啟無障礙功能設定選單</translation>
 <translation id="8044457332620420407">鍵盤背光已關閉</translation>
-<translation id="8048077032188362328">管理員已關閉「熱點」。</translation>
 <translation id="8048123526339889627">藍牙設定</translation>
 <translation id="8051716679295756675">名為「<ph name="DESK_TEMPLATE_NAME" />」的範本已存在</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
@@ -1753,7 +1748,6 @@
 <translation id="8131740175452115882">確定</translation>
 <translation id="8131994907636310308">閂排序資訊框</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
-<translation id="8135163608236671037">切換熱點。熱點已開啟，目前沒有任何裝置連線。</translation>
 <translation id="8138705869659070104">在裝置完成設定後啟用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">連按兩下</translation>

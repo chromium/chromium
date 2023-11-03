@@ -1872,6 +1872,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2428978615149723410">deze kaarten</translation>
 <translation id="2431027948063157455">De Google Assistent kan niet worden geladen. Controleer de netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="243179355394256322">Je organisatie beperkt apparaatinschrijving tot alleen geautoriseerde gebruikers. Deze gebruiker is niet geautoriseerd om apparaten in te schrijven. Zorg ervoor dat de gebruiker het beheerdersrecht Google Meet-hardware inschrijven heeft in het gedeelte Gebruikers van de Beheerdersconsole.</translation>
+<translation id="243275146591958220">Download annuleren</translation>
 <translation id="2433452467737464329">Voeg een queryparameter toe aan de URL om de pagina automatisch te laten vernieuwen: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Vormgeving</translation>
 <translation id="2433836460518180625">Alleen apparaat ontgrendelen</translation>
@@ -8980,6 +8981,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="81238879832906896">Geel-witte bloem</translation>
 <translation id="8123975449645947908">Terugscrollen</translation>
 <translation id="8124313775439841391">Beheerde ONC</translation>
+<translation id="8125651784723647184">Wachtwoord delen wordt beheerd door je beheerder</translation>
 <translation id="8129265306888404830">Als je het e-mailadres van je organisatie (<ph name="EMAIL_DOMAIN" />) wilt gebruiken, moet je zakelijke inschrijving gebruiken. Als dit apparaat bedoeld is voor persoonlijk gebruik, log je in met je persoonlijke Google-account.</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
@@ -9046,7 +9048,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" /> van <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energiebesparing staat aan</translation>
 <translation id="8180786512391440389">'<ph name="EXTENSION" />' kan afbeeldingen, video- en geluidsbestanden lezen en verwijderen op de gecontroleerde locaties.</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" />-hotspot instellen</translation>
 <translation id="8181215761849004992">Kan het domein niet koppelen. Controleer je account om te zien of je over voldoende rechten beschikt om apparaten toe te voegen.</translation>
 <translation id="8182105986296479640">App reageert niet</translation>
 <translation id="8182412589359523143"><ph name="BEGIN_LINK" />Klik hier<ph name="END_LINK" /> als je alle gegevens van deze <ph name="DEVICE_TYPE" /> wilt verwijderen.</translation>
@@ -10044,6 +10045,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
 <translation id="8968766641738584599">Pas opslaan</translation>
 <translation id="8968906873893164556">Kies het account dat je voor het instellen wilt gebruiken</translation>
+<translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Neem contact op met je netwerkbeheerder om ervoor te zorgen dat downloads van Google-servers niet door de firewall worden geblokkeerd.</translation>
 <translation id="8973263196882835828">Liv&amp;e ondertiteling aanzetten</translation>

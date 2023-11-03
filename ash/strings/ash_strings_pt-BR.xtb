@@ -212,7 +212,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
-<translation id="1815245884418711390">Alterne o status do ponto de acesso. O ponto de acesso está desativado.</translation>
 <translation id="1816896987747843206">Dá acesso à câmera para todos os apps e sites com essa permissão</translation>
 <translation id="1823280932251546115">Bandeja de status, horário <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -565,6 +564,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3340978935015468852">configurações</translation>
 <translation id="3341303451326249809">Captura de tela feita</translation>
 <translation id="334252345105450327">Fazer uma captura de tela</translation>
+<translation id="3346728094401457853">Digite a senha do dispositivo para <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Selecionar o texto do cursor até o fim da linha</translation>
 <translation id="3349345708646875009">Abrir o gerenciador de tarefas</translation>
 <translation id="3364721542077212959">Ferramentas da stylus</translation>
@@ -977,7 +977,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4936329710968938986">Todos (desativado)</translation>
 <translation id="4937170330762390348">É possível digitar com a voz usando o Ditado. Pressione a tecla de Ditado ou selecione o ícone de microfone na parte de baixo da tela quando estiver em um campo de texto. O idioma do Ditado está definido como <ph name="LANGUAGE" />. O download dos arquivos de fala será feito para que você possa usar o recurso off-line. É possível mudar o idioma a qualquer momento em "Configurações" &gt; "Acessibilidade".</translation>
 <translation id="4938176435186993759">Ocultar todas as sugestões</translation>
-<translation id="4943007472417128747">O ponto de acesso foi desativado para usar o Wi-Fi. Para usar o ponto de acesso, desative o Wi-Fi.</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
@@ -998,7 +997,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5009463889040999939">Renomeando o perfil. Pode levar alguns minutos..</translation>
 <translation id="5016558321564993266">Alterne o marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Categorias de pesquisa</translation>
-<translation id="5029356738310729434">O acesso ao microfone do dispositivo está ativado</translation>
 <translation id="5030659775136592441">Mostrar gerenciador de favoritos</translation>
 <translation id="5030687792513154421">Tempo esgotado</translation>
 <translation id="5033299697334913360">Clique em qualquer lugar para capturar a tela cheia</translation>
@@ -1344,7 +1342,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="643147933154517414">Pronto</translation>
 <translation id="6431865393913628856">Gravação de tela</translation>
 <translation id="643593192654616063">Armazenamento de <ph name="STORAGE_IN_USE_SIZE" /> em uso de um total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">O acesso ao microfone do dispositivo está desativado</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Encontrar suas imagens pelo conteúdo</translation>
@@ -1470,7 +1467,6 @@ Nova instalação</translation>
 <translation id="6912841030378044227">Foco na barra de endereço</translation>
 <translation id="6912901278692845878">Tour rápido</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>
-<translation id="6920245099716267363">Alterne o status do ponto de acesso. O ponto de acesso está ativado e 1 dispositivo está conectado.</translation>
 <translation id="692135145298539227">excluir</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>
 <translation id="6931576957638141829">Salvar em</translation>
@@ -1566,7 +1562,6 @@ Nova instalação</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área para a gravação</translation>
 <translation id="7378594059915113390">Controles de mídia</translation>
 <translation id="7378889811480108604">Modo de Economia de bateria desativado</translation>
-<translation id="7382640522316003298">Alterne o status do ponto de acesso. O ponto de acesso está ativado e <ph name="DEVICECOUNT" /> dispositivos estão conectados.</translation>
 <translation id="7382680553121047388">Ativar</translation>
 <translation id="7384028040782072252">Clique com o botão direito do mouse em qualquer lugar para reordenar os apps</translation>
 <translation id="7386767620098596324">Alternar conexão de rede. <ph name="STATE_TEXT" />.</translation>
@@ -1590,6 +1585,7 @@ Nova instalação</translation>
 <translation id="7489261257412536105">Entrar ou sair da tela cheia</translation>
 <translation id="7490360161041035804">Você pode fixar arquivos importantes, inclusive os do Google Drive. Para fazer isso, passe o cursor sobre um item ou abra o app Arquivos e clique com o botão direito do mouse em um item.</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
+<translation id="7507162824403726948">Concluir a verificação da sua identidade</translation>
 <translation id="7508690557411636492">Aberto no último mês</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>
 <translation id="7512509370370076552">O atalho de clicar com o botão direito do mouse era alt + clique e foi atualizado para <ph name="LAUNCHER_KEY_NAME" /> + clique</translation>
@@ -1736,7 +1732,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menu de configurações de acessibilidade</translation>
 <translation id="8044457332620420407">A luz de fundo do teclado está desligada</translation>
-<translation id="8048077032188362328">O administrador desativou o ponto de acesso.</translation>
 <translation id="8048123526339889627">Configurações de Bluetooth</translation>
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
@@ -1757,7 +1752,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Fechar aviso de classificação</translation>
 <translation id="8132793192354020517">Conectado à <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Alterne o status do ponto de acesso. O ponto de acesso está ativado e nenhum dispositivo está conectado.</translation>
 <translation id="8138705869659070104">Ativar após a configuração do dispositivo</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8142441511840089262">Clicar duas vezes</translation>

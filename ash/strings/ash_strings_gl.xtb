@@ -211,7 +211,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
-<translation id="1815245884418711390">Activar ou desactivar a zona wifi. A zona wifi está desactivada.</translation>
 <translation id="1816896987747843206">Desta forma, poderán acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1823280932251546115">Bandexa de estado, hora: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -976,7 +975,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4936329710968938986">Todos (desactivado)</translation>
 <translation id="4937170330762390348">A función de ditado permíteche escribir usando a voz. Cando esteas nun campo de texto, preme a tecla de ditado ou selecciona a icona do micrófono que está na parte inferior da pantalla. O <ph name="LANGUAGE" /> é o idioma que tes definido para o ditado. Os ficheiros de voz descargaranse para que poidas usar a función de ditado sen conexión. Podes cambiar o idioma do ditado cando queiras en Configuración &gt; Accesibilidade.</translation>
 <translation id="4938176435186993759">Ocultar todas as suxestións</translation>
-<translation id="4943007472417128747">Desactivouse a zona wifi para poder usar a rede wifi. Desactiva esta última se prefires usar a zona wifi.</translation>
 <translation id="4945196315133970626">Desactivar notificacións</translation>
 <translation id="4946376291507881335">Zona que se capturará</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
@@ -997,7 +995,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5009463889040999939">Cambiando nome de perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Categorías de busca</translation>
-<translation id="5029356738310729434">O acceso do micrófono ao dispositivo está activado</translation>
 <translation id="5030659775136592441">Mostra o xestor de marcadores</translation>
 <translation id="5030687792513154421">Rematou o tempo</translation>
 <translation id="5033299697334913360">Fai clic en calquera parte para facer unha captura a pantalla completa</translation>
@@ -1343,7 +1340,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="643147933154517414">Listo</translation>
 <translation id="6431865393913628856">Gravación da pantalla</translation>
 <translation id="643593192654616063">Almacenamento: <ph name="STORAGE_IN_USE_SIZE" /> en uso dun total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">O acceso do micrófono ao dispositivo está desactivado</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Busca as túas imaxes polo contido</translation>
@@ -1469,7 +1465,6 @@ Nova instalación</translation>
 <translation id="6912841030378044227">Enfocar barra de enderezos</translation>
 <translation id="6912901278692845878">Visita rápida</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
-<translation id="6920245099716267363">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai 1 dispositivo conectado.</translation>
 <translation id="692135145298539227">elimina</translation>
 <translation id="6929081673585394903">Mostrar os controis</translation>
 <translation id="6931576957638141829">Gardar en</translation>
@@ -1565,7 +1560,6 @@ Nova instalación</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar a zona que queiras gravar</translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>
 <translation id="7378889811480108604">Está desactivado o modo de aforro de batería</translation>
-<translation id="7382640522316003298">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="7382680553121047388">Activado</translation>
 <translation id="7384028040782072252">Fai clic co botón dereito en calquera parte da pantalla para reordenar as aplicacións</translation>
 <translation id="7386767620098596324">Activar/desactivar a conexión de rede. <ph name="STATE_TEXT" />.</translation>
@@ -1735,7 +1729,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
 <translation id="8044457332620420407">A retroiluminación do teclado está apagada</translation>
-<translation id="8048077032188362328">O teu administrador desactivou a zona wifi.</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Xa existe un modelo chamado <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>
@@ -1756,7 +1749,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Pechar notificación de ordenar</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Activar ou desactivar a zona wifi. A zona wifi está activada. Non hai ningún dispositivo conectado.</translation>
 <translation id="8138705869659070104">Activar tras a configuración</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8142441511840089262">Dobre clic</translation>

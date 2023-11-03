@@ -116,6 +116,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1391102559483454063">Til</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Brug piletasterne til at navigere mellem datoer.</translation>
+<translation id="141170878022560212">Midterknap</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installeret app</translation>
 <translation id="1414919006379339073">Luk det aktuelle vindue</translation>
 <translation id="1415846719612499304">Vis netværksliste. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="1796561540704213354">Websites, der omfatter sider, du har besøgt, og åbne sider</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
-<translation id="1815245884418711390">Slå hotspot til/fra. Hotspot er deaktiveret.</translation>
 <translation id="1816896987747843206">Dette giver alle apps og websites med kameratilladelse adgang til kameraet</translation>
 <translation id="1823280932251546115">Statusbakke, klokkeslæt <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2086334242442703436">Åbn emojivælger</translation>
 <translation id="2088116547584365419">spil</translation>
 <translation id="209965399369889474">Der er ingen netværksforbindelse</translation>
+<translation id="2107581415810719320">Anden knap <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Dit USB-C-kabel understøtter ikke Thunderbolt. Enhedens ydeevne kan være begrænset.</translation>
 <translation id="2108303511227308752">Tastaturgenvejen Alt+Backspace er blevet ændret. Hvis du vil bruge Delete-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Backspace.</translation>
 <translation id="2126242104232412123">Nyt skrivebord</translation>
@@ -975,7 +976,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4936329710968938986">Alle, deaktiveret</translation>
 <translation id="4937170330762390348">Du kan skrive med din stemme ved hjælp af diktering. Tryk på dikteringstasten, eller vælg mikrofonikonet nederst på skærmen, når du er i et tekstfelt. Dit dikteringssprog er indstillet til <ph name="LANGUAGE" />. Talefilerne downloades, så du kan bruge diktering offline. Du kan til enhver tid ændre dikteringssproget i Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
-<translation id="4943007472417128747">Hotspot er blevet deaktiveret, så der kan bruges Wi-Fi. Deaktiver Wi-Fi for at bruge hotspot.</translation>
 <translation id="4945196315133970626">Deaktiver notifikationer</translation>
 <translation id="4946376291507881335">Tag billeder</translation>
 <translation id="495046168593986294">Rul op</translation>
@@ -996,7 +996,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5009463889040999939">Profilen omdøbes. Dette kan tage et par minutter.</translation>
 <translation id="5016558321564993266">Slå tusch til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Søgekategorier</translation>
-<translation id="5029356738310729434">Adgang til enhedens mikrofon er aktiveret</translation>
 <translation id="5030659775136592441">Vis bogmærkeadministrator</translation>
 <translation id="5030687792513154421">Tiden er gået</translation>
 <translation id="5033299697334913360">Klik et vilkårligt sted for at tage et billede af hele skærmen</translation>
@@ -1342,7 +1341,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="643147933154517414">Færdig</translation>
 <translation id="6431865393913628856">Skærmoptagelse</translation>
 <translation id="643593192654616063">Lagerplads <ph name="STORAGE_IN_USE_SIZE" /> er i brug ud af i alt <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Adgang til enhedens mikrofon er deaktiveret</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Find dine billeder efter indhold</translation>
@@ -1468,7 +1466,6 @@ Installeret for nylig</translation>
 <translation id="6912841030378044227">Fokuser på adresselinjen</translation>
 <translation id="6912901278692845878">Hurtig rundvisning</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
-<translation id="6920245099716267363">Slå hotspot til/fra. Hotspot er aktiveret, og 1 enhed er tilsluttet.</translation>
 <translation id="692135145298539227">slet</translation>
 <translation id="6929081673585394903">Vis styringselementer</translation>
 <translation id="6931576957638141829">Gem i</translation>
@@ -1564,7 +1561,6 @@ Installeret for nylig</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
 <translation id="7378889811480108604">Tilstanden Batterisparefunktion er deaktiveret</translation>
-<translation id="7382640522316003298">Slå hotspot til/fra. Hotspot er aktiveret. <ph name="DEVICECOUNT" /> enheder er tilsluttet.</translation>
 <translation id="7382680553121047388">Til</translation>
 <translation id="7384028040782072252">Højreklik et vilkårligt sted for at omarrangere dine apps</translation>
 <translation id="7386767620098596324">Slå netværksforbindelse til/fra. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
 <translation id="8044457332620420407">Baggrundslyset på tastaturet er slukket</translation>
-<translation id="8048077032188362328">Din administrator har deaktiveret hotspottet.</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
@@ -1755,7 +1750,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8131994907636310308">Luk sorteringstoast</translation>
 <translation id="8132793192354020517">Forbundet til <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Slå hotspot til/fra. Hotspot er aktiveret, og der er ingen tilsluttede enheder.</translation>
 <translation id="8138705869659070104">Aktivér efter enhedskonfiguration</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8142441511840089262">Dobbeltklik</translation>

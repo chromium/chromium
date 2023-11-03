@@ -4036,9 +4036,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="4380159792986204036">Web kiosk'un, herhangi bir ekranda birden fazla tarayıcı penceresi açmasına izin ver</translation>
 <translation id="4381227367939912539">Dinozor paskalya yumurtası oyununu devre dışı bırak</translation>
 <translation id="4382413175336720282">Gerçek zamanlı URL kontrolü devre dışı bırakıldı.</translation>
-<translation id="4384911996235542086">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında <ph name="PRODUCT_NAME" />, Güvenli Tarama'yı etkinleştirmiş kullanıcılar tarafından yapılan şüpheli indirmeleri kötü amaçlı yazılıma karşı taraması için Google'a gönderebilir.
-Bu politika devre dışı bırakıldığında tarama yapılmaz.
-Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirme içeriği analizini etkilemez.</translation>
 <translation id="4387741272680827493">Politika ayarlanırsa önceden yüklenmiş HSTS'lerin http'den https'ye geçirilmelerini atlayan ana makine adlarının bir listesi belirtilir.
 
       Bu politikada yalnızca tek etiketli ana makine adlarına izin verilir. Bu politika, yalnızca "statik" HSTS-önceden yüklenmiş öğeler için (örneğin, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />) geçerlidir. Bu politika, <ph name="HSTS_HEADER_NAME" /> yanıt başlığı kullanarak "dinamik" olarak HSTS sürümüne geçiş isteğinde bulunmuş sunucular için HSTS geçişlerini engellemez.
@@ -4395,6 +4392,17 @@ Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uyg
       Bu politika ayarlanmazsa filtreleme atlanır ve tüm yazdırma sunucuları dikkate alınır.
 
       Bu politika kullanımdan kaldırıldı, bunun yerine lütfen <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" /> politikasını kullanın.</translation>
+<translation id="4667462525936265103">Bu politika, yönetilen bir hesap, içerik alanında oturum açtıktan sonra oluşturulmuş yönetilen profile kullanıcıların mevcut tarama verilerini taşımalarına izin verilip verilmediğini kontrol eder.
+
+Bu politika ayarlanmazsa veya <ph name="USER_OPTIN_DATA_ENUM_NAME" /> değerine ayarlanırsa kullanıcı, mevcut tarama verilerini yönetilen profile taşıyıp taşımayacağını seçebilir. Profil oluşturma iletişim kutusunda onay kutusu görünür ve varsayılan olarak kutunun işareti kaldırılmıştır.
+
+Bu politika, <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> değerine (değer 2) ayarlanırsa kullanıcı, mevcut tarama verilerini yönetilen profile taşıyıp taşımayacağını seçebilir. Profil oluşturma iletişim kutusunda onay kutusu görünür ve varsayılan olarak işaretlidir. Bu seçeneğe yalnızca yönetilen cihazlarda izin verilir.
+
+Bu politika, <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> değerine (değer 3) ayarlanırsa kullanıcı, mevcut tarama verilerini yönetilen profile taşıyamaz. Profil oluşturma iletişim kutusunda onay kutusu görünmez.
+
+Mevcut tarama verilerini yönetilen profile taşımak, mevcut profilin yönetileceği anlamına gelir. Yeni profil oluşturulmaz.
+
+Mevcut tarama verilerinin yönetilen profile taşınmaması, yeni ve temiz bir profilin oluşturulacağı anlamına gelir. Mevcut tarama verileri, kullanıcının profil seçici aracılığıyla erişebileceği yönetilmeyen bir profilde kalır.</translation>
 <translation id="4668325077104657568">Varsayılan resimler ayarı</translation>
 <translation id="4669083178278833688">Devre dışı bırakılacak kamera, tarayıcı ayarları, OS ayarları, tarama, web mağazası, tuval, keşfet, crosh, galeri ve terminal özelliklerini yapılandır</translation>
 <translation id="4669292863736266737"><ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> politikası <ph name="BLOCK_GEOLOCATION_SETTING" /> seçeneğine ayarlanmadığı sürece, <ph name="GLS_ENABLED" /> politikasının ayarlanması Google konum hizmetlerini ilk kurulum sırasında açar. Politikayı <ph name="GLS_DISABLED" /> seçeneğine ayarlamak veya ayarlamadan bırakmak, konum hizmetlerini kurulum sırasında kapalı tutar.
@@ -7080,6 +7088,7 @@ olarak bu tür istekleri engelleme davranışı geçerli olur.</translation>
 
       Şu anda desteklenen diller şunlardır: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Uzun kenar dupleks yazdırmayı etkinleştir</translation>
+<translation id="6929639826067341257">Kullanıcılara, mevcut verilerini yönetilen profile taşımalarını öner ve taşımama seçeneği sun</translation>
 <translation id="6929746927224321095">Otomatik Doldurmayı Devre Dışı Bırak</translation>
 <translation id="6931242315485576290">Google ile veri senkronizasyonunu devre dışı bırak</translation>
 <translation id="6932282102911647185">Klavye arka ışığı mor</translation>
@@ -8419,17 +8428,6 @@ yapmak da güvenli seçeneklerden biridir.</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
 <translation id="8028814157747157754">Varsayılan arama sağlayıcısını etkinleştir ve kullanıcıların arama sağlayıcısı listesini değiştirmesine izin ver</translation>
 <translation id="8029201909194194377">Uzaktan erişim bağlantıları için izin verilen maksimum oturum süresi</translation>
-<translation id="8030797562351896051">Bu politika, kullanıcının belirli bir sitede arama yapabileceği site aramalarının listesini sağlar. Kullanıcılar adres çubuğuna kısayol veya @kısayol (ör. @iş) yazarak aramayı başlatabilir.
-
-Her giriş için şu alanlar gereklidir: ad, kısayol, url. Listedeki kısayollar benzersiz olmalı ve boşluk içermemelidir. Bir kısayolun başına @ işaretinin eklenmesi isteğe bağlı olduğu için gösterilen kısayollar, @ işareti içermeyen kısayollarla aynıdır. Örneğin, "iş" ve "@iş" yazdığınızda aynı kısayolları görürsünüz.
-
-URL alanı, her giriş için karşılık gelen anahtar kelimeyle arama sırasında kullanılan arama motorunun URL'sini belirtir. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir. Geçersiz girişler ve yinelenen kısayollara sahip girişler yoksayılır.
-
-Kullanıcı "@" yazdığında, öne çıkan olarak yapılandırılmış site arama girişleri adres çubuğunda gösterilir. Öne çıkan olarak en fazla üç giriş seçilebilir.
-
-Kullanıcılar, politika tarafından belirlenen site arama girişlerini düzenleyemez veya devre dışı bırakamaz, ancak aynı URL için yeni kısayollar ekleyebilir. Ayrıca, kullanıcılar daha önce politika aracılığıyla oluşturulmuş bir kısayolla yeni site arama girişleri oluşturamaz.
-
-Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durumunda kullanıcı ayarı dikkate alınır. Ancak kullanıcılar arama çubuğuna "@" yazarak politika tarafından oluşturulan seçeneği tetikleyebilir. Örneğin, kullanıcı URL1 kısayolu olarak daha önce "iş" kelimesini tanımladıysa ve politika "iş" kelimesini URL2 kısayolu olarak tanımlıyorsa arama çubuğuna "iş" yazıldığında URL1 araması tetiklenir ancak "@iş" yazıldığında URL2 araması tetiklenir.</translation>
 <translation id="8035570672225663428">Uyarlanabilir şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin ver</translation>
 <translation id="8036284429246268475">Politika, Etkin değerine ayarlanırsa kullanıcılar, <ph name="PRODUCT_NAME" /> ürününün, girilen kullanıcı adları ve şifrelerin bir sızıntının parçası olup olmadığını kontrol etmesini sağlayabilirler.
 

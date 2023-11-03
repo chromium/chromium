@@ -211,7 +211,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
-<translation id="1815245884418711390">Activar o desactivar el hotspot. El hotspot está desactivado.</translation>
 <translation id="1816896987747843206">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1823280932251546115">Bandeja de estado, hora <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341303451326249809">Se guardó la captura de pantalla</translation>
 <translation id="334252345105450327">Toma una captura de pantalla</translation>
+<translation id="3346728094401457853">Ingresa la contraseña del dispositivo de <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Seleccionar texto desde el cursor hasta el final del renglón</translation>
 <translation id="3349345708646875009">Abrir el Administrador de tareas</translation>
 <translation id="3364721542077212959">Herramientas de la pluma stylus</translation>
@@ -976,7 +976,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4936329710968938986">Todos, desactivado</translation>
 <translation id="4937170330762390348">Con el dictado, puedes escribir con tu voz. Presiona la tecla de dictado o selecciona el ícono de micrófono en la parte inferior de la pantalla cuando estés en un campo de texto. El idioma de dictado está configurado en <ph name="LANGUAGE" />. Se descargarán los archivos de voz para que puedas usar el dictado sin conexión. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
 <translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
-<translation id="4943007472417128747">Se desactivó el hotspot para usar la conexión Wi-Fi. Para usar el hotspot, desactiva la conexión Wi-Fi.</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
@@ -997,7 +996,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5009463889040999939">Se está cambiando el nombre del perfil. Es posible que este proceso demore unos minutos.</translation>
 <translation id="5016558321564993266">Activar o desactivar el marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Buscar categorías</translation>
-<translation id="5029356738310729434">El acceso al micrófono del dispositivo está activado</translation>
 <translation id="5030659775136592441">Mostrar el Administrador de favoritos</translation>
 <translation id="5030687792513154421">Se acabó el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte para capturar la pantalla completa</translation>
@@ -1343,7 +1341,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="643147933154517414">Todo listo</translation>
 <translation id="6431865393913628856">Grabación de pantalla</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> de almacenamiento en uso de un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">El acceso al micrófono del dispositivo está desactivado</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Busca imágenes según el contenido</translation>
@@ -1469,7 +1466,6 @@ Nueva instalación</translation>
 <translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6912901278692845878">Recorrido rápido</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
-<translation id="6920245099716267363">Activar o desactivar el hotspot. El hotspot está activado y hay 1 dispositivo conectado.</translation>
 <translation id="692135145298539227">eliminar</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>
 <translation id="6931576957638141829">Guardar en</translation>
@@ -1565,7 +1561,6 @@ Nueva instalación</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área que quieras grabar</translation>
 <translation id="7378594059915113390">Controles de contenido multimedia</translation>
 <translation id="7378889811480108604">El modo de Ahorro de batería está desactivado</translation>
-<translation id="7382640522316003298">Activar o desactivar el hotspot. El hotspot está activado y hay <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="7382680553121047388">Sí</translation>
 <translation id="7384028040782072252">Haz clic con el botón derecho en cualquier lugar para reorganizar las apps</translation>
 <translation id="7386767620098596324">Activar o desactivar la conexión de red. <ph name="STATE_TEXT" />.</translation>
@@ -1589,6 +1584,7 @@ Nueva instalación</translation>
 <translation id="7489261257412536105">Ingresar al modo de pantalla completa o salir de él</translation>
 <translation id="7490360161041035804">Puedes fijar archivos importantes, incluidos los de Google Drive. Para fijar un elemento, coloca el cursor sobre él o abre Archivos y haz clic con el botón derecho en él.</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
+<translation id="7507162824403726948">Terminar de verificar tu identidad</translation>
 <translation id="7508690557411636492">Se abrió el mes pasado</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7512509370370076552">Se actualizó la combinación de teclas para hacer clic con el botón derecho de Alt + clic a la tecla <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>
@@ -1735,7 +1731,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8036504271468642248">Oración anterior</translation>
 <translation id="8042893070933512245">Abrir el menú de configuración de accesibilidad</translation>
 <translation id="8044457332620420407">La retroiluminación del teclado está desactivada</translation>
-<translation id="8048077032188362328">Tu administrador desactivó el hotspot.</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Ya existe una plantilla con el nombre <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">Se copió el elemento en el portapapeles</translation>
@@ -1756,7 +1751,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Cerrar el aviso de ordenamiento</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Activar o desactivar el hotspot. El hotspot está activado y no hay ningún dispositivo conectado.</translation>
 <translation id="8138705869659070104">Activar luego de configurarlo</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8142441511840089262">Doble clic</translation>

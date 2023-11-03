@@ -1878,6 +1878,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2428978615149723410">need ostukorvid</translation>
 <translation id="2431027948063157455">Google'i assistendi laadimine nurjus, kontrollige võrguühendust ja proovige uuesti.</translation>
 <translation id="243179355394256322">Teie organisatsioon lubab seadmeid registreerida ainult volitatud kasutajatel. See kasutaja pole seadmete registreerimiseks volitatud. Veenduge administraatorikonsooli jaotises Kasutajad, et kasutajal oleks administraatori õigus „Google Meeti riistvara registreerimine“.</translation>
+<translation id="243275146591958220">Tühista allalaadimine</translation>
 <translation id="2433452467737464329">Lisage URL-ile päringu parameetrid, et lehte automaatselt värskendada: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Välimus</translation>
 <translation id="2433836460518180625">Ava ainult seade</translation>
@@ -9062,7 +9063,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energiasäästja on sisse lülitatud</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />” saab märgitud asukohtade pildi-, video- ja helifaile lugeda ning kirjutada.</translation>
-<translation id="8180826593917851025">Seadme <ph name="DEVICE_TYPE" /> kuumkoha seadistamine</translation>
 <translation id="8181215761849004992">Domeeniga ei saa liituda. Kontrollige oma kontot ja veenduge, et teil oleks seadmete lisamiseks piisavad õigused.</translation>
 <translation id="8182105986296479640">Rakendus ei reageeri.</translation>
 <translation id="8182412589359523143">Seadmest <ph name="DEVICE_TYPE" /> kõikide andmete kustutamiseks <ph name="BEGIN_LINK" />klõpsake siin<ph name="END_LINK" />.</translation>
@@ -10059,6 +10059,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="8968527460726243404">ChromeOS-i süsteemi pildikirjutaja</translation>
 <translation id="8968766641738584599">Salvesta kaart</translation>
 <translation id="8968906873893164556">Valige konto, mida seadistamiseks kasutada</translation>
+<translation id="8970887620466824814">Midagi läks valesti.</translation>
 <translation id="89720367119469899">Klahv Escape</translation>
 <translation id="8972513834460200407">Paluge oma võrguadministraatoril tagada, et tulemüür ei blokeeriks allalaaditavaid faile Google'i serveritest.</translation>
 <translation id="8973263196882835828">&amp;Luba reaalajas subtiitrid</translation>

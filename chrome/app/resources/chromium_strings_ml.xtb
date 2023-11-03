@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1001716830750249114">Chromium പതിപ്പ് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="1026101648481255140">ഇൻസ്റ്റാൾ ചെയ്യൽ പുനരാരംഭിക്കുക</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="1040916596585577953">ഈ വിപുലീകരണം അവലോകനം ചെയ്യണമെന്ന് Chromium നിർദ്ദേശിക്കുന്നു</translation>
@@ -23,6 +24,7 @@
 <translation id="1342274909142618978">Chromium-ൽ നിന്നുള്ള ഡാറ്റയും ഇല്ലാതാക്കുക (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">നിങ്ങൾ Chromium-ൽ സൈൻ ഇൻ ചെയ്‌തു!</translation>
 <translation id="1478370723027452770">Chrome for Testing-മായി ബന്ധപ്പെട്ട സഹായം നേടൂ</translation>
+<translation id="1497802159252041924">ഇൻസ്‌റ്റാൾ ചെയ്യലിൽ പിശക്: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">ഒരു Chromium ടാബ് പങ്കിടുക</translation>
 <translation id="1553461853655228091">നിങ്ങളുടെ ചുറ്റുപാടിന്റെ 3D മാപ്പ് സൃഷ്ടിക്കുന്നതിന് നിങ്ങളുടെ ക്യാമറ ആക്സസ് ചെയ്യാൻ Chromium-ന് നിങ്ങളുടെ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="1574377791422810894">Chromium-ന്റെ സുരക്ഷാ ടൂളുകൾ</translation>
@@ -33,6 +35,7 @@
 വെബ്‌സൈറ്റുകൾക്കും ആപ്പുകൾക്കും നിങ്ങൾ ഇതിനകം നൽകിയ അനുമതികൾ ഈ അക്കൗണ്ടിന് ബാധകമായേക്കാം. <ph name="SETTINGS_LINK_BEGIN" />ക്രമീകരണത്തിൽ<ph name="SETTINGS_LINK_END" /> നിങ്ങളുടെ Google അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യാം.</translation>
 <translation id="1640672724030957280">ഡൗൺലോഡുചെയ്യുന്നു...</translation>
 <translation id="1708666629004767631">പുതിയതും സുരക്ഷിതവുമായ Chromium പതിപ്പ് ലഭ്യമാണ്.</translation>
+<translation id="1715127912119967311">ഈ ഫീച്ചറുകൾ മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന്, Chromium-മായി നിങ്ങൾ നടത്തുന്ന ഇടപഴകലുകൾ അത് Google-ലേക്ക് അയയ്ക്കുന്നു. അവലോകനം ചെയ്യുന്നവർ ഈ ഡാറ്റ വായിക്കുകയും പ്രോസസ് ചെയ്യുകയും വ്യാഖ്യാനിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="17264556997921157">നിങ്ങളെ പരസ്യങ്ങൾ കാണിക്കാൻ സൈറ്റുകൾ ഉപയോഗിക്കുന്ന, താൽപ്പര്യമുള്ള വിഷയങ്ങൾ കാണാനും നീക്കം ചെയ്യാനും നിങ്ങൾക്ക് കഴിയും. നിങ്ങളുടെ അടുത്തിടെയുള്ള ബ്രൗസിംഗ് ചരിത്രം അടിസ്ഥാനമാക്കി നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ Chromium അനുമാനിക്കുന്നു.</translation>
 <translation id="1733725117201708356">Chromium ഉടൻ തന്നെ ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും</translation>
 <translation id="1745121272106313518"><ph name="REMAINING_TIME" />-നുള്ളിൽ Chromium റീസ്റ്റാർട്ട് ചെയ്യും</translation>
@@ -157,11 +160,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ഇതിനകം ഈ Chromium പ്രൊഫൈലിലേക്ക് സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. നിങ്ങൾക്ക് ഒറ്റയ്ക്ക് ബ്രൗസ് ചെയ്യാൻ, Chromium-ന് നിങ്ങളുടെ സ്വന്തം പ്രൊഫൈൽ സൃഷ്‌ടിക്കാനാകും.</translation>
 <translation id="3909353120217047026">ഈ വിപുലീകരണം Chrome വെബ് സ്റ്റോർ നയം ലംഘിക്കുന്നു, ഇത് സുരക്ഷിതമല്ലായിരിക്കാം. Chromium-ൽ നിന്ന് ഇത് നീക്കം ചെയ്യുന്നതിലൂടെ, നിങ്ങളുടെ വ്യക്തിപരമായ വിവരങ്ങൾ ഉൾപ്പെടെ നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകളിലെ ഡാറ്റ അതിന് ഇനി കാണാനും മാറ്റാനുമാകില്ല.</translation>
 <translation id="391789666908693569">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_NAME" /> ആണ്. നിങ്ങളുടെ അഡ്‌മിന് ഈ Chromium ബ്രൗസർ പ്രൊഫൈലും ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവ പോലുള്ള അതിലെ ഡാറ്റയും കാണാനും എഡിറ്റ് ചെയ്യാനുമാകും.</translation>
+<translation id="3922825997980843979">നിങ്ങൾ ടൈപ്പ് ചെയ്യുന്നതിനനുസരിച്ച്, വിലാസ ബാറിലെയോ സെർച്ച് ബോക്സിലെയോ ഉള്ളടക്കം നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിനിലേക്ക് Chromium അയയ്ക്കുന്നു</translation>
 <translation id="3945058413678539331">പാസ്‌വേഡുകൾ പകർത്താൻ Chromium ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="3962647064319009959">Chromium നിങ്ങളെ എങ്ങനെ സുരക്ഷിതരായി സൂക്ഷിക്കുന്നുവെന്ന് അറിയുക</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing-നെക്കുറിച്ച്</translation>
 <translation id="3997429360543082038">ChromiumOS-നെ കുറിച്ച്</translation>
 <translation id="4019629340646866719">ChromiumOS സാധ്യമാക്കിയത് <ph name="BEGIN_LINK_LINUX_OSS" />Linux വികസന പരിതസ്ഥിതി<ph name="END_LINK_LINUX_OSS" /> പോലുള്ള അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
+<translation id="4028143804911941282">ഓഫായിരിക്കുമ്പോൾ, Chromium ലോക്കലായി നൽകുന്ന നിർദ്ദേശങ്ങൾ നിങ്ങൾ തുടർന്നും കാണും</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />നിലവിലെ ക്രമീകരണം<ph name="END_LINK" /> റിപ്പോർട്ട് ചെയ്‌തുകൊണ്ട് Chromium മികച്ചതാക്കാൻ സഹായിക്കുക</translation>
 <translation id="4050175100176540509">ഏറ്റവും പുതിയ പതിപ്പിൽ പ്രധാനപ്പെട്ട സുരക്ഷാ മെച്ചപ്പെടുത്തലുകളും പുതിയ ഫീച്ചറുകളും ലഭ്യമാണ്.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -253,6 +258,7 @@
 <translation id="6003112304606738118">ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="HOURS" /> മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6055895534982063517">Chromium-ത്തിന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്, അത് എന്നത്തേതിലും വേഗതയേറിയതാണ്.</translation>
+<translation id="6058380562449900225">നിങ്ങളുടെ ഡാറ്റ പരിരക്ഷിക്കുന്നതിന്, അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്ത സൈറ്റുകളിൽ നിന്നുള്ള അനുമതികൾ നീക്കം ചെയ്യാൻ Chromium-നെ അനുവദിക്കുക. അറിയിപ്പുകൾ നിർത്തുന്നില്ല.</translation>
 <translation id="6063093106622310249">&amp;Chromium-ത്തിൽ തുറക്കുക</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium-ത്തിലേക്ക് ചേർത്തു</translation>
 <translation id="6072463441809498330">Chromium കൂടുതൽ വേഗതയുള്ളതാക്കുക</translation>

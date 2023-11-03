@@ -211,7 +211,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web, incluidas las páginas que has visitado y las páginas abiertas</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
-<translation id="1815245884418711390">Activar o desactivar punto de acceso. Punto de acceso desactivado.</translation>
 <translation id="1816896987747843206">Esto permite que accedan a la cámara todas las aplicaciones y sitios web con el permiso de cámara</translation>
 <translation id="1823280932251546115">Bandeja de estado; hora: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -976,7 +975,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4936329710968938986">Todos, desactivado</translation>
 <translation id="4937170330762390348">El dictado te permite escribir con la voz. Cuando estés en un campo de texto, pulsa la tecla de dictado o selecciona el icono del micrófono situado en la parte inferior de la pantalla. Tu idioma de dictado es <ph name="LANGUAGE" />. Los archivos de voz se descargarán para que puedas usar el dictado sin conexión. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
 <translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
-<translation id="4943007472417128747">El punto de acceso se ha desactivado para usar la conexión Wi-Fi. Para usar el punto de acceso, desactiva la conexión Wi‐Fi.</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Hacer captura</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
@@ -997,7 +995,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5009463889040999939">Cambiando el nombre del perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="5016558321564993266">Activar/Desactivar marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Categorías de búsqueda</translation>
-<translation id="5029356738310729434">El acceso al micrófono del dispositivo está activado</translation>
 <translation id="5030659775136592441">Mostrar administrador de marcadores</translation>
 <translation id="5030687792513154421">Se ha agotado el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte de la pantalla para hacer una captura de la pantalla completa</translation>
@@ -1343,7 +1340,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="643147933154517414">Hecho</translation>
 <translation id="6431865393913628856">Grabar pantalla</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> de espacio de almacenamiento en uso de un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">El acceso al micrófono del dispositivo está desactivado</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">Busca tus imágenes por el contenido</translation>
@@ -1469,7 +1465,6 @@ Nueva instalación</translation>
 <translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6912901278692845878">Visita rápida</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
-<translation id="6920245099716267363">Activar o desactivar punto de acceso. Punto de acceso activado. 1 dispositivo conectado.</translation>
 <translation id="692135145298539227">eliminar</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>
 <translation id="6931576957638141829">Guardar en</translation>
@@ -1565,7 +1560,6 @@ Nueva instalación</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área de grabación</translation>
 <translation id="7378594059915113390">Controles multimedia</translation>
 <translation id="7378889811480108604">El modo de ahorro de batería está desactivado</translation>
-<translation id="7382640522316003298">Activar o desactivar punto de acceso. Punto de acceso activado. <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="7382680553121047388">Activado</translation>
 <translation id="7384028040782072252">Haz clic con el botón derecho en cualquier lugar para reorganizar tus aplicaciones</translation>
 <translation id="7386767620098596324">Activar o desactivar conexión de red. <ph name="STATE_TEXT" />.</translation>
@@ -1735,7 +1729,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú de configuración de accesibilidad</translation>
 <translation id="8044457332620420407">La retroiluminación del teclado está desactivada</translation>
-<translation id="8048077032188362328">Tu administrador ha desactivado el punto de acceso.</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Ya existe una plantilla llamada <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiada en el portapapeles</translation>
@@ -1756,7 +1749,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Cerrar la notificación del sistema para ordenar</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Activar o desactivar punto de acceso. Punto de acceso activado. No hay dispositivos conectados.</translation>
 <translation id="8138705869659070104">Activar tras la configuración</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8142441511840089262">Doble clic</translation>

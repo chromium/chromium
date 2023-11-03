@@ -1887,6 +1887,7 @@
 <translation id="2428978615149723410">این سبدهای خرید</translation>
 <translation id="2431027948063157455">‏«دستیار Google» بارگیری نشد. لطفاً اتصال شبکه را بررسی کرده و دوباره امتحان کنید.</translation>
 <translation id="243179355394256322">‏سازمانتان ثبت‌نام دستگاه را به «فقط کاربران مجاز» محدود می‌کند. این کاربر مجاز نیست دستگاه‌ها را ثبت‌نام کند. لطفاً مطمئن شوید کاربر امتیاز سرپرستی «ثبت‌نام کردن Google Meet hardware» را در بخش «کاربران» از «کنسول سرپرست» داشته باشد.</translation>
+<translation id="243275146591958220">لغو بارگیری</translation>
 <translation id="2433452467737464329">‏برای بازآوری خودکار صفحه، یک پارامتر جستجو به نشانی وب اضافه کنید: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433507940547922241">شکل ظاهری</translation>
 <translation id="2433836460518180625">فقط باز کردن قفل دستگاه</translation>
@@ -2391,7 +2392,7 @@
 <translation id="2804043232879091219">مرورگر جایگزین باز نشد</translation>
 <translation id="2804667941345577550">از سیستم این سایت (ازجمله در برگه‌های باز) خارج خواهید شد</translation>
 <translation id="2804680522274557040">دوربین خاموش است</translation>
-<translation id="2804742109948581745">پهلو به پهلو</translation>
+<translation id="2804742109948581745">پهلوبه‌پهلو</translation>
 <translation id="2805539617243680210">همه چیز آماده است!</translation>
 <translation id="2805646850212350655">‏سیستم فایل رمزگذاری Microsoft</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
@@ -3554,7 +3555,7 @@
 <translation id="375636864092143889">سایت درحال استفاده از میکروفون شما است</translation>
 <translation id="3756485814916578707">درحال ارسال محتوای صفحه</translation>
 <translation id="3756578970075173856">تنظیم پین</translation>
-<translation id="3756795331760037744">‏به «دستیار Google» اجازه دهید برای کمک کردن، از اطلاعات روی صفحه <ph name="SUPERVISED_USER_NAME" /> استفاده کند</translation>
+<translation id="3756795331760037744">‏به «دستیار Google» اجازه دهید برای کمک کردن، از بافت صفحه <ph name="SUPERVISED_USER_NAME" /> استفاده کند</translation>
 <translation id="3756806135608816820">سایت‌ها می‌توانند برای جستجوی دستگاه‌های بلوتوث درخواست دهند</translation>
 <translation id="3757567010566591880">برداشتن سنجاق از «نوارابزار»</translation>
 <translation id="3757733214359997190">سایتی یافت نشد</translation>
@@ -4077,7 +4078,7 @@
 <translation id="414800391140809654">می‌تواند از اطلاعاتتان درحین مرور استفاده کند</translation>
 <translation id="4148195018520464922">می‌توانید ورود به سیستم را برای کاربران خاصی محدود کنید. با این کار، گزینه «افزودن شخص» در صفحه ورود به سیستم برداشته می‌شود. همچنین می‌توانید کاربران فعلی را نیز بردارید.</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
-<translation id="4150569944729499860">اطلاعات روی صفحه</translation>
+<translation id="4150569944729499860">بافت صفحه</translation>
 <translation id="4151449637210235443">درباره تجربه بازی اخیرتان به ما بگویید</translation>
 <translation id="4151503145138736576">هیچ فضای ذخیره‌سازی آفلاینی برای پاک کردن نیست</translation>
 <translation id="4152011295694446843">نشانک‌ها را اینجا خواهید دید</translation>
@@ -7083,7 +7084,7 @@
 <translation id="6602956230557165253">از کلیدهای پیکان سمت راست و چپ برای پیمایش استفاده کنید.</translation>
 <translation id="6603185457265641428">انتخاب کنید سابقه همگام‌سازی شود یا نه</translation>
 <translation id="6605847144724004692">قبلاً هیچ کاربری رده‌بندی نکرده است.</translation>
-<translation id="6606671997164410857">به‌نظر می‌رسد قبلاً «دستیار» را در دستگاه دیگری راه‌اندازی کرده‌اید. با روشن کردن «اطلاعات روی صفحه» در این دستگاه، بهره بیشتری از «دستیار» ببرید.</translation>
+<translation id="6606671997164410857">به‌نظر می‌رسد قبلاً «دستیار» را در دستگاه دیگری راه‌اندازی کرده‌اید. با روشن کردن «بافت صفحه» در این دستگاه، بهره بیشتری از «دستیار» ببرید.</translation>
 <translation id="6607831829715835317">ا&amp;بزارهای بیشتر</translation>
 <translation id="6607890859198268021">‏درحال‌حاضر <ph name="DOMAIN" /> <ph name="USER_EMAIL" /> را مدیریت می‌کند. برای استفاده از کنترل‌های والدین با «حساب Google» دیگر، بعد از راه‌اندازی از سیستم خارج شوید و سپس «افزودن فرد» را در صفحه ورود به سیستم انتخاب کنید.</translation>
 <translation id="6608166463665411119">بازنشانی سیم‌کارت داخلی</translation>
@@ -7669,7 +7670,7 @@
 <translation id="7059858479264779982">تنظیم روی اجرای خودکار</translation>
 <translation id="7063129466199351735">در حال پردازش میان‌برها...</translation>
 <translation id="7063311912041006059">نشانی وب با <ph name="SPECIAL_SYMBOL" /> به‌جای پرسش</translation>
-<translation id="706342288220489463">به «دستیار» اجازه دهید برای ارائه کمک از اطلاعات روی صفحه استفاده کند</translation>
+<translation id="706342288220489463">به «دستیار» اجازه دهید برای ارائه کمک از بافت صفحه استفاده کند</translation>
 <translation id="70641621694466590">رفتن به صفحه «گذرواژه‌ها»</translation>
 <translation id="7064734931812204395">‏درحال پیکربندی محتوی Linux. این کار ممکن است تا ۳۰ دقیقه طول بکشد.</translation>
 <translation id="7065223852455347715">این دستگاه در حالتی قفل شده است که از ثبت‌نام شرکتی جلوگیری می‌کند. اگر می‌خواهید دستگاه را ثبت‌نام کنید ابتدا باید دستگاه را بازیابی کنید.</translation>
@@ -8508,7 +8509,7 @@
 <translation id="773511996612364297">نشانه‌های تکیه</translation>
 <translation id="7737115349420013392">درحال جفت کردن با «<ph name="DEVICE_NAME" />» …</translation>
 <translation id="7737203573077018777">دستورالعمل <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> دریافت شده است</translation>
-<translation id="7737846262459425222">‏هر زمان خواستید می‌توانید این گزینه را در «تنظیمات &gt; دستیار Google &gt; اطلاعات روی صفحه» تغییر دهید.</translation>
+<translation id="7737846262459425222">‏هر زمان خواستید می‌توانید این گزینه را در «تنظیمات &gt; دستیار Google &gt; بافت صفحه» تغییر دهید.</translation>
 <translation id="7737948071472253612">اجازه ندارد از دوربین استفاده کند</translation>
 <translation id="77381465218432215">نمایش نشانه‌های تکیه (اِعراب) و نویسه‌های خاص</translation>
 <translation id="7740996059027112821">استاندارد</translation>
@@ -8615,7 +8616,7 @@
 <translation id="7805906048382884326">بستن نکته</translation>
 <translation id="7806722269368320106">یک برنامه، درحال نصب</translation>
 <translation id="7807067443225230855">جستجو و دستیار</translation>
-<translation id="7807117920154132308">‏به‌نظر می‌رسد <ph name="SUPERVISED_USER_NAME" /> ازقبل «دستیار Google» را در دستگاه دیگری راه‌اندازی کرده است. <ph name="SUPERVISED_USER_NAME" /> می‌تواند با روشن کردن «اطلاعات روی صفحه» در این دستگاه، بهره بیشتری از «دستیار» ببرد.</translation>
+<translation id="7807117920154132308">‏به‌نظر می‌رسد <ph name="SUPERVISED_USER_NAME" /> ازقبل «دستیار Google» را در دستگاه دیگری راه‌اندازی کرده است. <ph name="SUPERVISED_USER_NAME" /> می‌تواند با روشن کردن «بافت صفحه» در این دستگاه، بهره بیشتری از «دستیار» ببرد.</translation>
 <translation id="7807711621188256451">دسترسی <ph name="HOST" /> به دوربین شما همیشه مجاز باشد</translation>
 <translation id="7810202088502699111">پنجره‌های بازشو در این صفحه مسدود شده‌اند.</translation>
 <translation id="7810367892333449285">‏ورودی باید در قالب <ph name="LPA_0" />$<ph name="LPA_1" />SM-‏DP+ نشانی<ph name="LPA_2" />$<ph name="LPA_3" />شناسه انطباق اختیاری<ph name="LPA_4" /> باشد</translation>
@@ -9023,6 +9024,7 @@
 <translation id="81238879832906896">گل زرد و سفید</translation>
 <translation id="8123975449645947908">پیمایش به‌عقب</translation>
 <translation id="8124313775439841391">‏ONC مدیریت شده</translation>
+<translation id="8125651784723647184">سرپرست شما هم‌رسانی گذرواژه را مدیریت می‌کند</translation>
 <translation id="8129265306888404830">‏برای استفاده از نشانی ایمیل سازمانتان (<ph name="EMAIL_DOMAIN" />)، باید از ثبت‌نام شرکتی استفاده کنید. اگر این دستگاه برای استفاده شخصی شما است، با «حساب Google» شخصی خود به سیستم وارد شوید.</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>
@@ -9089,7 +9091,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. چاپگر <ph name="ITEM_POSITION" /> از <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">«بهینه‌سازی انرژی» روشن است</translation>
 <translation id="8180786512391440389">«<ph name="EXTENSION" />» می‌تواند تصاویر، ویدئوها و فایل‌های صوتی را در مکان‌های انتخاب شده بخواند یا حذف کند.</translation>
-<translation id="8180826593917851025">پیکربندی نقطه اتصال <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">نمی‌توان به دامنه وصل شد. حسابتان را بررسی کنید تا ببینید آیا دسترسی‌های کافی برای اضافه کردن دستگاه دارید.</translation>
 <translation id="8182105986296479640">برنامه پاسخ نمی‌دهد</translation>
 <translation id="8182412589359523143">برای حذف همه داده‌ها از این <ph name="DEVICE_TYPE" />، <ph name="BEGIN_LINK" />اینجا کلیک کنید<ph name="END_LINK" />.</translation>
@@ -10088,6 +10089,7 @@
 <translation id="8968527460726243404">‏ایجادکننده تصویر سیستمی ChromeOS</translation>
 <translation id="8968766641738584599">ذخیره کارت</translation>
 <translation id="8968906873893164556">حسابی را که می‌خواهید برای راه‌اندازی استفاده شود انتخاب کنید</translation>
+<translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="89720367119469899">فرار</translation>
 <translation id="8972513834460200407">‏لطفاً با سرپرست شبکه خود بررسی کنید تا مطمئن شوید فایروال از بارگیری از سرورهای Google جلوگیری نمی‌کند.</translation>
 <translation id="8973263196882835828">&amp;فعال کردن زیرنویس ناشنوایان زنده</translation>

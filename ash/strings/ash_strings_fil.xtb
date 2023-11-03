@@ -116,6 +116,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1391102559483454063">Naka-on</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gamitin ang mga arrow key para mag-navigate sa pagitan ng mga petsa.</translation>
+<translation id="141170878022560212">Button sa Gitna</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Naka-install na App</translation>
 <translation id="1414919006379339073">Isara ang kasalukuyang window</translation>
 <translation id="1415846719612499304">Ipakita ang listahan ng network. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
-<translation id="1815245884418711390">I-toggle ang Hotspot. Naka-off ang Hotspot.</translation>
 <translation id="1816896987747843206">Pinapayagan nito ang access sa camera para sa lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="1823280932251546115">Status tray, oras <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2086334242442703436">Buksan ang Picker ng Emoji</translation>
 <translation id="2088116547584365419">mga laro</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
+<translation id="2107581415810719320">Iba pang Button <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Hindi sinusuportahan ng iyong USB-C cable ang Thunderbolt. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="2108303511227308752">Nagbago ang keyboard shortcut na Alt + Backspace. Para magamit ang Delete key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
 <translation id="2126242104232412123">Bagong desk</translation>
@@ -563,6 +564,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3341303451326249809">Na-capture na ang screenshot</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
+<translation id="3346728094401457853">Ilagay ang password ng device para sa <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">I-highlight ang text mula sa cursor hanggang sa dulo ng linya</translation>
 <translation id="3349345708646875009">Buksan ang task manager</translation>
 <translation id="3364721542077212959">Mga stylus tool</translation>
@@ -975,7 +977,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4936329710968938986">Lahat, naka-off</translation>
 <translation id="4937170330762390348">Sa pamamagitan ng dictation, makakapag-type ka gamit ang iyong boses. Pindutin ang dictation key o piliin ang icon na mikropono sa ibaba ng screen kapag nasa isang field ng text ka. Nakatakda sa <ph name="LANGUAGE" /> ang wika ng dictation mo. Mada-download ang mga file ng speech para magamit mo offline ang dictation. Puwede mong palitan ang wika ng dictation anumang oras sa Mga Setting &gt; Accessibility.</translation>
 <translation id="4938176435186993759">I-hide ang lahat ng suhestyon</translation>
-<translation id="4943007472417128747">Na-off ang Hotspot para gamitin ang WiFi. Para gamitin ang Hotspot, i-off ang WiFi.</translation>
 <translation id="4945196315133970626">I-off ang mga notification</translation>
 <translation id="4946376291507881335">I-capture</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
@@ -996,7 +997,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5009463889040999939">Nire-rename ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="5016558321564993266">I-toggle ang marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Mga kategorya ng paghahanap</translation>
-<translation id="5029356738310729434">Naka-on ang access sa mikropono ng device</translation>
 <translation id="5030659775136592441">Ipakita ang manager ng bookmark</translation>
 <translation id="5030687792513154421">Tapos na ang oras</translation>
 <translation id="5033299697334913360">Mag-click kahit saan para i-capture ang full screen</translation>
@@ -1342,7 +1342,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="643147933154517414">Tapos na ang lahat</translation>
 <translation id="6431865393913628856">Pag-record ng screen</translation>
 <translation id="643593192654616063">Ginagamit ang <ph name="STORAGE_IN_USE_SIZE" /> na storage sa kabuuang <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Naka-off ang access sa mikropono ng device</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Hanapin ang iyong mga larawan ayon sa content</translation>
@@ -1468,7 +1467,6 @@ Kaka-install lang</translation>
 <translation id="6912841030378044227">Tumuon sa address bar</translation>
 <translation id="6912901278692845878">Quick tour</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
-<translation id="6920245099716267363">I-toggle ang Hotspot. Naka-on ang Hotspot, 1 device ang nakakonekta.</translation>
 <translation id="692135145298539227">tanggalin</translation>
 <translation id="6929081673585394903">Ipakita ang mga kontrol</translation>
 <translation id="6931576957638141829">I-save sa</translation>
@@ -1563,7 +1561,6 @@ Kaka-install lang</translation>
 <translation id="7378203170292176219">Mag-drag para pumili ng bahaging ire-record</translation>
 <translation id="7378594059915113390">Mga Kontrol ng Media</translation>
 <translation id="7378889811480108604">Naka-off ang battery saver mode</translation>
-<translation id="7382640522316003298">I-toggle ang Hotspot. Naka-on ang Hotspot, <ph name="DEVICECOUNT" /> (na) device ang nakakonekta.</translation>
 <translation id="7382680553121047388">I-on</translation>
 <translation id="7384028040782072252">Mag-right click kahit saan para baguhin ang pagkakaayos ng iyong mga app</translation>
 <translation id="7386767620098596324">I-toggle ang koneksyon ng network. <ph name="STATE_TEXT" />.</translation>
@@ -1587,6 +1584,7 @@ Kaka-install lang</translation>
 <translation id="7489261257412536105">Pumasok o lumabas sa full screen</translation>
 <translation id="7490360161041035804">Puwede kang mag-pin ng mahahalagang file, kabilang ang mga file sa Google Drive. Para mag-pin, mag-hover sa item at buksan ang Mga File at mag-right click sa item.</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
+<translation id="7507162824403726948">Tapusin ang pag-verify ng iyong pagkakakilanlan</translation>
 <translation id="7508690557411636492">Binuksan sa nakalipas na buwan</translation>
 <translation id="7509246181739783082">I-verify ang iyong pagkakakilanlan</translation>
 <translation id="7512509370370076552">Na-update ang shortcut sa pag-right click sa <ph name="LAUNCHER_KEY_NAME" /> key + click mula sa dating alt + click</translation>
@@ -1733,7 +1731,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8036504271468642248">Nakaraang pangungusap</translation>
 <translation id="8042893070933512245">Buksan ang menu ng mga setting ng accessibility</translation>
 <translation id="8044457332620420407">Na-off ang backlight ng keyboard</translation>
-<translation id="8048077032188362328">Ini-off ng iyong administrator ang Hotspot.</translation>
 <translation id="8048123526339889627">Mga Setting ng Bluetooth</translation>
 <translation id="8051716679295756675">May template nang may pangalang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
@@ -1754,7 +1751,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8131994907636310308">Isara ang pagbubukod-bukod ng toast</translation>
 <translation id="8132793192354020517">Kumukonekta sa <ph name="NAME" /></translation>
-<translation id="8135163608236671037">I-toggle ang Hotspot. Naka-on ang Hotspot, walang nakakonektang device.</translation>
 <translation id="8138705869659070104">I-activate matapos ang setup</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8142441511840089262">I-double click</translation>

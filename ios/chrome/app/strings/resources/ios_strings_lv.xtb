@@ -48,6 +48,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="1219674500290482172">Nevar izveidot savienojumu ar internetu.</translation>
 <translation id="1226238226094914652">Paroles visās jūsu ierīcēs</translation>
 <translation id="122699739164161391">Aizvērt visas cilnes</translation>
+<translation id="1227866575467023566">{count,plural, =1{Lapa tika pievienota lasīšanas sarakstam jūsu kontā ({email})}zero{{count} lapas tika pievienotas lasīšanas sarakstam jūsu kontā ({email})}one{{count} lapa tika pievienota lasīšanas sarakstam jūsu kontā ({email})}other{{count} lapas tika pievienotas lasīšanas sarakstam jūsu kontā ({email})}}</translation>
 <translation id="1229222343402087523">Meklēt “${searchPhrase}” pārlūkprogrammā Chrome</translation>
 <translation id="1242044645101871359">Pierakstieties vēlreiz</translation>
 <translation id="1248276223555153952">Pārvaldīt kontus šajā ierīcē…</translation>
@@ -123,6 +124,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="1580715474678097352">Aizsardzība pret kaitīgām vietnēm</translation>
 <translation id="1580783302095112590">E-pasts nosūtīts.</translation>
 <translation id="1582732959743469162">Šādi tiks pārtraukta pašreizējās lejupielādes norise.</translation>
+<translation id="158591023028013564">{count,plural, =1{Lapa tika pievienota jūsu lasīšanas sarakstam}zero{{count} lapas tika pievienotas jūsu lasīšanas sarakstam}one{{count} lapa tika pievienota jūsu lasīšanas sarakstam}other{{count} lapas tika pievienotas jūsu lasīšanas sarakstam}}</translation>
 <translation id="1594034544529347967">Sākums</translation>
 <translation id="160275202205869636">Ja šis iestatījums ir ieslēgts, varat izmantot un saglabāt datus savā Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē.</translation>
 <translation id="1605405588277479165">Izslēgta — nav ieteicams</translation>
@@ -422,6 +424,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157684681743766797">Atzīmēt visus…</translation>
 <translation id="315778507796115851">Vēsture</translation>
+<translation id="31652791196570636">Nerādīt</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Varat arī izmantot saglabātās paroles citās savās ierīcēs.</translation>
 <translation id="3175081911749765310">Tīm. pak.</translation>
@@ -585,6 +588,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4112644173421521737">Meklēt</translation>
 <translation id="4113030288477039509">Pārvalda jūsu administrators</translation>
 <translation id="4113957097611235433">Nomainiet paroles</translation>
+<translation id="4120936477286528673">Šī vietne atkārtoti mēģina atvērt citu lietojumprogrammu.</translation>
 <translation id="4121993058175073134">Neto eksporta datu sūtīšanai konfigurējiet e-pasta kontu iestatījumos.</translation>
 <translation id="4124987746317609294">Laika periods</translation>
 <translation id="4133265950310064865">Uzlabota aizsardzība</translation>
@@ -779,6 +783,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} nedroša parole}zero{{COUNT} nedrošu paroļu}one{{COUNT} nedroša parole}other{{COUNT} nedrošas paroles}}</translation>
 <translation id="5149188072385105201">Pievienot paroli…</translation>
 <translation id="5150492518600715772">Nosūtīt uz jūsu ierīci</translation>
+<translation id="5157638238828697074">Radās problēma. Lietojumprogrammu nevarēja atvērt.</translation>
 <translation id="5168414296986405587">Izstrādāts operētājsistēmai iPadOS</translation>
 <translation id="5173088371991956744">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
 <translation id="5173493422621051500">Izmantot tastatūru</translation>
@@ -805,6 +810,8 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5235389474593199952">Paslēpt vienumu Vēsture</translation>
 <translation id="5238301240406177137">Saglabāt kontā</translation>
 <translation id="5245322853195994030">Atcelt sinhronizēšanu</translation>
+<translation id="5248640482715684545">Šī vietne mēģina atvērt citu lietojumprogrammu.</translation>
+<translation id="5256661381001734217">Šī vietne mēģina atvērt lietojumprogrammu.  Tādējādi tiks iziets no inkognito režīma.</translation>
 <translation id="5256908199795498284">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti sūtījumu izsekošanas numuri un lapā Jauna cilne tiks parādīti jaunumi par sūtījumiem. Jūsu dati tiks kopīgoti ar uzņēmumu Google, lai nodrošinātu šo funkciju un visiem lietotājiem uzlabotu pakalpojumu Pirkumi.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Obligātais lauks ir tukšs. Pirms saglabāšanas aizpildiet to.}zero{Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.}one{Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.}other{Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.}}</translation>
 <translation id="5271549068863921519">Saglabāt paroli</translation>
@@ -904,6 +911,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5834415013958049700">Attēls, ko nokopējāt pakalpojumā Lens</translation>
 <translation id="5844284118433003733">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
 <translation id="5846482154967366008">Meklētājprogramma</translation>
+<translation id="5850913622988109693">Sūtījumu izsekošanas iespējas</translation>
 <translation id="5854790677617711513">Vecāki par 30 dienām</translation>
 <translation id="5857090052475505287">Jauna mape</translation>
 <translation id="5857770089550859117">Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>

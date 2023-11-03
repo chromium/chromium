@@ -116,6 +116,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1391102559483454063">Ymlaen</translation>
 <translation id="1407069428457324124">Thema dywyll</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Defnyddiwch y bysellau saeth i lywio rhwng dyddiadau.</translation>
+<translation id="141170878022560212">Botwm Canol</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Gosodwyd Ap</translation>
 <translation id="1414919006379339073">Cau'r ffenestr bresennol</translation>
 <translation id="1415846719612499304">Dangos rhestr rhwydwaith. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1787955149152357925">Diffodd</translation>
 <translation id="1796561540704213354">Gwefannau gan gynnwys tudalennau rydych wedi ymweld â nhw a thudalennau agored</translation>
 <translation id="181103072419391116">Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
-<translation id="1815245884418711390">Toglo'r Boethfan. Mae'r boethfan wedi'i diffodd.</translation>
 <translation id="1816896987747843206">Mae hyn yn caniatáu mynediad camera i bob ap a gwefan gyda chaniatâd y camera</translation>
 <translation id="1823280932251546115">Hambwrdd statws, amser <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2086334242442703436">Agor Dewisydd Emoji</translation>
 <translation id="2088116547584365419">gemau</translation>
 <translation id="209965399369889474">Heb ei gysylltu â rhwydwaith</translation>
+<translation id="2107581415810719320">Botwm Arall <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Nid yw eich cebl USB-C yn cefnogi Thunderbolt. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="2108303511227308752">Mae'r llwybr byr bysellfwrdd Alt + Backspace wedi newid. I ddefnyddio'r fysell Delete, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Desg newydd</translation>
@@ -975,7 +976,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4936329710968938986">Pawb, wedi'i ddiffodd</translation>
 <translation id="4937170330762390348">Gydag arddweud, gallwch deipio gan ddefnyddio'ch llais. Pwyswch y fysell arddweud neu dewiswch yr eicon meicroffon ar waelod y sgrîn pan fyddwch chi ar faes testun. Mae'ch iaith arddweud wedi'i gosod i <ph name="LANGUAGE" />. Bydd ffeiliau lleferydd yn cael eu lawrlwytho fel y gallwch ddefnyddio arddweud all-lein. Gallwch newid yr iaith arddweud unrhyw bryd yn y Gosodiadau &gt; Hygyrchedd.</translation>
 <translation id="4938176435186993759">Cuddio'r holl awgrymiadau</translation>
-<translation id="4943007472417128747">Mae'r boethfan wedi'i diffodd er mwyn defnyddio WiFi. I ddefnyddio'r boethfan, diffoddwch y WiFi.</translation>
 <translation id="4945196315133970626">Diffodd hysbysiadau</translation>
 <translation id="4946376291507881335">Tynnu sgrinlun</translation>
 <translation id="495046168593986294">Sgrolio i fyny</translation>
@@ -996,7 +996,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5009463889040999939">Wrthi'n ailenwi'r proffil. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="5016558321564993266">Toglo'r marciwr. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Chwilio categorïau</translation>
-<translation id="5029356738310729434">Mae mynediad at feicroffon y ddyfais ymlaen</translation>
 <translation id="5030659775136592441">Dangos y rheolwr nodau tudalen</translation>
 <translation id="5030687792513154421">Amser ar ben</translation>
 <translation id="5033299697334913360">Cliciwch unrhyw le i dynnu sgrinlun o'r sgrîn lawn</translation>
@@ -1342,7 +1341,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="643147933154517414">Popeth wedi'i orffen</translation>
 <translation id="6431865393913628856">Recordio'r sgrîn</translation>
 <translation id="643593192654616063">Mae <ph name="STORAGE_IN_USE_SIZE" /> o le storio yn cael ei ddefnyddio allan o gyfanswm o <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Mae mynediad at feicroffon y ddyfais wedi diffodd</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Dod o hyd i'ch delweddau yn ôl y cynnwys</translation>
@@ -1468,7 +1466,6 @@ Gosodiad newydd</translation>
 <translation id="6912841030378044227">Ffocysu ar y bar cyfeiriad</translation>
 <translation id="6912901278692845878">Taith gyflym</translation>
 <translation id="6919251195245069855">Methu ag adnabod eich cerdyn clyfar. Rhowch gynnig arall arni.</translation>
-<translation id="6920245099716267363">Toglo'r Boethfan. Mae'r boethfan ymlaen, mae 1 ddyfais wedi'i chysylltu.</translation>
 <translation id="692135145298539227">dileu</translation>
 <translation id="6929081673585394903">Dangos rheolyddion</translation>
 <translation id="6931576957638141829">Cadw yn</translation>
@@ -1564,7 +1561,6 @@ Gosodiad newydd</translation>
 <translation id="7378203170292176219">Llusgwch i ddewis ardal i'w recordio</translation>
 <translation id="7378594059915113390">Rheolaethau Cyfryngau</translation>
 <translation id="7378889811480108604">Mae'r modd arbed batri wedi'i ddiffodd</translation>
-<translation id="7382640522316003298">Toglo'r Boethfan. Mae'r boethfan ymlaen, mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu.</translation>
 <translation id="7382680553121047388">Ymlaen</translation>
 <translation id="7384028040782072252">De-gliciwch unrhyw le i aildrefnu'ch apiau</translation>
 <translation id="7386767620098596324">Toglo cysylltiad rhwydwaith. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8036504271468642248">Brawddeg flaenorol</translation>
 <translation id="8042893070933512245">Agor dewislen gosodiadau hygyrchedd</translation>
 <translation id="8044457332620420407">Mae ôl-olau'r bysellfwrdd wedi'i ddiffodd</translation>
-<translation id="8048077032188362328">Mae eich gweinyddwr wedi diffodd y Boethfan.</translation>
 <translation id="8048123526339889627">Gosodiadau Bluetooth</translation>
 <translation id="8051716679295756675">Mae'r templed o'r enw <ph name="DESK_TEMPLATE_NAME" /> eisoes yn bodoli</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
@@ -1755,7 +1750,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8131994907636310308">Cau'r neges trefnu</translation>
 <translation id="8132793192354020517">Wedi cysylltu â <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Toglo'r Boethfan. Mae'r boaethfan ymlaen, dim dyfais wedi'i chysylltu.</translation>
 <translation id="8138705869659070104">Gweithredu ar ôl gosod y ddyfais</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8142441511840089262">Clicio dwywaith</translation>

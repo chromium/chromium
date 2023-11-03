@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1001716830750249114">Ves a la configuració de la versió de Chromium</translation>
 <translation id="1026101648481255140">Reprèn la instal·lació</translation>
 <translation id="1029669172902658969">Reinicia per actualitzar &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium et recomana que revisis aquesta extensió</translation>
@@ -21,6 +22,7 @@
 <translation id="1342274909142618978">Suprimeix també les dades de Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Teniu la sessió iniciada a Chromium.</translation>
 <translation id="1478370723027452770">Obtén ajuda amb Chrome for Testing</translation>
+<translation id="1497802159252041924">Error d'instal·lació: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Comparteix una pestanya de Chromium</translation>
 <translation id="1553461853655228091">Chromium necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
 <translation id="1574377791422810894">Eines de seguretat de Chromium</translation>
@@ -31,6 +33,7 @@
 És possible que els permisos que ja hagis donat a llocs web i aplicacions s'apliquin a aquest compte. Pots gestionar els teus Comptes de Google a <ph name="SETTINGS_LINK_BEGIN" />Configuració<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1708666629004767631">Hi ha disponible una versió nova més segura de Chromium.</translation>
+<translation id="1715127912119967311">Per ajudar a millorar aquestes funcions, Chromium envia a Google les interaccions que hi mantinguis. És possible que revisors humans llegeixin, tractin i anotin aquestes dades.</translation>
 <translation id="17264556997921157">Pots veure i suprimir els temes d'interès que els llocs web utilitzen per mostrar-te anuncis. Chromium estima els teus interessos basant-se en l'historial de navegació recent.</translation>
 <translation id="1733725117201708356">Chromium suprimirà les dades de navegació aviat</translation>
 <translation id="1745121272106313518">Chromium es reiniciarà d'aquí a <ph name="REMAINING_TIME" /></translation>
@@ -155,11 +158,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chromium. Per continuar amb la teva navegació per separat, Chromium et pot crear un perfil propi.</translation>
 <translation id="3909353120217047026">Aquesta extensió infringeix la política de Chrome Web Store i podria no ser segura. Suprimeix-la de Chromium perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="391789666908693569"><ph name="MANAGER_NAME" /> gestiona el teu compte. L'administrador pot veure i editar aquest perfil del navegador Chromium i les dades associades, com ara les adreces d'interès, l'historial i les contrasenyes.</translation>
+<translation id="3922825997980843979">A mesura que escrius, Chromium envia el contingut de la barra d'adreces o del quadre de cerca al teu motor de cerca predeterminat</translation>
 <translation id="3945058413678539331">Chromium està provant de copiar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="3962647064319009959">Informació sobre com et protegeix Chromium</translation>
 <translation id="3975724895399328945">Sobre &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Sobre Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="4028143804911941282">Encara que aquesta opció estigui desactivada, continuaràs veient els suggeriments que Chromium proporciona localment</translation>
 <translation id="4036079820698952681">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chromium</translation>
 <translation id="4050175100176540509">La versió més recent incorpora millores de seguretat i funcions noves importants.</translation>
 <translation id="4055805654398742145">G&amp;estor de contrasenyes</translation>
@@ -251,6 +256,7 @@
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6055895534982063517">Hi ha disponible una versió nova de Chromium, i és més ràpida que mai.</translation>
+<translation id="6058380562449900225">Per protegir les teves dades, permet que Chromium suprimeixi els permisos dels llocs web que no has visitat recentment. En continuaràs rebent notificacions.</translation>
 <translation id="6063093106622310249">&amp;Obre a Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> s'ha afegit a Chromium</translation>
 <translation id="6072463441809498330">Fes que Chromium sigui més ràpid</translation>

@@ -25,6 +25,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome sudah selesai membuat pengemaskinian. Anda boleh menggunakan versi terkini setelah anda membuat pelancaran semula. Selepas itu, tab semasa anda akan dibuka semula.}=1{Chrome sudah selesai membuat pengemaskinian. Anda boleh menggunakan versi terkini setelah anda membuat pelancaran semula. Selepas itu, tab semasa anda akan dibuka semula. Tetingkap Inkognito anda tidak akan dibuka semula.}other{Chrome sudah selesai membuat pengemaskinian. Anda boleh menggunakan versi terkini setelah anda membuat pelancaran semula. Selepas itu, tab semasa anda akan dibuka semula. # tetingkap Inkognito anda tidak akan dibuka semula.}}</translation>
 <translation id="1434626383986940139">Apl Chrome Canary</translation>
 <translation id="1492280395845991349">Lancarkan semula untuk menyelesaikan pengemaskinian Chrome</translation>
+<translation id="1497802159252041924">Ralat pemasangan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Sesuaikan profil Chrome baharu anda</translation>
 <translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk meneruskan 
  penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -68,6 +69,7 @@
 <translation id="2130870084309816036">Tidak dapat disambungkan kepada Internet. Jika anda menggunakan tembok api, sila senarai benarkan <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan oleh Chrome.</translation>
 <translation id="2139300032719313227">Mulakan semula Chrome OS</translation>
+<translation id="2146761408396054429">Fail ini mungkin berbahaya<ph name="LINE_BREAK" />Chrome boleh memeriksa muat turun ini untuk anda jika anda memberikan kata laluan — kata laluan anda kekal pada peranti anda</translation>
 <translation id="2151406531797534936">Sila mulakan semula Chrome sekarang</translation>
 <translation id="2174917724755363426">Pemasangan belum selesai. Anda pasti ingin membatalkan?</translation>
 <translation id="2190166659037789668">Ralat semakan kemaskinian: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -87,6 +89,7 @@
 <translation id="2467438592969358367">Google Chrome mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="2472092250898121027">Sambungan ini mengandungi perisian hasad dan tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
+<translation id="2534365042754120737">Untuk melindungi data anda, benarkan Chrome mengalih keluar kebenaran daripada laman yang belum anda lawati baru-baru ini. Tidak menghentikan pemberitahuan.</translation>
 <translation id="2534507159460261402">Google Pay (disalin ke Chrome)</translation>
 <translation id="2556847002339236023">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data semakan imbas telah dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.</translation>
 <translation id="2559253115192232574">Kemudian, laman yang anda lawati boleh meminta Chrome melihat minat anda untuk memeribadikan iklan yang anda lihat. Chrome boleh berkongsi sehingga 3 minat.</translation>
@@ -266,6 +269,7 @@
 <translation id="5524761631371622910">Semasa percubaan dihidupkan dan jika Chrome telah meletakkan anda secara rawak dalam percubaan aktif, sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara bergilir setiap bulan.</translation>
 <translation id="5530733413481476019">Jadikan Chrome Lebih Pantas</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5572786658631721382">Apabila dimatikan, anda masih dapat melihat cadangan yang diberikan oleh Chrome secara setempat</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, jadi Chrome telah menyekat fail itu.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini}=1{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="5686916850681061684">Sesuaikan dan kawal Google Chrome. Perhatian anda diperlukan - klik untuk mendapatkan butiran.</translation>
@@ -359,6 +363,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7177959540995930968">Anda boleh mengetahui lebih lanjut tentang ciri ini dalam tetapan Chrome.</translation>
 <translation id="7193885263065350793">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda log masuk menggunakan akaun terurus dan memberikan pentadbirnya kawalan terhadap profil Google Chrome anda. Data Chrome anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Akaun Google, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih membuat profil baharu untuk mengasingkan data Chrome anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
+<translation id="7284878711178835966">Ketika anda menaip, Chrome menghantar kandungan daripada bar alamat atau kotak carian ke enjin carian lalai anda</translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk memaparkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7308322188646931570">Chrome memerlukan akses storan untuk memuat turun fail</translation>

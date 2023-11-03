@@ -347,6 +347,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />サイトのホームページにアクセス<ph name="END_LINK" />してみてください。</translation>
 <translation id="1641976391427233992">出力のタイミング</translation>
 <translation id="164212631332220697">ご購入手続きの際に <ph name="CARD_DETAIL" /> で支払います。</translation>
+<translation id="1643651787397909318">[Chrome の安全チェックに移動] ボタンです。ボタンを押すと、Chrome 設定の安全チェックページに移動します</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1645368109819982629">サポートされていないプロトコルです</translation>
 <translation id="1650602712345345441">Chrome の設定を管理します</translation>
@@ -2043,6 +2044,8 @@
 <translation id="5137761395480718572">このアプリは Wi-Fi 認証情報のインストール権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。これらの認証情報を削除するには、アプリをアンインストールします。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">仮想カードは現在ご利用いただけません。銀行にお問い合わせください</translation>
 <translation id="5138227688689900538">一部を表示</translation>
+<translation id="5143309888746105072">Chromium では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。
+            <ph name="NEW_LINE" />サイトが機能しない場合は、<ph name="START_LINK" />サードパーティ Cookie を一時的に許可してみてください<ph name="END_LINK" />。</translation>
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> の通知をブロックしました</translation>
 <translation id="514704532284964975"><ph name="URL" /> が、スマートフォンでタップした NFC デバイスの情報を参照および変更しようとしています</translation>
@@ -2387,6 +2390,7 @@
 <translation id="5873297634595728366">ディーゼル車</translation>
 <translation id="5877831137320480913">美容、フィットネス</translation>
 <translation id="5879989559903563723">ゲストモードで許可しないサイト</translation>
+<translation id="5880050725127890683">Chrome の安全チェックに移動</translation>
 <translation id="5883861433316751031">MIDI デバイスの操作と再プログラムを行いますか？</translation>
 <translation id="5884465125445718607">中国 #6 封筒</translation>
 <translation id="5887400589839399685">カードが保存されました</translation>
@@ -2567,6 +2571,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ファイルの移動がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの移動がブロックされています}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="6254436959401408446">メモリが不足しているため、このページを開けません</translation>
+<translation id="625463612687472648">許可を取り消す</translation>
 <translation id="6259156558325130047">順序変更のやり直し（&amp;R）</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
@@ -2741,6 +2746,8 @@
 <translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6597665340361269064">90°</translation>
 <translation id="6599642189720630047">トラッキングしている商品</translation>
+<translation id="6606309334576464871">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。
+            <ph name="NEW_LINE" />サイトが機能しない場合は、<ph name="START_LINK" />サードパーティ Cookie を一時的に許可してみてください<ph name="END_LINK" />。</translation>
 <translation id="6611723696964473273">経済ニュース</translation>
 <translation id="6612010098632894193">オンライン動画</translation>
 <translation id="6613866251791999074">Chrome で使用する検索エンジンについての詳細</translation>
@@ -3410,6 +3417,7 @@
 <translation id="7888575728750733395">印刷時のレンダリング インテント</translation>
 <translation id="7894280532028510793">タイプミスでない場合は、<ph name="BEGIN_LINK" />ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7×9 インチ封筒</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome 設定の安全チェックページに移動します</translation>
 <translation id="7916162853251942238">フレキソベース</translation>
 <translation id="7927971017714848357">用地、土地</translation>
 <translation id="793209273132572360">住所を更新しますか？</translation>
@@ -3703,6 +3711,7 @@
 <translation id="8460854335417802511">有効にする</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 件のクレジット カード}other{# 件のクレジット カード}}</translation>
+<translation id="8467494337615822642">Chrome 設定の安全チェックページに移動</translation>
 <translation id="8468358362970107653">C3 封筒</translation>
 <translation id="8473626140772740486">300x450 mm</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>

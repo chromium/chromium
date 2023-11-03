@@ -211,7 +211,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Webbplatser, inklusive sidor som du har besökt och öppna sidor</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
-<translation id="1815245884418711390">Aktivera och inaktivera surfzon. Surfzonen är inaktiverad.</translation>
 <translation id="1816896987747843206">Detta ger kameraåtkomst för alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="1823280932251546115">Statusfältet, tid <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3340978935015468852">inställningar</translation>
 <translation id="3341303451326249809">Skärmbilden har tagits</translation>
 <translation id="334252345105450327">Ta en skärmbild</translation>
+<translation id="3346728094401457853">Ange enhetslösenordet för <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Markera text från markören till slutet av raden</translation>
 <translation id="3349345708646875009">Öppna Aktivitetshanteraren</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
@@ -975,7 +975,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4936329710968938986">Alla, av</translation>
 <translation id="4937170330762390348">Med diktering kan du skriva med rösten. Tryck på dikteringstangenten eller välj mikrofonikonen längst ned på skärmen när du är i ett textfält. Dikteringsspråket är inställt på <ph name="LANGUAGE" />. Talfiler laddas ned så att du kan använda diktering offline. Du kan när som helst ändra dikteringsspråket i Inställningar &gt; Tillgänglighet.</translation>
 <translation id="4938176435186993759">Dölj alla förslag</translation>
-<translation id="4943007472417128747">Surfzonen har inaktiverats för att använda wifi. Inaktivera wifi för att använda surfzon.</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
 <translation id="495046168593986294">Scrolla upp</translation>
@@ -996,7 +995,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5009463889040999939">Byter namn på profilen. Det kan ta några minuter.</translation>
 <translation id="5016558321564993266">Aktivera och inaktivera märkpennan. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Sökkategorier</translation>
-<translation id="5029356738310729434">Åtkomst till enhetens mikrofon har aktiverats</translation>
 <translation id="5030659775136592441">Visa bokmärkeshanteraren</translation>
 <translation id="5030687792513154421">Tiden är slut</translation>
 <translation id="5033299697334913360">Klicka var som helst för att ta en bild av hela skärmen</translation>
@@ -1342,7 +1340,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="643147933154517414">Klart</translation>
 <translation id="6431865393913628856">Skärminspelning</translation>
 <translation id="643593192654616063">Lagringsutrymme: <ph name="STORAGE_IN_USE_SIZE" /> lagringsutrymme av totalt <ph name="STORAGE_TOTAL_SIZE" /> används</translation>
-<translation id="6442259747294754014">Åtkomst till enhetens mikrofon har inaktiverats</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Hitta dina bilder efter innehållet</translation>
@@ -1468,7 +1465,6 @@ Nyligen installerad</translation>
 <translation id="6912841030378044227">Flytta fokus till adressfältet</translation>
 <translation id="6912901278692845878">Snabbgenomgång</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
-<translation id="6920245099716267363">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. 1 enhet är ansluten.</translation>
 <translation id="692135145298539227">radera</translation>
 <translation id="6929081673585394903">Visa kontroller</translation>
 <translation id="6931576957638141829">Spara i</translation>
@@ -1564,7 +1560,6 @@ Nyligen installerad</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
 <translation id="7378889811480108604">Batterisparläget är avstängt</translation>
-<translation id="7382640522316003298">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. <ph name="DEVICECOUNT" /> enheter är anslutna.</translation>
 <translation id="7382680553121047388">På</translation>
 <translation id="7384028040782072252">Högerklicka var som helst och ändra ordning på apparna</translation>
 <translation id="7386767620098596324">Aktivera och inaktivera nätverksanslutning. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1583,7 @@ Nyligen installerad</translation>
 <translation id="7489261257412536105">Aktivera eller inaktivera helskärm</translation>
 <translation id="7490360161041035804">Du kan fästa viktiga filer, till exempel Google Drive-filer. Håll muspekaren över ett objekt eller öppna Filer och högerklicka på ett objekt för att fästa det.</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
+<translation id="7507162824403726948">Slutför verifieringen av din identitet</translation>
 <translation id="7508690557411636492">Öppnades under den senaste månaden</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
 <translation id="7512509370370076552">Kortkommandot för högerklick har uppdaterats från Alt + klick till <ph name="LAUNCHER_KEY_NAME" />-tangenten + klick</translation>
@@ -1734,7 +1730,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8036504271468642248">Föregående mening</translation>
 <translation id="8042893070933512245">Öppna menyn med tillgänglighetsinställningar</translation>
 <translation id="8044457332620420407">Tangentbordets bakgrundsbelysning är av</translation>
-<translation id="8048077032188362328">Administratören har inaktiverat surfzonen.</translation>
 <translation id="8048123526339889627">Bluetooth-inställningar</translation>
 <translation id="8051716679295756675">Det finns redan en mall som heter <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>
@@ -1755,7 +1750,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8131994907636310308">Stäng sorteringspopup</translation>
 <translation id="8132793192354020517">Ansluten till <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. Ingen enhet är ansluten.</translation>
 <translation id="8138705869659070104">Aktivera efter enhetskonfig.</translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8142441511840089262">Dubbelklicka</translation>

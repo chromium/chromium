@@ -212,7 +212,6 @@
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
-<translation id="1815245884418711390">يمكنك تفعيل نقطة الاتصال أو إيقافها. نقطة الاتصال غير مفعَّلة.</translation>
 <translation id="1816896987747843206">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="1823280932251546115">شريط الحالة، الوقت <ph name="TIME" />،
         <ph name="BATTERY" />
@@ -977,7 +976,6 @@
 <translation id="4936329710968938986">الجميع: غير مفعّل</translation>
 <translation id="4937170330762390348">من خلال ميزة "إملاء"، يمكنك الكتابة باستخدام صوتك. اضغط على مفتاح ميزة "إملاء" أو اختَر رمز الميكروفون في أسفل الشاشة عندما تكون في حقل نصي. تم ضبط لغة ميزة "إملاء" على <ph name="LANGUAGE" />. سيتم تنزيل ملفات التعرّف على الكلام كي تتمكّن من استخدام ميزة "إملاء" بلا اتصال بالإنترنت. يمكنك في أي وقت تغيير لغة ميزة "إملاء" من خلال الإعدادات &gt; تسهيل الاستخدام.</translation>
 <translation id="4938176435186993759">إخفاء جميع الاقتراحات</translation>
-<translation id="4943007472417128747">‏تم إيقاف نقطة الاتصال لاستخدام شبكة Wi-Fi. لاستخدام نقطة الاتصال، عليك إيقاف شبكة Wi-Fi.</translation>
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
@@ -998,7 +996,6 @@
 <translation id="5009463889040999939">جارٍ إعادة تسمية الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="5016558321564993266">حالة إيقاف/تفعيل أداة التحديد: <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">البحث حسب الفئات</translation>
-<translation id="5029356738310729434">الوصول إلى ميكروفون الجهاز مفعَّل.</translation>
 <translation id="5030659775136592441">عرض "مدير الإشارات"</translation>
 <translation id="5030687792513154421">انتهى الوقت</translation>
 <translation id="5033299697334913360">انقر في أي مكان لالتقاط صورة لوضع ملء الشاشة.</translation>
@@ -1344,7 +1341,6 @@
 <translation id="643147933154517414">ليس لديك أي إشعارات</translation>
 <translation id="6431865393913628856">تسجيل الشاشة</translation>
 <translation id="643593192654616063">مساحة التخزين المستخدمة حاليًا <ph name="STORAGE_IN_USE_SIZE" /> من إجمالي <ph name="STORAGE_TOTAL_SIZE" />.</translation>
-<translation id="6442259747294754014">الوصول إلى ميكروفون الجهاز غير مفعَّل.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">‏وحدة المعالجة المركزية (CPU)</translation>
 <translation id="6446225358675593408">البحث عن الصور حسب المحتوى</translation>
@@ -1470,7 +1466,6 @@
 <translation id="6912841030378044227">التركيز على شريط العناوين</translation>
 <translation id="6912901278692845878">جولة سريعة</translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
-<translation id="6920245099716267363">يمكنك تفعيل نقطة الاتصال أو إيقافها. نقطة الاتصال مفعَّلة، وهناك جهاز واحد متصل بها.</translation>
 <translation id="692135145298539227">حذف</translation>
 <translation id="6929081673585394903">عرض عناصر التحكّم</translation>
 <translation id="6931576957638141829">حفظ في</translation>
@@ -1567,7 +1562,6 @@
 <translation id="7378203170292176219">يُرجى السحب لتحديد منطقة لتسجيل فيديو لها.</translation>
 <translation id="7378594059915113390">عناصر التحكم في الوسائط</translation>
 <translation id="7378889811480108604">وضع "توفير شحن البطارية" غير مفعَّل.</translation>
-<translation id="7382640522316003298">يمكنك تفعيل نقطة الاتصال أو إيقافها. نقطة الاتصال مفعَّلة، ومتصل بها <ph name="DEVICECOUNT" /> جهاز.</translation>
 <translation id="7382680553121047388">مفعَّلة</translation>
 <translation id="7384028040782072252">انقر بزر الماوس الأيمن على أي مكان على الشاشة لإعادة ترتيب التطبيقات</translation>
 <translation id="7386767620098596324">إيقاف/تفعيل الاتصال بالشبكة: <ph name="STATE_TEXT" /></translation>
@@ -1737,7 +1731,6 @@
 <translation id="8036504271468642248">الجملة السابقة</translation>
 <translation id="8042893070933512245">فتح قائمة إعدادات "أدوات تمكين الوصول"</translation>
 <translation id="8044457332620420407">تم إيقاف الإضاءة الخلفية للوحة المفاتيح.</translation>
-<translation id="8048077032188362328">أوقَف المشرف نقطة الاتصال.</translation>
 <translation id="8048123526339889627">إعدادات البلوتوث</translation>
 <translation id="8051716679295756675">سبق وأن تم إدخال نموذج باسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
@@ -1758,7 +1751,6 @@
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8131994907636310308">إغلاق الإشعار المنبثق لترتيب التطبيقات</translation>
 <translation id="8132793192354020517">تم الاتصال بالموقع <ph name="NAME" /></translation>
-<translation id="8135163608236671037">يمكنك تفعيل نقطة الاتصال أو إيقافها. نقطة الاتصال مفعَّلة، وما مِن أجهزة متصلة بها.</translation>
 <translation id="8138705869659070104">يمكنك التفعيل بعد إعداد جهازك</translation>
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8142441511840089262">النقر مرّتين</translation>

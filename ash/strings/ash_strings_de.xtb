@@ -210,7 +210,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1787955149152357925">Aus</translation>
 <translation id="1796561540704213354">Websites, einschließlich besuchter und derzeit geöffneter Seiten</translation>
 <translation id="181103072419391116">Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
-<translation id="1815245884418711390">Hotspot ein-/ausschalten. Hotspot ist deaktiviert.</translation>
 <translation id="1816896987747843206">Dies erlaubt den Kamerazugriff für alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="1823280932251546115">Statusleiste, Uhrzeit <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -972,7 +971,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4936329710968938986">Alle, aus</translation>
 <translation id="4937170330762390348">Mit der Spracheingabe kannst du Text diktieren. Drücke die Spracheingabetaste oder wähle das Mikrofonsymbol unten auf dem Bildschirm aus, wenn du dich in einem Textfeld befindest. Deine Spracheingabesprache ist auf <ph name="LANGUAGE" /> festgelegt. Sprachdateien werden heruntergeladen, damit du die Spracheingabe offline verwenden kannst. Du kannst die Sprache der Spracheingabe jederzeit unter „Einstellungen“ &gt; „Bedienungshilfen“ ändern.</translation>
 <translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
-<translation id="4943007472417128747">Der Hotspot wurde deaktiviert, um das WLAN zu verwenden. Deaktiviere das WLAN, wenn du den Hotspot verwenden möchtest.</translation>
 <translation id="4945196315133970626">Benachrichtigungen deaktivieren</translation>
 <translation id="4946376291507881335">Aufnahme</translation>
 <translation id="495046168593986294">Nach oben scrollen</translation>
@@ -993,7 +991,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5009463889040999939">Profil wird umbenannt. Das kann einige Minuten dauern.</translation>
 <translation id="5016558321564993266">Filzstift aktivieren oder deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Suchkategorien</translation>
-<translation id="5029356738310729434">Gerätemikrofonzugriff ist aktiviert</translation>
 <translation id="5030659775136592441">Lesezeichenmanager einblenden</translation>
 <translation id="5030687792513154421">Die Zeit ist abgelaufen</translation>
 <translation id="5033299697334913360">Auf eine beliebige Stelle klicken, um den ganzen Bildschirm aufzuzeichnen</translation>
@@ -1338,7 +1335,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="643147933154517414">Fertig</translation>
 <translation id="6431865393913628856">Bildschirm aufzeichnen</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> von insgesamt <ph name="STORAGE_TOTAL_SIZE" /> Speicherplatz belegt</translation>
-<translation id="6442259747294754014">Gerätemikrofonzugriff ist deaktiviert</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">Bildersuche nach Bildinhalt</translation>
@@ -1464,7 +1460,6 @@ Neuinstallation</translation>
 <translation id="6912841030378044227">Fokus auf Adressleiste</translation>
 <translation id="6912901278692845878">Kurze Einführung</translation>
 <translation id="6919251195245069855">Deine Smartcard wurde nicht erkannt. Bitte versuche es noch einmal.</translation>
-<translation id="6920245099716267363">Hotspot ein-/ausschalten. Hotspot ist aktiviert, 1 Gerät ist verbunden.</translation>
 <translation id="692135145298539227">löschen</translation>
 <translation id="6929081673585394903">Steuerelemente einblenden</translation>
 <translation id="6931576957638141829">Speichern unter</translation>
@@ -1560,7 +1555,6 @@ Neuinstallation</translation>
 <translation id="7378203170292176219">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
 <translation id="7378594059915113390">Mediensteuerelemente</translation>
 <translation id="7378889811480108604">Energiesparmodus ist deaktiviert</translation>
-<translation id="7382640522316003298">Hotspot ein-/ausschalten. Hotspot ist aktiviert, <ph name="DEVICECOUNT" /> Geräte sind verbunden.</translation>
 <translation id="7382680553121047388">An</translation>
 <translation id="7384028040782072252">An einer beliebigen Stelle rechtsklicken, um Apps neu zu sortieren</translation>
 <translation id="7386767620098596324">Netzwerkverbindung aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
@@ -1730,7 +1724,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8036504271468642248">Vorheriger Satz</translation>
 <translation id="8042893070933512245">Menü "Bedienungshilfen" öffnen</translation>
 <translation id="8044457332620420407">Hintergrundbeleuchtung der Tastatur ist aus</translation>
-<translation id="8048077032188362328">Dein Administrator hat die Hotspotfunktion deaktiviert.</translation>
 <translation id="8048123526339889627">Bluetooth-Einstellungen</translation>
 <translation id="8051716679295756675">Eine Vorlage namens „<ph name="DESK_TEMPLATE_NAME" />“ ist bereits vorhanden</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
@@ -1751,7 +1744,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8131994907636310308">Toast für Sortierung schließen</translation>
 <translation id="8132793192354020517">Verbunden mit <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Hotspot ein-/ausschalten. Hotspot ist aktiviert, es ist kein Gerät verbunden.</translation>
 <translation id="8138705869659070104">Nach Einrichtung aktivieren</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8142441511840089262">Doppelklick</translation>

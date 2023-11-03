@@ -1874,6 +1874,7 @@
 <translation id="2428978615149723410">այս զամբյուղները</translation>
 <translation id="2431027948063157455">Չհաջողվեց բեռնել Google Օգնականը։ Ստուգեք կապն ու նորից փորձեք։</translation>
 <translation id="243179355394256322">Ձեր կազմակերպությունում սարքեր կարող են գրանցել միայն այն օգտատերերը, որոնք ունեն համապատասխան թույլտվություն։ Այս օգտատերը սարքեր գրանցելու թույլտվություն չունի։ Անցեք ադմինիստրատորի վահանակ և «Օգտատերեր» բաժնում տվյալ օգտատիրոջը տվեք ադմինիստրատորի «Գրանցել ծրագրակազմ Google Meet-ի համար» թույլտվություն։</translation>
+<translation id="243275146591958220">Չեղարկել ներբեռնումը</translation>
 <translation id="2433452467737464329">Ավելացրեք URL-ում հարցման հարաչափ էջի ինքնաթարմացման համար՝ chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Արտաքին տեսք</translation>
 <translation id="2433836460518180625">Միայն ապակողպել սարքը</translation>
@@ -9055,7 +9056,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />։ Տպիչ <ph name="ITEM_POSITION" />՝ <ph name="NUM_PRINTERS" />-ից։</translation>
 <translation id="8180785270975217276">Էներգիայի տնտեսումը միացված է</translation>
 <translation id="8180786512391440389">«<ph name="EXTENSION" />» ընդլայնումը կարող է նշված պանակներում կարդալ և ջնջել պատկերները, տեսանյութերը և ձայնային ֆայլերը:</translation>
-<translation id="8180826593917851025">Կարգավորել <ph name="DEVICE_TYPE" />-ի թեժ կետ</translation>
 <translation id="8181215761849004992">Չհաջողվեց միանալ տիրույթին: Ստուգեք ձեր հաշիվը՝ համոզվելու, որ սարքեր ավելացնելու արտոնություններ ունեք:</translation>
 <translation id="8182105986296479640">Հավելվածը չի արձագանքում:</translation>
 <translation id="8182412589359523143">Այս <ph name="DEVICE_TYPE" /> սարքի բոլոր տվյալները ջնջելու համար <ph name="BEGIN_LINK" />սեղմեք այստեղ<ph name="END_LINK" />։</translation>
@@ -10053,6 +10053,7 @@
 <translation id="8968527460726243404">ChromeOS Համակարգային պատկերի գրիչ</translation>
 <translation id="8968766641738584599">Պահել քարտը</translation>
 <translation id="8968906873893164556">Ընտրեք հաշիվը, որը կօգտագործվի կարգավորման համար</translation>
+<translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Ճշտեք ձեր ցանցի ադմինիստրատորից՝ արդյոք հրապատը չի արգելափակում ներբեռնումները Google սերվերներից:</translation>
 <translation id="8973263196882835828">&amp;Միացնել Կենդանի ենթագրերը</translation>

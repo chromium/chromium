@@ -1875,6 +1875,7 @@
 <translation id="2428978615149723410">รถเข็นเหล่านี้</translation>
 <translation id="2431027948063157455">โหลด Google Assistant ไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายและลองอีกครั้ง</translation>
 <translation id="243179355394256322">องค์กรของคุณจำกัดการลงทะเบียนอุปกรณ์ไว้สำหรับผู้ใช้ที่ได้รับอนุญาตเท่านั้น ผู้ใช้รายนี้ไม่ได้รับอนุญาตให้ลงทะเบียนอุปกรณ์ โปรดตรวจสอบว่าผู้ใช้มีสิทธิ์ของผู้ดูแลระบบในการ "ลงทะเบียนฮาร์ดแวร์ของ Google Meet" ในส่วน "ผู้ใช้" ของคอนโซลผู้ดูแลระบบ</translation>
+<translation id="243275146591958220">ยกเลิกการดาวน์โหลด</translation>
 <translation id="2433452467737464329">เพิ่มพารามิเตอร์ข้อความค้นหาใน URL เพื่อรีเฟรชหน้าอัตโนมัติ: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">ลักษณะที่ปรากฏ</translation>
 <translation id="2433836460518180625">ปลดล็อกอุปกรณ์เท่านั้น</translation>
@@ -9005,6 +9006,7 @@
 <translation id="81238879832906896">ดอกไม้สีเหลืองแซมขาว</translation>
 <translation id="8123975449645947908">เลื่อนไปข้างหลัง</translation>
 <translation id="8124313775439841391">ONC ที่มีการจัดการ</translation>
+<translation id="8125651784723647184">การแชร์รหัสผ่านจัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8129265306888404830">หากต้องการใช้อีเมลจากองค์กร (<ph name="EMAIL_DOMAIN" />) คุณต้องใช้การลงทะเบียนองค์กร หากอุปกรณ์นี้มีไว้เพื่อใช้งานส่วนบุคคล ให้ลงชื่อเข้าใช้ด้วยบัญชี Google ส่วนบุคคล</translation>
 <translation id="813082847718468539">ดูข้อมูลเว็บไซต์</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
@@ -9071,7 +9073,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" /> เครื่องพิมพ์ที่ <ph name="ITEM_POSITION" /> จาก <ph name="NUM_PRINTERS" /></translation>
 <translation id="8180785270975217276">เปิดโหมดประหยัดพลังงานแล้ว</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" สามารถอ่านและลบรูปภาพ วิดีโอ และไฟล์เสียงในตำแหน่งที่เลือก</translation>
-<translation id="8180826593917851025">กําหนดค่าฮอตสปอต <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">เข้าร่วมโดเมนไม่ได้ ตรวจสอบบัญชีว่าคุณมีสิทธิ์เพียงพอที่จะเพิ่มอุปกรณ์ไหม</translation>
 <translation id="8182105986296479640">แอปพลิเคชันไม่ตอบสนอง</translation>
 <translation id="8182412589359523143">หากต้องการลบข้อมูลทั้งหมดจาก <ph name="DEVICE_TYPE" /> นี้ ให้<ph name="BEGIN_LINK" />คลิกที่นี่<ph name="END_LINK" /></translation>
@@ -10069,6 +10070,7 @@
 <translation id="8968527460726243404">ตัวเขียนอิมเมจระบบ ChromeOS</translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
 <translation id="8968906873893164556">เลือกบัญชีที่จะใช้สำหรับการตั้งค่า</translation>
+<translation id="8970887620466824814">มีบางอย่างผิดพลาด</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">โปรดตรวจสอบกับผู้ดูแลระบบเครือข่ายของคุณเพื่อให้แน่ใจว่าไฟร์วอลล์ไม่ได้บล็อกการดาวน์โหลดจากเซิร์ฟเวอร์ของ Google</translation>
 <translation id="8973263196882835828">&amp;เปิดใช้คำบรรยายสด</translation>

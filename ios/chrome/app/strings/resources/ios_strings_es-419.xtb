@@ -521,6 +521,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="371230970611282515">Predice y te advierte sobre eventos peligrosos antes de que ocurran.</translation>
 <translation id="371398631992790800">Ocultar la opción Favoritos</translation>
 <translation id="37207012422556617">Tendencias de búsquedas</translation>
+<translation id="3725081662140949903">Si quieres evitar que otras personas usen tu contraseña, abre la app de <ph name="APP" /> para cambiarla</translation>
 <translation id="3740397331642243698">Abre las URL ingresadas en Google Chrome en modo Incógnito.</translation>
 <translation id="374357899112510277">Ocultar la opción Descargas</translation>
 <translation id="3745190878148784130">Ocultar la opción Hacer zoom en el texto</translation>
@@ -622,7 +623,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
-<translation id="430967081421617822">Todo el tiempo</translation>
+<translation id="430967081421617822">Desde el inicio</translation>
 <translation id="4331177082088332784">Puedes administrar esto en la BEGIN_LINK Configuración de contenido END_LINK</translation>
 <translation id="4334428914252001502">1 artículo sin leer.</translation>
 <translation id="4338650699862464074">Envía a Google las URLs de las páginas que visitas.</translation>
@@ -637,6 +638,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4389019817280890563">Presiona aquí para cambiar el idioma.</translation>
 <translation id="4405320213589929829">Usa direcciones en páginas web para obtener información local además de instrucciones sobre cómo llegar</translation>
 <translation id="4420409367264901497">Editar favorito</translation>
+<translation id="4431224949908513835">Selecciona una forma de pago para completarla.</translation>
 <translation id="4442550905108052454">Abre la <ph name="BEGIN_BOLD" />Configuración<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Agregar idioma</translation>
 <translation id="4461286950227634995">Ofrecer guardar contraseñas</translation>
@@ -1190,6 +1192,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7221173315674413369">Explora nuevas funciones y sugerencias en Novedades</translation>
 <translation id="7223102419539744003">Cerrar pestaña</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
+<translation id="7233006041370588369">Selecciona una contraseña para completarla.</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{Nuevo seguimiento de paquete}other{Nuevos seguimientos de paquete}}</translation>

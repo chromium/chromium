@@ -212,7 +212,6 @@
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1796561540704213354">เว็บไซต์จะรวมหน้าเว็บที่คุณเคยเข้าชมและหน้าเว็บที่เคยเปิด</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
-<translation id="1815245884418711390">เปิด/ปิดฮอตสปอต ฮอตสปอตปิดอยู่</translation>
 <translation id="1816896987747843206">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="1823280932251546115">ถาดสถานะ เวลา <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -565,6 +564,7 @@
 <translation id="3340978935015468852">การตั้งค่า</translation>
 <translation id="3341303451326249809">จับภาพหน้าจอแล้ว</translation>
 <translation id="334252345105450327">จับภาพหน้าจอ</translation>
+<translation id="3346728094401457853">ป้อนรหัสผ่านของอุปกรณ์สำหรับ <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">เลือกข้อความจากเคอร์เซอร์ไปจนถึงท้ายบรรทัด</translation>
 <translation id="3349345708646875009">เปิดตัวจัดการงาน</translation>
 <translation id="3364721542077212959">เครื่องมือสไตลัส</translation>
@@ -972,7 +972,6 @@
 <translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4937170330762390348">ฟีเจอร์การพิมพ์ตามคำบอกช่วยให้คุณพิมพ์ด้วยเสียงได้ กดแป้นให้พิมพ์ตามคำบอกหรือเลือกไอคอนไมโครโฟนที่ด้านล่างของหน้าจอเมื่อคุณอยู่ในช่องข้อความ ภาษาสำหรับการพิมพ์ตามคำบอกตั้งค่าเป็น<ph name="LANGUAGE" /> จะมีการดาวน์โหลดไฟล์คำพูดเพื่อให้คุณใช้การพิมพ์ตามคำบอกแบบออฟไลน์ได้ คุณเปลี่ยนภาษาสำหรับการพิมพ์ตามคำบอกได้ทุกเมื่อในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
-<translation id="4943007472417128747">ปิดฮอตสปอตเพื่อใช้ Wi-Fi แล้ว หากต้องการใช้ฮอตสปอต ให้ปิด Wi-Fi</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
@@ -993,7 +992,6 @@
 <translation id="5009463889040999939">กำลังเปลี่ยนชื่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="5016558321564993266">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">หมวดหมู่การค้นหา</translation>
-<translation id="5029356738310729434">การเข้าถึงไมโครโฟนของอุปกรณ์เปิดอยู่</translation>
 <translation id="5030659775136592441">แสดงการจัดการบุ๊กมาร์ก</translation>
 <translation id="5030687792513154421">หมดเวลา</translation>
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
@@ -1339,7 +1337,6 @@
 <translation id="643147933154517414">เสร็จเรียบร้อย</translation>
 <translation id="6431865393913628856">บันทึกหน้าจอ</translation>
 <translation id="643593192654616063">กำลังใช้พื้นที่เก็บข้อมูล <ph name="STORAGE_IN_USE_SIZE" /> จากทั้งหมด <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">การเข้าถึงไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">ค้นหารูปภาพตามเนื้อหา</translation>
@@ -1465,7 +1462,6 @@
 <translation id="6912841030378044227">โฟกัสแถบที่อยู่</translation>
 <translation id="6912901278692845878">การแนะนำสั้นๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
-<translation id="6920245099716267363">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ 1 เครื่อง</translation>
 <translation id="692135145298539227">นำออก</translation>
 <translation id="6929081673585394903">แสดงการควบคุม</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
@@ -1561,7 +1557,6 @@
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>
 <translation id="7378889811480108604">โหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
-<translation id="7382640522316003298">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ <ph name="DEVICECOUNT" /> เครื่อง</translation>
 <translation id="7382680553121047388">เปิด</translation>
 <translation id="7384028040782072252">คลิกขวาที่ใดก็ได้เพื่อเรียงลำดับแอปใหม่</translation>
 <translation id="7386767620098596324">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
@@ -1585,6 +1580,7 @@
 <translation id="7489261257412536105">เข้าหรือออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="7490360161041035804">คุณปักหมุดไฟล์ที่สำคัญ รวมถึงไฟล์ใน Google ไดรฟ์ได้ หากต้องการปักหมุด ให้วางเมาส์เหนือรายการหรือเปิด Files และคลิกขวาที่รายการ</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
+<translation id="7507162824403726948">ยืนยันตัวตนให้เสร็จสิ้น</translation>
 <translation id="7508690557411636492">เปิดในเดือนที่ผ่านมา</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7512509370370076552">อัปเดตแป้นพิมพ์ลัดสำหรับการคลิกขวาจาก Alt + คลิกเป็นแป้น <ph name="LAUNCHER_KEY_NAME" /> + คลิกแล้ว</translation>
@@ -1731,7 +1727,6 @@
 <translation id="8036504271468642248">ประโยคก่อนหน้า</translation>
 <translation id="8042893070933512245">เปิดเมนูการตั้งค่าการช่วยเหลือพิเศษ</translation>
 <translation id="8044457332620420407">ไฟแบ็กไลต์ของแป้นพิมพ์ปิดอยู่</translation>
-<translation id="8048077032188362328">ผู้ดูแลระบบของคุณได้ปิดฮอตสปอตไว้</translation>
 <translation id="8048123526339889627">การตั้งค่าบลูทูธ</translation>
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
@@ -1752,7 +1747,6 @@
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8131994907636310308">ปิดข้อความโทสต์การจัดเรียง</translation>
 <translation id="8132793192354020517">เชื่อมต่อกับ <ph name="NAME" /></translation>
-<translation id="8135163608236671037">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ ไม่มีอุปกรณ์ใดเชื่อมต่อ</translation>
 <translation id="8138705869659070104">เปิดใช้งานหลังตั้งค่าอุปกรณ์</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8142441511840089262">ดับเบิลคลิก</translation>

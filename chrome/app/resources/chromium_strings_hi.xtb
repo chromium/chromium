@@ -21,6 +21,7 @@
 <translation id="1342274909142618978">Chromium (<ph name="URL" />) से भी डेटा मिटाएं</translation>
 <translation id="1414495520565016063">आप क्रोमियम में प्रवेश हैं!</translation>
 <translation id="1478370723027452770">Chrome for Testing से जुड़ी सहायता पाएं</translation>
+<translation id="1497802159252041924">इंस्टॉल करने में गड़बड़ी: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">क्रोमियम का टैब शेयर करें</translation>
 <translation id="1553461853655228091">क्रोमियम को आपके आस-पास की जगह का 3D मैप बनाने के लिए, कैमरा ऐक्सेस करने की अनुमति चाहिए</translation>
 <translation id="1574377791422810894">Chromium के सुरक्षा टूल</translation>
@@ -155,11 +156,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> इस Chromium प्रोफ़ाइल में पहले से साइन इन है. आपकी निजी ब्राउज़िंग के लिए, Chromium आपकी खुद की प्रोफ़ाइल बना सकता है.</translation>
 <translation id="3909353120217047026">यह एक्सटेंशन, Chrome Web Store की नीति का उल्लंघन करता है और यह खतरनाक हो सकता है. इसे Chromium से हटाएं, ताकि यह उन साइटों का डेटा न देख सके और न उसमें बदलाव कर सके जिन पर विज़िट किया जाता है. इस डेटा में आपकी निजी जानकारी भी शामिल है.</translation>
 <translation id="391789666908693569">आपके खाते को <ph name="MANAGER_NAME" /> मैनेज करता है. आपका एडमिन, इस Chromium ब्राउज़र पर प्रोफ़ाइल और उसके डेटा, जैसे कि बुकमार्क, इतिहास, और पासवर्ड को देख सकता है और उसमें बदलाव कर सकता है.</translation>
+<translation id="3922825997980843979">आपके टाइप करते ही, Chromium पता बार या खोज बॉक्स के कॉन्टेंट को आपके डिफ़ॉल्ट सर्च इंजन को भेज देता है</translation>
 <translation id="3945058413678539331">क्रोमियम, पासवर्ड कॉपी करने की कोशिश कर रहा है. इसकी अनुमति देने के लिए Windows का पासवर्ड डालें.</translation>
 <translation id="3962647064319009959">जानें कि Chromium आपको इंटरनेट पर कैसे सुरक्षित रखता है</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing के बारे में जानकारी</translation>
 <translation id="3997429360543082038">ChromiumOS के बारे में जानकारी</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux डेवलपमेंट एनवायरमेंट<ph name="END_LINK_LINUX_OSS" /> की तरह, ChromiumOS को भी अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
+<translation id="4028143804911941282">इस सुविधा के बंद होने पर भी, आपको वे सुझाव दिखेंगे जो Chromium स्थानीय तौर पर उपलब्ध कराता है</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />अभी वाली सेटिंग<ph name="END_LINK" /> की रिपोर्ट करके क्रोमियम को बेहतर बनाने में सहायता करें</translation>
 <translation id="4050175100176540509">महत्‍वपूर्ण सुरक्षा सुधार और नई सुविधाएं नवीनतम वर्शन में उपलब्‍ध हैं.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
@@ -251,6 +254,7 @@
 <translation id="6003112304606738118">डाउनलोड हो रहा है... <ph name="HOURS" /> घंटे बचे हैं</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6055895534982063517">क्रोमियम का एक नया वर्शन उपलब्ध है और यह पहले से ज़्यादा तेज़ है.</translation>
+<translation id="6058380562449900225">आपके डेटा की सुरक्षा के लिए, Chromium को उन साइटों को मिली हुई अनुमतियां हटाने दें जिन पर आपने हाल ही में विज़िट नहीं किया है. इससे सूचनाएं पाने की सुविधा बंद नहीं होती.</translation>
 <translation id="6063093106622310249">&amp;क्रोमियम में खोलें</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> को क्रोमियम में जोड़ा गया</translation>
 <translation id="6072463441809498330">Chromium को ज़्यादा तेज़ बनाएं</translation>

@@ -211,7 +211,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1787955149152357925">Uit</translation>
 <translation id="1796561540704213354">Websites, waaronder pagina's die je hebt bezocht en geopende pagina's</translation>
 <translation id="181103072419391116">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
-<translation id="1815245884418711390">Zet de hotspot aan/uit. Hotspot staat uit.</translation>
 <translation id="1816896987747843206">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="1823280932251546115">Statusvak, tijd <ph name="TIME" />,
 <ph name="BATTERY" />
@@ -563,6 +562,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3340978935015468852">instellingen</translation>
 <translation id="3341303451326249809">Screenshot gemaakt</translation>
 <translation id="334252345105450327">Een screenshot maken</translation>
+<translation id="3346728094401457853">Voer het apparaatwachtwoord in voor <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Tekst vanaf cursor tot het einde van de regel selecteren</translation>
 <translation id="3349345708646875009">Taakbeheer openen</translation>
 <translation id="3364721542077212959">Stylustools</translation>
@@ -975,7 +975,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4936329710968938986">Iedereen, uit</translation>
 <translation id="4937170330762390348">Met dicteren kun je typen met je stem. Druk op de dicteertoets of selecteer het microfoontje onderaan het scherm in een tekstveld. Je dicteertaal is ingesteld op <ph name="LANGUAGE" />. Spraakbestanden worden gedownload zodat je dicteren offline kunt gebruiken. Je kunt de dicteertaal op elk moment wijzigen via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
-<translation id="4943007472417128747">De hotspot is uitgezet om wifi te gebruiken. Zet wifi uit om de hotspot te gebruiken.</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
@@ -996,7 +995,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5009463889040999939">Naam van profiel wijzigen. Dit kan een paar minuten duren.</translation>
 <translation id="5016558321564993266">Stift aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Zoekcategorieën</translation>
-<translation id="5029356738310729434">Microfoontoegang voor apparaat staat aan</translation>
 <translation id="5030659775136592441">Bookmarkmanager bekijken</translation>
 <translation id="5030687792513154421">De tijd is voorbij</translation>
 <translation id="5033299697334913360">Klik ergens om een opname van het volledige scherm te maken</translation>
@@ -1342,7 +1340,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="643147933154517414">Klaar</translation>
 <translation id="6431865393913628856">Schermopname</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> opslag van in totaal <ph name="STORAGE_TOTAL_SIZE" /> in gebruik</translation>
-<translation id="6442259747294754014">Microfoontoegang voor apparaat staat uit</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Je afbeeldingen zoeken op basis van de content</translation>
@@ -1468,7 +1465,6 @@ Nieuwe installatie</translation>
 <translation id="6912841030378044227">Focus op adresbalk</translation>
 <translation id="6912901278692845878">Korte rondleiding</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
-<translation id="6920245099716267363">Zet de hotspot aan/uit. Hotspot staat aan: 1 apparaat verbonden.</translation>
 <translation id="692135145298539227">verwijderen</translation>
 <translation id="6929081673585394903">Bedieningselementen tonen</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
@@ -1564,7 +1560,6 @@ Nieuwe installatie</translation>
 <translation id="7378203170292176219">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
 <translation id="7378594059915113390">Mediabediening</translation>
 <translation id="7378889811480108604">Batterijbesparing staat uit</translation>
-<translation id="7382640522316003298">Zet de hotspot aan/uit. Hotspot staat aan: <ph name="DEVICECOUNT" /> apparaten verbonden.</translation>
 <translation id="7382680553121047388">Aan</translation>
 <translation id="7384028040782072252">Klik ergens met de rechtermuisknop om je apps opnieuw te ordenen</translation>
 <translation id="7386767620098596324">Netwerkverbinding aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1583,7 @@ Nieuwe installatie</translation>
 <translation id="7489261257412536105">Volledig scherm openen of sluiten</translation>
 <translation id="7490360161041035804">Je kunt belangrijke bestanden vastzetten, waaronder Google Drive-bestanden. Als je een item wilt vastzetten, plaats je de cursor op het item of open je Bestanden en klik je met de rechtermuisknop op het item.</translation>
 <translation id="7497767806359279797">Taal en toetsenbord kiezen</translation>
+<translation id="7507162824403726948">De verificatie van je identiteit afronden</translation>
 <translation id="7508690557411636492">Geopend in de afgelopen maand</translation>
 <translation id="7509246181739783082">Je identiteit verifiëren</translation>
 <translation id="7512509370370076552">De sneltoets voor klikken met de rechtermuisknop is geüpdatet van alt + klikken naar <ph name="LAUNCHER_KEY_NAME" />-toets + klikken</translation>
@@ -1734,7 +1730,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8036504271468642248">Vorige zin</translation>
 <translation id="8042893070933512245">Menu met toegankelijkheidsinstellingen openen</translation>
 <translation id="8044457332620420407">Achtergrondverlichting van toetsenbord staat uit</translation>
-<translation id="8048077032188362328">Je beheerder heeft de hotspot uitgezet.</translation>
 <translation id="8048123526339889627">Bluetooth-instellingen</translation>
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>
@@ -1755,7 +1750,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8131994907636310308">Sorteertoast sluiten</translation>
 <translation id="8132793192354020517">Verbonden met <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Zet de hotspot aan/uit. Hotspot staat aan: geen apparaat verbonden.</translation>
 <translation id="8138705869659070104">Activeren na apparaatinstelling</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>

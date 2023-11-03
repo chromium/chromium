@@ -211,7 +211,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="1796561540704213354">Verkkosivustot, esimerkiksi aiemmin avaamasi sivut ja avoinna olevat sivut</translation>
 <translation id="181103072419391116">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
-<translation id="1815245884418711390">Laita hotspot päälle tai pois päältä. Hotspot on pois päältä.</translation>
 <translation id="1816896987747843206">Sallii kameran käytön kaikille sovelluksille ja verkkosivustoille, joilla on kameralupa</translation>
 <translation id="1823280932251546115">Tila-alue, aika <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -975,7 +974,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4936329710968938986">Kaikki, pois päältä</translation>
 <translation id="4937170330762390348">Kun käytät sanelua, voit kirjoittaa puhumalla. Paina sanelunäppäintä tai valitse mikrofonikuvake näytön alareunasta, kun olet tekstikentässä. Sanelukieleksi on asetettu <ph name="LANGUAGE" />. Puhetiedostot ladataan, jotta voit käyttää sanelua offline-tilassa. Voit muuttaa sanelukieltä milloin tahansa valitsemalla Asetukset &gt; Saavutettavuus.</translation>
 <translation id="4938176435186993759">Piilota kaikki ehdotukset</translation>
-<translation id="4943007472417128747">Hotspot on laitettu pois päältä, jotta voit käyttää Wi-Fi-yhteyttä. Jos haluat käyttää hotspotia, laita Wi-Fi pois päältä.</translation>
 <translation id="4945196315133970626">Laita ilmoitukset pois päältä</translation>
 <translation id="4946376291507881335">Kuvakaappaus</translation>
 <translation id="495046168593986294">Vieritä ylös</translation>
@@ -996,7 +994,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="5009463889040999939">Nimetään profiilia uudelleen. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="5016558321564993266">Piirtotyökalu päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Hakukategoriat</translation>
-<translation id="5029356738310729434">Pääsy laitteen mikrofoniin on päällä</translation>
 <translation id="5030659775136592441">Näytä kirjainmerkkien hallinta</translation>
 <translation id="5030687792513154421">Aika on lopussa</translation>
 <translation id="5033299697334913360">Ota koko ruudun kuvakaappaus klikkaamalla minne tahansa</translation>
@@ -1342,7 +1339,6 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="643147933154517414">Valmis</translation>
 <translation id="6431865393913628856">Näytön tallennus</translation>
 <translation id="643593192654616063">Tallennustilaa on käytössä <ph name="STORAGE_IN_USE_SIZE" />/<ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Pääsy laitteen mikrofoniin on pois päältä</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Hae kuvia sisällön perusteella</translation>
@@ -1468,7 +1464,6 @@ Uusi asennus</translation>
 <translation id="6912841030378044227">Tarkenna osoitepalkkiin</translation>
 <translation id="6912901278692845878">Pikaesittely</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
-<translation id="6920245099716267363">Laita hotspot päälle tai pois päältä. Hotspot on päällä ja siihen on yhdistetty yksi laite.</translation>
 <translation id="692135145298539227">poista</translation>
 <translation id="6929081673585394903">Näytä säätimet</translation>
 <translation id="6931576957638141829">Tallennuspaikka:</translation>
@@ -1564,7 +1559,6 @@ Uusi asennus</translation>
 <translation id="7378203170292176219">Valitse tallennettava alue vetämällä</translation>
 <translation id="7378594059915113390">Mediaohjaimet</translation>
 <translation id="7378889811480108604">Virransäästötila on poissa päältä</translation>
-<translation id="7382640522316003298">Laita hotspot päälle tai pois päältä. Hotspot on päällä ja siihen on yhdistetty <ph name="DEVICECOUNT" /> laitetta.</translation>
 <translation id="7382680553121047388">Päällä</translation>
 <translation id="7384028040782072252">Järjestele sovellukset uudelleen klikkaamalla mitä tahansa kohtaa kakkospainikkeella</translation>
 <translation id="7386767620098596324">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1728,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8036504271468642248">Edellinen lause</translation>
 <translation id="8042893070933512245">Avaa Saavutettavuusasetukset-valikko</translation>
 <translation id="8044457332620420407">Näppäimistön taustavalo on poissa päältä</translation>
-<translation id="8048077032188362328">Järjestelmänvalvoja on laittanut hotspotin pois päältä.</translation>
 <translation id="8048123526339889627">Bluetooth-asetukset</translation>
 <translation id="8051716679295756675">Malli nimeltään <ph name="DESK_TEMPLATE_NAME" /> on jo olemassa</translation>
 <translation id="8052898407431791827">Kopioitu leikepöydälle</translation>
@@ -1755,7 +1748,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8131994907636310308">Sulje lajitteluilmoitus</translation>
 <translation id="8132793192354020517">Yhteys muodostettu verkkoon <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Laita hotspot päälle tai pois päältä. Hotspot on päällä, ei yhdistettyjä laitteita.</translation>
 <translation id="8138705869659070104">Aktivoi käyttöönoton jälkeen</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8142441511840089262">Kaksoisklikkaus</translation>

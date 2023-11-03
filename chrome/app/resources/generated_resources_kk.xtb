@@ -1869,6 +1869,7 @@
 <translation id="2428978615149723410">бұл себеттер</translation>
 <translation id="2431027948063157455">Google Assistant жүктелмеді, желі байланысын тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="243179355394256322">Ұйымда құрылғыларды рұқсат етілген пайдаланушылар ғана тіркей алады. Бұл пайдаланушыда құрылғыларды тіркеу рұқсаты жоқ. Оған Әкімші консолінің "Пайдаланушылар" бөлімінде "Google Meet жабдығын тіркеу" әкімші құқығының берілгенін тексеріңіз.</translation>
+<translation id="243275146591958220">Жүктеп алудан бас тарту</translation>
 <translation id="2433452467737464329">Келесі бетті автоматты түрде жаңарту үшін URL сілтемесіндегі сұрау параметрін қосыңыз: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Көрініс</translation>
 <translation id="2433836460518180625">Тек құрылғының құлпын ашу</translation>
@@ -8981,6 +8982,7 @@
 <translation id="81238879832906896">Сары және ақ гүл</translation>
 <translation id="8123975449645947908">Артқа айналдыру</translation>
 <translation id="8124313775439841391">Басқарылатын ONC</translation>
+<translation id="8125651784723647184">Құпия сөзді бөлісу әрекетін әкімші басқарады.</translation>
 <translation id="8129265306888404830">Ұйымның электрондық пошта мекенжайын (<ph name="EMAIL_DOMAIN" />) пайдалану үшін кәсіпорынды тіркеуді пайдалануыңыз керек. Бұл құрылғы жеке пайдалануыңызға арналған болса, жеке Google аккаунтыңызбен кіріңіз.</translation>
 <translation id="813082847718468539">Сайт ақпаратын көру</translation>
 <translation id="8131740175452115882">Растау</translation>
@@ -9047,7 +9049,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Принтер: <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Қуат үнемдеу режимі қосылды</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" белгіленген орындарда кескіндерді, бейнені және дыбыстық файлдарды оқи және жоя алады.</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> хотспотын конфигурациялау</translation>
 <translation id="8181215761849004992">Доменге қосылу мүмкін емес. Аккаунт мәліметтерін қарап, құрылғы енгізуге құқығыңыз бар-жоғын тексеріңіз.</translation>
 <translation id="8182105986296479640">Қолданба жауап бермейді.</translation>
 <translation id="8182412589359523143">Осы <ph name="DEVICE_TYPE" /> құрылғысындағы барлық деректі жою үшін <ph name="BEGIN_LINK" />осы жерді түртіңіз<ph name="END_LINK" />.</translation>
@@ -10044,6 +10045,7 @@
 <translation id="8968527460726243404">ChromeOS жүйесінің кескін жазу құралы</translation>
 <translation id="8968766641738584599">Картаны сақтау</translation>
 <translation id="8968906873893164556">Орнату үшін пайдаланылатын аккаунтты таңдаңыз</translation>
+<translation id="8970887620466824814">Бірдеңе дұрыс болмады.</translation>
 <translation id="89720367119469899">Шығу</translation>
 <translation id="8972513834460200407">Әкімшіге хабарласып, брандмауэр Google серверлерінен келген жүктеулерді бөгемейтінін тексеріңіз.</translation>
 <translation id="8973263196882835828">Live Caption функциясын қосу</translation>

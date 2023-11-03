@@ -211,7 +211,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
-<translation id="1815245884418711390">Kuumkoha sisse-/väljalülitamine. Kuumkoht on välja lülitatud.</translation>
 <translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1823280932251546115">Olekusalv, aeg <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -976,7 +975,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4936329710968938986">Kõik, väljas</translation>
 <translation id="4937170330762390348">Dikteerides saate hääle abil teksti sisestada. Kui tekstiväli on aktiveeritud, vajutage dikteerimisklahvi või valige ekraani allosas mikrofoni ikoon. Teie dikteerimiskeeleks on määratud <ph name="LANGUAGE" />. Kõnefailid laaditakse alla, et saaksite dikteerida võrguühenduseta. Dikteerimiskeelt võite igal ajal muuta menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="4938176435186993759">Peida kõik soovitused</translation>
-<translation id="4943007472417128747">Kuumkoht on WiFi kasutamiseks välja lülitatud. Kuumkoha kasutamiseks lülitage WiFi välja.</translation>
 <translation id="4945196315133970626">Märguannete väljalülitamine</translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
 <translation id="495046168593986294">Keri üles</translation>
@@ -997,7 +995,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5009463889040999939">Profiili nime muudetakse. See võib võtta mõne minuti.</translation>
 <translation id="5016558321564993266">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Otsingukategooriad</translation>
-<translation id="5029356738310729434">Juurdepääs seadme mikrofonile on sisse lülitatud</translation>
 <translation id="5030659775136592441">Kuvab järjehoidjate halduri</translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
 <translation id="5033299697334913360">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
@@ -1343,7 +1340,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="643147933154517414">Kõik on valmis</translation>
 <translation id="6431865393913628856">Ekraani salvestamine</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> salvestusruumi on kasutusel, kokku <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Juurdepääs seadme mikrofonile on välja lülitatud</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">protsessor</translation>
 <translation id="6446225358675593408">Piltide otsimine sisu järgi</translation>
@@ -1469,7 +1465,6 @@ Uus installimine</translation>
 <translation id="6912841030378044227">Keskenduge aadressiribale</translation>
 <translation id="6912901278692845878">Kiire tutvustus</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
-<translation id="6920245099716267363">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, 1 seade on ühendatud.</translation>
 <translation id="692135145298539227">Kustuta</translation>
 <translation id="6929081673585394903">Kuva juhtelemendid</translation>
 <translation id="6931576957638141829">Sihtkohta salvestamine</translation>
@@ -1565,7 +1560,6 @@ Uus installimine</translation>
 <translation id="7378203170292176219">Lohistage salvestatava piirkonna valimiseks</translation>
 <translation id="7378594059915113390">Meedia juhtnupud</translation>
 <translation id="7378889811480108604">Akusäästja režiim on välja lülitatud</translation>
-<translation id="7382640522316003298">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, <ph name="DEVICECOUNT" /> seadet on ühendatud.</translation>
 <translation id="7382680553121047388">Sees</translation>
 <translation id="7384028040782072252">Rakenduste järjestuse muutmiseks paremklõpsake kus tahes</translation>
 <translation id="7386767620098596324">Võrguühenduse sisse-/väljalülitamine. <ph name="STATE_TEXT" />.</translation>
@@ -1735,7 +1729,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8036504271468642248">Eelmine lause</translation>
 <translation id="8042893070933512245">Ava juurdepääsetavuse seadete menüü</translation>
 <translation id="8044457332620420407">Klaviatuuri taustavalgus on välja lülitatud</translation>
-<translation id="8048077032188362328">Teie administraator on kuumkoha välja lülitanud.</translation>
 <translation id="8048123526339889627">Bluetoothi seaded</translation>
 <translation id="8051716679295756675">Mall nimega <ph name="DESK_TEMPLATE_NAME" /> on juba olemas</translation>
 <translation id="8052898407431791827">Lõikelauale kopeeritud</translation>
@@ -1756,7 +1749,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8131994907636310308">Sulge sortimise teatis</translation>
 <translation id="8132793192354020517">Ühendus <ph name="NAME" />iga</translation>
-<translation id="8135163608236671037">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, ükski seade pole ühendatud.</translation>
 <translation id="8138705869659070104">Aktiveerige pärast seadme seadistust</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8142441511840089262">Topeltklikk</translation>

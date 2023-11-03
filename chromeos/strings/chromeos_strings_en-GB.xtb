@@ -189,6 +189,7 @@
 <translation id="2236746079896696523">Keyboard backlight toggle</translation>
 <translation id="2240366984605217732">Layout switch</translation>
 <translation id="225692081236532131">Activation status</translation>
+<translation id="2267285889943769271">Add screenshot</translation>
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2276999893457278469">Top help content</translation>
 <translation id="2279051792571591988">Restore defaults</translation>
@@ -432,6 +433,7 @@
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
+<translation id="4354430579665871434">key</translation>
 <translation id="435692326371619097">Manage network APN settings. APNs establish a connection between a mobile network and the Internet. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Reset all shortcuts</translation>
 <translation id="4378373042927530923">Not run</translation>

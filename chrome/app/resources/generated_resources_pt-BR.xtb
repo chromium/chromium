@@ -1891,6 +1891,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2428978615149723410">estes carrinhos</translation>
 <translation id="2431027948063157455">Não foi possível carregar o Google Assistente. Verifique sua conexão de rede e tente novamente.</translation>
 <translation id="243179355394256322">Sua organização limita o registro de dispositivos apenas a usuários autorizados. Este usuário não tem autorização para registrar dispositivos. Confira se ele tem o privilégio de administrador "Registrar hardware do Google Meet" na seção "Usuários" do Admin Console.</translation>
+<translation id="243275146591958220">Cancelar download</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aparência</translation>
 <translation id="2433836460518180625">Desbloquear somente dispositivo</translation>
@@ -9029,6 +9030,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8123975449645947908">Rolar para trás</translation>
 <translation id="8124313775439841391">ONC gerenciado</translation>
+<translation id="8125651784723647184">O compartilhamento de senhas é gerenciado pelo administrador</translation>
 <translation id="8129265306888404830">Para usar o endereço de e-mail da sua organização (<ph name="EMAIL_DOMAIN" />), você precisa do registro empresarial. Se este dispositivo for para uso pessoal, faça login com sua Conta do Google pessoal.</translation>
 <translation id="813082847718468539">Ver informações do site</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -9095,7 +9097,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />: <ph name="PRINTER_STATUS" />. Impressora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Economia de energia ativada</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" pode ​​ler e excluir imagens, vídeos e arquivos de som nos locais marcados.</translation>
-<translation id="8180826593917851025">Configurar o ponto de acesso do <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Não é possível vincular ao domínio. Confira na sua conta se você tem privilégios suficientes para adicionar dispositivos.</translation>
 <translation id="8182105986296479640">O app não está respondendo.</translation>
 <translation id="8182412589359523143">Para excluir todos os dados deste <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />clique aqui<ph name="END_LINK" />.</translation>
@@ -10094,6 +10095,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8968527460726243404">Gravador de imagem do sistema ChromeOS</translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
 <translation id="8968906873893164556">Escolher a conta a ser usada na configuração</translation>
+<translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Verifique com seu administrador de rede se o firewall não está bloqueando downloads dos servidores do Google.</translation>
 <translation id="8973263196882835828">&amp;Ativar a Legenda instantânea</translation>

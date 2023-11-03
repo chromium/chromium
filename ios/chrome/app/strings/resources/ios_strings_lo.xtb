@@ -521,6 +521,7 @@
 <translation id="371230970611282515">ຄາດເດົາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍກ່ອນທີ່ພວກມັນຈະເກີດຂຶ້ນ.</translation>
 <translation id="371398631992790800">ເຊື່ອງ Bookmarks</translation>
 <translation id="37207012422556617">ການຊອກຫາມາແຮງ</translation>
+<translation id="3725081662140949903">ເພື່ອຢຸດຄົນອື່ນບໍ່ໃຫ້ໃຊ້ລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ເປີດແອັບ <ph name="APP" /> ເພື່ອປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="3740397331642243698">ເປີດ URL ທີ່ປ້ອນເຂົ້າໃນ Google Chrome ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="374357899112510277">ເຊື່ອງການດາວໂຫຼດ</translation>
 <translation id="3745190878148784130">ເຊື່ອງ ຊູມຂໍ້ຄວາມ</translation>
@@ -637,6 +638,7 @@
 <translation id="4389019817280890563">ແຕະເພື່ອປ່ຽນພາສາ.</translation>
 <translation id="4405320213589929829">ໃຊ້ທີ່ຢູ່ຢູ່ໜ້າເວັບເພື່ອໂດຂໍ້ມູນ ແລະ ເສັ້ນທາງ.</translation>
 <translation id="4420409367264901497">ແກ້ໄຂບຸກມາກ</translation>
+<translation id="4431224949908513835">ເລືອກວິທີການຈ່າຍເງິນທີ່ຈະຕື່ມ.</translation>
 <translation id="4442550905108052454">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">ເພີ່ມພາສາ</translation>
 <translation id="4461286950227634995">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ</translation>
@@ -1190,6 +1192,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7221173315674413369">ສຳຫຼວດຄຸນສົມບັດ ແລະ ເຄັດລັບໃໝ່ໆໃນ ມີຫຍັງໃໝ່</translation>
 <translation id="7223102419539744003">ປິດແຖບ</translation>
 <translation id="722454870747268814">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
+<translation id="7233006041370588369">ເລືອກລະຫັດຜ່ານທີ່ຈະຕື່ມ.</translation>
 <translation id="7265758999917665941">ບໍ່ເລີຍສໍາລັບເວັບໄຊນີ້</translation>
 <translation id="7272437679830969316">ບໍ່ສາມາດພິສູດຢືນຢັນຕົວຕົນຂອງທ່ານໄດ້. ບໍ່ໄດ້ສຳເນົາລະຫັດຜ່ານ.</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{ຕິດຕາມພັດສະດຸໃໝ່ແລ້ວ}other{ຕິດຕາມພັດສະດຸໃໝ່ແລ້ວ}}</translation>

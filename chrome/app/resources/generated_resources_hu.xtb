@@ -1889,6 +1889,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2428978615149723410">ezek a bevásárlókocsik</translation>
 <translation id="2431027948063157455">A Google Segéd betöltése sikertelen volt. Ellenőrizze a hálózati kapcsolatot, majd próbálja újra.</translation>
 <translation id="243179355394256322">Szervezete csak a jogosult felhasználók számára engedélyezi az eszközregisztrációt. Ez a felhasználó nem jogosult eszközök regisztrációjára. A felhasználónak az „Enroll Google Meet hardware” (Google Meet-hardver regisztrációja) adminisztrátori jogosultsággal kell rendelkeznie a Felügyeleti Konzol Felhasználók szakaszában.</translation>
+<translation id="243275146591958220">Letöltés megszakítása</translation>
 <translation id="2433452467737464329">Adjon meg egy lekérdezési paramétert az URL-címben az oldal automatikus frissítéséhez: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Megjelenés</translation>
 <translation id="2433836460518180625">Feloldás csak az adott eszközzel</translation>
@@ -9090,7 +9091,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />/<ph name="ITEM_POSITION" />. nyomtató.</translation>
 <translation id="8180785270975217276">Az energiatakarékos mód be van kapcsolva</translation>
 <translation id="8180786512391440389">A(z) „<ph name="EXTENSION" />” olvashat és törölhet képeket, videókat és hangfájlokat a megjelölt helyeken.</translation>
-<translation id="8180826593917851025">A(z) <ph name="DEVICE_TYPE" /> hotspotjának konfigurálása</translation>
 <translation id="8181215761849004992">Nem sikerült a csatlakozás a domainhez. Ellenőrizze fiókját, hogy meggyőződhessen, elegendő jogosultsággal rendelkezik az eszközök hozzáadásához.</translation>
 <translation id="8182105986296479640">Az alkalmazás nem válaszol.</translation>
 <translation id="8182412589359523143">Ha szeretné az összes adatot törölni erről az eszközről (<ph name="DEVICE_TYPE" />), <ph name="BEGIN_LINK" />kattintson ide<ph name="END_LINK" />.</translation>
@@ -10088,6 +10088,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
 <translation id="8968766641738584599">Kártya mentése</translation>
 <translation id="8968906873893164556">Válassza ki a beállításhoz használni kívánt fiókot</translation>
+<translation id="8970887620466824814">Hiba történt.</translation>
 <translation id="89720367119469899">Vezérlő</translation>
 <translation id="8972513834460200407">Kérdezze meg a hálózati rendszergazdától, hogy a tűzfal nem tiltja-e le a Google szervereiről érkező letöltéseket.</translation>
 <translation id="8973263196882835828">Az Élő feliratozás &amp;bekapcsolása</translation>

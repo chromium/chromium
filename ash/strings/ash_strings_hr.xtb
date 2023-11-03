@@ -116,6 +116,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Za kretanje od jednog do drugog datuma koristite tipke sa strelicama.</translation>
+<translation id="141170878022560212">Srednji gumb</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, instalirana aplikacija</translation>
 <translation id="1414919006379339073">Zatvaranje trenutačnog prozora</translation>
 <translation id="1415846719612499304">Prikažite popis mreža. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Web-lokacije uključujući stranice koje ste posjetili i otvorene stranice</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
-<translation id="1815245884418711390">Prebacite žarišnu točku. Žarišna je točka isključena.</translation>
 <translation id="1816896987747843206">To omogućuje pristup kameri za sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="1823280932251546115">Traka statusa, vrijeme <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2086334242442703436">Otvaranje alata za odabir emojija</translation>
 <translation id="2088116547584365419">igre</translation>
 <translation id="209965399369889474">Niste povezani s mrežom</translation>
+<translation id="2107581415810719320">Drugi gumb <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Vaš kabel USB-C ne podržava Thunderbolt. Izvedba uređaja može biti ograničena.</translation>
 <translation id="2108303511227308752">Promijenjen je tipkovni prečac Alt + Backspace. Da biste upotrijebili tipku za brisanje, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Nova radna površina</translation>
@@ -563,6 +564,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3341303451326249809">Zaslon je snimljen</translation>
 <translation id="334252345105450327">Izradi snimku zaslona</translation>
+<translation id="3346728094401457853">Unesite zaporku uređaja za račun <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Odabir teksta od pokazivača do kraja retka</translation>
 <translation id="3349345708646875009">Otvaranje upravitelja zadataka</translation>
 <translation id="3364721542077212959">Alati pisaljke</translation>
@@ -975,7 +977,6 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4936329710968938986">Svi, isključeno</translation>
 <translation id="4937170330762390348">Diktiranje omogućuje pisanje glasom. Pritisnite tipku diktiranja ili odaberite ikonu mikrofona pri dnu zaslona dok ste u tekstnom polju. Jezik za diktiranje postavljen je na <ph name="LANGUAGE" />. Preuzet će se govorne datoteke kako biste mogli upotrebljavati diktiranje izvan mreže. Jezik diktiranja uvijek možete promijeniti u odjeljku Postavke &gt; Pristupačnost.</translation>
 <translation id="4938176435186993759">Sakrij sve prijedloge</translation>
-<translation id="4943007472417128747">Žarišna točka isključena je da biste upotrebljavali Wi-Fi. Da biste koristili žarišnu točku, isključite Wi-Fi.</translation>
 <translation id="4945196315133970626">Isključi obavijesti</translation>
 <translation id="4946376291507881335">Fotografiraj</translation>
 <translation id="495046168593986294">Pomakni prema gore</translation>
@@ -996,7 +997,6 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="5009463889040999939">U tijeku je preimenovanje profila. To može potrajati nekoliko minuta.</translation>
 <translation id="5016558321564993266">Prebacite marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorije pretraživanja</translation>
-<translation id="5029356738310729434">Pristup mikrofonu uređaja je uključen</translation>
 <translation id="5030659775136592441">Prikaz upravitelja oznaka</translation>
 <translation id="5030687792513154421">Vrijeme je isteklo</translation>
 <translation id="5033299697334913360">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
@@ -1342,7 +1342,6 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="643147933154517414">Dovršeno</translation>
 <translation id="6431865393913628856">Snimanje zaslona</translation>
 <translation id="643593192654616063">Upotrebljava se <ph name="STORAGE_IN_USE_SIZE" /> pohrane od ukupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Pristup mikrofonu uređaja je isključen</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
 <translation id="6446225358675593408">Pronalaženje slika prema sadržaju</translation>
@@ -1468,7 +1467,6 @@ Novo instaliranje</translation>
 <translation id="6912841030378044227">Fokusiranje na adresnu traku</translation>
 <translation id="6912901278692845878">Kratki obilazak</translation>
 <translation id="6919251195245069855">Nismo prepoznali vašu pametnu karticu. Pokušajte ponovo.</translation>
-<translation id="6920245099716267363">Prebacite žarišnu točku. Žarišna točka je uključena, povezan je jedan uređaj.</translation>
 <translation id="692135145298539227">izbriši</translation>
 <translation id="6929081673585394903">Pokaži kontrole</translation>
 <translation id="6931576957638141829">Spremi u</translation>
@@ -1564,7 +1562,6 @@ Novo instaliranje</translation>
 <translation id="7378203170292176219">Povucite da biste odabrali područje za snimanje</translation>
 <translation id="7378594059915113390">Medijske kontrole</translation>
 <translation id="7378889811480108604">Način štednje baterije je isključen</translation>
-<translation id="7382640522316003298">Prebacite žarišnu točku. Žarišna točka je uključena, povezani su uređaji (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7382680553121047388">Uključi</translation>
 <translation id="7384028040782072252">Kliknite desnom tipkom bilo gdje da biste promijenili redoslijed svojih aplikacija</translation>
 <translation id="7386767620098596324">Prebacite mrežnu vezu. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1585,7 @@ Novo instaliranje</translation>
 <translation id="7489261257412536105">Ulazak ili izlazak iz prikaza na cijelom zaslonu</translation>
 <translation id="7490360161041035804">Možete prikvačiti važne datoteke, uključujući datoteke s Google diska. Da biste prikvačili stavku, zadržite pokazivač iznad nje ili otvorite Datoteke i kliknite je desnom tipkom miša.</translation>
 <translation id="7497767806359279797">Odaberite jezik i tipkovnicu</translation>
+<translation id="7507162824403726948">Dovršite potvrdu identiteta</translation>
 <translation id="7508690557411636492">Otvoreno prošli mjesec</translation>
 <translation id="7509246181739783082">Potvrdite svoj identitet</translation>
 <translation id="7512509370370076552">Prečac desnom tipkom miša ažuriran je na tipku <ph name="LAUNCHER_KEY_NAME" /> i klik (stari prečac: Alt + klik)</translation>
@@ -1734,7 +1732,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8036504271468642248">Prethodna rečenica</translation>
 <translation id="8042893070933512245">Otvori izbornik postavki pristupačnosti</translation>
 <translation id="8044457332620420407">Pozadinsko svjetlo tipkovnice je isključeno</translation>
-<translation id="8048077032188362328">Vaš je administrator isključio žarišnu točku.</translation>
 <translation id="8048123526339889627">Postavke Bluetootha</translation>
 <translation id="8051716679295756675">Već postoji predložak s nazivom <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopirano u međuspremnik</translation>
@@ -1755,7 +1752,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8131994907636310308">Zatvorite razvrstavanje skočnih poruka</translation>
 <translation id="8132793192354020517">Povezano s <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Prebacite žarišnu točku. Žarišna točka je uključena, nije povezan nijedan uređaj.</translation>
 <translation id="8138705869659070104">Aktiviraj nakon postavljanja uređaja</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>

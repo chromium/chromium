@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">מופעלת</translation>
 <translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. אפשר לעבור בין תאריכים באמצעות מקשי החיצים.</translation>
+<translation id="141170878022560212">הלחצן האמצעי</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, אפליקציה מותקנת</translation>
 <translation id="1414919006379339073">סגירת החלון הנוכחי</translation>
 <translation id="1415846719612499304">צפייה ברשימת הרשתות. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">כבוי</translation>
 <translation id="1796561540704213354">אתרים, כולל דפים שביקרת בהם ודפים פתוחים</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
-<translation id="1815245884418711390">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט כבויה.</translation>
 <translation id="1816896987747843206">הפעולה הזו מאפשרת גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1823280932251546115">מגש הסטטוס, השעה <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">פתיחה של בוחר אמוג'י</translation>
 <translation id="2088116547584365419">משחקים</translation>
 <translation id="209965399369889474">לא מחובר לרשת</translation>
+<translation id="2107581415810719320">לחצן אחר <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏כבל ה-USB-C שחיברת לא תומך ב-Thunderbolt. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="2108303511227308752">‏מקשי הקיצור Alt + ‏Backspace הוחלפו. כדי לדמות את הפעולה של המקש Delete, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + המקש Backspace.</translation>
 <translation id="2126242104232412123">שולחן עבודה חדש</translation>
@@ -975,7 +976,6 @@
 <translation id="4936329710968938986">כולם, במצב כבוי</translation>
 <translation id="4937170330762390348">עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. תתבצע הורדה של קובצי דיבור כדי להשתמש בהכתבה במצב אופליין. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
 <translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
-<translation id="4943007472417128747">‏הנקודה לשיתוף האינטרנט (Hotspot) כובתה כדי לאפשר שימוש ב-Wi-Fi. כדי להשתמש בנקודה לשיתוף האינטרנט צריך לכבות את ה-Wi-Fi.</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
@@ -996,7 +996,6 @@
 <translation id="5009463889040999939">שינוי שם הפרופיל מתבצע. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5016558321564993266">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">קטגוריות החיפוש</translation>
-<translation id="5029356738310729434">הגישה למיקרופון המכשיר מופעלת</translation>
 <translation id="5030659775136592441">הצגת ניהול הסימניות</translation>
 <translation id="5030687792513154421">נגמר הזמן</translation>
 <translation id="5033299697334913360">כדי לצלם את המסך המלא, יש ללחוץ במקום כלשהו</translation>
@@ -1342,7 +1341,6 @@
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>
 <translation id="643593192654616063">נפח אחסון של <ph name="STORAGE_IN_USE_SIZE" /> בשימוש מתוך <ph name="STORAGE_TOTAL_SIZE" /> סה"כ</translation>
-<translation id="6442259747294754014">הגישה למיקרופון המכשיר מושבתת</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">‏המעבד (CPU)</translation>
 <translation id="6446225358675593408">חיפוש התמונות שלך לפי מה שמופיע בהן</translation>
@@ -1468,7 +1466,6 @@
 <translation id="6912841030378044227">התמקדות בסרגל הכתובות</translation>
 <translation id="6912901278692845878">סיור קצר</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
-<translation id="6920245099716267363">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="692135145298539227">מחק</translation>
 <translation id="6929081673585394903">הצגת הפקדים</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
@@ -1564,7 +1561,6 @@
 <translation id="7378203170292176219">יש לגרור כדי לבחור אזור להקלטה</translation>
 <translation id="7378594059915113390">פקדי מדיה</translation>
 <translation id="7378889811480108604">מצב חסכון בסוללה כבוי</translation>
-<translation id="7382640522316003298">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש <ph name="DEVICECOUNT" /> מכשירים מחוברים.</translation>
 <translation id="7382680553121047388">מופעל</translation>
 <translation id="7384028040782072252">לוחצים לחיצה ימנית במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="7386767620098596324">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" />.</translation>
@@ -1736,7 +1732,6 @@
 <translation id="8036504271468642248">המשפט הקודם</translation>
 <translation id="8042893070933512245">פתיחת התפריט של הגדרות הנגישות</translation>
 <translation id="8044457332620420407">התאורה האחורית של המקלדת כבויה</translation>
-<translation id="8048077032188362328">האדמין שלך כיבה את נקודת האינטרנט.</translation>
 <translation id="8048123526339889627">‏הגדרות Bluetooth</translation>
 <translation id="8051716679295756675">קיימת כבר תבנית בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>
@@ -1757,7 +1752,6 @@
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8131994907636310308">סגירת ההודעה הקופצת של המיון</translation>
 <translation id="8132793192354020517">מחובר ל<ph name="NAME" /></translation>
-<translation id="8135163608236671037">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. אין מכשיר מחובר.</translation>
 <translation id="8138705869659070104">הפעלה לאחר הגדרת המכשיר</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>
 <translation id="8142441511840089262">לחיצה כפולה</translation>

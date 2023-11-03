@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1001716830750249114">Vai alle impostazioni della versione di Chromium</translation>
 <translation id="1026101648481255140">Riprendi l'installazione</translation>
 <translation id="1029669172902658969">Riavvia per aggiornare &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium ti consiglia di esaminare questa estensione</translation>
@@ -31,6 +32,7 @@
 A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1708666629004767631">È disponibile una nuova versione più sicura di Chromium.</translation>
+<translation id="1715127912119967311">Per contribuire a migliorare queste funzionalità, Chromium invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
 <translation id="17264556997921157">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chromium stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="1733725117201708356">A breve Chromium eliminerà i dati di navigazione</translation>
 <translation id="1745121272106313518">Chromium verrà riavviato tra <ph name="REMAINING_TIME" /></translation>

@@ -211,7 +211,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="1796561540704213354">Ziyaret ettiğiniz ve açık sayfaların da dahil olduğu web siteleri</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
-<translation id="1815245884418711390">Hotspot'u aç/kapat. Hotspot kapalı.</translation>
 <translation id="1816896987747843206">Bu işlem, kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="1823280932251546115">Durum tepsisi, saat <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
 <translation id="3341303451326249809">Ekran görüntüsü alındı</translation>
 <translation id="334252345105450327">Ekran görüntüsü al</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> için cihaz şifresini girin</translation>
 <translation id="334927402682780278">İmleç konumundan satırın sonuna kadar olan metni seç</translation>
 <translation id="3349345708646875009">Görev yöneticisini açın</translation>
 <translation id="3364721542077212959">Ekran kalemi araçları</translation>
@@ -975,7 +975,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4936329710968938986">Herkes, kapalı</translation>
 <translation id="4937170330762390348">Dikte özelliğinde sesinizi kullanarak yazabilirsiniz. Metin alanındayken dikte tuşuna basın veya ekranın alt kısmındaki mikrofon simgesini seçin. Dikte diliniz <ph name="LANGUAGE" /> olarak ayarlandı. Dikteyi çevrimdışı olarak kullanabilmeniz için konuşma dosyaları indirilecek. Dikte dilini dilediğiniz zaman Ayarlar &gt; Erişilebilirlik bölümünden değiştirebilirsiniz.</translation>
 <translation id="4938176435186993759">Tüm önerileri gizle</translation>
-<translation id="4943007472417128747">Kablosuz bağlantının kullanılması için hotspot kapatıldı. Hotspot'u kullanmak için kablosuz bağlantıyı kapatın.</translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
@@ -996,7 +995,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5009463889040999939">Profil yeniden adlandırılıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="5016558321564993266">İşaretçiyi açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorilerde arayın</translation>
-<translation id="5029356738310729434">Cihazın mikrofonu erişimi açık</translation>
 <translation id="5030659775136592441">Yer işareti yöneticisini görüntüler</translation>
 <translation id="5030687792513154421">Süre doldu</translation>
 <translation id="5033299697334913360">Tam ekran görüntüsünü yakalamak için herhangi bir yeri tıklayın</translation>
@@ -1342,7 +1340,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="643147933154517414">Tümü bitti</translation>
 <translation id="6431865393913628856">Ekran kaydı</translation>
 <translation id="643593192654616063">Toplam <ph name="STORAGE_TOTAL_SIZE" /> depolama alanından <ph name="STORAGE_IN_USE_SIZE" /> kullanılıyor</translation>
-<translation id="6442259747294754014">Cihazın mikrofonu erişimi kapalı</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Görsellerinizi içeriğe göre bulun</translation>
@@ -1468,7 +1465,6 @@ Yeni yüklenmiş</translation>
 <translation id="6912841030378044227">Adres çubuğuna odaklanın</translation>
 <translation id="6912901278692845878">Hızlı genel bakış</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
-<translation id="6920245099716267363">Hotspot'u aç/kapat. Hotspot açık, 1 cihaz bağlı.</translation>
 <translation id="692135145298539227">sil</translation>
 <translation id="6929081673585394903">Kontrolleri göster</translation>
 <translation id="6931576957638141829">Kaydetme yeri</translation>
@@ -1564,7 +1560,6 @@ Yeni yüklenmiş</translation>
 <translation id="7378203170292176219">Kaydedilecek alanı seçmek için sürükleyin</translation>
 <translation id="7378594059915113390">Medya Denetimleri</translation>
 <translation id="7378889811480108604">Pil tasarrufu modu kapalı</translation>
-<translation id="7382640522316003298">Hotspot'u aç/kapat. Hotspot açık, <ph name="DEVICECOUNT" /> cihaz bağlı.</translation>
 <translation id="7382680553121047388">Açık</translation>
 <translation id="7384028040782072252">Uygulamalarınızı yeniden sıralamak için herhangi bir yeri sağ tıklayın</translation>
 <translation id="7386767620098596324">Ağ bağlantısını aç/kapat. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1583,7 @@ Yeni yüklenmiş</translation>
 <translation id="7489261257412536105">Tam ekran moduna geç veya tam ekran modundan çık</translation>
 <translation id="7490360161041035804">Google Drive dosyaları da dahil olmak üzere önemli dosyaları sabitleyebilirsiniz. Sabitlemek için fareyle bir öğenin üzerine gelin veya Dosyalar'ı açıp öğeyi sağ tıklayın.</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
+<translation id="7507162824403726948">Kimliğinizi doğrulama işlemini tamamlayın</translation>
 <translation id="7508690557411636492">Geçen ay açıldı</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
 <translation id="7512509370370076552">Sağ tıklama kısayolu, <ph name="LAUNCHER_KEY_NAME" /> tuşu + alt tuşunu tıklama + tıklama olarak güncellendi</translation>
@@ -1734,7 +1730,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8036504271468642248">Önceki cümle</translation>
 <translation id="8042893070933512245">Erişilebilirlik ayarları menüsünü aç</translation>
 <translation id="8044457332620420407">Klavye arka ışığı kapalı</translation>
-<translation id="8048077032188362328">Yöneticiniz hotspot'u kapattı.</translation>
 <translation id="8048123526339889627">Bluetooth Ayarları</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> adlı şablon zaten var</translation>
 <translation id="8052898407431791827">Panoya kopyalandı</translation>
@@ -1755,7 +1750,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8131994907636310308">Sıralama kısa iletisini kapat</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ağına bağlanıldı</translation>
-<translation id="8135163608236671037">Hotspot'u aç/kapat. Hotspot açık, bağlı bir cihaz yok.</translation>
 <translation id="8138705869659070104">Cihaz kurulumundan sonra etkinleştirin</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8142441511840089262">Çift tıklama</translation>

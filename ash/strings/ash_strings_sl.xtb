@@ -211,7 +211,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1796561540704213354">Spletna mesta, vključno s stranmi, ki ste jih obiskali, in odprtimi stranmi</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
-<translation id="1815245884418711390">Preklop dostopne točke. Dostopna točka je izklopljena.</translation>
 <translation id="1816896987747843206">To omogoča dostop do kamere za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero.</translation>
 <translation id="1823280932251546115">Vrstica stanja, čas <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3340978935015468852">nastavitve</translation>
 <translation id="3341303451326249809">Posnetek zaslona je shranjen</translation>
 <translation id="334252345105450327">Ustvari posnetek zaslona</translation>
+<translation id="3346728094401457853">Vnesite geslo za napravo za <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Izbira besedila od kazalca do konca vrstice</translation>
 <translation id="3349345708646875009">Odpiranje upravitelja opravil</translation>
 <translation id="3364721542077212959">Orodja pisala</translation>
@@ -975,7 +975,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4936329710968938986">Vsi, izklopljeno</translation>
 <translation id="4937170330762390348">Z narekom lahko vnašate z glasom. Ko ste v polju z besedilom, pritisnite tipko za narek ali izberite ikono mikrofona na dnu zaslona. Jezik nareka je nastavljen na jezik <ph name="LANGUAGE" />. Datoteke za govor bodo prenesene, tako da boste lahko uporabljali narek brez povezave. Jezik nareka lahko kadar koli spremenite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="4938176435186993759">Skrij vse predloge</translation>
-<translation id="4943007472417128747">Dostopna točka je izklopljena zaradi uporabe Wi-Fi-ja. Če želite uporabljati dostopno točko, izklopite Wi-Fi.</translation>
 <translation id="4945196315133970626">Izklop obvestil</translation>
 <translation id="4946376291507881335">Zajemi</translation>
 <translation id="495046168593986294">Pomik navzgor</translation>
@@ -996,7 +995,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5009463889040999939">Preimenovanje profila. To lahko traja nekaj minut.</translation>
 <translation id="5016558321564993266">Preklopite označevalnik. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Iskanje po kategorijah</translation>
-<translation id="5029356738310729434">Dostop do mikrofona v napravi je vklopljen.</translation>
 <translation id="5030659775136592441">Prikaz upravitelja zaznamkov</translation>
 <translation id="5030687792513154421">Dovoljeni čas je potekel</translation>
 <translation id="5033299697334913360">Kliknite kjer koli za posnetek celotnega zaslona.</translation>
@@ -1342,7 +1340,6 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="643147933154517414">Končano</translation>
 <translation id="6431865393913628856">Snemanje zaslona</translation>
 <translation id="643593192654616063">Shramba: <ph name="STORAGE_IN_USE_SIZE" /> je v uporabi od skupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Dostop do mikrofona v napravi je izklopljen.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpe</translation>
 <translation id="6446225358675593408">Iskanje slik po vsebini</translation>
@@ -1468,7 +1465,6 @@ Nova namestitev</translation>
 <translation id="6912841030378044227">Preklop na naslovno vrstico</translation>
 <translation id="6912901278692845878">Hitra predstavitev</translation>
 <translation id="6919251195245069855">Pametne kartice ni bilo mogoče prepoznati. Poskusite znova.</translation>
-<translation id="6920245099716267363">Preklop dostopne točke. Dostopna točka je vklopljena, povezana je 1 naprava.</translation>
 <translation id="692135145298539227">izbriši</translation>
 <translation id="6929081673585394903">Prikaz kontrolnikov</translation>
 <translation id="6931576957638141829">Shrani v</translation>
@@ -1564,7 +1560,6 @@ Nova namestitev</translation>
 <translation id="7378203170292176219">Povlecite, če želite izbrati območje za posnetek</translation>
 <translation id="7378594059915113390">Kontrolniki predstavnosti</translation>
 <translation id="7378889811480108604">Način varčevanja z energijo baterije je izklopljen</translation>
-<translation id="7382640522316003298">Preklop dostopne točke. Dostopna točka je vklopljena, povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Vklop</translation>
 <translation id="7384028040782072252">Če želite preurediti aplikacije, z desnim gumbom kliknite kjer koli.</translation>
 <translation id="7386767620098596324">Preklop omrežne povezave. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1583,7 @@ Nova namestitev</translation>
 <translation id="7489261257412536105">Preklop v celozaslonski način ali izhod iz njega</translation>
 <translation id="7490360161041035804">Pripnete lahko pomembne datoteke, vključno z datotekami v Googlu Drive. Če želite pripeti element, premaknite miškin kazalec nanj ali odprite Datoteke in element kliknite z desnim gumbom.</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
+<translation id="7507162824403726948">Dokončajte preverjanje identitete</translation>
 <translation id="7508690557411636492">Odprto v preteklem mesecu</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>
 <translation id="7512509370370076552">Bližnjica, ki jo kliknete z desnim gumbom, je posodobljena na tipko <ph name="LAUNCHER_KEY_NAME" /> + klik s kombinacijo tipke alt + klik</translation>
@@ -1734,7 +1730,6 @@ Nova namestitev</translation>
 <translation id="8036504271468642248">Prejšnji stavek</translation>
 <translation id="8042893070933512245">Odpiranje menija z nastavitvami funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="8044457332620420407">Osvetlitev tipkovnice je izklopljena</translation>
-<translation id="8048077032188362328">Skrbnik je izklopil dostopno točko.</translation>
 <translation id="8048123526339889627">Nastavitve za Bluetooth</translation>
 <translation id="8051716679295756675">Predloga <ph name="DESK_TEMPLATE_NAME" /> že obstaja.</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>
@@ -1755,7 +1750,6 @@ Nova namestitev</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8131994907636310308">Zapiranje obvestila za razvrščanje</translation>
 <translation id="8132793192354020517">Povezava z <ph name="NAME" /> je vzpostavljena </translation>
-<translation id="8135163608236671037">Preklop dostopne točke. Dostopna točka je vklopljena, nobena naprava ni povezana.</translation>
 <translation id="8138705869659070104">Aktiv. po nastavitvi naprave</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8142441511840089262">Dvoklik</translation>

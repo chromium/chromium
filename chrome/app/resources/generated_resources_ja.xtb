@@ -1867,6 +1867,7 @@
 <translation id="2428978615149723410">これらのカート</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
 <translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
+<translation id="243275146591958220">ダウンロードをキャンセル</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
@@ -8976,6 +8977,7 @@
 <translation id="81238879832906896">黄色と白の花</translation>
 <translation id="8123975449645947908">後方スクロール</translation>
 <translation id="8124313775439841391">管理対象 ONC</translation>
+<translation id="8125651784723647184">パスワードの共有は管理者によって管理されています</translation>
 <translation id="8129265306888404830">組織（<ph name="EMAIL_DOMAIN" />）のメールアドレスを使用するには、企業登録を使用する必要があります。このデバイスを個人で使用している場合は、個人の Google アカウントでログインしてください。</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
 <translation id="8131740175452115882">確認</translation>
@@ -9042,7 +9044,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。プリンタ <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />。</translation>
 <translation id="8180785270975217276">省エネモードがオンになっています</translation>
 <translation id="8180786512391440389">「<ph name="EXTENSION" />」は、チェックした場所にある画像、動画、音声ファイルの読み取りと削除ができます。</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> アクセス ポイントを設定</translation>
 <translation id="8181215761849004992">ドメインを追加できません。アカウントにデバイスを追加する権限があるかどうかご確認ください。</translation>
 <translation id="8182105986296479640">アプリケーションから応答がありません。</translation>
 <translation id="8182412589359523143">この <ph name="DEVICE_TYPE" /> からすべてのデータを削除するには、<ph name="BEGIN_LINK" />ここをクリック<ph name="END_LINK" />してください。</translation>
@@ -10039,6 +10040,7 @@
 <translation id="8968527460726243404">ChromeOS システム イメージ ライター</translation>
 <translation id="8968766641738584599">カードを保存</translation>
 <translation id="8968906873893164556">設定に使用するアカウントの選択</translation>
+<translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">ファイアウォールが Google のサーバーからのダウンロードをブロックしていないかどうかをネットワーク管理者に確認してください。</translation>
 <translation id="8973263196882835828">自動字幕起こしをオンにする(&amp;E)</translation>

@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">آف</translation>
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
-<translation id="1815245884418711390">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آف ہے۔</translation>
 <translation id="1816896987747843206">اس سے کیمرے کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1823280932251546115">صورتحال کی ٹرے، وقت <ph name="TIME" />،
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> کیلئے آلہ کا پاس ورڈ درج کریں</translation>
 <translation id="334927402682780278">کرسر سے لائن کے آخر تک ٹیکسٹ منتخب کریں</translation>
 <translation id="3349345708646875009">ٹاسک مینیجر کھولیں</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
@@ -975,7 +975,6 @@
 <translation id="4936329710968938986">ہر کوئی، آف</translation>
 <translation id="4937170330762390348">ڈکٹیشن کے ساتھ، آپ اپنی آواز کا استعمال کرتے ہوئے ٹائپ کر سکتے ہیں۔ جب آپ ٹیکسٹ فیلڈ پر ہوں تو ڈکٹیشن کلید دبائیں یا اسکرین کے نیچے مائیکروفون آئیکن کو منتخب کریں۔ آپ کی ڈکٹیشن زبان <ph name="LANGUAGE" /> پر سیٹ ہے۔ اسپیچ فائلز ڈاؤن لوڈ کی جائیں گی تاکہ آپ ڈکٹیشن آف لائن استعمال کر سکیں۔ آپ ترتیبات &gt; ایکسیسبیلٹی میں کسی بھی وقت ڈکٹیشن کی زبان تبدیل کر سکتے ہیں۔</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
-<translation id="4943007472417128747">‏WiFi استعمال کرنے کے لیے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔ ہاٹ اسپاٹ استعمال کرنے کے لیے، WiFi آف کریں۔</translation>
 <translation id="4945196315133970626">اطلاعات آف کریں</translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
@@ -996,7 +995,6 @@
 <translation id="5009463889040999939">پروفائل کا نام تبدیل ہو رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5016558321564993266">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">تلاش کے زمرے</translation>
-<translation id="5029356738310729434">آلے کے مائیکروفون تک رسائی آن ہے</translation>
 <translation id="5030659775136592441">بُک مارک مینیجر دکھائیں</translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
 <translation id="5033299697334913360">فُل اسکرین کیپچر کرنے کیلئے کہیں بھی کلک کریں</translation>
@@ -1342,7 +1340,6 @@
 <translation id="643147933154517414">سب ہو گیا</translation>
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
 <translation id="643593192654616063">کل <ph name="STORAGE_TOTAL_SIZE" /> میں سے <ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج زیر استعمال ہے</translation>
-<translation id="6442259747294754014">آلے کے مائیکروفون تک رسائی آف ہے</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">مواد کے لحاظ سے اپنی تصاویر تلاش کریں</translation>
@@ -1467,7 +1464,6 @@
 <translation id="6912841030378044227">ایڈریس بار پر فوکس کریں</translation>
 <translation id="6912901278692845878">مختصر ٹؤر</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
-<translation id="6920245099716267363">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ منسلک ہے، 1 آلہ منسلک ہے۔</translation>
 <translation id="692135145298539227">حذف کریں</translation>
 <translation id="6929081673585394903">کنٹرولز دکھائیں</translation>
 <translation id="6931576957638141829">اس میں محفوظ کریں</translation>
@@ -1563,7 +1559,6 @@
 <translation id="7378203170292176219">ریکارڈ کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="7378594059915113390">میڈیا کنٹرولز</translation>
 <translation id="7378889811480108604">بیٹری سیور وضع آف ہے</translation>
-<translation id="7382640522316003298">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، <ph name="DEVICECOUNT" /> آلات منسلک ہیں۔</translation>
 <translation id="7382680553121047388">آن کریں</translation>
 <translation id="7384028040782072252">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی دائیں طرف کلک کریں</translation>
 <translation id="7386767620098596324">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
@@ -1587,6 +1582,7 @@
 <translation id="7489261257412536105">فُل اسکرین میں داخل ہوں یا اس سے باہر نکلیں</translation>
 <translation id="7490360161041035804">‏آپ اہم فائز کو پن کر سکتے ہیں، بشمول Google Drive فائلز۔ پن کرنے کے لیے، کسی آئٹم پر گھمائیں یا فائلز کھولیں اور کسی آئٹم پر دائیں کلک کریں۔</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
+<translation id="7507162824403726948">اپنی شناخت کی تصدیق مکمل کریں</translation>
 <translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7512509370370076552">‏دائیں کلک کے شارٹ کٹ کو <ph name="LAUNCHER_KEY_NAME" /> کلید + کلک سے alt + کلک پر اپ ڈیٹ کیا جاتا ہے</translation>
@@ -1733,7 +1729,6 @@
 <translation id="8036504271468642248">پچھلا جملہ</translation>
 <translation id="8042893070933512245">ایکسیسبیلٹی ترتیبات کا مینیو کھولیں</translation>
 <translation id="8044457332620420407">کی بورڈ عقبی لائٹ آف ہے</translation>
-<translation id="8048077032188362328">آپ کے منتظم نے ہاٹ اسپاٹ کو آف کر دیا ہے۔</translation>
 <translation id="8048123526339889627">بلوٹوتھ کی ترتیبات</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> کے نام والی تمثیل پہلے سے موجود ہے</translation>
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>
@@ -1754,7 +1749,6 @@
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8131994907636310308">ترتیب دینے والے ٹوسٹ کو بند کریں</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> سے منسلک ہو گیا</translation>
-<translation id="8135163608236671037">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے۔</translation>
 <translation id="8138705869659070104">آلہ سیٹ اپ کرنے کے بعد فعال کریں</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8142441511840089262">دو بار کلک کریں</translation>

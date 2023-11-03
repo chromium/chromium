@@ -1480,7 +1480,7 @@
 <translation id="2121055421682309734">{COUNT,plural, =0{কুকিসমূহ অৱৰোধ কৰা হৈছে}=1{কুকিসমূহক অৱৰোধ কৰা হৈছে, ১ টা ব্যতিক্ৰম}one{কুকিসমূহ অৱৰোধ কৰা হৈছে, {COUNT} টা ব্যতিক্ৰম}other{কুকিসমূহ অৱৰোধ কৰা হৈছে, {COUNT} টা ব্যতিক্ৰম}}</translation>
 <translation id="2121825465123208577">আকাৰ সলনি কৰক</translation>
 <translation id="2123766928840368256">বেলেগ এটা ফাইল বাছনি কৰক</translation>
-<translation id="2124930039827422115">{1,plural, =1{এজন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" /> হিচাপে মূল্যাংকন কৰিছে।}one{# জন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" />হিচাপে মূল্যাংকন কৰিছে।}other{# জন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" />হিচাপে মূল্যাংকন কৰিছে।}}</translation>
+<translation id="2124930039827422115">{1,plural, =1{এগৰাকী ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" /> হিচাপে মূল্যাংকন কৰিছে।}one{# জন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" />হিচাপে মূল্যাংকন কৰিছে।}other{# জন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" />হিচাপে মূল্যাংকন কৰিছে।}}</translation>
 <translation id="2126167708562367080">আপোনাৰ প্ৰশাসকে ছিংক অক্ষম কৰিছে।</translation>
 <translation id="2127372758936585790">কম শক্তিৰ চ্চাৰ্জাৰ</translation>
 <translation id="212862741129535676">সঘনতাৰ স্থিতি দখলৰ শতকৰা হাৰ</translation>
@@ -1885,6 +1885,7 @@
 <translation id="2428978615149723410">এই কাৰ্টসমূহ</translation>
 <translation id="2431027948063157455">Google Assistant ল’ড কৰিব পৰা নগ’ল, অনুগ্ৰহ কৰি আপোনাৰ নেটৱর্ক সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="243179355394256322">আপোনাৰ প্ৰতিষ্ঠানে ডিভাইচৰ পঞ্জীয়ন কেৱল কৰ্তৃত্ব থকা ব্যৱহাৰকাৰীৰ মাজত সীমিত কৰিছে। এই ব্যৱহাৰকাৰী গৰাকীৰ ডিভাইচ পঞ্জীয়ন কৰিবলৈ কৰ্তৃত্ব নাই। অনুগ্ৰহ কৰি প্ৰশাসকৰ কনছ’লৰ ব্যৱহাৰকাৰীৰ শাখাটোত ব্যৱহাৰকাৰী গৰাকীৰ "Google Meetৰ হাৰ্ডৱেৰ পঞ্জীয়ন কৰক" প্ৰশাসকীয় বিশেষ সুবিধা থকাটো নিশ্চিত কৰক।</translation>
+<translation id="243275146591958220">ডাউনল’ড বাতিল কৰক</translation>
 <translation id="2433452467737464329">পৃষ্ঠাটো স্বয়ংক্ৰিয়ভাৱে ৰিফ্রে’শ্ব কৰিবলৈ URLত সন্ধানৰ এটা পৰম যোগ কৰক: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">ৰূপ</translation>
 <translation id="2433836460518180625">কেৱল ডিভাইচহে আনলক কৰক</translation>
@@ -2255,7 +2256,7 @@
 <translation id="2715640894224696481">সুৰক্ষা সম্পৰ্কীয় চাবিৰ অনুৰোধ</translation>
 <translation id="2715751256863167692">আপগ্ৰে’ড কৰা এই কাৰ্যটোৱে আপোনাৰ Chromebook ৰিছেট কৰে আৰু ব্যৱহাৰকাৰীৰ বৰ্তমানৰ ডেটা আঁতৰ কৰে।</translation>
 <translation id="2715934493766003251">ফাইল ছিংক কৰাৰ সুবিধাটো অন হৈ থকিলে ষ্ট’ৰেজৰ স্থান খালী কৰিব নোৱাৰি</translation>
-<translation id="2716986496990888774">এই ছেটিং কোনো এজন অভিভাৱকে পৰিচালনা কৰে।</translation>
+<translation id="2716986496990888774">এই ছেটিং কোনো এগৰাকী অভিভাৱকে পৰিচালনা কৰে।</translation>
 <translation id="271749239614426244">কাৰ্ছৰৰ সৰু-সুৰা চলাচল অগ্ৰাহ্য কৰক</translation>
 <translation id="2718395828230677721">ৰাতিৰ পোহৰ</translation>
 <translation id="2718998670920917754">এণ্টি-ভাইৰাছ ছফ্টৱেৰে এটা ভাইৰাছ ধৰা পেলাইছে।</translation>
@@ -9002,6 +9003,7 @@
 <translation id="81238879832906896">হালধীয়া আৰু বগা ফুল</translation>
 <translation id="8123975449645947908">পিছলৈ স্ক্ৰ'ল কৰক</translation>
 <translation id="8124313775439841391">পৰিচালিত ONC</translation>
+<translation id="8125651784723647184">আপোনাৰ প্ৰশাসকে পাছৱৰ্ড শ্বেয়াৰ কৰাটো পৰিচালনা কৰে</translation>
 <translation id="8129265306888404830">আপোনাৰ প্ৰতিষ্ঠান (<ph name="EMAIL_DOMAIN" />)ৰ পৰা পোৱা আপোনাৰ ইমেইল ব্যৱহাৰ কৰিবলৈ, আপুনি এণ্টাৰপ্ৰাইজৰ পঞ্জীয়ন ব্যৱহাৰ কৰিব লাগিব। যদি এই ডিভাইচটো আপোনাৰ ব্যক্তিগত ব্যৱহাৰৰ বাবে, তেন্তে আপোনাৰ ব্যক্তিগত Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক।</translation>
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
@@ -9068,7 +9070,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />। <ph name="NUM_PRINTERS" /> টা প্ৰিণ্টাৰৰ <ph name="ITEM_POSITION" /> নম্বৰটো।</translation>
 <translation id="8180785270975217276">শক্তি সঞ্চয়কাৰী অন কৰা হ’ল</translation>
 <translation id="8180786512391440389">চিহ্নিত কৰা ফ’ল্ডাৰসমূহত "<ph name="EXTENSION" />"এ প্ৰতিচ্ছবি, ভিডিঅ’ আৰু শব্দৰ ফাইল পঢ়িব আৰু মচিব পাৰে।</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" /> হ’টস্প’ট কনফিগাৰ কৰক</translation>
 <translation id="8181215761849004992">ড’মেইনত যোগদান কৰিব নোৱাৰি। ডিভাইচ যোগ কৰিব পৰাকৈ আপোনাৰ পৰ্যাপ্ত বিশেষাধিকাৰ আছেনে সেয়া জানিবলৈ নিজৰ একাউণ্টটো চাই লওক।</translation>
 <translation id="8182105986296479640">এপ্লিকেশ্বনটোৱে সঁহাৰি দিয়া নাই।</translation>
 <translation id="8182412589359523143">এই <ph name="DEVICE_TYPE" />ৰ পৰা আটাইবোৰ ডেটা মচিবলৈ <ph name="BEGIN_LINK" />ইয়াত ক্লিক কৰক<ph name="END_LINK" />।</translation>
@@ -10066,6 +10067,7 @@
 <translation id="8968527460726243404">ChromeOS ছিষ্টেম ইমেজ ৰাইটাৰ</translation>
 <translation id="8968766641738584599">কার্ড ছেভ কৰক</translation>
 <translation id="8968906873893164556">ছেটআপৰ বাবে ব্যৱহাৰ কৰিবলৈ একাউণ্টটো বাছনি কৰক</translation>
+<translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>
 <translation id="89720367119469899">ESCAPE</translation>
 <translation id="8972513834460200407">ফায়াৰৱাল-এ যাতে Google ছাৰ্ভাৰৰ পৰা ডাউনল’ড অৱৰোধ কৰি থোৱা নাই সেয়া নিশ্চিত কৰিবলৈ আপোনাৰ নেটৱৰ্ক প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8973263196882835828">&amp;লাইভ কেপশ্বন সক্ষম কৰক</translation>

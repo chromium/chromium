@@ -4076,9 +4076,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4380159792986204036">Mengizinkan Kios Web membuka lebih dari satu jendela browser di layar mana pun</translation>
 <translation id="4381227367939912539">Nonaktifkan game dinosaurus sebagai fitur tersembunyi</translation>
 <translation id="4382413175336720282">Pemeriksaan URL secara real time dinonaktifkan.</translation>
-<translation id="4384911996235542086">Jika kebijakan ini disetel ke aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat mengirim download yang mencurigakan dari pengguna yang mengaktifkan Safe Browsing ke Google untuk memindai malware.
-Jika kebijakan ini disetel ke nonaktif, pemindaian ini tidak akan dilakukan.
-Kebijakan ini tidak memengaruhi analisis konten download yang dikonfigurasi oleh Chrome Enterprise Connectors.</translation>
 <translation id="4387741272680827493">Menyetel kebijakan akan menentukan daftar nama host yang mengabaikan upgrade HSTS yang dipramuat dari HTTP menjadi HTTPS.
 
       Hanya nama host berlabel tunggal yang diizinkan di kebijakan ini, dan kebijakan ini hanya berlaku pada entri HSTS yang dipramuat "statis" (contohnya, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Kebijakan ini tidak mencegah upgrade HSTS untuk server yang memiliki upgrade HSTS yang diminta "secara dinamis" menggunakan header respons <ph name="HSTS_HEADER_NAME" />.
@@ -4461,6 +4458,17 @@ Menyetel <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> hanya akan berpenga
       Jika kebijakan ini tidak disetel, pemfilteran akan dihilangkan dan semua server cetak akan dipertimbangkan.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
+<translation id="4667462525936265103">Kebijakan ini mengontrol apakah pengguna diizinkan menyimpan data penjelajahan yang sudah ada ke profil terkelola yang dibuat setelah akun terkelola login di area konten.
+
+Jika kebijakan ini tidak disetel atau disetel ke <ph name="USER_OPTIN_DATA_ENUM_NAME" /> (nilai 1), pengguna dapat memilih apakah akan menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil akan terlihat dan tidak dicentang secara default.
+
+Jika kebijakan ini disetel ke <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> (nilai 2), pengguna dapat memilih apakah akan menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil akan terlihat dan dicentang secara default. Opsi ini hanya diizinkan di perangkat terkelola.
+
+Jika kebijakan ini disetel ke <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> (nilai 3), pengguna tidak dapat menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil tidak akan terlihat.
+
+Jika data penjelajahan yang ada dipindahkan ke profil terkelola, berarti profil saat ini akan menjadi profil terkelola. Tidak ada profil baru yang akan dibuat.
+
+Dengan tidak memindahkan data penjelajahan yang ada ke profil terkelola, artinya profil bersih baru akan dibuat. Data penjelajahan yang sudah ada akan tetap berada di profil yang tidak dikelola, yang masih dapat diakses oleh pengguna melalui pemilih profil.</translation>
 <translation id="4668325077104657568">Setelan gambar default</translation>
 <translation id="4669083178278833688">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, Web Store, Canvas, Jelajahi, crosh, galeri, dan fitur-fitur terminal untuk dinonaktifkan</translation>
 <translation id="4669292863736266737">Menyetel ke <ph name="GLS_ENABLED" /> akan mengaktifkan layanan lokasi Google saat penyiapan awal, kecuali kebijakan <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> disetel ke <ph name="BLOCK_GEOLOCATION_SETTING" />. Jika kebijakan disetel ke <ph name="GLS_DISABLED" /> atau tidak disetel, layanan lokasi akan tetap dinonaktifkan selama penyiapan.
@@ -7233,6 +7241,7 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
 
       Bahasa yang didukung saat ini adalah: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Aktifkan pencetakan dupleks tepi panjang</translation>
+<translation id="6929639826067341257">Sarankan kepada pengguna untuk memindahkan data mereka yang sudah ada ke profil terkelola dan memberi mereka pilihan untuk tidak melakukannya</translation>
 <translation id="6929746927224321095">Nonaktifkan Isi Otomatis</translation>
 <translation id="6931242315485576290">Nonaktifkan sinkronisasi data dengan Google</translation>
 <translation id="6932282102911647185">Warna lampu latar keyboard ungu</translation>
@@ -8565,17 +8574,6 @@ juga aman.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
-<translation id="8030797562351896051">Kebijakan ini menyediakan daftar penelusuran situs yang dapat digunakan pengguna untuk menelusuri situs tertentu. Pengguna dapat memulai penelusuran dengan mengetik pintasan atau @pintasan (mis. @kerja) di kolom URL.
-
-Kolom berikut wajib diisi untuk setiap entri: name, shortcut, url. Pintasan dalam daftar harus unik dan tidak boleh berisi spasi. Menambahkan @ ke pintasan bersifat opsional, sehingga pintasan yang dihasilkan dianggap sama dengan pintasan tanpa @; misalnya, "kerja" dan "@kerja" dianggap sebagai pintasan yang sama.
-
-Untuk setiap entri, kolom URL menentukan URL mesin telusur yang digunakan saat melakukan penelusuran dengan kata kunci yang sesuai. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna. Entri yang tidak valid dan entri dengan pintasan duplikat akan diabaikan.
-
-Entri penelusuran situs yang dikonfigurasi sebagai unggulan ditampilkan di kolom URL saat pengguna mengetik "@". Anda dapat memilih maksimal tiga entri sebagai unggulan.
-
-Pengguna tidak dapat mengedit atau menonaktifkan entri penelusuran situs yang disetel oleh kebijakan, tetapi mereka dapat menambahkan pintasan baru untuk URL yang sama. Selain itu, pengguna tidak dapat membuat entri penelusuran situs baru dengan pintasan yang sebelumnya dibuat melalui kebijakan.
-
-Jika terjadi konflik dengan pintasan yang sebelumnya dibuat oleh pengguna, setelan pengguna akan diterapkan. Namun, pengguna tetap dapat memicu opsi yang dibuat oleh kebijakan dengan mengetik "@" di kotak penelusuran. Misalnya, jika pengguna telah menetapkan "kerja" sebagai pintasan ke URL1 dan kebijakan menetapkan "kerja" sebagai pintasan ke URL2, mengetik "kerja" di kotak penelusuran akan memicu penelusuran ke URL1, tetapi mengetik "@kerja" di kotak penelusuran akan memicu penelusuran ke URL2.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8036284429246268475">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
 

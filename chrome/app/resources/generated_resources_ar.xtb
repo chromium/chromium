@@ -1876,6 +1876,7 @@
 <translation id="2428978615149723410">سلات التسوّق هذه</translation>
 <translation id="2431027948063157455">‏تعذّر تحميل مساعد Google، يُرجى التحقُّق من اتصال الشبكة وإعادة المحاولة.</translation>
 <translation id="243179355394256322">‏لا تسمح مؤسستك بتسجيل الأجهزة إلا للمستخدمين المصرّح لهم. هذا المستخدم غير مصرح له بتسجيل الأجهزة. يُرجى التأكّد من أنّ المستخدم لديه امتياز المشرف "تسجيل جهاز Google Meet" في قسم المستخدمين ضِمن وحدة تحكُّم المشرف.</translation>
+<translation id="243275146591958220">إلغاء التنزيل</translation>
 <translation id="2433452467737464329">‏إضافة معلمة لطلب البحث في عنوان URL لإعادة تحميل الصفحة تلقائيًا: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">المظهر</translation>
 <translation id="2433836460518180625">فتح قفل الجهاز فقط</translation>
@@ -9066,7 +9067,6 @@
 <translation id="8180295062887074137">حالة الطابعة "<ph name="PRINTER_NAME" />": <ph name="PRINTER_STATUS" />. ترتيب الطابعة: <ph name="ITEM_POSITION" /> من <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">تم تفعيل وضع "توفير الطاقة"</translation>
 <translation id="8180786512391440389">يمكن لـ "<ph name="EXTENSION" />" قراءة الصور والفيديوهات وملفات الصوت في المواقع المحددة وحذفها.</translation>
-<translation id="8180826593917851025">إعداد نقطة اتصال <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">يتعذَّر ضم الجهاز إلى النطاق. يُرجى التحقُّق من حسابك للتأكُّد من أنّك تحظى بالامتيازات الكافية لإضافة الأجهزة.</translation>
 <translation id="8182105986296479640">التطبيق لا يستجيب.</translation>
 <translation id="8182412589359523143">لحذف جميع البيانات من جهاز <ph name="DEVICE_TYPE" />، يمكنك <ph name="BEGIN_LINK" />النقر هنا<ph name="END_LINK" />.</translation>
@@ -10068,6 +10068,7 @@
 <translation id="8968527460726243404">‏كاتب الصور لنظام ChromeOS</translation>
 <translation id="8968766641738584599">حفظ البطاقة</translation>
 <translation id="8968906873893164556">اختيار الحساب المُراد استخدامه لعملية الإعداد</translation>
+<translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="89720367119469899">خروج</translation>
 <translation id="8972513834460200407">‏يُرجى التحقق مع مشرف الشبكة للتأكد من عدم حظر الجدار الناري للتنزيلات من خوادم Google.</translation>
 <translation id="8973263196882835828">&amp;تفعيل ميزة "النسخ النصي التلقائي"</translation>

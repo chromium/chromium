@@ -3980,9 +3980,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4380159792986204036">Permitir que una aplicación web de kiosco abra más de una ventana del navegador en cualquier pantalla</translation>
 <translation id="4381227367939912539">Inhabilitar el juego del huevo de pascua del dinosaurio</translation>
 <translation id="4382413175336720282">La comprobación de URL en tiempo real está inhabilitada.</translation>
-<translation id="4384911996235542086">Si esta política se habilita o no se define, <ph name="PRODUCT_NAME" /> podrá enviar a Google las descargas sospechosas de usuarios con la Navegación segura habilitada para analizarlas en busca de malware.
-Si se inhabilita esta política, no se realizará este análisis.
-Esta política no afecta al análisis del contenido de las descargas configurado por Chrome Enterprise Connectors.</translation>
 <translation id="4387741272680827493">Si se establece la política, se especifica una lista de nombres de host que evita las actualizaciones de HSTS precargadas (de http a https).
 
       En esta política, solo se permiten nombres de host de una sola etiqueta. Esta política solo se aplica a entradas estáticas precargadas por HSTS (por ejemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Esta política no evita las actualizaciones de HSTS en el caso de los servidores que hayan solicitado dinámicamente actualizaciones de HSTS usando un encabezado de respuesta <ph name="HSTS_HEADER_NAME" />.
@@ -8336,17 +8333,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="802776363472387903">El hash SHA-256 de la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir a los usuarios modificar la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima permitida de la sesión para conexiones de acceso remoto</translation>
-<translation id="8030797562351896051">Esta política proporciona una lista de búsquedas en el sitio donde el usuario puede buscar en un sitio específico. Los usuarios pueden iniciar la búsqueda escribiendo el acceso directo o @acceso directo (por ejemplo, @trabajo) en la barra de direcciones.
-
-Los siguientes campos son obligatorios para cada entrada: nombre, atajo, URL. Los atajos de la lista deben ser únicos y no pueden contener espacios. Anteponer @ a un acceso directo es opcional: el acceso directo resultante se considera igual que el acceso directo sin @, por ejemplo, "trabajo" y "@trabajo" se consideran el mismo acceso directo.
-
-Para cada entrada, el campo URL especifica la URL del buscador utilizado durante una búsqueda con la palabra clave correspondiente. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario. Las entradas no válidas y las que tengan accesos directos duplicados se ignoran.
-
-Las entradas de búsquedas en el sitio marcadas como destacadas se muestran en la barra de direcciones cuando el usuario escribe "@". Se pueden seleccionar hasta tres entradas como destacadas.
-
-Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el sitio establecidas por una política, pero pueden añadir nuevos accesos directos para la misma URL. Además, los usuarios no podrán crear nuevas entradas de búsquedas en el sitio con un acceso directo creado anteriormente mediante una política.
-
-En caso de conflicto con un acceso directo creado por el usuario con anterioridad, se respetará la configuración del usuario. Sin embargo, los usuarios seguirán pudiendo activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya ha definido "trabajo" como acceso directo a URL1 y la política define "trabajo" como acceso directo a URL2, al escribir "trabajo" en la barra de búsqueda se iniciará la búsqueda en URL1 y al escribir "@trabajo" la iniciará en URL2.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8036284429246268475">Si se habilita esta política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas introducidos forman parte de alguna filtración de datos.
 

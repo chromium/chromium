@@ -1867,6 +1867,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2428978615149723410">diese Einkaufswagen</translation>
 <translation id="2431027948063157455">Google Assistant konnte nicht geladen werden. Überprüfe deine Netzverbindung und versuche es noch einmal.</translation>
 <translation id="243179355394256322">In deiner Organisation darf die Geräteregistrierung nur von autorisierten Nutzern durchgeführt werden. Dieser Nutzer ist nicht für die Geräteregistrierung autorisiert. Der Nutzer muss im Bereich „Nutzer“ in der Admin-Konsole über die Administratorberechtigung „Google Meet-Hardware registrieren“ verfügen.</translation>
+<translation id="243275146591958220">Download abbrechen</translation>
 <translation id="2433452467737464329">Füge der URL einen Anfrageparameter hinzu, damit die Seite automatisch aktualisiert wird: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
@@ -9030,7 +9031,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" />: <ph name="PRINTER_STATUS" />. Drucker <ph name="ITEM_POSITION" /> von <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energiesparmodus aktiviert</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" kann Bilder, Video- und Sounddateien an den angegebenen Orten lesen und löschen.</translation>
-<translation id="8180826593917851025"><ph name="DEVICE_TYPE" />-Hotspot konfigurieren</translation>
 <translation id="8181215761849004992">Beitritt zur Domain nicht möglich. Prüfe in deinem Konto, ob du Geräte hinzufügen darfst.</translation>
 <translation id="8182105986296479640">App antwortet nicht.</translation>
 <translation id="8182412589359523143">Um alle Daten von diesem <ph name="DEVICE_TYPE" /> zu löschen, <ph name="BEGIN_LINK" />klicke hier<ph name="END_LINK" />.</translation>
@@ -10025,6 +10025,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8968527460726243404">ChromeOS-Systemabbild-Writer</translation>
 <translation id="8968766641738584599">Karte speichern</translation>
 <translation id="8968906873893164556">Konto für die Einrichtung auswählen</translation>
+<translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="89720367119469899">Esc-Taste</translation>
 <translation id="8972513834460200407">Bitte deinen Netzwerkadministrator, zu überprüfen, ob Downloads von Google-Servern von der Firewall blockiert werden.</translation>
 <translation id="8973263196882835828">Automatische Untertitel aktivi&amp;eren</translation>

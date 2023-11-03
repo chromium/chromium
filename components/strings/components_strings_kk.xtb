@@ -347,6 +347,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Сайттың негізгі бетіне кіріп<ph name="END_LINK" /> көріңіз.</translation>
 <translation id="1641976391427233992">Шығысты кідірту</translation>
 <translation id="164212631332220697">Тапсырысты рәсімдегенде, <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
+<translation id="1643651787397909318">Chrome қауіпсіздік тексерісі түймесіне өтіңіз, параметрлердегі Chrome қауіпсіздік тексерісі бетіне кіру үшін іске қосыңыз.</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1645368109819982629">Қолдау көрсетілмейтін протокол</translation>
 <translation id="1650602712345345441">Chrome параметрлерін басқару</translation>
@@ -2042,6 +2043,8 @@
 <translation id="5137761395480718572">Бұл қолданба Wi-Fi тіркелу деректерін орнату рұқсатын сұрауда. Реттеуден кейін, <ph name="DEVICE_TYPE" /> құрылғысы қатысатын Wi-Fi желілеріне автоматты түрде қосылады. Осы тіркелу деректерін өшіру үшін қолданбаны жойыңыз. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Қазір виртуалдық карта қолжетімсіз. Банкіңізге хабарласыңыз.</translation>
 <translation id="5138227688689900538">Жию</translation>
+<translation id="5143309888746105072">Chromium сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды.
+            <ph name="NEW_LINE" />Сайт функциялары жұмыс істемесе, <ph name="START_LINK" />үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Қате коды саясат жауабында көрсетіледі</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> сайты үшін хабарландырулар бөгелді</translation>
 <translation id="514704532284964975"><ph name="URL" /> сайты телефоныңызбен түрткен NFC құрылғылары туралы ақпаратты көргісі және өзгерткісі келеді.</translation>
@@ -2386,6 +2389,7 @@
 <translation id="5873297634595728366">Дизельді көліктер</translation>
 <translation id="5877831137320480913">Сұлулық және фитнес</translation>
 <translation id="5879989559903563723">Қонақ режимінде рұқсат етілмеген</translation>
+<translation id="5880050725127890683">Chrome қауіпсіздік тексерісіне өту</translation>
 <translation id="5883861433316751031">MIDI құрылғыларын басқару және қайта бағдарламалау керек пе?</translation>
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
@@ -2566,6 +2570,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Файлды жылжытуға блок қойылған}other{<ph name="FILE_COUNT" /> файлды жылжытуға блок қойылған}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі жүктеп алған файлдарыңызды басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="6254436959401408446">Бұл бетті ашу үшін жад жеткіліксіз</translation>
+<translation id="625463612687472648">Рұқсат беруді тоқтату</translation>
 <translation id="6259156558325130047">&amp;Қайта ретке келтіру әрекетін қайталау</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
@@ -2740,6 +2745,8 @@
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
 <translation id="6597665340361269064">90 градус</translation>
 <translation id="6599642189720630047">Қадағаланатын өнімдер</translation>
+<translation id="6606309334576464871">Chrome сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды.
+            <ph name="NEW_LINE" />Сайт функциялары жұмыс істемесе, <ph name="START_LINK" />үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Экономика жаңалықтары</translation>
 <translation id="6612010098632894193">Онлайн бейне</translation>
 <translation id="6613866251791999074">Chrome-дағы іздеу жүйесі туралы толық ақпарат</translation>
@@ -3408,6 +3415,7 @@
 <translation id="7888575728750733395">Басып шығарудың рендеринг мақсаты</translation>
 <translation id="7894280532028510793">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Network Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">178 x 229 мм хатқалта</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, параметрлердегі Chrome қауіпсіздік тексерісі бетіне өту үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="7916162853251942238">Флексографиялық база</translation>
 <translation id="7927971017714848357">Жер телімдері</translation>
 <translation id="793209273132572360">Мекенжайды жаңарту керек пе?</translation>
@@ -3701,6 +3709,7 @@
 <translation id="8460854335417802511">Қосу</translation>
 <translation id="8461694314515752532">Синхрондалған деректерді өзіңіздің синхрондау құпия фразаңызбен шифрлау</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 несие картасы}other{# несие картасы}}</translation>
+<translation id="8467494337615822642">Параметрлердегі Chrome қауіпсіздік тексерісі бетіне өту</translation>
 <translation id="8468358362970107653">C3 хатқалтасы</translation>
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>

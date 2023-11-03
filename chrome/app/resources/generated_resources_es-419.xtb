@@ -1869,6 +1869,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2428978615149723410">estos carritos</translation>
 <translation id="2431027948063157455">No se pudo cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="243179355394256322">Tu organización permite inscribir dispositivos solo a usuarios autorizados. Este usuario no está autorizado a inscribir dispositivos. Asegúrate de que el usuario tenga el privilegio de administrador "Inscribir el hardware de Google Meet" en la sección Usuarios de la Consola del administrador.</translation>
+<translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2433452467737464329">Agrega un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;.</translation>
 <translation id="2433507940547922241">Diseño</translation>
 <translation id="2433836460518180625">Desbloquear solo el dispositivo</translation>
@@ -8987,6 +8988,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="81238879832906896">Flor amarilla y blanca</translation>
 <translation id="8123975449645947908">Desplazarse hacia atrás</translation>
 <translation id="8124313775439841391">ONC administrado</translation>
+<translation id="8125651784723647184">Tu administrador gestiona el uso compartido de contraseñas</translation>
 <translation id="8129265306888404830">Para usar la dirección de correo electrónico de tu organización (<ph name="EMAIL_DOMAIN" />), debes usar la inscripción empresarial. Si este dispositivo es para uso personal, accede con tu Cuenta de Google personal.</translation>
 <translation id="813082847718468539">Consulta la información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -9053,7 +9055,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Impresora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Se activó el Ahorro de energía</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" puede leer y eliminar imágenes, videos y archivos de sonido en las ubicaciones marcadas.</translation>
-<translation id="8180826593917851025">Configurar el hotspot de <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">No se puede unir al dominio. Verifica que tu cuenta tenga privilegios suficientes para agregar dispositivos.</translation>
 <translation id="8182105986296479640">La app no responde.</translation>
 <translation id="8182412589359523143">Para borrar todos los datos de este dispositivo <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />haz clic aquí<ph name="END_LINK" />.</translation>
@@ -10050,6 +10051,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8968527460726243404">Herramienta de escritura de imagen del SO de Chrome</translation>
 <translation id="8968766641738584599">Guardar la tarjeta</translation>
 <translation id="8968906873893164556">Elige la cuenta que usarás para la configuración</translation>
+<translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Consulta con tu administrador de red para asegurarte de que el firewall no esté bloqueando las descargas de los servidores de Google.</translation>
 <translation id="8973263196882835828">&amp;Habilitar Subtitulado instantáneo</translation>

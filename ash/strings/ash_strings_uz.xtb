@@ -116,6 +116,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1391102559483454063">Yoniq</translation>
 <translation id="1407069428457324124">Tungi mavzu</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Sanalarga oʻtish uchun strelka tugmalaridan foydalaning.</translation>
+<translation id="141170878022560212">Oʻrta tugma</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Ilova oʻrnatildi</translation>
 <translation id="1414919006379339073">Joriy oynani yopish</translation>
 <translation id="1415846719612499304">Tarmoq roʻyxatini ochish. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1787955149152357925">Oʻchiq</translation>
 <translation id="1796561540704213354">Saytlar, jumladan siz tashrif buyurgan va ochilgan sahifalar</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
-<translation id="1815245884418711390">Hotspot tugmasi. Hotspot oʻchiq.</translation>
 <translation id="1816896987747843206">Bunda kameraga ruxsat beriladi. Barcha ilovalar va saytlar kameradan foydalana oladi</translation>
 <translation id="1823280932251546115">Holat qatori, vaqt <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2086334242442703436">Emoji tanlagichni ochish</translation>
 <translation id="2088116547584365419">oʻyinlar</translation>
 <translation id="209965399369889474">Tarmoqqa ulanmagan</translation>
+<translation id="2107581415810719320">Boshqa tugma: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kabelingiz Thunderbolt qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
@@ -975,7 +976,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4936329710968938986">Hammaga, oʻchiq</translation>
 <translation id="4937170330762390348">Diktovka funksiyasi yordamida ovoz bilan yozish mumkin. Matn maydonida diktovka tugmasini yoki ekranning quyi qismidagi mikrofon belgisini bosing. Ovoz bilan yozish tili belgilandi: <ph name="LANGUAGE" />. Ovoz bilan internetsiz yozish uchun nutq fayllari yuklab olinadi. Ovoz bilan yozish tilini istalgan vaqt Sozlamalar &gt; Qulaylik sahifasi orqali oʻzgartirish mumkin.</translation>
 <translation id="4938176435186993759">Barcha takliflarni berkitish</translation>
-<translation id="4943007472417128747">Wi-Fi ishlatish uchun hotspot oʻchirildi. Hotspot ishlatish uchun Wi-Fi aloqasini oʻchiring.</translation>
 <translation id="4945196315133970626">Bildirishnoma kelmasin</translation>
 <translation id="4946376291507881335">Tasvirga olish</translation>
 <translation id="495046168593986294">Tepaga chiqish</translation>
@@ -996,7 +996,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5009463889040999939">Profil qayta nomlanmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="5016558321564993266">Marker holatini oʻzgartirish. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Turkumlardan qidirish</translation>
-<translation id="5029356738310729434">Qurilma mikrofoniga ruxsat yoniq</translation>
 <translation id="5030659775136592441">Xatcho‘plar menejerini ko‘rsatish</translation>
 <translation id="5030687792513154421">Vaqt tugadi</translation>
 <translation id="5033299697334913360">Butun ekranni tasvirga olish uchun istalgan joyga bosing</translation>
@@ -1342,7 +1341,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="643147933154517414">Bajarildi</translation>
 <translation id="6431865393913628856">Ekran yozuvi</translation>
 <translation id="643593192654616063">Xotira: <ph name="STORAGE_IN_USE_SIZE" /> / <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Qurilma mikrofoniga ruxsat oʻchiq</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Kontent orqali rasmlaringizni toping</translation>
@@ -1468,7 +1466,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6912841030378044227">Manzillar qatorini fokuslash</translation>
 <translation id="6912901278692845878">Tezkor tanishtiruv</translation>
 <translation id="6919251195245069855">Smart kartangiz aniqlanmadi. Qayta urining.</translation>
-<translation id="6920245099716267363">Hotspot tugmasi. Hotspot yoniq, 1 ta qurilma ulangan.</translation>
 <translation id="692135145298539227">oʻchirish</translation>
 <translation id="6929081673585394903">Tugmalarni chiqarish</translation>
 <translation id="6931576957638141829">Saqlab olish</translation>
@@ -1564,7 +1561,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7378203170292176219">Yozib olinadigan hududni tanlash uchun suring</translation>
 <translation id="7378594059915113390">Media boshqaruv elementlari</translation>
 <translation id="7378889811480108604">Quvvat tejash rejimi oʻchiq</translation>
-<translation id="7382640522316003298">Hotspot tugmasi. Hotspot yoniq, <ph name="DEVICECOUNT" /> ta qurilma ulangan.</translation>
 <translation id="7382680553121047388">Yoniq</translation>
 <translation id="7384028040782072252">Ilovalarni qayta saralash uchun oʻng klikni istalgan joyga bosing</translation>
 <translation id="7386767620098596324">Tarmoq aloqasini yoqish/oʻchirish <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8036504271468642248">Avvalgi gap</translation>
 <translation id="8042893070933512245">Qulayliklar sozlamalari menyusini ochish</translation>
 <translation id="8044457332620420407">Klaviatura orqa chirogʻi oʻchiq</translation>
-<translation id="8048077032188362328">Hotspot administrator tomonidan faolsizlantirildi.</translation>
 <translation id="8048123526339889627">Bluetooth sozlamalari</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> nomli andoza bor</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
@@ -1755,7 +1750,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8131994907636310308">Tartiblash bildirgisini yopish</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> tarmog‘iga ulanilgan</translation>
-<translation id="8135163608236671037">Hotspot tugmasi. Hotspot yoniq, hech qaysi qurilma ulanmagan</translation>
 <translation id="8138705869659070104">Qurilma sozlangandan keyin faollashtiriladi</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8142441511840089262">Ikki marta bosish</translation>

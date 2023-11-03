@@ -212,7 +212,6 @@
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1796561540704213354">Webhelyek, például a felkeresett oldalak és a megnyitott oldalak</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
-<translation id="1815245884418711390">Hotspot be-/kikapcsolása. A hotspot ki van kapcsolva.</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="1823280932251546115">Állapottálca, idő <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -978,7 +977,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4936329710968938986">Mindenki, kikapcsolva</translation>
 <translation id="4937170330762390348">A diktálás funkció segítségével a hangjával is gépelhet. Szövegmezőben nyomja meg a diktálás gombot, vagy válassza a képernyő alján lévő mikrofon ikont. A diktálás nyelve a következő: <ph name="LANGUAGE" />. A beszédfájlok le lesznek töltve, így a diktálás offline módban is használható. A diktálás nyelvét bármikor módosíthatja a következő pontban: Beállítások &gt; Kisegítő lehetőségek.</translation>
 <translation id="4938176435186993759">Összes javaslat elrejtése</translation>
-<translation id="4943007472417128747">A hotspot ki lett kapcsolva, hogy használni lehessen a Wi-Fi-t. A hotspot használatához kapcsolja ki a Wi-Fi-t.</translation>
 <translation id="4945196315133970626">Az értesítések kikapcsolása</translation>
 <translation id="4946376291507881335">Rögzítés</translation>
 <translation id="495046168593986294">Görgetés felfelé</translation>
@@ -999,7 +997,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5009463889040999939">Profil átnevezése. Ez eltarthat néhány percig.</translation>
 <translation id="5016558321564993266">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategóriák keresése</translation>
-<translation id="5029356738310729434">Az eszköz mikrofon-hozzáférése be van kapcsolva</translation>
 <translation id="5030659775136592441">A könyvjelzőkezelő megjelenítése</translation>
 <translation id="5030687792513154421">Lejárt az idő</translation>
 <translation id="5033299697334913360">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
@@ -1345,7 +1342,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="643147933154517414">Elkészült</translation>
 <translation id="6431865393913628856">Képernyőrögzítés</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> foglalt a teljes <ph name="STORAGE_TOTAL_SIZE" /> tárhelyből</translation>
-<translation id="6442259747294754014">Az eszköz mikrofon-hozzáférése ki van kapcsolva</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Képkeresés képtartalom alapján</translation>
@@ -1471,7 +1467,6 @@ Frissen telepítve</translation>
 <translation id="6912841030378044227">Fókuszálás a címsávra</translation>
 <translation id="6912901278692845878">Gyors bemutató</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>
-<translation id="6920245099716267363">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva, 1 eszköz csatlakozik.</translation>
 <translation id="692135145298539227">törlés</translation>
 <translation id="6929081673585394903">Vezérlők megjelenítése</translation>
 <translation id="6931576957638141829">Mentés ide</translation>
@@ -1567,7 +1562,6 @@ Frissen telepítve</translation>
 <translation id="7378203170292176219">Húzással jelöljön ki egy területet a videó készítéséhez</translation>
 <translation id="7378594059915113390">Médiavezérlők</translation>
 <translation id="7378889811480108604">Az Akkumulátorkímélő mód ki van kapcsolva</translation>
-<translation id="7382640522316003298">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva, <ph name="DEVICECOUNT" /> eszköz csatlakoztatva.</translation>
 <translation id="7382680553121047388">Be</translation>
 <translation id="7384028040782072252">Az alkalmazások átrendezéséhez kattintson jobb egérgombbal bárhol</translation>
 <translation id="7386767620098596324">Hálózati kapcsolat be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
@@ -1737,7 +1731,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8036504271468642248">Előző mondat</translation>
 <translation id="8042893070933512245">A kisegítő lehetőségekhez tartozó beállítások menüjének megnyitása</translation>
 <translation id="8044457332620420407">Billentyűzet háttérvilágítása kikapcsolva</translation>
-<translation id="8048077032188362328">A rendszergazda kikapcsolta a hotspotot.</translation>
 <translation id="8048123526339889627">Bluetooth-beállítások</translation>
 <translation id="8051716679295756675">A(z) <ph name="DESK_TEMPLATE_NAME" /> nevű sablon már létezik.</translation>
 <translation id="8052898407431791827">Vágólapra másolva</translation>
@@ -1758,7 +1751,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8131994907636310308">Rendezés bezárása üzenet</translation>
 <translation id="8132793192354020517">Csatlakozás a következőhöz megtörtént: <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva; nincs csatlakoztatott eszköz.</translation>
 <translation id="8138705869659070104">Aktiválás eszközbeállítás után</translation>
 <translation id="813913629614996137">Indítás…</translation>
 <translation id="8142441511840089262">Dupla kattintás</translation>

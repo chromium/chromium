@@ -521,6 +521,7 @@
 <translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
 <translation id="371398631992790800">隱藏「書籤」</translation>
 <translation id="37207012422556617">熱門搜尋</translation>
+<translation id="3725081662140949903">如果不希望他人使用你的密碼，請開啟「<ph name="APP" />」應用程式變更密碼</translation>
 <translation id="3740397331642243698">在 Google Chrome 中以無痕模式開啟已輸入的網址。</translation>
 <translation id="374357899112510277">隱藏「下載檔案」</translation>
 <translation id="3745190878148784130">隱藏「縮放文字」</translation>
@@ -637,6 +638,7 @@
 <translation id="4389019817280890563">輕按即可變更語言。</translation>
 <translation id="4405320213589929829">使用網頁上的地址，取得當地資訊和路線。</translation>
 <translation id="4420409367264901497">編輯書籤</translation>
+<translation id="4431224949908513835">請選取要填入的付款方式。</translation>
 <translation id="4442550905108052454">開啟「設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">新增語言</translation>
 <translation id="4461286950227634995">顯示儲存密碼的選項</translation>
@@ -1188,6 +1190,7 @@
 <translation id="7221173315674413369">在「最新功能」中探索新功能和提示</translation>
 <translation id="7223102419539744003">關閉分頁</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
+<translation id="7233006041370588369">請選取要填入的密碼。</translation>
 <translation id="7265758999917665941">一律不儲存此網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證您的身分。未複製密碼。</translation>
 <translation id="7284359491594949826">{COUNT,plural, =1{已追蹤新包裹}other{已追蹤新包裹}}</translation>

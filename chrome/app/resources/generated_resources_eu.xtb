@@ -1872,6 +1872,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2428978615149723410">saski hauek</translation>
 <translation id="2431027948063157455">Ezin izan da kargatu Google-ren Laguntzailea. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="243179355394256322">Zure erakundeak ezarritako mugen arabera, baimendutako erabiltzaileek soilik erregistra ditzakete gailuak. Erabiltzaileak ez du baimenik gailuak erregistratzeko. Egiaztatu erabiltzaileak "Erregistratu Google Meet-en hardwarea" administratzaile-pribilegioa duela administrazio-kontsolako Erabiltzaileak atalean.</translation>
+<translation id="243275146591958220">Utzi deskargatzeari</translation>
 <translation id="2433452467737464329">Orria automatikoki freskatzeko, gehitu kontsulta-parametro bat URLan: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2433836460518180625">Desblokeatu gailua bakarrik</translation>
@@ -9050,7 +9051,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" /> inprimagailutatik <ph name="ITEM_POSITION" />garrena.</translation>
 <translation id="8180785270975217276">Aktibatu egin da energia-aurreztailea</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" luzapenak markatutako kokapenetako irudiak, bideoak eta soinu-fitxategiak irakur eta ezaba ditzake.</translation>
-<translation id="8180826593917851025">Konfiguratu <ph name="DEVICE_TYPE" /> gailuaren wifi-gunea</translation>
 <translation id="8181215761849004992">Ezin da sartu domeinuan. Gailuak gehitzeko pribilegioak dituzula ziurtatzeko, egiaztatu kontua.</translation>
 <translation id="8182105986296479640">Aplikazioak ez du erantzuten.</translation>
 <translation id="8182412589359523143"><ph name="DEVICE_TYPE" /> gailutik datu guztiak ezabatzeko, <ph name="BEGIN_LINK" />sakatu hau<ph name="END_LINK" />.</translation>
@@ -10047,6 +10047,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8968527460726243404">ChromeOS sistemako irudi-idazlea</translation>
 <translation id="8968766641738584599">Gorde txartela</translation>
 <translation id="8968906873893164556">Aukeratu konfiguratzeko erabili nahi duzun kontua</translation>
+<translation id="8970887620466824814">Arazo bat izan da.</translation>
 <translation id="89720367119469899">Ihes-tekla</translation>
 <translation id="8972513834460200407">Galdetu sarearen administratzaileari suebakia Google-ren zerbitzariaren deskargak blokeatzen ari den.</translation>
 <translation id="8973263196882835828">&amp;Gaitu Istanteko azpitituluak</translation>

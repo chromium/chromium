@@ -116,6 +116,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Koristite tastere sa strelicama da biste se kretali između datuma.</translation>
+<translation id="141170878022560212">Srednje dugme</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, instalirana aplikacija</translation>
 <translation id="1414919006379339073">Zatvori prozor u kome se trenutno radi</translation>
 <translation id="1415846719612499304">Pregledajte listu mreža. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Veb-sajtovi, uključujući stranice koje ste posetili i otvorili</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
-<translation id="1815245884418711390">Uključite/isključite hotspot. Hotspot je isključen.</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i veb-sajtove sa dozvolom za kameru</translation>
 <translation id="1823280932251546115">Statusna traka, vreme <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2086334242442703436">Otvorite birač emodžija</translation>
 <translation id="2088116547584365419">igre</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
+<translation id="2107581415810719320"><ph name="BUTTON_NUMBER" />. dugme Drugo</translation>
 <translation id="2107914222138020205">USB-C kabl ne podržava Thunderbolt. Učinak uređaja će možda biti ograničen.</translation>
 <translation id="2108303511227308752">Tasterska prečica Alt + Backspace je promenjena. Da biste koristili taster Delete, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Novi radni prostor</translation>
@@ -563,6 +564,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3340978935015468852">podešavanja</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
 <translation id="334252345105450327">Napravi snimak ekrana</translation>
+<translation id="3346728094401457853">Unesite lozinku za uređaj za <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Izaberi tekst od kursora do kraja reda</translation>
 <translation id="3349345708646875009">Otvori menadžer zadataka</translation>
 <translation id="3364721542077212959">Alatke za pisaljku</translation>
@@ -976,7 +978,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4936329710968938986">Svi, isključeno</translation>
 <translation id="4937170330762390348">Diktiranjem možete da unosite tekst pomoću glasa. Pritisnite taster za diktiranje ili izaberite ikonu mikrofona u dnu ekrana kada se nalazite u polju za unos teksta. Jezik diktiranja je podešen na <ph name="LANGUAGE" />. Fajlovi govora će se preuzeti da biste mogli da koristite diktiranje oflajn. U svakom trenutku možete da promenite jezik diktiranja u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="4938176435186993759">Sakrij sve predloge</translation>
-<translation id="4943007472417128747">Hotspot je isključen da biste koristili WiFi. Da biste koristili hotspot, isključite WiFi.</translation>
 <translation id="4945196315133970626">Isključi obaveštenja</translation>
 <translation id="4946376291507881335">Snimi</translation>
 <translation id="495046168593986294">Pomeri nagore</translation>
@@ -997,7 +998,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5009463889040999939">Menja se ime profila. To može da potraje nekoliko minuta.</translation>
 <translation id="5016558321564993266">Uključite/isključite marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorije pretrage</translation>
-<translation id="5029356738310729434">Pristup mikrofonu uređaja je uključen</translation>
 <translation id="5030659775136592441">Prikažite menadžer obeleživača</translation>
 <translation id="5030687792513154421">Vreme je isteklo</translation>
 <translation id="5033299697334913360">Kliknite bilo gde da biste snimili ceo ekran</translation>
@@ -1343,7 +1343,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="643147933154517414">Gotovo</translation>
 <translation id="6431865393913628856">Snimak ekrana</translation>
 <translation id="643593192654616063">Koristi se <ph name="STORAGE_IN_USE_SIZE" /> memorijskog prostora od ukupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Pristup mikrofonu uređaja je isključen</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
 <translation id="6446225358675593408">Pronađite slike prema sadržaju</translation>
@@ -1469,7 +1468,6 @@ Novo instaliranje</translation>
 <translation id="6912841030378044227">Fokusiranje na traku za adresu</translation>
 <translation id="6912901278692845878">Kratak obilazak</translation>
 <translation id="6919251195245069855">Nismo uspeli da prepoznamo pametnu karticu. Probajte ponovo.</translation>
-<translation id="6920245099716267363">Uključite/isključite hotspot. Hotspot je uključen, 1 uređaj je povezan.</translation>
 <translation id="692135145298539227">izbriši</translation>
 <translation id="6929081673585394903">Pokaži kontrole</translation>
 <translation id="6931576957638141829">Sačuvajte u</translation>
@@ -1566,7 +1564,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7378203170292176219">Prevucite da biste izabrali oblast za snimanje</translation>
 <translation id="7378594059915113390">Kontrole za medije</translation>
 <translation id="7378889811480108604">Režim uštede baterije je isključen</translation>
-<translation id="7382640522316003298">Uključite/isključite hotspot. Hotspot je uključen, uređaji (<ph name="DEVICECOUNT" />) su povezani.</translation>
 <translation id="7382680553121047388">Uključeno</translation>
 <translation id="7384028040782072252">Kliknite desnim tasterom bilo gde da biste promenili redosled aplikacija</translation>
 <translation id="7386767620098596324">Uključite/isključite mrežnu vezu. <ph name="STATE_TEXT" />.</translation>
@@ -1590,6 +1587,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7489261257412536105">Uđite ili izađite iz režima prikaza preko celog ekrana</translation>
 <translation id="7490360161041035804">Možete da zakačite važne fajlove, uključujući fajlove Google diska. Da biste zakačili fajl, pređite kursorom preko stavke ili otvorite Fajlovi i kliknite desnim tasterom na stavku.</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
+<translation id="7507162824403726948">Dovršite verifikaciju identiteta</translation>
 <translation id="7508690557411636492">Otvarano proteklog meseca</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
 <translation id="7512509370370076552">Prečica za desni klik je sada taster <ph name="LAUNCHER_KEY_NAME" /> + klik, a ne više alt + klik</translation>
@@ -1736,7 +1734,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8036504271468642248">Prethodna rečenica</translation>
 <translation id="8042893070933512245">Otvori meni podešavanja pristupačnosti</translation>
 <translation id="8044457332620420407">Pozadinsko osvetljenje tastature je isključeno</translation>
-<translation id="8048077032188362328">Administrator je isključio hotspot.</translation>
 <translation id="8048123526339889627">Podešavanja Bluetooth-a</translation>
 <translation id="8051716679295756675">Šablon pod naslovom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
 <translation id="8052898407431791827">Kopirano je u privremenu memoriju</translation>
@@ -1757,7 +1754,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8131994907636310308">Zatvorite povratnu poruku za sortiranje</translation>
 <translation id="8132793192354020517">Uspostavljena je veza sa <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Uključite/isključite hotspot. Hotspot je uključen, ali nijedan uređaj nije povezan.</translation>
 <translation id="8138705869659070104">Aktiviraj posle podešavanja</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>

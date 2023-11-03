@@ -1873,6 +1873,7 @@
 <translation id="2428978615149723410">гэтыя кошыкі</translation>
 <translation id="2431027948063157455">Не ўдалося загрузіць Памочніка Google. Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
 <translation id="243179355394256322">Рэгістраваць прылады ў арганізацыі могуць толькі аўтарызаваныя карыстальнікі. Гэты карыстальнік не мае дазволу на рэгістрацыю прылад. Праверыць, ці ёсць у карыстальніка права адміністратара на рэгістрацыю апаратнага забеспячэння Google Meet, можна ў раздзеле "Карыстальнікі" кансолі адміністратара.</translation>
+<translation id="243275146591958220">Скасаваць спампоўку</translation>
 <translation id="2433452467737464329">Дадайце параметр запыту ў URL-адрас для аўтаматычнага абнаўлення старонкі: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Выгляд</translation>
 <translation id="2433836460518180625">Толькі разблакіраваць прыладу</translation>
@@ -9058,7 +9059,6 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> – <ph name="PRINTER_STATUS" />. Прынтар <ph name="ITEM_POSITION" /> з <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Эканомія энергіі ўключана</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" можа чытаць і выдаляць відарысы, відэа- і аўдыяфайлы ў адзначаных месцах.</translation>
-<translation id="8180826593917851025">Наладжванне хот-спота на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Не ўдаецца далучыцца да дамена. Праверце, ці мае ваш уліковы запіс дастатковыя паўнамоцтвы, каб дадаваць прылады.</translation>
 <translation id="8182105986296479640">Праграма не адказвае.</translation>
 <translation id="8182412589359523143">Каб выдаліць усе даныя з прылады <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />націсніце тут<ph name="END_LINK" />.</translation>
@@ -10058,6 +10058,7 @@
 <translation id="8968527460726243404">Запіс стану сістэмы Chrome OS</translation>
 <translation id="8968766641738584599">Захаваць картку</translation>
 <translation id="8968906873893164556">Выберыце ўліковы запіс для наладжвання</translation>
+<translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Даведайцеся ў адміністратара сеткі, ці не блакіруе брандмаўэр спампоўкі з сервераў Google.</translation>
 <translation id="8973263196882835828">&amp;Уключыць Імгненныя субцітры</translation>

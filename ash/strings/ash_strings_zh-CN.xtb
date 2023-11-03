@@ -211,7 +211,6 @@
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
-<translation id="1815245884418711390">开启/关闭热点。热点已关闭。</translation>
 <translation id="1816896987747843206">如果您开启摄像头，即意味着允许所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1823280932251546115">状态栏，时间为 <ph name="TIME" />，
         <ph name="BATTERY" />
@@ -563,6 +562,7 @@
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341303451326249809">已截取屏幕</translation>
 <translation id="334252345105450327">截屏</translation>
+<translation id="3346728094401457853">输入 <ph name="EMAIL" /> 用于登录设备的密码</translation>
 <translation id="334927402682780278">选中从光标处到行尾的文字</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
@@ -974,7 +974,6 @@
 <translation id="4936329710968938986">所有人，已关闭</translation>
 <translation id="4937170330762390348">借助语音输入功能，您可以通过说话来输入内容。选中某个文本字段后，按语音输入键或选择屏幕底部的麦克风图标。您的语音输入语言已设置为<ph name="LANGUAGE" />。系统会下载语音文件，以便您离线使用语音输入功能。您可以随时在“设置”&gt;“无障碍”中更改语音输入语言。</translation>
 <translation id="4938176435186993759">隐藏所有建议</translation>
-<translation id="4943007472417128747">为了使用 Wi-Fi，已关闭热点。若要使用热点，请关闭 Wi-Fi。</translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>
@@ -995,7 +994,6 @@
 <translation id="5009463889040999939">正在重命名配置文件。这可能需要几分钟的时间。</translation>
 <translation id="5016558321564993266">开启/关闭标记工具。<ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">搜索类别</translation>
-<translation id="5029356738310729434">设备麦克风使用权限已开启</translation>
 <translation id="5030659775136592441">显示书签管理器</translation>
 <translation id="5030687792513154421">时间到</translation>
 <translation id="5033299697334913360">点击任意位置即可截取整个屏幕</translation>
@@ -1340,7 +1338,6 @@
 <translation id="643147933154517414">大功告成</translation>
 <translation id="6431865393913628856">屏幕录制</translation>
 <translation id="643593192654616063">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的存储空间，总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">设备麦克风使用权限已关闭</translation>
 <translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">按内容查找图片</translation>
@@ -1466,7 +1463,6 @@
 <translation id="6912841030378044227">聚焦于地址栏</translation>
 <translation id="6912901278692845878">快速导览</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
-<translation id="6920245099716267363">开启/关闭热点。热点已开启，且已连接 1 部设备。</translation>
 <translation id="692135145298539227">删除</translation>
 <translation id="6929081673585394903">显示控件</translation>
 <translation id="6931576957638141829">保存到</translation>
@@ -1562,7 +1558,6 @@
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378889811480108604">省电模式已关闭</translation>
-<translation id="7382640522316003298">开启/关闭热点。热点已开启，且已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
 <translation id="7382680553121047388">开启</translation>
 <translation id="7384028040782072252">若要将您的应用重新排序，请右键点击任意位置</translation>
 <translation id="7386767620098596324">开启/关闭网络连接。<ph name="STATE_TEXT" />。</translation>
@@ -1586,6 +1581,7 @@
 <translation id="7489261257412536105">进入或退出全屏模式</translation>
 <translation id="7490360161041035804">您可以固定重要文件，包括 Google 云端硬盘文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
+<translation id="7507162824403726948">完成身份验证</translation>
 <translation id="7508690557411636492">过去一个月内打开过</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7512509370370076552">“右键点击”对应的快捷键原为 alt + 点击，现已更新为<ph name="LAUNCHER_KEY_NAME" />键 + 点击</translation>
@@ -1732,7 +1728,6 @@
 <translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">打开无障碍功能设置菜单</translation>
 <translation id="8044457332620420407">键盘背光已关闭</translation>
-<translation id="8048077032188362328">您的管理员已关闭热点。</translation>
 <translation id="8048123526339889627">蓝牙设置</translation>
 <translation id="8051716679295756675">名为“<ph name="DESK_TEMPLATE_NAME" />”的模板已存在</translation>
 <translation id="8052898407431791827">已复制到剪贴板</translation>
@@ -1753,7 +1748,6 @@
 <translation id="8131740175452115882">确认</translation>
 <translation id="8131994907636310308">关闭排序消息框</translation>
 <translation id="8132793192354020517">已连接到 <ph name="NAME" /></translation>
-<translation id="8135163608236671037">开启/关闭热点。热点已开启，但尚未连接任何设备。</translation>
 <translation id="8138705869659070104">在设备完成设置后启用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">双击</translation>

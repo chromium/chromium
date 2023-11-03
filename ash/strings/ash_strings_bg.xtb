@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Включено</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Използвайте клавишите със стрелка, за да се придвижвате между датите.</translation>
+<translation id="141170878022560212">Среден бутон</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирано приложение</translation>
 <translation id="1414919006379339073">Затваряне на текущия прозорец</translation>
 <translation id="1415846719612499304">Показване на списъка с мрежи. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">Изкл.</translation>
 <translation id="1796561540704213354">Уебсайтове, включително посетените от вас и отворените страници</translation>
 <translation id="181103072419391116">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
-<translation id="1815245884418711390">Превключване на точката за достъп. Тя е изключена.</translation>
 <translation id="1816896987747843206">Това разрешава достъп до камерата за всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="1823280932251546115">Лента на състоянието, часът е <ph name="TIME" />,
         <ph name="BATTERY" />,
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">Отваряне на инструмента за избор на емоджи</translation>
 <translation id="2088116547584365419">игри</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
+<translation id="2107581415810719320">Друг бутон: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C кабелът ви не поддържа Thunderbolt. Ефективността на устройството може да е ограничена.</translation>
 <translation id="2108303511227308752">Клавишната комбинация Alt + Backspace се промени. За да използвате клавиша за изтриване, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + Backspace.</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
@@ -975,7 +976,6 @@
 <translation id="4936329710968938986">Всички, изключено</translation>
 <translation id="4937170330762390348">Функцията за диктуване ви дава възможност да въвеждате текст с гласа си. Натиснете клавиша за диктуване или изберете иконата на микрофон в долната част на екрана, когато сте в текстово поле. За езика ви за диктуване е зададено <ph name="LANGUAGE" />. Файловете за говор ще бъдат изтеглени, за да можете да използвате функцията за диктуване офлайн. Можете да промените езика за диктуване по всяко време от „Настройки &gt; Достъпност“.</translation>
 <translation id="4938176435186993759">Скриване на всички предложения</translation>
-<translation id="4943007472417128747">Точката за достъп е изключена с цел ползване на Wi-Fi. За да я използвате, изключете Wi-Fi.</translation>
 <translation id="4945196315133970626">Изключване на известията</translation>
 <translation id="4946376291507881335">Заснемане</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
@@ -996,7 +996,6 @@
 <translation id="5009463889040999939">Профилът за мобилна мрежа се преименува. Това може да отнеме няколко минути.</translation>
 <translation id="5016558321564993266">Превключване на маркера. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Категории на резултатите от търсенето</translation>
-<translation id="5029356738310729434">Достъпът до микрофона на устройството е разрешен</translation>
 <translation id="5030659775136592441">Показване на диспечера на отметките</translation>
 <translation id="5030687792513154421">Времето свърши</translation>
 <translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
@@ -1342,7 +1341,6 @@
 <translation id="643147933154517414">Всичко е готово</translation>
 <translation id="6431865393913628856">Записване на екрана</translation>
 <translation id="643593192654616063">Използвано хранилище: <ph name="STORAGE_IN_USE_SIZE" /> от общо <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Достъпът до микрофона на устройството е забранен</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6445915701151710649">процесор</translation>
 <translation id="6446225358675593408">Намиране на изображенията ви по съдържание</translation>
@@ -1468,7 +1466,6 @@
 <translation id="6912841030378044227">Поставяне на фокуса върху адресната лента</translation>
 <translation id="6912901278692845878">Бърза обиколка</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
-<translation id="6920245099716267363">Превключване на точката за достъп. Тя е включена, има 1 свързано устройство.</translation>
 <translation id="692135145298539227">изтриване</translation>
 <translation id="6929081673585394903">Показване на контролите</translation>
 <translation id="6931576957638141829">Запазване във</translation>
@@ -1564,7 +1561,6 @@
 <translation id="7378203170292176219">С плъзгане изберете областта, която да бъде записана</translation>
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
 <translation id="7378889811480108604">Режимът за запазване на батерията е изключен</translation>
-<translation id="7382640522316003298">Превключване на точката за достъп. Тя е включена, има <ph name="DEVICECOUNT" /> свързани устройства.</translation>
 <translation id="7382680553121047388">Вкл.</translation>
 <translation id="7384028040782072252">Кликнете с десния бутон върху произволно място, за да пренаредите приложенията си</translation>
 <translation id="7386767620098596324">Превключване на връзката с мрежа. <ph name="STATE_TEXT" />.</translation>
@@ -1734,7 +1730,6 @@
 <translation id="8036504271468642248">Предишно изречение</translation>
 <translation id="8042893070933512245">Отваряне на менюто с настройки за достъпност</translation>
 <translation id="8044457332620420407">Фоновото осветление на клавиатурата е изключено</translation>
-<translation id="8048077032188362328">Администраторът ви е изключил точката за достъп.</translation>
 <translation id="8048123526339889627">Настройки за Bluetooth</translation>
 <translation id="8051716679295756675">Вече съществува шаблон с името „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
@@ -1755,7 +1750,6 @@
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8131994907636310308">Затваряне на изскачащото известие за сортиране</translation>
 <translation id="8132793192354020517">Установена е връзка с/ъс <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Превключване на точката за достъп. Тя е включена, няма свързани устройства.</translation>
 <translation id="8138705869659070104">Актив. след настр. на у-вото</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8142441511840089262">Двукратно кликване</translation>

@@ -347,6 +347,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />Sitenin ana sayfasını ziyaret etmeyi deneyin<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Şu saate kadar çıkışı geciktir:</translation>
 <translation id="164212631332220697">Ödeme sırasında <ph name="CARD_DETAIL" /> ile ödeyin.</translation>
+<translation id="1643651787397909318">Chrome güvenlik kontrolüne git düğmesi, ayarlarda Chrome güvenlik kontrolü sayfasını ziyaret etmek için etkinleştirin</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1645368109819982629">Desteklenmeyen protokol</translation>
 <translation id="1650602712345345441">Chrome ayarlarınızı yönetin</translation>
@@ -2043,6 +2044,8 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5137761395480718572">Bu uygulama kablosuz ağ kimlik bilgileri yüklemek için izin istiyor. Kurulumdan sonra <ph name="DEVICE_TYPE" /> cihazınız katılımcı kablosuz ağlara otomatik olarak bağlanacaktır. Bu kimlik bilgilerini kaldırmak için uygulamayı kaldırın. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun.</translation>
 <translation id="5138227688689900538">Daha az göster</translation>
+<translation id="5143309888746105072">Chromium, sitelerin internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını engeller.
+            <ph name="NEW_LINE" />Site özellikleri çalışmıyorsa <ph name="START_LINK" />üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> için bildirimler engellendi</translation>
 <translation id="514704532284964975"><ph name="URL" />, telefonunuzla dokunduğunuz NFC cihazlardaki bilgileri görme ve değiştirme izni istiyor</translation>
@@ -2387,6 +2390,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5873297634595728366">Dizel Araçlar</translation>
 <translation id="5877831137320480913">Güzellik ve form koruma</translation>
 <translation id="5879989559903563723">Misafir Modu'nda izin verilmez</translation>
+<translation id="5880050725127890683">Chrome güvenlik kontrolüne gidin</translation>
 <translation id="5883861433316751031">MIDI cihazları kontrol edilip yeniden programlansın mı?</translation>
 <translation id="5884465125445718607">Zarf Chinese #6</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
@@ -2567,6 +2571,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6251906504834538140">{0,plural, =1{Dosyanın taşınması engellendi}other{<ph name="FILE_COUNT" /> dosyanın taşınması engellendi}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'da indirdiğiniz dosyaları yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6254436959401408446">Bu sayfayı açmaya yetecek kadar bellek yok</translation>
+<translation id="625463612687472648">İzin vermeyi durdur</translation>
 <translation id="6259156558325130047">Sıralama Değişikliğini &amp;Yeniden Yap</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> yer işaretleri</translation>
 <translation id="6264376385120300461">Yine de indir</translation>
@@ -2741,6 +2746,8 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6596325263575161958">Şifreleme seçenekleri</translation>
 <translation id="6597665340361269064">90 derece</translation>
 <translation id="6599642189720630047">Takip Edilen Ürünler</translation>
+<translation id="6606309334576464871">Chrome, sitelerin internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını engeller.
+            <ph name="NEW_LINE" />Site özellikleri çalışmıyorsa <ph name="START_LINK" />üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Ekonomi haberleri</translation>
 <translation id="6612010098632894193">Çevrimiçi video</translation>
 <translation id="6613866251791999074">Chrome'daki arama motorunuz hakkında daha fazla bilgi</translation>
@@ -3409,6 +3416,7 @@ Ek ayrıntılar:
 <translation id="7888575728750733395">Baskı oluşturma amacı</translation>
 <translation id="7894280532028510793">Yazım doğruysa <ph name="BEGIN_LINK" />Ağ Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Zarf 7 x 9 inç</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ayarlarda Chrome güvenlik kontrolü sayfasına gitmek için Sekme tuşuna, sonra Enter'a basın</translation>
 <translation id="7916162853251942238">Flekso Taban</translation>
 <translation id="7927971017714848357">Arazi ve arsa</translation>
 <translation id="793209273132572360">Adres güncellensin mi?</translation>
@@ -3702,6 +3710,7 @@ Ek ayrıntılar:
 <translation id="8460854335417802511">Etkinleştir</translation>
 <translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
+<translation id="8467494337615822642">Ayarlarda Chrome güvenlik kontrolü sayfasına gidin</translation>
 <translation id="8468358362970107653">Zarf C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>

@@ -3966,9 +3966,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4380159792986204036">Autoriser un kiosque Web à ouvrir plusieurs fenêtres de navigateur sur n'importe quel écran</translation>
 <translation id="4381227367939912539">Désactiver le jeu Easter Egg du dinosaure</translation>
 <translation id="4382413175336720282">La vérification en temps réel des URL est désactivée.</translation>
-<translation id="4384911996235542086">Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut envoyer à Google les téléchargements suspects d'utilisateurs pour lesquels la navigation sécurisée est activée, afin de rechercher des logiciels malveillants.
-Si elle est désactivée, cette analyse n'est pas effectuée.
-Cette règle n'a pas d'incidence sur l'analyse du contenu téléchargé configurée par les connecteurs Chrome Enterprise.</translation>
 <translation id="4387741272680827493">Cette règle permet de dresser une liste de noms d'hôte qui ignorent les mises à niveau HSTS préchargées entre http et https.
 
       Seuls les noms d'hôte sans extension sont autorisés dans cette règle. Elle ne s'applique qu'aux entrées préchargées HSTS "statiques" (par exemple, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Elle n'empêche pas les mises à niveau HSTS pour les serveurs qui ont demandé "dynamiquement" des mises à niveau HSTS à l'aide d'un en-tête de réponse <ph name="HSTS_HEADER_NAME" />.
@@ -8292,17 +8289,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>
-<translation id="8030797562351896051">Cette règle liste des recherches que l'utilisateur peut effectuer sur un site spécifique. L'utilisateur peut lancer une recherche en saisissant dans la barre d'adresse le raccourci ou le raccourci précédé du caractère @ (par exemple, @travail).
-
-Les champs liés au nom, au raccourci et à l'URL sont obligatoires pour chaque entrée. Les raccourcis listés doivent être uniques et sans espaces. L'ajout du caractère @ avant un raccourci est facultatif. Avec ou sans ce caractère, le résultat est considéré comme identique (par exemple, "travail" et "@travail" sont considérés comme le même raccourci).
-
-Pour chaque entrée, le champ "URL" indique l'URL du moteur de recherche utilisé lors d'une recherche avec le mot clé correspondant. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur. Les entrées non valides et celles comportant des raccourcis en double sont ignorées.
-
-Les entrées de recherche sur site configurées comme mises en avant sont affichées dans la barre d'adresse quand l'utilisateur saisit "@". Jusqu'à trois entrées peuvent être sélectionnées comme mises en avant.
-
-L'utilisateur ne peut pas modifier ni désactiver les entrées de recherche sur site définies par la règle, mais il peut ajouter des raccourcis pour la même URL. De plus, il ne peut pas créer d'entrées de recherche sur site avec un raccourci créé précédemment via une règle.
-
-En cas de conflit avec un raccourci que l'utilisateur a créé précédemment, le paramètre de l'utilisateur est respecté. Toutefois, l'utilisateur peut toujours déclencher l'option créée par une règle en saisissant le caractère @ dans la barre de recherche. Par exemple, si l'utilisateur a déjà défini "travail" comme raccourci vers l'URL1 et que la règle définit "travail" comme raccourci vers l'URL2, saisir "travail" dans la barre de recherche déclenchera une recherche sur l'URL1, mais saisir "@travail" dans la barre de recherche déclenchera une recherche sur l'URL2.</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8036284429246268475">Si cette règle est activée, les utilisateurs peuvent faire en sorte que <ph name="PRODUCT_NAME" /> contrôle si les noms d'utilisateur et les mots de passe saisis ont fait l'objet d'une fuite.
 

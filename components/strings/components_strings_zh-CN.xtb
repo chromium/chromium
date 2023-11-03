@@ -347,6 +347,7 @@
 <translation id="1640244768702815859">请尝试<ph name="BEGIN_LINK" />访问该网站的首页<ph name="END_LINK" />。</translation>
 <translation id="1641976391427233992">将输出时间延迟至</translation>
 <translation id="164212631332220697">结账时使用 <ph name="CARD_DETAIL" /> 付款。</translation>
+<translation id="1643651787397909318">“前往 Chrome 安全检查页面”按钮，激活它即可访问“设置”中的 Chrome“安全检查”页面</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1645368109819982629">协议不受支持</translation>
 <translation id="1650602712345345441">管理您的 Google 设置</translation>
@@ -2039,6 +2040,8 @@
 <translation id="5137761395480718572">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">暂时无法使用虚拟卡，请联系您的发卡行</translation>
 <translation id="5138227688689900538">收起</translation>
+<translation id="5143309888746105072">Chromium 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。
+            <ph name="NEW_LINE" />如果网站功能无法正常运作，请<ph name="START_LINK" />尝试暂时允许使用第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="5145883236150621069">策略响应中存在错误代码</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 网站上的通知已被屏蔽</translation>
 <translation id="514704532284964975"><ph name="URL" /> 想在您点按手机时查看和更改 NFC 设备上的信息</translation>
@@ -2383,6 +2386,7 @@
 <translation id="5873297634595728366">柴油车</translation>
 <translation id="5877831137320480913">美容与健身</translation>
 <translation id="5879989559903563723">在访客模式下不支持</translation>
+<translation id="5880050725127890683">前往 Chrome 安全检查页面</translation>
 <translation id="5883861433316751031">控制 MIDI 设备以及为其重新编程？</translation>
 <translation id="5884465125445718607">中式 #6 信封</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
@@ -2562,6 +2566,7 @@
 <translation id="6251906504834538140">{0,plural, =1{此文件已被禁止移动}other{<ph name="FILE_COUNT" /> 个文件已被禁止移动}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="6254436959401408446">内存不足，无法打开此网页</translation>
+<translation id="625463612687472648">不再授予权限</translation>
 <translation id="6259156558325130047">恢复顺序调整(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 书签</translation>
 <translation id="6264376385120300461">仍然下载</translation>
@@ -2736,6 +2741,8 @@
 <translation id="6596325263575161958">加密选项</translation>
 <translation id="6597665340361269064">90 度</translation>
 <translation id="6599642189720630047">跟踪的商品</translation>
+<translation id="6606309334576464871">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。
+            <ph name="NEW_LINE" />如果网站功能无法正常运作，请<ph name="START_LINK" />尝试暂时允许使用第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="6611723696964473273">经济新闻</translation>
 <translation id="6612010098632894193">在线视频</translation>
 <translation id="6613866251791999074">详细了解 Chrome 中的搜索引擎</translation>
@@ -3404,6 +3411,7 @@
 <translation id="7888575728750733395">打印操作渲染方式</translation>
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 英寸信封</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="7916162853251942238">柔印底基</translation>
 <translation id="7927971017714848357">地块与土地</translation>
 <translation id="793209273132572360">更新地址？</translation>
@@ -3697,6 +3705,7 @@
 <translation id="8460854335417802511">开启</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
+<translation id="8467494337615822642">前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="8468358362970107653">C3 信封</translation>
 <translation id="8473626140772740486">300 x 450 毫米</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>

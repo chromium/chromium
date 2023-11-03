@@ -349,6 +349,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1640244768702815859">Cuba <ph name="BEGIN_LINK" />lawat laman utama tapak<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Tangguhkan output sehingga</translation>
 <translation id="164212631332220697">Buat bayaran menggunakan <ph name="CARD_DETAIL" /> semasa daftar keluar.</translation>
+<translation id="1643651787397909318">Akses butang semakan keselamatan Chrome, aktifkan untuk melawat halaman semakan keselamatan Chrome dalam tetapan</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1645368109819982629">Protokol tidak disokong</translation>
 <translation id="1650602712345345441">Urus tetapan Chrome anda</translation>
@@ -1192,6 +1193,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3427342743765426898">&amp;Buat Semula Edit</translation>
 <translation id="342781501876943858">Chromium mengesyorkan penetapan semula kata laluan jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI templat pelayan DnsOverHttpsTemplates URI tidak sah dan tidak akan digunakan.</translation>
+<translation id="3428789896412418755">Sejarah Kumpulan</translation>
 <translation id="3431216045099978607">Tekan |<ph name="ACCELERATOR" />| untuk keluar daripada skrin penuh dan melihat muat turun.</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3433111389595862568">Perisian Kerjasama &amp; Persidangan</translation>
@@ -2049,6 +2051,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5137761395480718572">Apl ini meminta kebenaran untuk memasang bukti kelayakan Wi-Fi. Selepas persediaan, <ph name="DEVICE_TYPE" /> anda akan disambungkan secara automatik kepada rangkaian Wi-Fi yang turut serta. Untuk mengalih keluar bukti kelayakan ini, nyahpasang apl. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Kad maya tidak tersedia sekarang, sila hubungi bank anda</translation>
 <translation id="5138227688689900538">Tunjukkan kurang</translation>
+<translation id="5143309888746105072">Chromium menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas.
+            <ph name="NEW_LINE" />Jika ciri laman tidak berfungsi <ph name="START_LINK" />cuba berikan kebenaran kuki pihak ketiga buat sementara waktu<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Terdapat kod ralat dalam balasan dasar</translation>
 <translation id="5146995429444047494">Pemberitahuan untuk <ph name="ORIGIN" /> disekat</translation>
 <translation id="514704532284964975"><ph name="URL" /> mahu melihat dan menukar maklumat pada peranti NFC yang anda ketik dengan telefon anda</translation>
@@ -2394,6 +2398,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5873297634595728366">Kenderaan Diesel</translation>
 <translation id="5877831137320480913">Kecantikan &amp; kecergasan</translation>
 <translation id="5879989559903563723">Tidak dibenarkan dalam mod Tetamu</translation>
+<translation id="5880050725127890683">Akses semakan keselamatan Chrome</translation>
 <translation id="5883861433316751031">Kawal dan atur cara semula peranti MIDI?</translation>
 <translation id="5884465125445718607">Sampul Cina #6</translation>
 <translation id="5887400589839399685">Kad disimpan</translation>
@@ -2575,6 +2580,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6251906504834538140">{0,plural, =1{Fail disekat daripada dialihkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dialihkan}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus fail yang telah anda muat turun dalam Chrome</translation>
 <translation id="6254436959401408446">Memori tidak mencukupi untuk membuka halaman ini</translation>
+<translation id="625463612687472648">Hentikan kebenaran</translation>
 <translation id="6259156558325130047">&amp;Buat Asal Susun Semula</translation>
 <translation id="6263376278284652872">Penanda halaman <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Muat turun juga</translation>
@@ -2750,6 +2756,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6596325263575161958">Pilihan penyulitan</translation>
 <translation id="6597665340361269064">90 darjah</translation>
 <translation id="6599642189720630047">Produk yang Dijejaki</translation>
+<translation id="6606309334576464871">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas.
+            <ph name="NEW_LINE" />Jika ciri laman tidak berfungsi <ph name="START_LINK" />cuba berikan kebenaran kuki pihak ketiga buat sementara waktu<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Berita ekonomi</translation>
 <translation id="6612010098632894193">Video dalam talian</translation>
 <translation id="6613866251791999074">Ketahui lebih lanjut tentang enjin carian anda dalam Chrome</translation>
@@ -3172,6 +3180,7 @@ Butiran tambahan:
 <translation id="7423283032694727565">Butang urus kuki, aktifkan untuk mengurus pilihan kuki anda dalam tetapan Chrome</translation>
 <translation id="7427366580982928791">Keselamatan internet kanak-kanak</translation>
 <translation id="7429429656042611765">Eksekutif</translation>
+<translation id="7432774160230062882">Sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan oleh Chromium.</translation>
 <translation id="7437289804838430631">Tambahkan Maklumat Hubungan</translation>
 <translation id="7437490109271760224">Permainan kad</translation>
 <translation id="7438338505272634288">Penyerang pada laman yang cuba anda lawati mungkin memperdaya anda untuk memasang perisian berbahaya yang menjejaskan cara anda menyemak imbas – contohnya, dengan menukar halaman utama atau menunjukkan iklan tambahan pada laman yang anda lawati. Chrome amat mengesyorkan untuk kembali kepada laman selamat untuk mengelakkan bahaya. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3406,6 +3415,7 @@ Butiran tambahan:
 <translation id="7831993212387676366">Apakah itu Senarai beli-belah?</translation>
 <translation id="7840103971441592723">Tangkapan skrin telah bermula</translation>
 <translation id="784137052867620416">Cerapan Beli-belah</translation>
+<translation id="784404208867107517">Sejarah kumpulan</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Tiada}=1{1 apl (<ph name="EXAMPLE_APP_1" />)}=2{2 apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Kemudian, laman yang anda lawati boleh meminta topik anda daripada Chrome untuk memeribadikan iklan yang anda lihat. Chrome berkongsi sehingga 3 topik sambil melindungi sejarah penyemakan imbas dan identiti anda.</translation>
@@ -3424,6 +3434,7 @@ Butiran tambahan:
 <translation id="7888575728750733395">Niat pemaparan cetakan</translation>
 <translation id="7894280532028510793">Jika ejaan sudah betul, <ph name="BEGIN_LINK" />cuba jalankan Diagnostik Rangkaian<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Sampul 7 x 9 inci</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk mengakses halaman semakan keselamatan Chrome dalam tetapan</translation>
 <translation id="7916162853251942238">Asas Flexo</translation>
 <translation id="7927971017714848357">Lot &amp; tanah</translation>
 <translation id="793209273132572360">Kemas kini alamat?</translation>
@@ -3431,6 +3442,7 @@ Butiran tambahan:
 <translation id="79338296614623784">Masukkan nombor telefon yang sah</translation>
 <translation id="7934414805353235750"><ph name="URL" /> mahu memainkan kandungan yang dilindungi. Identiti peranti anda akan disahkan oleh Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7936775433939783906">Sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan oleh Google Chrome.</translation>
 <translation id="7937163678541954811">CVC kad ini akan disulitkan dan disimpan pada peranti anda untuk semak keluar yang lebih pantas</translation>
 <translation id="7937554595067888181">Tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sijil pelayan masih belum sah.</translation>
@@ -3719,6 +3731,7 @@ Butiran tambahan:
 <translation id="8460854335417802511">Hidupkan</translation>
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kad kredit}other{# kad kredit}}</translation>
+<translation id="8467494337615822642">Akses halaman semakan keselamatan Chrome dalam tetapan</translation>
 <translation id="8468358362970107653">Sampul C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>

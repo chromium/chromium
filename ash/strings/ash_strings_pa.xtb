@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">ਚਾਲੂ</translation>
 <translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। ਤਾਰੀਖਾਂ ਵਿਚਾਲੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
+<translation id="141170878022560212">ਵਿਚਕਾਰਲਾ ਬਟਨ</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ਸਥਾਪਤ ਕੀਤੀ ਐਪ</translation>
 <translation id="1414919006379339073">ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1415846719612499304">ਨੈੱਟਵਰਕ ਸੂਚੀ ਨੂੰ ਦਿਖਾਓ। <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@
 <translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
-<translation id="1815245884418711390">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ।</translation>
 <translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1823280932251546115">ਸਥਿਤੀ ਟ੍ਰੇ, ਸਮਾਂ <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@
 <translation id="2086334242442703436">ਇਮੋਜੀ ਚੋਣਕਾਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="2088116547584365419">ਗੇਮਾਂ</translation>
 <translation id="209965399369889474">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ</translation>
+<translation id="2107581415810719320">ਹੋਰ ਬਟਨ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ਤੁਹਾਡੀ USB-C ਕੇਬਲ Thunderbolt ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2108303511227308752">Alt + ਬੈਕਸਪੇਸ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Delete ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਬੈਕਸਪੇਸ ਦਬਾਓ।</translation>
 <translation id="2126242104232412123">ਨਵਾਂ ਡੈਸਕ</translation>
@@ -563,6 +564,7 @@
 <translation id="3340978935015468852">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3341303451326249809">ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="334252345105450327">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> ਦੇ ਲਈ ਡੀਵਾਈਸ ਦਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="334927402682780278">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੇ ਅਖੀਰ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="3349345708646875009">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3364721542077212959">ਸਟਾਈਲਸ ਟੂਲ</translation>
@@ -976,7 +978,6 @@
 <translation id="4936329710968938986">ਹਰ ਕੋਈ, ਬੰਦ</translation>
 <translation id="4937170330762390348">ਡਿਕਟੇਸ਼ਨ ਨਾਲ, ਤੁਸੀਂ ਆਪਣੀ ਅਵਾਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਟਾਈਪ ਕਰ ਸਕਦੇ ਹੋ। ਲਿਖਤ ਖੇਤਰ 'ਤੇ ਹੋਣ ਵੇਲੇ 'ਡਿਕਟੇਸ਼ਨ' ਕੁੰਜੀ ਦਬਾਓ ਜਾਂ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਦਿੱਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ। ਤੁਹਾਡੀ ਡਿਕਟੇਸ਼ਨ ਭਾਸ਼ਾ <ph name="LANGUAGE" /> 'ਤੇ ਸੈੱਟ ਹੈ। ਬੋਲੀ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾਵੇਗਾ ਤਾਂ ਜੋ ਤੁਸੀਂ ਡਿਕਟੇਸ਼ਨ ਨੂੰ ਆਫ਼ਲਾਈਨ ਵਰਤ ਸਕੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਡਿਕਟੇਸ਼ਨ ਭਾਸ਼ਾ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4938176435186993759">ਸਾਰੇ ਸੁਝਾਵਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
-<translation id="4943007472417128747">ਵਾਈ-ਫਾਈ ਵਰਤਣ ਲਈ ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਲਈ, ਵਾਈ-ਫਾਈ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="4945196315133970626">ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="4946376291507881335">ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="495046168593986294">ਉੱਪਰ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
@@ -997,7 +998,6 @@
 <translation id="5009463889040999939">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5016558321564993266">ਮਾਰਕਰ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">ਸ਼੍ਰੇਣੀਆਂ ਖੋਜੋ</translation>
-<translation id="5029356738310729434">ਡੀਵਾਈਸ ਦੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਚਾਲੂ ਹੈ</translation>
 <translation id="5030659775136592441">ਬੁੱਕਮਾਰਕ ਪ੍ਰਬੰਧਕ ਦਿਖਾਓ</translation>
 <translation id="5030687792513154421">ਸਮਾਂ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="5033299697334913360">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -1343,7 +1343,6 @@
 <translation id="643147933154517414">ਸਭ ਹੋ ਗਿਆ</translation>
 <translation id="6431865393913628856">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਰ</translation>
 <translation id="643593192654616063">ਕੁੱਲ <ph name="STORAGE_TOTAL_SIZE" /> ਸਟੋਰੇਜ ਵਿੱਚੋਂ <ph name="STORAGE_IN_USE_SIZE" /> ਵਰਤੋਂ ਵਿੱਚ</translation>
-<translation id="6442259747294754014">ਡੀਵਾਈਸ ਦੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਹੈ</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">ਸਮੱਗਰੀ ਮੁਤਾਬਕ ਆਪਣੇ ਚਿੱਤਰ ਲੱਭਣਾ</translation>
@@ -1469,7 +1468,6 @@
 <translation id="6912841030378044227">ਪਤਾ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="6912901278692845878">ਤਤਕਾਲ ਟੂਰ</translation>
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="6920245099716267363">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, 1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="692135145298539227">ਮਿਟਾਓ</translation>
 <translation id="6929081673585394903">ਕੰਟਰੋਲ ਦਿਖਾਓ</translation>
 <translation id="6931576957638141829">ਇਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -1565,7 +1563,6 @@
 <translation id="7378203170292176219">ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
 <translation id="7378594059915113390">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
 <translation id="7378889811480108604">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਬੰਦ ਹੈ</translation>
-<translation id="7382640522316003298">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਹਨ।</translation>
 <translation id="7382680553121047388">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7384028040782072252">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7386767620098596324">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
@@ -1589,6 +1586,7 @@
 <translation id="7489261257412536105">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ ਜਾਂ ਉਸ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="7490360161041035804">ਤੁਸੀਂ Google Drive ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਸਮੇਤ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਪਿੰਨ ਕਰਨ ਲਈ, ਕਰਸਰ ਨੂੰ ਕਿਸੇ ਆਈਟਮ ਦੇ ਉੱਤੇ ਘੁੰਮਾਓ ਜਾਂ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ ਅਤੇ ਉਸ ਆਈਟਮ 'ਤੇ ਸੱਜਾ-ਕਲਿਕ ਕਰੋ।</translation>
 <translation id="7497767806359279797">ਭਾਸ਼ਾ ਅਤੇ ਕੀ-ਬੋਰਡ ਚੁਣੋ</translation>
+<translation id="7507162824403726948">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7508690557411636492">ਪਿਛਲੇ ਮਹੀਨੇ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="7509246181739783082">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7512509370370076552">ਸੱਜਾ-ਕਲਿੱਕ ਸ਼ਾਰਟਕੱਟ ਨੂੰ alt + click ਤੋਂ<ph name="LAUNCHER_KEY_NAME" /> key + click 'ਤੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -1735,7 +1733,6 @@
 <translation id="8036504271468642248">ਪਿਛਲਾ ਵਾਕ</translation>
 <translation id="8042893070933512245">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8044457332620420407">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਬੰਦ ਹੈ</translation>
-<translation id="8048077032188362328">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="8048123526339889627">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ਨਾਮਕ ਟੈਮਪਲੇਟ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8052898407431791827">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
@@ -1756,7 +1753,6 @@
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8131994907636310308">ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਵਾਲਾ ਟੋਸਟ ਬੰਦ ਕਰੋ</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ</translation>
-<translation id="8135163608236671037">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8138705869659070104">ਡੀਵਾਈਸ ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="813913629614996137">ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8142441511840089262">ਡਬਲ ਕਲਿੱਕ ਕਰੋ</translation>

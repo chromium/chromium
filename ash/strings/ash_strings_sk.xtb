@@ -116,6 +116,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1391102559483454063">Zapnuté</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Klávesmi so šípkami prechádzajte medzi dátumami.</translation>
+<translation id="141170878022560212">Stredné tlačidlo</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, nainštalovaná aplikácia</translation>
 <translation id="1414919006379339073">Zavretie aktuálneho okna</translation>
 <translation id="1415846719612499304">Zobraziť zoznam sietí. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1787955149152357925">Vypnuté</translation>
 <translation id="1796561540704213354">Weby vrátane stránok, ktoré ste navštívili, a tých, ktoré sú otvorené</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
-<translation id="1815245884418711390">Prepnúť hotspot Hotspot je vypnutý.</translation>
 <translation id="1816896987747843206">Týmto povolíte prístup ku kamere všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1823280932251546115">Stavový panel, čas <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2086334242442703436">Otvoriť výber emodži</translation>
 <translation id="2088116547584365419">hry</translation>
 <translation id="209965399369889474">Nemáte pripojenie k sieti</translation>
+<translation id="2107581415810719320">Iné tlačidlo <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kábel USB-C nepodporuje Thunderbolt. Výkonnosť zariadenia môže byť obmedzená.</translation>
 <translation id="2108303511227308752">Klávesová skratka Alt + Backspace bola zmenená. Ak chcete použiť kláves Delete, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
@@ -563,6 +564,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3340978935015468852">nastavenia</translation>
 <translation id="3341303451326249809">Snímka obrazovky bola zaznamenaná</translation>
 <translation id="334252345105450327">Vytvoriť snímku obrazovky</translation>
+<translation id="3346728094401457853">Zadajte heslo zariadenia pre účet <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Výber textu od kurzora po koniec riadka</translation>
 <translation id="3349345708646875009">Otvorenie správcu úloh</translation>
 <translation id="3364721542077212959">Nástroje pre dotykové pero</translation>
@@ -975,7 +977,6 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4936329710968938986">Všetci, vypnuté</translation>
 <translation id="4937170330762390348">Diktovanie vám umožňuje písať hlasom. Keď prejdete na textové pole, stlačte kláves diktovania alebo vyberte ikonu mikrofónu v dolnej časti obrazovky. Máte nastavené diktovanie v jazyku <ph name="LANGUAGE" />. Súbory reči budú stiahnuté, aby ste diktovanie mohli používať offline. Jazyk diktovania môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="4938176435186993759">Skryť všetky návrhy</translation>
-<translation id="4943007472417128747">Hotspot bol vypnutý, aby sa mohla používať sieť Wi‐Fi. Ak chcete používať hotspot, vypnite Wi‐Fi.</translation>
 <translation id="4945196315133970626">Vypnúť upozornenia</translation>
 <translation id="4946376291507881335">Nasnímať</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
@@ -996,7 +997,6 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="5009463889040999939">Profil sa premenúva. Môže to trvať niekoľko minút.</translation>
 <translation id="5016558321564993266">Prepnite zvýrazňovač. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Hľadať v kategóriách</translation>
-<translation id="5029356738310729434">Prístup k mikrofónu zariadenia je zapnutý</translation>
 <translation id="5030659775136592441">Zobrazenie správcu záložiek</translation>
 <translation id="5030687792513154421">Čas vypršal</translation>
 <translation id="5033299697334913360">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
@@ -1342,7 +1342,6 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="643147933154517414">Všetko je hotové</translation>
 <translation id="6431865393913628856">Rekordér obrazovky</translation>
 <translation id="643593192654616063">Využívaný priestor z celkovej kapacity <ph name="STORAGE_TOTAL_SIZE" />: <ph name="STORAGE_IN_USE_SIZE" /></translation>
-<translation id="6442259747294754014">Prístup k mikrofónu zariadenia je vypnutý</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">procesor</translation>
 <translation id="6446225358675593408">Vyhľadávajte obrázky podľa obsahu</translation>
@@ -1468,7 +1467,6 @@ Nová inštalácia</translation>
 <translation id="6912841030378044227">Označenie panela s adresou</translation>
 <translation id="6912901278692845878">Rýchla prehliadka</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
-<translation id="6920245099716267363">Prepnúť hotspot Hotspot je zapnutý, je pripojené jedno zariadenie.</translation>
 <translation id="692135145298539227">odstrániť</translation>
 <translation id="6929081673585394903">Zobraziť ovládanie</translation>
 <translation id="6931576957638141829">Uložiť do</translation>
@@ -1564,7 +1562,6 @@ Nová inštalácia</translation>
 <translation id="7378203170292176219">Presunutím vyberte oblasť, ktorú chcete nahrať</translation>
 <translation id="7378594059915113390">Ovládanie médií</translation>
 <translation id="7378889811480108604">Režim šetriča batérie je vypnutý</translation>
-<translation id="7382640522316003298">Prepnúť hotspot Hotspot je zapnutý, počet pripojených zariadení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Zapnuté</translation>
 <translation id="7384028040782072252">Kliknite pravým tlačidlom na ľubovoľné miesto a zmeňte poradie aplikácií</translation>
 <translation id="7386767620098596324">Prepnúť pripojenie k sieti. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1585,7 @@ Nová inštalácia</translation>
 <translation id="7489261257412536105">Spustenie alebo ukončenie režimu celej obrazovky</translation>
 <translation id="7490360161041035804">Dôležité súbory vrátane súborov z Disku Google si môžete pripnúť. Ak chcete položku pripnúť, umiestnite na ňu kurzor alebo otvorte Súbory a na príslušnú položku kliknite pravým tlačidlom.</translation>
 <translation id="7497767806359279797">Vybrať jazyk a klávesnicu</translation>
+<translation id="7507162824403726948">Dokončite overenie totožnosti</translation>
 <translation id="7508690557411636492">Otvorené v poslednom mesiaci</translation>
 <translation id="7509246181739783082">Overenie totožnosti</translation>
 <translation id="7512509370370076552">Skratka kliknutia pravým tlačidlom bola aktualizovaná z kombinácie Alt + kliknutie na kombináciu <ph name="LAUNCHER_KEY_NAME" /> + kliknutie</translation>
@@ -1734,7 +1732,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8036504271468642248">Predchádzajúca veta</translation>
 <translation id="8042893070933512245">Otvoriť ponuku nastavení dostupnosti</translation>
 <translation id="8044457332620420407">Podsvietenie klávesnice je vypnuté</translation>
-<translation id="8048077032188362328">Váš správca hotspot vypol.</translation>
 <translation id="8048123526339889627">Nastavenia Bluetooth</translation>
 <translation id="8051716679295756675">Šablóna s názvom <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Skopírované do schránky</translation>
@@ -1755,7 +1752,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8131994907636310308">Zavrieť oznam k zoradeniu</translation>
 <translation id="8132793192354020517">Pripojené k sieti <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Prepnúť hotspot Hotspot je zapnutý, nie je pripojené žiadne zariadenie.</translation>
 <translation id="8138705869659070104">Aktivovať po nastavení zar.</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8142441511840089262">Dvojité kliknutie</translation>

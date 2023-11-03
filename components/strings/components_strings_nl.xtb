@@ -347,6 +347,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1640244768702815859">Probeer <ph name="BEGIN_LINK" />de homepage van de site te bezoeken<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Uitvoer vertragen tot</translation>
 <translation id="164212631332220697">Bij het afrekenen betalen met <ph name="CARD_DETAIL" />.</translation>
+<translation id="1643651787397909318">Knop Naar de Chrome-veiligheidscheck, activeer deze knop om naar de pagina voor de Chrome-veiligheidscheck in de instellingen te gaan</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1645368109819982629">Niet-ondersteund protocol</translation>
 <translation id="1650602712345345441">Je Chrome-instellingen beheren</translation>
@@ -2038,6 +2039,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5137761395480718572">Deze app wil rechten om wifi-inloggegevens te installeren. Na het instellen maakt je <ph name="DEVICE_TYPE" /> automatisch verbinding met deelnemende wifi-netwerken. Verwijder de app om deze inloggegevens te verwijderen. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuele kaart nu niet beschikbaar, neem contact op met je bank</translation>
 <translation id="5138227688689900538">Minder bekijken</translation>
+<translation id="5143309888746105072">Chromium voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst.
+            <ph name="NEW_LINE" />Als sitefuncties niet werken, <ph name="START_LINK" />kun je cookies van derden tijdelijk toestaan<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Foutcode aanwezig in de beleidsreactie</translation>
 <translation id="5146995429444047494">Meldingen voor <ph name="ORIGIN" /> zijn geblokkeerd</translation>
 <translation id="514704532284964975"><ph name="URL" /> wil informatie zien en wijzigen op NFC-apparaten waarop je met je telefoon tikt</translation>
@@ -2382,6 +2385,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5873297634595728366">Dieselvoertuigen</translation>
 <translation id="5877831137320480913">Beauty en fitness</translation>
 <translation id="5879989559903563723">Niet toegestaan in gastmodus</translation>
+<translation id="5880050725127890683">Naar de Chrome-veiligheidscheck</translation>
 <translation id="5883861433316751031">MIDI-apparaten bedienen en opnieuw programmeren?</translation>
 <translation id="5884465125445718607">Envelop Chinees #6</translation>
 <translation id="5887400589839399685">Pas opgeslagen</translation>
@@ -2561,6 +2565,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6251906504834538140">{0,plural, =1{Bestand kan niet worden verplaatst}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden verplaatst}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om bestanden te beheren die je in Chrome hebt gedownload</translation>
 <translation id="6254436959401408446">Onvoldoende geheugen om deze pagina te openen</translation>
+<translation id="625463612687472648">Niet meer toestaan</translation>
 <translation id="6259156558325130047">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="6263376278284652872">Bookmarks voor <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
@@ -2735,6 +2740,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6596325263575161958">Opties voor versleuteling</translation>
 <translation id="6597665340361269064">90 graden</translation>
 <translation id="6599642189720630047">Gevolgde producten</translation>
+<translation id="6606309334576464871">Chrome voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst.
+            <ph name="NEW_LINE" />Als sitefuncties niet werken, <ph name="START_LINK" />kun je cookies van derden tijdelijk toestaan<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Economisch nieuws</translation>
 <translation id="6612010098632894193">Online video</translation>
 <translation id="6613866251791999074">Meer informatie over je zoekmachine in Chrome</translation>
@@ -3403,6 +3410,7 @@ Aanvullende informatie:
 <translation id="7888575728750733395">Weergave-intentie voor afdrukken</translation>
 <translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelop 7 x 9 inch</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om naar de pagina voor de Chrome-veiligheidscheck in de instellingen te gaan</translation>
 <translation id="7916162853251942238">Flexo-basis</translation>
 <translation id="7927971017714848357">Kavels en land</translation>
 <translation id="793209273132572360">Adres updaten?</translation>
@@ -3696,6 +3704,7 @@ Aanvullende informatie:
 <translation id="8460854335417802511">Aanzetten</translation>
 <translation id="8461694314515752532">Gesynchroniseerde gegevens versleutelen met een eigen wachtwoordzin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 creditcard}other{# creditcards}}</translation>
+<translation id="8467494337615822642">Naar de pagina voor de Chrome-veiligheidscheck in de instellingen gaan</translation>
 <translation id="8468358362970107653">Envelop C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>

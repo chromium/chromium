@@ -4078,9 +4078,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4382413175336720282">A verificação de URLs em tempo real está desativada.</translation>
 <translation id="4384480363454039240">Quando a política é ativada ou deixada sem definição, os usuários podem rastrear as encomendas no <ph name="PRODUCT_NAME" /> pela página "Nova guia".
 Quando ela é desativada, os usuários não podem rastrear as encomendas no <ph name="PRODUCT_NAME" /> pela página "Nova guia".</translation>
-<translation id="4384911996235542086">Se esta política for ativada ou se não for definida, o <ph name="PRODUCT_NAME" /> pode enviar downloads suspeitos de usuários com o recurso Navegação segura ao Google para verificar se há malware.
-Se a política for desativada, a verificação não será realizada.
-Esta política não afeta a análise de downloads configurada pelo Chrome Enterprise Connectors.</translation>
 <translation id="4387741272680827493">A definição da política especifica uma lista de nomes de host que ignoram upgrades HSTS pré-carregados de HTTP para HTTPS.
 
       Apenas nomes de host de etiqueta única são permitidos nesta política, e ela se aplica somente a entradas HSTS pré-carregadas "estáticas" (por exemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). A política não impede upgrades HSTS para servidores que fazem solicitações de upgrade HSTS "dinamicamente" usando um cabeçalho de resposta <ph name="HSTS_HEADER_NAME" />.
@@ -4466,6 +4463,17 @@ A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá e
       Se esta política não for definida, a filtragem será omitida, e todos os servidores de impressão serão considerados.
 
       Esta política está obsoleta. Use <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
+<translation id="4667462525936265103">Essa política controla se os usuários têm permissão para migrar dados de navegação para um perfil gerenciado criado após o login de uma conta gerenciada na área de conteúdo.
+
+Se a política for deixada sem definição ou for definida como <ph name="USER_OPTIN_DATA_ENUM_NAME" /> (valor 1), o usuário poderá escolher se quer trazer os dados de navegação para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil fica visível e desmarcada por padrão.
+
+Se esta política for definida como <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> (valor 2), o usuário poderá escolher se quer usar os dados de navegação já existentes para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil fica visível e marcada por padrão. Além disso, a opção só é permitida em dispositivos gerenciados.
+
+Se esta política for definida como <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> (valor 3), o usuário não poderá transferir os dados de navegação para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil não estará visível.
+
+A transferência de dados de navegação para o perfil gerenciado significa que o perfil atual passa a ser gerenciado. Nenhum perfil novo será criado.
+
+Não transferir os dados de navegação para o perfil gerenciado significa que um novo perfil limpo será criado. Os dados de navegação vão permanecer em um perfil não gerenciado, que ainda poderá ser acessado pelo usuário no seletor de perfis.</translation>
 <translation id="4668325077104657568">Configuração de imagens padrão</translation>
 <translation id="4669083178278833688">Definir a câmera, configurações do navegador, configurações do SO, digitalização, loja on-line, tela, análise, Crosh, galeria e recursos do terminal a serem desativados</translation>
 <translation id="4669292863736266737">A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> vai ativar os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização vão continuar desativados durante a configuração.
@@ -7235,6 +7243,7 @@ bloqueio dessas solicitações será aplicado.</translation>
 
       Os idiomas compatíveis no momento são: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Ativar impressão duplex de borda longa</translation>
+<translation id="6929639826067341257">Sugerir aos usuários que transfiram os dados no perfil gerenciado e oferecer a opção de negar a transferência</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
 <translation id="6932282102911647185">Luz de fundo roxa do teclado</translation>
@@ -8576,17 +8585,6 @@ também é seguro.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
-<translation id="8030797562351896051">Esta política oferece uma lista de pesquisas em que o usuário pode fazer buscas em um site específico. O usuário pode iniciar a pesquisa digitando o atalho ou @atalho (por exemplo, @trabalho) na barra de endereço.
-
-Os campos a seguir são obrigatórios para cada entrada: nome, atalho e URL. Os atalhos da lista precisam ser exclusivos e não podem ter espaços. A inclusão de @ no início de um atalho é opcional. Assim, o atalho é considerado o mesmo com ou sem @. Por exemplo, "trabalho" e "@trabalho" são o mesmo atalho.
-
-Para cada entrada, o campo "URL" especifica o URL do mecanismo de pesquisa usado durante uma pesquisa com a palavra-chave correspondente. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário. Entradas inválidas e com atalhos duplicados são ignoradas.
-
-As entradas da pesquisa no site configuradas como em destaque aparecem na barra de endereço quando o usuário digita "@". Até três entradas podem ser selecionadas para ficar em destaque.
-
-Os usuários não podem editar ou desativar entradas de pesquisa no site definidas pela política, mas podem adicionar novos atalhos para o mesmo URL. Além disso, os usuários não podem criar novas entradas de pesquisa no site com um atalho criado anteriormente pela política.
-
-Em caso de conflito com um atalho já criado pelo usuário, a configuração do usuário é respeitada. No entanto, os usuários ainda podem acionar a opção criada pela política digitando "@" na barra de pesquisa. Por exemplo, se o usuário já definiu "trabalho" como um atalho para URL1, e a política define "trabalho" como um atalho para URL2, digitar "trabalho" na barra de pesquisa vai acionar uma pesquisa para URL1, mas digitar "@trabalho" vai acionar uma pesquisa para URL2.</translation>
 <translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
 <translation id="8036284429246268475">Se a política for ativada, os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
 

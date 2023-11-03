@@ -116,6 +116,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1391102559483454063">Włączono</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Aby przechodzić między datami, użyj klawiszy strzałek.</translation>
+<translation id="141170878022560212">Przycisk środkowy</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, zainstalowana aplikacja</translation>
 <translation id="1414919006379339073">Zamknij bieżące okno</translation>
 <translation id="1415846719612499304">Pokaż listę sieci. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
-<translation id="1815245884418711390">Przełącz hotspota. Hotspot jest wyłączony.</translation>
 <translation id="1816896987747843206">Spowoduje to przyznanie dostępu do aparatu wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1823280932251546115">Pasek stanu, godzina <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2086334242442703436">Otwórz selektor emotikonów</translation>
 <translation id="2088116547584365419">gry</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
+<translation id="2107581415810719320">Inny przycisk <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Twój kabel USB-C nie obsługuje standardu Thunderbolt. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="2108303511227308752">Skrót klawiszowy Alt + Backspace został zmieniony. Aby użyć klawisza Delete, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Nowe biurko</translation>
@@ -563,6 +564,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3340978935015468852">ustawienia</translation>
 <translation id="3341303451326249809">Wykonano zrzut ekranu</translation>
 <translation id="334252345105450327">Zrób zrzut ekranu</translation>
+<translation id="3346728094401457853">Wpisz hasło urządzenia dla użytkownika <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Zaznacz tekst od kursora do końca wiersza</translation>
 <translation id="3349345708646875009">Otwórz menedżera zadań</translation>
 <translation id="3364721542077212959">Narzędzia rysika</translation>
@@ -975,7 +977,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4936329710968938986">Wszystkim, wyłączono</translation>
 <translation id="4937170330762390348">Dzięki dyktowaniu możesz pisać głosowo. Naciśnij klawisz dyktowania lub wybierz ikonę mikrofonu u dołu ekranu, jeśli jesteś w polu tekstowym. Twój język dyktowania to <ph name="LANGUAGE" />. Pliki rozpoznawania mowy zostaną pobrane, aby można było używać dyktowania offline. W każdej chwili możesz zmienić język dyktowania. W tym celu wybierz Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="4938176435186993759">Ukryj wszystkie sugestie</translation>
-<translation id="4943007472417128747">Hotspot został wyłączony, żeby można było korzystać z Wi-Fi. Aby korzystać z hotspota, wyłącz Wi-Fi.</translation>
 <translation id="4945196315133970626">Wyłącz powiadomienia</translation>
 <translation id="4946376291507881335">Zapis</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>
@@ -996,7 +997,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5009463889040999939">Zmieniam nazwę profilu. Może to potrwać kilka minut.</translation>
 <translation id="5016558321564993266">Włącz lub wyłącz pisak. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorie wyszukiwania</translation>
-<translation id="5029356738310729434">Dostęp do mikrofonu urządzenia jest włączony</translation>
 <translation id="5030659775136592441">Pokaż menedżera zakładek</translation>
 <translation id="5030687792513154421">Czas minął</translation>
 <translation id="5033299697334913360">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
@@ -1342,7 +1342,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="643147933154517414">Wszystko gotowe</translation>
 <translation id="6431865393913628856">Nagrywanie ekranu</translation>
 <translation id="643593192654616063">Wykorzystano <ph name="STORAGE_IN_USE_SIZE" /> z <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Dostęp do mikrofonu urządzenia jest wyłączony</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Znajdź obrazy według zawartości</translation>
@@ -1467,7 +1466,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6912841030378044227">Zaznacz pasek adresu</translation>
 <translation id="6912901278692845878">Krótka prezentacja</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
-<translation id="6920245099716267363">Przełącz hotspota. Hotspot jest włączony. Jedno urządzenie jest połączone.</translation>
 <translation id="692135145298539227">usuń</translation>
 <translation id="6929081673585394903">Pokaż elementy sterujące</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
@@ -1563,7 +1561,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
 <translation id="7378594059915113390">Sterowanie multimediami</translation>
 <translation id="7378889811480108604">Oszczędzanie baterii jest wyłączone.</translation>
-<translation id="7382640522316003298">Przełącz hotspota. Hotspot jest włączony. Połączono z urządzeniami (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7382680553121047388">Wł.</translation>
 <translation id="7384028040782072252">Kliknij prawym przyciskiem w dowolnym miejscu, aby zmienić kolejność aplikacji</translation>
 <translation id="7386767620098596324">Przełącz połączenie sieciowe. <ph name="STATE_TEXT" />.</translation>
@@ -1587,6 +1584,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7489261257412536105">Otwórz lub zamknij pełny ekran</translation>
 <translation id="7490360161041035804">Możesz przypiąć ważne pliki, w tym pliki na Dysku Google. Aby przypiąć element, najedź na niego kursorem lub otwórz Pliki i kliknij go prawym przyciskiem myszy.</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
+<translation id="7507162824403726948">Dokończ proces weryfikacji tożsamości</translation>
 <translation id="7508690557411636492">Otwierane w zeszłym miesiącu</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7512509370370076552">Skrót symulujący kliknięcie prawym przyciskiem myszy to teraz klawisz <ph name="LAUNCHER_KEY_NAME" /> + kliknięcie (poprzednio Alt + kliknięcie)</translation>
@@ -1733,7 +1731,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8036504271468642248">Poprzednie zdanie</translation>
 <translation id="8042893070933512245">Otwórz menu ustawień ułatwień dostępu</translation>
 <translation id="8044457332620420407">Podświetlenie klawiatury jest wyłączone</translation>
-<translation id="8048077032188362328">Administrator wyłączył hotspot.</translation>
 <translation id="8048123526339889627">Ustawienia Bluetootha</translation>
 <translation id="8051716679295756675">Szablon o nazwie <ph name="DESK_TEMPLATE_NAME" /> już istnieje</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>
@@ -1754,7 +1751,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8131994907636310308">Komunikat Zamknij sortowanie</translation>
 <translation id="8132793192354020517">Połączono z <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Przełącz hotspota. Hotspot jest włączony. Żadne urządzenie nie jest połączone.</translation>
 <translation id="8138705869659070104">Aktywuj po konfiguracji urządzenia</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8142441511840089262">Dwukrotne kliknięcie</translation>

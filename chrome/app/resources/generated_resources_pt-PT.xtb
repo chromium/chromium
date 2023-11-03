@@ -1875,6 +1875,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2428978615149723410">estes carrinhos</translation>
 <translation id="2431027948063157455">Não foi possível carregar o Assistente Google. Verifique a sua ligação à rede e tente novamente.</translation>
 <translation id="243179355394256322">A sua entidade limita a inscrição de dispositivos apenas a utilizadores autorizados. Este utilizador não está autorizado a inscrever dispositivos. Certifique-se de que o utilizador tem o privilégio de administrador "Inscrever hardware Google Meet" na secção Utilizadores da consola do administrador.</translation>
+<translation id="243275146591958220">Cancelar transferência</translation>
 <translation id="2433452467737464329">Adicione um parâmetro de consulta ao URL para atualizar automaticamente a página: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aspeto</translation>
 <translation id="2433836460518180625">Desbloquear apenas no dispositivo</translation>
@@ -9011,6 +9012,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8123975449645947908">Deslocar para trás</translation>
 <translation id="8124313775439841391">ONC gerido</translation>
+<translation id="8125651784723647184">A partilha de palavras-passe é gerida pelo seu administrador</translation>
 <translation id="8129265306888404830">Para usar o endereço de email da sua organização (<ph name="EMAIL_DOMAIN" />), tem de usar a inscrição empresarial. Se este dispositivo for para sua utilização pessoal, inicie sessão com a sua Conta Google pessoal.</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -9077,7 +9079,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Impressora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Poupança de energia ativada</translation>
 <translation id="8180786512391440389">A extensão "<ph name="EXTENSION" />" consegue ler e eliminar imagens, ficheiros de vídeo e de som nas localizações marcadas.</translation>
-<translation id="8180826593917851025">Configurar zona Wi-Fi do <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Não é possível associar ao domínio. Verifique a sua conta para saber se tem privilégios suficientes para adicionar dispositivos.</translation>
 <translation id="8182105986296479640">A aplicação não está a responder</translation>
 <translation id="8182412589359523143">Para eliminar todos os dados deste dispositivo <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />clique aqui<ph name="END_LINK" />.</translation>
@@ -10075,6 +10076,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8968527460726243404">Criador de imagem do sistema do Chrome OS</translation>
 <translation id="8968766641738584599">Guardar cartão</translation>
 <translation id="8968906873893164556">Escolha a conta a usar para a configuração</translation>
+<translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Consulte o seu gestor de rede para ter a certeza de que a firewall não está a bloquear as transferências dos servidores da Google.</translation>
 <translation id="8973263196882835828">&amp;Ativar Legendas instantâneas</translation>

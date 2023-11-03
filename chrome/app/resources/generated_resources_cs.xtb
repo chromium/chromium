@@ -1874,6 +1874,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2428978615149723410">tyto karty</translation>
 <translation id="2431027948063157455">Načtení Asistenta Google se nezdařilo, zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="243179355394256322">Vaše organizace omezuje registraci zařízení pouze na oprávněné uživatele. Tento uživatel není oprávněn registrovat zařízení. Zkontrolujte, zda má uživatel v administrátorské konzoli v sekci Uživatelé administrátorské právo Registrovat hardware Google Meet.</translation>
+<translation id="243275146591958220">Zrušit stahování</translation>
 <translation id="2433452467737464329">Chcete-li stránku obnovovat automaticky, přidejte do adresy URL následující parametr dotazu: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Vzhled</translation>
 <translation id="2433836460518180625">Jen odemknout zařízení</translation>
@@ -9057,7 +9058,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Tiskárna <ph name="ITEM_POSITION" /> z <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Spořič energie zapnutý</translation>
 <translation id="8180786512391440389">Rozšíření <ph name="EXTENSION" /> může číst obrázky, video a zvukové soubory v povolených umístěních a mazat je.</translation>
-<translation id="8180826593917851025">Konfigurace hotspotu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8181215761849004992">Přidání do domény se nezdařilo. Zkontrolujte, zda má váš účet k přidávání zařízení dostatečná oprávnění.</translation>
 <translation id="8182105986296479640">Aplikace neodpovídá.</translation>
 <translation id="8182412589359523143">Chcete-li z tohoto zařízení <ph name="DEVICE_TYPE" /> vymazat veškerá data, <ph name="BEGIN_LINK" />klikněte sem<ph name="END_LINK" />.</translation>
@@ -10055,6 +10055,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8968527460726243404">Zapisovač obrazu systému Chrome OS</translation>
 <translation id="8968766641738584599">Uložit kartu</translation>
 <translation id="8968906873893164556">Vyberte účet, který chcete použít k nastavení</translation>
+<translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="89720367119469899">Escapovat</translation>
 <translation id="8972513834460200407">Obraťte se na svého správce sítě a ověřte, že stahování ze serverů Google neblokuje firewall.</translation>
 <translation id="8973263196882835828">&amp;Zapnout živý přepis</translation>

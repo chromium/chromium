@@ -116,6 +116,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1391102559483454063">Aktif</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan tombol panah untuk berpindah-pindah antar-tanggal.</translation>
+<translation id="141170878022560212">Tombol Tengah</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Aplikasi yang Diinstal</translation>
 <translation id="1414919006379339073">Tutup jendela saat ini</translation>
 <translation id="1415846719612499304">Tampilkan daftar jaringan. <ph name="STATE_TEXT" />.</translation>
@@ -211,7 +212,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="1796561540704213354">Situs, termasuk halaman yang telah Anda kunjungi dan halaman yang dibuka</translation>
 <translation id="181103072419391116">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
-<translation id="1815245884418711390">Aktifkan/nonaktifkan Hotspot. Hotspot dinonaktifkan.</translation>
 <translation id="1816896987747843206">Tindakan ini akan mengizinkan akses kamera untuk semua aplikasi dan situs yang memiliki izin kamera</translation>
 <translation id="1823280932251546115">Menu status, waktu <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -282,6 +282,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2086334242442703436">Buka Alat Pilih Emoji</translation>
 <translation id="2088116547584365419">game</translation>
 <translation id="209965399369889474">Tidak terhubung ke jaringan</translation>
+<translation id="2107581415810719320">Tombol Lainnya <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C Anda tidak mendukung Thunderbolt. Performa perangkat mungkin dibatasi.</translation>
 <translation id="2108303511227308752">Pintasan keyboard Alt + Backspace telah diubah. Untuk menggunakan tombol Delete, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Desktop baru</translation>
@@ -563,6 +564,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3340978935015468852">setelan</translation>
 <translation id="3341303451326249809">Screenshot diambil</translation>
 <translation id="334252345105450327">Ambil screenshot</translation>
+<translation id="3346728094401457853">Masukkan sandi perangkat untuk <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Pilih teks dari kursor ke akhir baris</translation>
 <translation id="3349345708646875009">Buka pengelola tugas</translation>
 <translation id="3364721542077212959">Alat stilus</translation>
@@ -975,7 +977,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4936329710968938986">Siapa saja, nonaktif</translation>
 <translation id="4937170330762390348">Dengan dikte, Anda dapat mengetik menggunakan suara. Tekan tombol dikte atau pilih ikon mikrofon di bagian bawah layar saat Anda berada di kolom teks. Bahasa dikte Anda disetel ke <ph name="LANGUAGE" />. File ucapan akan didownload sehingga Anda dapat menggunakan dikte secara offline. Anda dapat mengubah bahasa dikte kapan saja di Setelan &gt; Aksesibilitas.</translation>
 <translation id="4938176435186993759">Sembunyikan semua saran</translation>
-<translation id="4943007472417128747">Hotspot telah dinonaktifkan untuk menggunakan Wi-Fi. Untuk menggunakan Hotspot, nonaktifkan Wi-Fi.</translation>
 <translation id="4945196315133970626">Nonaktifkan notifikasi</translation>
 <translation id="4946376291507881335">Ambil gambar</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
@@ -996,7 +997,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5009463889040999939">Mengganti nama profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="5016558321564993266">Aktifkan/nonaktifkan penanda. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Telusuri kategori</translation>
-<translation id="5029356738310729434">Akses mikrofon perangkat aktif</translation>
 <translation id="5030659775136592441">Menampilkan pengelola bookmark</translation>
 <translation id="5030687792513154421">Waktu habis</translation>
 <translation id="5033299697334913360">Klik di mana saja untuk menangkap gambar dalam layar penuh</translation>
@@ -1342,7 +1342,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="643147933154517414">Selesai</translation>
 <translation id="6431865393913628856">Perekaman layar</translation>
 <translation id="643593192654616063"><ph name="STORAGE_IN_USE_SIZE" /> penyimpanan digunakan dari total <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">Akses mikrofon perangkat nonaktif</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">Temukan gambar Anda berdasarkan kontennya</translation>
@@ -1468,7 +1467,6 @@ Baru diinstal</translation>
 <translation id="6912841030378044227">Fokus ke kolom URL</translation>
 <translation id="6912901278692845878">Tur singkat</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
-<translation id="6920245099716267363">Aktifkan/nonaktifkan Hotspot. Hotspot aktif, 1 perangkat terhubung.</translation>
 <translation id="692135145298539227">hapus, delete</translation>
 <translation id="6929081673585394903">Tampilkan kontrol</translation>
 <translation id="6931576957638141829">Simpan ke</translation>
@@ -1564,7 +1562,6 @@ Baru diinstal</translation>
 <translation id="7378203170292176219">Tarik untuk memilih area yang akan direkam</translation>
 <translation id="7378594059915113390">Kontrol Media</translation>
 <translation id="7378889811480108604">Mode penghemat baterai tidak aktif</translation>
-<translation id="7382640522316003298">Aktifkan/nonaktifkan Hotspot. Hotspot aktif, <ph name="DEVICECOUNT" /> perangkat terhubung.</translation>
 <translation id="7382680553121047388">Aktif</translation>
 <translation id="7384028040782072252">Klik kanan di sembarang tempat untuk mengurutkan ulang aplikasi</translation>
 <translation id="7386767620098596324">Tombol koneksi jaringan. <ph name="STATE_TEXT" />.</translation>
@@ -1588,6 +1585,7 @@ Baru diinstal</translation>
 <translation id="7489261257412536105">Masuk atau keluar dari layar penuh</translation>
 <translation id="7490360161041035804">Anda dapat menyematkan file penting, termasuk file Google Drive. Untuk menyematkan, arahkan kursor ke item atau buka File lalu klik kanan item.</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
+<translation id="7507162824403726948">Selesaikan verifikasi identitas Anda</translation>
 <translation id="7508690557411636492">Dibuka dalam sebulan terakhir</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7512509370370076552">Pintasan klik kanan diperbarui dari alt + klik menjadi tombol <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
@@ -1734,7 +1732,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8036504271468642248">Kalimat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu setelan aksesibilitas</translation>
 <translation id="8044457332620420407">Lampu latar keyboard menyala</translation>
-<translation id="8048077032188362328">Administrator Anda telah menonaktifkan Hotspot.</translation>
 <translation id="8048123526339889627">Setelan Bluetooth</translation>
 <translation id="8051716679295756675">Template bernama <ph name="DESK_TEMPLATE_NAME" /> sudah ada</translation>
 <translation id="8052898407431791827">Disalin ke papan klip</translation>
@@ -1755,7 +1752,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8131994907636310308">Tutup toast pengurutan</translation>
 <translation id="8132793192354020517">Terhubung ke <ph name="NAME" /></translation>
-<translation id="8135163608236671037">Aktifkan/nonaktifkan Hotspot. Hotspot aktif, tidak ada perangkat yang terhubung.</translation>
 <translation id="8138705869659070104">Aktifkan setelah penyiapan perangkat</translation>
 <translation id="813913629614996137">Memulai...</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>

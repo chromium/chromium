@@ -349,6 +349,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1640244768702815859">Tente <ph name="BEGIN_LINK" />visitar a página inicial do site<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Adiar saída até</translation>
 <translation id="164212631332220697">Pague com <ph name="CARD_DETAIL" /> na finalização da compra.</translation>
+<translation id="1643651787397909318">Ative o botão "Confirmação de segurança do Chrome" para acessar a página nas configurações</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645368109819982629">Protocolo não compatível</translation>
 <translation id="1650602712345345441">Gerencie as configurações do Chrome</translation>
@@ -2048,6 +2049,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5137761395480718572">Este app quer ter permissão para instalar credenciais de Wi-Fi. Após a configuração, seu <ph name="DEVICE_TYPE" /> se conecta automaticamente às redes Wi-Fi participantes. Para remover essas credenciais, desinstale o app. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">O cartão virtual não está disponível no momento. Entre em contato com seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
+<translation id="5143309888746105072">O Chromium impede que os sites usem cookies de terceiros para rastrear você durante a navegação.
+            <ph name="NEW_LINE" />Se os recursos do site não estiverem funcionando, <ph name="START_LINK" />permita cookies de terceiros temporariamente<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificações de <ph name="ORIGIN" /> estão bloqueadas</translation>
 <translation id="514704532284964975"><ph name="URL" /> quer ver e mudar informações em dispositivos NFC que você toca com seu smartphone</translation>
@@ -2393,6 +2396,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5873297634595728366">Veículos a diesel</translation>
 <translation id="5877831137320480913">Beleza e fitness</translation>
 <translation id="5879989559903563723">Não permitido no modo convidado</translation>
+<translation id="5880050725127890683">Acessar a confirmação de segurança do Chrome</translation>
 <translation id="5883861433316751031">Controlar e reprogramar dispositivos MIDI?</translation>
 <translation id="5884465125445718607">Envelope chinês 6</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
@@ -2574,6 +2578,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6251906504834538140">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos transferidos por download no Chrome</translation>
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
+<translation id="625463612687472648">Parar de permitir</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
@@ -2749,6 +2754,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6596325263575161958">Opções de criptografia</translation>
 <translation id="6597665340361269064">90 graus</translation>
 <translation id="6599642189720630047">Produtos monitorados</translation>
+<translation id="6606309334576464871">O Chrome impede que os sites usem cookies de terceiros para rastrear você durante a navegação.
+            <ph name="NEW_LINE" />Se os recursos do site não estiverem funcionando, <ph name="START_LINK" />permita cookies de terceiros temporariamente<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Notícias de economia</translation>
 <translation id="6612010098632894193">Vídeo on-line</translation>
 <translation id="6613866251791999074">Saiba mais sobre seu mecanismo de pesquisa no Chrome</translation>
@@ -3423,6 +3430,7 @@ Mais detalhes:
 <translation id="7888575728750733395">Intent de renderização da impressão</translation>
 <translation id="7894280532028510793">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Rede<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope de 18 cm x 23 cm</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para acessar a página de confirmação de segurança do Chrome nas configurações</translation>
 <translation id="7916162853251942238">Flexográfica</translation>
 <translation id="7927971017714848357">Loteamentos e terrenos</translation>
 <translation id="793209273132572360">Atualizar endereço?</translation>
@@ -3718,6 +3726,7 @@ Mais detalhes:
 <translation id="8460854335417802511">Ativar</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# cartão de crédito}other{# cartões de crédito}}</translation>
+<translation id="8467494337615822642">Acesse a página de confirmação de segurança do Chrome nas configurações</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
