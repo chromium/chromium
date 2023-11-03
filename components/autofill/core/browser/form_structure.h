@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <memory>
 #include <set>
 #include <string>
@@ -56,6 +57,7 @@ enum class PasswordAttribute {
 // page. These are sequence containers to reflect their order in the DOM.
 using FormAndFieldSignatures =
     std::vector<std::pair<FormSignature, std::vector<FieldSignature>>>;
+using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
 struct FormData;
 struct FormDataPredictions;
@@ -477,6 +479,12 @@ class FormStructure {
     size_t required_fields_for_forms_with_only_password_fields =
         kRequiredFieldsForFormsWithOnlyPasswordFields;
   };
+
+  static std::optional<FieldSuggestion> GetFieldSuggestion(
+      const FormStructure& form,
+      const AutofillField& field,
+      std::map<std::pair<FormSignature, FieldSignature>,
+               std::deque<FieldSuggestion>>& fields_suggestions);
 
   // Parses the field types from the server query response. |forms| must be the
   // same as the one passed to EncodeQueryRequest when constructing the query.
