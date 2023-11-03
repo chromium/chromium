@@ -152,7 +152,6 @@ class PageNodeImpl
   const std::string& browser_context_id() const;
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
-  resource_attribution::PageContext resource_context() const;
   EmbeddingType embedding_type() const;
   PageType type() const;
   bool is_focused() const;

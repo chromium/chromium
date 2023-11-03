@@ -74,7 +74,6 @@ class WorkerNodeImpl
   WorkerType worker_type() const;
   ProcessNodeImpl* process_node() const;
   const blink::WorkerToken& worker_token() const;
-  resource_attribution::WorkerContext resource_context() const;
 
   // Getters for non-const properties. These are not thread safe.
   const GURL& url() const;

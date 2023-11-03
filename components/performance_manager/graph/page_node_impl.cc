@@ -98,7 +98,7 @@ const std::string& PageNodeImpl::GetBrowserContextID() const {
 
 resource_attribution::PageContext PageNodeImpl::GetResourceContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
+  return resource_attribution::PageContext::FromPageNode(this);
 }
 
 PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
@@ -428,11 +428,6 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
   return embedder_frame_node_;
-}
-
-resource_attribution::PageContext PageNodeImpl::resource_context() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_attribution::PageContext::FromPageNode(this);
 }
 
 PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {

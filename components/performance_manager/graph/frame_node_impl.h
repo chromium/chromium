@@ -112,7 +112,6 @@ class FrameNodeImpl
   const blink::LocalFrameToken& frame_token() const;
   content::BrowsingInstanceId browsing_instance_id() const;
   content::SiteInstanceId site_instance_id() const;
-  resource_attribution::FrameContext resource_context() const;
   const RenderFrameHostProxy& render_frame_host_proxy() const;
 
   // Getters for non-const properties. These are not thread safe.

@@ -73,14 +73,14 @@ TEST_F(QuerySchedulerTest, CPUQueries) {
   // Allow some time to pass to measure.
   task_env().FastForwardBy(base::Minutes(1));
   ExpectQueryResult(cpu_query1.get(),
-                    Contains(Key(mock_graph.process->resource_context())));
+                    Contains(Key(mock_graph.process->GetResourceContext())));
 
   // CPU monitoring should not stop until the last query is deleted.
   auto cpu_query2 = std::make_unique<ScopedCPUQuery>(graph());
   cpu_query1.reset();
   EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
   ExpectQueryResult(cpu_query2.get(),
-                    Contains(Key(mock_graph.process->resource_context())));
+                    Contains(Key(mock_graph.process->GetResourceContext())));
 
   cpu_query2.reset();
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());

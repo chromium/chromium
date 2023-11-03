@@ -88,7 +88,7 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("viewport_intersection",
           IntersectsViewportToString(impl->intersects_viewport_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
-  ret.Set("resource_context", impl->resource_context().ToString());
+  ret.Set("resource_context", impl->GetResourceContext().ToString());
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",

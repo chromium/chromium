@@ -59,7 +59,7 @@ const blink::WorkerToken& WorkerNodeImpl::GetWorkerToken() const {
 
 resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
+  return resource_attribution::WorkerContext::FromWorkerNode(this);
 }
 
 const GURL& WorkerNodeImpl::GetURL() const {
@@ -188,11 +188,6 @@ const GURL& WorkerNodeImpl::url() const {
 const blink::WorkerToken& WorkerNodeImpl::worker_token() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return worker_token_;
-}
-
-resource_attribution::WorkerContext WorkerNodeImpl::resource_context() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_attribution::WorkerContext::FromWorkerNode(this);
 }
 
 const base::flat_set<FrameNodeImpl*>& WorkerNodeImpl::client_frames() const {

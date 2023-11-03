@@ -159,7 +159,6 @@ class ProcessNodeImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return process_.value();
   }
-  resource_attribution::ProcessContext resource_context() const;
   base::TimeTicks launch_time() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return launch_time_;

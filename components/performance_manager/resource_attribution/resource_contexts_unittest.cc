@@ -28,40 +28,24 @@ TEST_F(ResourceContextTest, NodeContexts) {
   // Test each type of ProcessNode (browser, renderer, non-renderer child) since
   // they use different constructors.
 
-  // Ensure the public and private accessors return the same value.
-  EXPECT_EQ(ToPublic<FrameNode>(mock_graph.frame)->GetResourceContext(),
-            mock_graph.frame->resource_context());
-  EXPECT_EQ(ToPublic<PageNode>(mock_graph.page)->GetResourceContext(),
-            mock_graph.page->resource_context());
-  EXPECT_EQ(
-      ToPublic<ProcessNode>(mock_graph.browser_process)->GetResourceContext(),
-      mock_graph.browser_process->resource_context());
-  EXPECT_EQ(ToPublic<ProcessNode>(mock_graph.process)->GetResourceContext(),
-            mock_graph.process->resource_context());
-  EXPECT_EQ(
-      ToPublic<ProcessNode>(mock_graph.utility_process)->GetResourceContext(),
-      mock_graph.utility_process->resource_context());
-  EXPECT_EQ(ToPublic<WorkerNode>(mock_graph.worker)->GetResourceContext(),
-            mock_graph.worker->resource_context());
-
   // Ensure each node gets a fresh token.
   const std::set<FrameContext> frame_contexts{
-      mock_graph.frame->resource_context(),
-      mock_graph.other_frame->resource_context(),
-      mock_graph.child_frame->resource_context(),
+      mock_graph.frame->GetResourceContext(),
+      mock_graph.other_frame->GetResourceContext(),
+      mock_graph.child_frame->GetResourceContext(),
   };
   EXPECT_EQ(frame_contexts.size(), 3u);
-  EXPECT_NE(mock_graph.page->resource_context(),
-            mock_graph.other_page->resource_context());
+  EXPECT_NE(mock_graph.page->GetResourceContext(),
+            mock_graph.other_page->GetResourceContext());
   const std::set<ProcessContext> process_contexts{
-      mock_graph.browser_process->resource_context(),
-      mock_graph.process->resource_context(),
-      mock_graph.other_process->resource_context(),
-      mock_graph.utility_process->resource_context(),
+      mock_graph.browser_process->GetResourceContext(),
+      mock_graph.process->GetResourceContext(),
+      mock_graph.other_process->GetResourceContext(),
+      mock_graph.utility_process->GetResourceContext(),
   };
   EXPECT_EQ(process_contexts.size(), 4u);
-  EXPECT_NE(mock_graph.worker->resource_context(),
-            mock_graph.other_worker->resource_context());
+  EXPECT_NE(mock_graph.worker->GetResourceContext(),
+            mock_graph.other_worker->GetResourceContext());
 }
 
 TEST_F(ResourceContextTest, ResourceContextComparators) {
@@ -70,34 +54,34 @@ TEST_F(ResourceContextTest, ResourceContextComparators) {
   // Ensure tokens of the same type can be compared when wrapped in
   // ResourceContext.
   const ResourceContext process_context =
-      mock_graph.process->resource_context();
+      mock_graph.process->GetResourceContext();
   const ResourceContext other_process_context =
-      mock_graph.other_process->resource_context();
+      mock_graph.other_process->GetResourceContext();
 
   // ResourceContext == node context
-  EXPECT_EQ(process_context, mock_graph.process->resource_context());
+  EXPECT_EQ(process_context, mock_graph.process->GetResourceContext());
   // node context == ResourceContext
-  EXPECT_EQ(mock_graph.other_process->resource_context(),
+  EXPECT_EQ(mock_graph.other_process->GetResourceContext(),
             other_process_context);
   // ResourceContext == ResourceContext
   const ResourceContext process_context_copy = process_context;
   EXPECT_EQ(process_context, process_context_copy);
 
   // ResourceContext != node context
-  EXPECT_NE(process_context, mock_graph.other_process->resource_context());
+  EXPECT_NE(process_context, mock_graph.other_process->GetResourceContext());
   // node context != ResourceContext
-  EXPECT_NE(mock_graph.process->resource_context(), other_process_context);
+  EXPECT_NE(mock_graph.process->GetResourceContext(), other_process_context);
   // ResourceContext != ResourceContext
   EXPECT_NE(process_context, other_process_context);
 
   // Ensure tokens of different types can be compared when wrapped in
   // ResourceContext, although they'll never be equal.
-  const ResourceContext page_context = mock_graph.page->resource_context();
+  const ResourceContext page_context = mock_graph.page->GetResourceContext();
 
   // ResourceContext != node context
-  EXPECT_NE(process_context, mock_graph.page->resource_context());
+  EXPECT_NE(process_context, mock_graph.page->GetResourceContext());
   // node context != Resource Context
-  EXPECT_NE(mock_graph.process->resource_context(), page_context);
+  EXPECT_NE(mock_graph.process->GetResourceContext(), page_context);
   // ResourceContext != ResourceContext
   EXPECT_NE(process_context, page_context);
 }
@@ -108,24 +92,25 @@ TEST_F(ResourceContextTest, ResourceContextConverters) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
 
   const ResourceContext process_context =
-      mock_graph.process->resource_context();
-  const ResourceContext page_context = mock_graph.page->resource_context();
+      mock_graph.process->GetResourceContext();
+  const ResourceContext page_context = mock_graph.page->GetResourceContext();
 
   EXPECT_TRUE(ContextIs<ProcessContext>(process_context));
   EXPECT_FALSE(ContextIs<ProcessContext>(page_context));
 
   const ProcessContext unwrapped_process_context =
       AsContext<ProcessContext>(process_context);
-  EXPECT_EQ(unwrapped_process_context, mock_graph.process->resource_context());
+  EXPECT_EQ(unwrapped_process_context,
+            mock_graph.process->GetResourceContext());
 
   EXPECT_THAT(AsOptionalContext<ProcessContext>(process_context),
-              Optional(mock_graph.process->resource_context()));
+              Optional(mock_graph.process->GetResourceContext()));
   EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), absl::nullopt);
 }
 
 TEST_F(ResourceContextDeathTest, FailedResourceContextConverters) {
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
-  const ResourceContext page_context = mock_graph.page->resource_context();
+  const ResourceContext page_context = mock_graph.page->GetResourceContext();
   EXPECT_DEATH_IF_SUPPORTED(AsContext<ProcessContext>(page_context),
                             "Bad variant access");
 }

@@ -183,7 +183,7 @@ const base::Process& ProcessNodeImpl::GetProcess() const {
 resource_attribution::ProcessContext ProcessNodeImpl::GetResourceContext()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
+  return resource_attribution::ProcessContext::FromProcessNode(this);
 }
 
 base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
@@ -302,11 +302,6 @@ PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
       return nullptr;
   }
   return page_node;
-}
-
-resource_attribution::ProcessContext ProcessNodeImpl::resource_context() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_attribution::ProcessContext::FromProcessNode(this);
 }
 
 RenderProcessHostId ProcessNodeImpl::GetRenderProcessId() const {

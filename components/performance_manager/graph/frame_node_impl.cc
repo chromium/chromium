@@ -146,7 +146,7 @@ content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
 
 resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
+  return resource_attribution::FrameContext::FromFrameNode(this);
 }
 
 bool FrameNodeImpl::IsMainFrame() const {
@@ -288,11 +288,6 @@ content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
 content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id_;
-}
-
-resource_attribution::FrameContext FrameNodeImpl::resource_context() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_attribution::FrameContext::FromFrameNode(this);
 }
 
 const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
