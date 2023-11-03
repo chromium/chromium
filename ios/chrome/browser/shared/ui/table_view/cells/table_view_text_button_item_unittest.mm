@@ -34,10 +34,10 @@ TEST_F(TableViewTextButtonItemTest, SetProperties) {
   TableViewTextButtonCell* textButtonCell =
       base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
   EXPECT_FALSE(textButtonCell.textLabel.text);
-  EXPECT_FALSE(textButtonCell.button.titleLabel.text);
+  EXPECT_FALSE(textButtonCell.button.configuration.title);
 
   [item configureCell:textButtonCell
            withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_NSEQ(text, textButtonCell.textLabel.text);
-  EXPECT_NSEQ(buttonText, textButtonCell.button.titleLabel.text);
+  EXPECT_NSEQ(buttonText, textButtonCell.button.configuration.title);
 }
