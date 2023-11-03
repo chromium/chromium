@@ -1227,10 +1227,10 @@
   {
     "name": "content-languages-in-language-picker",
     "owners": [
-      "basiaz@google.com",
+      "perrier@google.com",
       "chrome-language@google.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "content-push-notifications",
@@ -1963,7 +1963,7 @@
     "name": "enable-accessibility-include-long-click-action",
     "owners": ["mschillaci@google.com", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 130
-  },  
+  },
   {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
@@ -7705,10 +7705,10 @@
   {
     "name": "translate-message-ui",
     "owners": [
-      "basiaz@google.com",
+      "perrier@google.com",
       "chrome-language@google.com"
     ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "trusted-vault-frequent-degraded-recoverability-polling",
