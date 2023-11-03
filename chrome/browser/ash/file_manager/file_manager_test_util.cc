@@ -302,6 +302,9 @@ ash::file_system_provider::AbortCallback
 FakeProvidedFileSystemOneDrive::CreateFile(
     const base::FilePath& file_path,
     storage::AsyncFileUtil::StatusCallback callback) {
+  if (create_file_callback_) {
+    std::move(create_file_callback_).Run();
+  }
   if (create_file_error_ != base::File::Error::FILE_OK) {
     std::move(callback).Run(create_file_error_);
     return ash::file_system_provider::AbortCallback();
@@ -312,6 +315,11 @@ FakeProvidedFileSystemOneDrive::CreateFile(
 void FakeProvidedFileSystemOneDrive::SetCreateFileError(
     base::File::Error error) {
   create_file_error_ = error;
+}
+
+void FakeProvidedFileSystemOneDrive::SetCreateFileCallback(
+    base::OnceClosure callback) {
+  create_file_callback_ = std::move(callback);
 }
 
 void FakeProvidedFileSystemOneDrive::SetGetActionsError(
@@ -409,6 +417,8 @@ FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
 
   return provided_file_system;
 }
+
+FakeProvidedFileSystemOneDrive::~FakeProvidedFileSystemOneDrive() = default;
 
 }  // namespace test
 }  // namespace file_manager

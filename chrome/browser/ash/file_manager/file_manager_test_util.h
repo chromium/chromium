@@ -152,9 +152,11 @@ class FakeProvidedFileSystemOneDrive
   explicit FakeProvidedFileSystemOneDrive(
       const ash::file_system_provider::ProvidedFileSystemInfo&
           file_system_info);
+  ~FakeProvidedFileSystemOneDrive() override;
 
   // Fail the create file request with |create_file_error_| if it exists.
-  // Otherwise, create a file as normal.
+  // Otherwise, create a file as normal. Tests can run a callback on
+  // `CreateFile` via `SetCreateFileCallback()`.
   ash::file_system_provider::AbortCallback CreateFile(
       const base::FilePath& file_path,
       storage::AsyncFileUtil::StatusCallback callback) override;
@@ -173,6 +175,9 @@ class FakeProvidedFileSystemOneDrive
   // Set error for the `CreateFile` to fail with.
   void SetCreateFileError(base::File::Error error);
 
+  // Set a callback to be called when `CreateFile` is called.
+  void SetCreateFileCallback(base::OnceClosure callback);
+
   // Set error for the `GetActions` to fail with when non-root entry actions are
   // requested.
   void SetGetActionsError(base::File::Error error);
@@ -184,6 +189,7 @@ class FakeProvidedFileSystemOneDrive
   base::File::Error create_file_error_ = base::File::Error::FILE_OK;
   base::File::Error get_actions_error_ = base::File::Error::FILE_OK;
   bool reauthentication_required_ = false;
+  base::OnceClosure create_file_callback_;
 };
 
 // Fake extension provider to create a `FakeProvidedFileSystemOneDrive`.
