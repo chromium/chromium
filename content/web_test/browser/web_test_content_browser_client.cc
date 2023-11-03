@@ -711,7 +711,8 @@ bool WebTestContentBrowserClient::IsInterestGroupAPIAllowed(
 bool WebTestContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    content::PrivacySandboxInvokingAPI invoking_api,
+    bool post_impression_reporting) {
   return true;
 }
 

@@ -431,7 +431,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   void MaybeSendPrivateAggregationReports();
 
   // Checks that `url` is attested for reporting. On success, returns true. On
-  // failure, return false, and appends an error to `errors_`.
+  // failure, return false, and appends an error to `errors_`. The `url` passed
+  // to this function should be the report url of either `reportWin()` or
+  // `reportResult()`. They are not post-impression beacons.
   bool CheckReportUrl(const GURL& url);
 
   // For each url in `urls`, erases that url iff CheckReportUrl(url) returns

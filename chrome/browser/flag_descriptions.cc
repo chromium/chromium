@@ -1113,6 +1113,14 @@ const char kEnableFencedFramesDeveloperModeDescription[] =
     "element without running an ad auction, as you can manually supply a URL "
     "to navigate the fenced frame to.";
 
+const char kEnableFencedFramesM120FeaturesName[] =
+    "Enable the Fenced Frames M120 features";
+const char kEnableFencedFramesM120FeaturesDescription[] =
+    "The Fenced Frames M120 features include: 1. Support leaving interest "
+    "group from ad components. 2. Relax the attestation requirement of "
+    "post-impression beacons from Protected Audience only to either Protected "
+    "Audience or Attribution Reporting.";
+
 const char kEnableGamepadButtonAxisEventsName[] =
     "Gamepad Button and Axis Events";
 const char kEnableGamepadButtonAxisEventsDescription[] =

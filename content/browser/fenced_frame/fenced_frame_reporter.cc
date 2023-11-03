@@ -142,7 +142,7 @@ base::StringPiece InvokingAPIAsString(
 }  // namespace
 
 FencedFrameReporter::PendingEvent::PendingEvent(
-    const absl::variant<DestinationEnumEvent, DestinationURLEvent>& event,
+    const DestinationVariant& event,
     const url::Origin& request_initiator,
     absl::optional<AttributionReportingData> attribution_reporting_data,
     int initiator_frame_tree_node_id)
@@ -287,8 +287,7 @@ void FencedFrameReporter::OnUrlMappingReady(
 }
 
 bool FencedFrameReporter::SendReport(
-    const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
-        event_variant,
+    const DestinationVariant& event_variant,
     blink::FencedFrame::ReportingDestination reporting_destination,
     RenderFrameHostImpl* request_initiator_frame,
     network::AttributionReportingRuntimeFeatures
@@ -351,6 +350,10 @@ bool FencedFrameReporter::SendReport(
       request_initiator_frame->GetLastCommittedOrigin();
 
   // If the reporting URL map is pending, queue the event.
+  NotifyIsBeaconQueued(
+      event_variant,
+      /*is_queued=*/it->second.reporting_url_map == absl::nullopt);
+
   if (it->second.reporting_url_map == absl::nullopt) {
     it->second.pending_events.emplace_back(
         event_variant, request_initiator, std::move(attribution_reporting_data),
@@ -366,8 +369,7 @@ bool FencedFrameReporter::SendReport(
 
 bool FencedFrameReporter::SendReportInternal(
     const ReportingDestinationInfo& reporting_destination_info,
-    const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
-        event_variant,
+    const DestinationVariant& event_variant,
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
     const absl::optional<AttributionReportingData>& attribution_reporting_data,
@@ -513,13 +515,18 @@ bool FencedFrameReporter::SendReportInternal(
            ->browser()
            ->IsPrivacySandboxReportingDestinationAttested(
                browser_context_, url::Origin::Create(destination_url),
-               invoking_api_)) {
+               invoking_api_, /*post_impression_reporting=*/true)) {
     error_message = base::StrCat({
         "The reporting destination '",
         ReportingDestinationAsString(reporting_destination),
         "' is not attested for '",
         InvokingAPIAsString(invoking_api_),
-        "'.",
+        "'",
+        (base::FeatureList::IsEnabled(
+             blink::features::kFencedFramesM120Features) &&
+         invoking_api_ == PrivacySandboxInvokingAPI::kProtectedAudience)
+            ? " or 'Attribution Reporting'."
+            : ".",
     });
     console_message_level = blink::mojom::ConsoleMessageLevel::kError;
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
@@ -681,6 +688,15 @@ bool FencedFrameReporter::SendReportInternal(
   return true;
 }
 
+void FencedFrameReporter::AddObserverForTesting(ObserverForTesting* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FencedFrameReporter::RemoveObserverForTesting(
+    const ObserverForTesting* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void FencedFrameReporter::OnForEventPrivateAggregationRequestsReceived(
     std::map<std::string, PrivateAggregationRequests>
         private_aggregation_event_map) {
@@ -815,6 +831,14 @@ void FencedFrameReporter::NotifyFencedFrameReportingBeaconFailed(
       attribution_reporting_data->attribution_reporting_runtime_features,
       /*reporting_url=*/GURL(), /*headers=*/nullptr,
       /*is_final_response=*/true);
+}
+
+void FencedFrameReporter::NotifyIsBeaconQueued(
+    const DestinationVariant& event_variant,
+    bool is_queued) {
+  for (ObserverForTesting& observer : observers_) {
+    observer.OnBeaconQueued(event_variant, is_queued);
+  }
 }
 
 }  // namespace content

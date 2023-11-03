@@ -8840,8 +8840,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
 }
 
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
-    const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
-        event_variant,
+    const FencedFrameReporter::DestinationVariant& event_variant,
     blink::FencedFrame::ReportingDestination destination,
     bool from_renderer,
     network::AttributionReportingRuntimeFeatures

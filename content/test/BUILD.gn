@@ -200,6 +200,8 @@ static_library("test_support") {
     "../public/test/fake_service_worker_context.h",
     "../public/test/fake_speech_recognition_manager.cc",
     "../public/test/fake_speech_recognition_manager.h",
+    "../public/test/fenced_frame_reporter_observer.cc",
+    "../public/test/fenced_frame_reporter_observer.h",
     "../public/test/fenced_frame_test_util.cc",
     "../public/test/fenced_frame_test_util.h",
     "../public/test/file_system_chooser_test_helpers.cc",
@@ -1850,9 +1852,7 @@ test("content_browsertests") {
     deps += [ "//media/cdm:cdm_paths" ]
 
     # Runtime dependencies.
-    data_deps += [
-      "//media/cdm/library_cdm/clear_key_cdm",
-    ]
+    data_deps += [ "//media/cdm/library_cdm/clear_key_cdm" ]
   }
 
   if (enable_ppapi) {
