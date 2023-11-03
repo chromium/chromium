@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -60,12 +61,12 @@ enum class FloatingWorkspaceServiceNotificationType {
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.
-class FloatingWorkspaceService
-    : public KeyedService,
-      public message_center::NotificationObserver,
-      public syncer::SyncServiceObserver,
-      public apps::AppRegistryCache::Observer,
-      public apps::AppRegistryCacheWrapper::Observer {
+class FloatingWorkspaceService : public KeyedService,
+                                 public message_center::NotificationObserver,
+                                 public syncer::SyncServiceObserver,
+                                 public apps::AppRegistryCache::Observer,
+                                 public apps::AppRegistryCacheWrapper::Observer,
+                                 public ash::SessionObserver {
  public:
   static FloatingWorkspaceService* GetForProfile(Profile* profile);
 
@@ -109,6 +110,9 @@ class FloatingWorkspaceService
   bool is_testing_ = false;
 
  private:
+  // ash::SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
   // AppRegistryCache::Observer
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
@@ -226,6 +230,18 @@ class FloatingWorkspaceService
   // Updates the `is_cache_ready_` status if all the required app types are
   // initialized.
   bool AreRequiredAppTypesInitialized();
+
+  // Shuts down the observers and dependent services.
+  // This will be called when the user session changes to a different user or on
+  // service shutdown.
+  void ShutDownServicesAndObservers();
+
+  // Setups the convenience pointers to the dependent services and observers.
+  // This will be called when the service is first initialized and when the
+  // active user session is changed back to the first logged in user.
+  void SetUpServiceAndObservers(
+      syncer::SyncService* sync_service,
+      desks_storage::DeskSyncService* desk_sync_service);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
