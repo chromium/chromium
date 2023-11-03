@@ -160,6 +160,10 @@ void FileAnalyzer::OnZipAnalysisFinished(
              ArchiveAnalysisResult::kTooLarge) {
     results_.archive_summary.set_parser_status(
         ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kDiskError) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::DISK_ERROR);
   }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;

@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Failed to open temporary file"/>
   <int value="7" label="DMG parser found no partitions of interest"/>
   <int value="8" label="Failed while iterating through the archive"/>
+  <int value="9" label="Disk error"/>
 </enum>
 
 <enum name="BooleanContainsMacros">

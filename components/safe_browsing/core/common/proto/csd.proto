@@ -973,6 +973,8 @@ message ClientDownloadRequest {
       PARSER_TIMED_OUT = 2;
       // The archive was too large to parse.
       TOO_LARGE = 3;
+      // Error writing to disk (e.g. disk full).
+      DISK_ERROR = 4;
     }
     optional Status parser_status = 1;
 

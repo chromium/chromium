@@ -37,6 +37,7 @@ class ZipAnalyzer : public ArchiveAnalyzer {
 
   bool has_encrypted_ = false;
   bool has_aes_encrypted_ = false;
+  bool has_disk_error_ = false;
 
   base::WeakPtrFactory<ZipAnalyzer> weak_factory_{this};
 };
