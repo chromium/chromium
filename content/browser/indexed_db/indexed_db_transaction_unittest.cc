@@ -80,9 +80,9 @@ class IndexedDBTransactionTest : public testing::Test {
     delegate.on_tasks_available = CreateRunTasksCallback();
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), false,
-        std::make_unique<PartitionedLockManager>(), std::move(delegate),
-        std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_->proxy(),
+        storage::BucketInfo(), std::make_unique<PartitionedLockManager>(),
+        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>(),
+        quota_manager_->proxy(),
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());

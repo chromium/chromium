@@ -269,7 +269,6 @@ IndexedDBBucketContext::Delegate::~Delegate() = default;
 
 IndexedDBBucketContext::IndexedDBBucketContext(
     storage::BucketInfo bucket_info,
-    bool persist_for_incognito,
     std::unique_ptr<PartitionedLockManager> lock_manager,
     Delegate&& delegate,
     std::unique_ptr<IndexedDBBackingStore> backing_store,
@@ -281,7 +280,6 @@ IndexedDBBucketContext::IndexedDBBucketContext(
         file_system_access_context,
     InstanceClosure initialize_closure)
     : bucket_info_(std::move(bucket_info)),
-      persist_for_incognito_(persist_for_incognito),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -352,10 +350,9 @@ void IndexedDBBucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
   MaybeStartClosing();
 }
 
-void IndexedDBBucketContext::StopPersistingForIncognito() {
+void IndexedDBBucketContext::Doom() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  persist_for_incognito_ = false;
-  MaybeStartClosing();
+  is_doomed_ = true;
 }
 
 void IndexedDBBucketContext::RunInstanceClosure(InstanceClosure method) {
@@ -568,7 +565,7 @@ bool IndexedDBBucketContext::CanClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(open_handles_, 0);
   return !has_blobs_outstanding_ && open_handles_ <= 0 &&
-         !persist_for_incognito_;
+         (is_doomed_ || !backing_store_->in_memory());
 }
 
 void IndexedDBBucketContext::MaybeStartClosing() {

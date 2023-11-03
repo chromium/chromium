@@ -337,7 +337,8 @@ void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
   // Make a copy of storage_key, as the ref might go away here during the close.
   indexeddb_factory_->ForceClose(
       bucket_id,
-      reason == storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
+      /*will_be_deleted=*/reason ==
+          storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
   DCHECK_EQ(0UL, GetConnectionCountSync(bucket_id));
   std::move(closure).Run();
 }

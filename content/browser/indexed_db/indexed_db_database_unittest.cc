@@ -82,9 +82,9 @@ class IndexedDBDatabaseTest : public ::testing::Test {
                             weak_factory_.GetWeakPtr(), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), false,
-        std::make_unique<PartitionedLockManager>(), std::move(delegate),
-        std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
+        storage::BucketInfo(), std::make_unique<PartitionedLockManager>(),
+        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>(),
+        quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
@@ -517,9 +517,9 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         base::Unretained(this), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), false,
-        std::make_unique<PartitionedLockManager>(), std::move(delegate),
-        std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
+        storage::BucketInfo(), std::make_unique<PartitionedLockManager>(),
+        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>(),
+        quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());

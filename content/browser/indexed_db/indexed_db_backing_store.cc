@@ -1938,7 +1938,7 @@ int64_t IndexedDBBackingStore::GetInMemoryBlobSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int64_t total_size = 0;
-  for (const auto& kvp : incognito_external_object_map_) {
+  for (const auto& kvp : in_memory_external_object_map_) {
     for (const IndexedDBExternalObject& object :
          kvp.second->external_objects()) {
       if (object.object_type() == IndexedDBExternalObject::ObjectType::kBlob) {
@@ -2452,8 +2452,9 @@ Status IndexedDBBackingStore::CleanUpBlobJournal(
   s = journal_transaction->Commit();
   // Notify blob files cleaned even if commit fails, as files could still be
   // deleted.
-  if (!is_incognito())
+  if (!in_memory()) {
     blob_files_cleaned_.Run();
+  }
   return s;
 }
 
@@ -2507,12 +2508,13 @@ Status IndexedDBBackingStore::Transaction::GetExternalObjectsForRecord(
   if (object_iter != external_object_change_map_.end()) {
     change_record = object_iter->second.get();
   } else {
-    object_iter = incognito_external_object_map_.find(object_store_data_key);
-    if (object_iter != incognito_external_object_map_.end())
+    object_iter = in_memory_external_object_map_.find(object_store_data_key);
+    if (object_iter != in_memory_external_object_map_.end()) {
       change_record = object_iter->second.get();
+    }
   }
   if (change_record) {
-    // Either we haven't written the blob to disk yet or we're in incognito
+    // Either we haven't written the blob to disk yet or we're in in_memory
     // mode, so we have to send back the one they sent us.  This change record
     // includes the original UUID.
     value->external_objects = change_record->external_objects();
@@ -3862,10 +3864,11 @@ void IndexedDBBackingStore::Transaction::Begin(
               backing_store_->db_.get(),
               backing_store_->db_->scopes()->CreateScope(std::move(locks)));
 
-  // If incognito, this snapshots blobs just as the above transaction_
+  // If in_memory, this snapshots blobs just as the above transaction_
   // constructor snapshots the leveldb.
-  for (const auto& iter : backing_store_->incognito_external_object_map_)
-    incognito_external_object_map_[iter.first] = iter.second->Clone();
+  for (const auto& iter : backing_store_->in_memory_external_object_map_) {
+    in_memory_external_object_map_[iter.first] = iter.second->Clone();
+  }
 }
 
 Status IndexedDBBackingStore::MigrateToV1(LevelDBWriteBatch* write_batch) {
@@ -4009,8 +4012,9 @@ Status IndexedDBBackingStore::Transaction::HandleBlobPreTransaction() {
   DCHECK(backing_store_);
   DCHECK(blobs_to_write_.empty());
 
-  if (backing_store_->is_incognito())
+  if (backing_store_->in_memory()) {
     return Status::OK();
+  }
 
   if (external_object_change_map_.empty())
     return Status::OK();
@@ -4064,8 +4068,9 @@ bool IndexedDBBackingStore::Transaction::CollectBlobFilesToRemove() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backing_store_);
 
-  if (backing_store_->is_incognito())
+  if (backing_store_->in_memory()) {
     return true;
+  }
 
   // Look up all old files to remove as part of the transaction, store their
   // names in blobs_to_remove_, and remove their old blob data entries.
@@ -4158,7 +4163,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseOne(
   committing_ = true;
   backing_store_->WillCommitTransaction();
 
-  if (!external_object_change_map_.empty() && !backing_store_->is_incognito()) {
+  if (!external_object_change_map_.empty() && !backing_store_->in_memory()) {
     // This kicks off the writes of the new blobs, if any.
     return WriteNewBlobs(std::move(callback));
   } else {
@@ -4192,7 +4197,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
   BlobJournalType recovery_journal, active_journal, saved_recovery_journal,
       inactive_blobs;
   if (!external_object_change_map_.empty()) {
-    if (!backing_store_->is_incognito()) {
+    if (!backing_store_->in_memory()) {
       for (auto& iter : external_object_change_map_) {
         BlobEntryKey blob_entry_key;
         StringPiece key_piece(iter.second->object_store_data_key());
@@ -4241,7 +4246,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
     saved_recovery_journal = recovery_journal;
     BlobJournalType active_blobs;
     if (!blobs_to_remove_.empty()) {
-      DCHECK(!backing_store_->is_incognito());
+      DCHECK(!backing_store_->in_memory());
       PartitionBlobsToRemove(&inactive_blobs, &active_blobs);
     }
     recovery_journal.insert(recovery_journal.end(), inactive_blobs.begin(),
@@ -4268,9 +4273,9 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
     return s;
   }
 
-  if (backing_store_->is_incognito()) {
+  if (backing_store_->in_memory()) {
     if (!external_object_change_map_.empty()) {
-      auto& target_map = backing_store_->incognito_external_object_map_;
+      auto& target_map = backing_store_->in_memory_external_object_map_;
       for (auto& iter : external_object_change_map_) {
         auto target_record = target_map.find(iter.first);
         if (target_record != target_map.end())
@@ -4309,7 +4314,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
     BlobWriteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backing_store_);
-  DCHECK(!backing_store_->is_incognito());
+  DCHECK(!backing_store_->in_memory());
   DCHECK(!external_object_change_map_.empty());
   DCHECK_GT(database_id_, 0);
 
@@ -4505,7 +4510,7 @@ Status IndexedDBBackingStore::Transaction::PutExternalObjectsIfNeeded(
 
   if (!external_objects || external_objects->empty()) {
     external_object_change_map_.erase(object_store_data_key);
-    incognito_external_object_map_.erase(object_store_data_key);
+    in_memory_external_object_map_.erase(object_store_data_key);
 
     BlobEntryKey blob_entry_key;
     StringPiece leveldb_key_piece(object_store_data_key);

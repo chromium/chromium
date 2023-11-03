@@ -627,7 +627,7 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
   EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(StorageBucketFromHandle(bucket_context_handle)
                   ->backing_store()
-                  ->is_incognito());
+                  ->in_memory());
   bucket_context_handle.Release();
 
   EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));

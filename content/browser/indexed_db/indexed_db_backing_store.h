@@ -219,7 +219,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
         external_object_change_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+        in_memory_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     int64_t database_id_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
 
     // List of blob files being newly written as part of this transaction.
@@ -640,7 +640,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // an otherwise healthy backing store.
   leveldb::Status RevertSchemaToV2();
 
-  bool is_incognito() const { return backing_store_mode_ == Mode::kInMemory; }
+  bool in_memory() const { return backing_store_mode_ == Mode::kInMemory; }
 
   virtual std::unique_ptr<Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
@@ -748,7 +748,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-      incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+      in_memory_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool execute_journal_cleaning_on_no_txns_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;

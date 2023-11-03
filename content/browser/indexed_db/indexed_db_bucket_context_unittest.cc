@@ -46,7 +46,7 @@ class IndexedDBBucketContextTest : public testing::Test {
                 "https://example.com")),
         blink::mojom::StorageType::kTemporary);
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        bucket_info, false, std::make_unique<PartitionedLockManager>(),
+        bucket_info, std::make_unique<PartitionedLockManager>(),
         IndexedDBBucketContext::Delegate(),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),

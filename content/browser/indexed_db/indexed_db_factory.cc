@@ -480,7 +480,7 @@ std::vector<IndexedDBDatabase*> IndexedDBFactory::GetOpenDatabasesForBucket(
 }
 
 void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
-                                  bool delete_in_memory_store) {
+                                  bool will_be_deleted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = bucket_contexts_.find(bucket_id);
   if (it == bucket_contexts_.end()) {
@@ -491,11 +491,11 @@ void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
   {
     IndexedDBBucketContextHandle bucket_context_handle(*it->second);
 
-    if (delete_in_memory_store) {
-      bucket_context_handle.bucket_context()->StopPersistingForIncognito();
+    if (will_be_deleted) {
+      bucket_context_handle->Doom();
     }
-    bucket_context_handle.bucket_context()->ForceClose();
-    weak_ptr = bucket_context_handle.bucket_context()->AsWeakPtr();
+    bucket_context_handle->ForceClose();
+    weak_ptr = bucket_context_handle->AsWeakPtr();
   }
   // Run tasks so the storage_key state is deleted.
   RunTasksForBucket(std::move(weak_ptr));
@@ -807,9 +807,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   }
 
   auto bucket_context = std::make_unique<IndexedDBBucketContext>(
-      bucket,
-      /*persist_for_incognito=*/is_incognito_and_in_memory,
-      std::move(lock_manager), std::move(bucket_delegate),
+      bucket, std::move(lock_manager), std::move(bucket_delegate),
       std::move(backing_store), context_->quota_manager_proxy(),
       context_->IOTaskRunner(), std::move(blob_storage_context),
       std::move(fsa_context), for_each_bucket_context_);

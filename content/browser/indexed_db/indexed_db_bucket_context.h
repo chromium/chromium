@@ -49,7 +49,7 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // IndexedDBBucketContext will keep itself alive while any of these is true:
 // * There are handles referencing the factory,
 // * There are outstanding blob references to this database's blob files, or
-// * The factory is in an incognito profile.
+// * The factory is in-memory (i.e. an incognito profile).
 //
 // When these qualities are no longer true, `RunTasks()` will return
 // `kCanBeDestroyed` which lets the owning `IndexedDBFactory` know it's time to
@@ -163,7 +163,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // `IndexedDBBucketContext` it creates.
   IndexedDBBucketContext(
       storage::BucketInfo bucket_info,
-      bool persist_for_incognito,
       std::unique_ptr<PartitionedLockManager> lock_manager,
       Delegate&& delegate,
       std::unique_ptr<IndexedDBBackingStore> backing_store,
@@ -194,7 +193,9 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   void ReportOutstandingBlobs(bool blobs_outstanding);
 
-  void StopPersistingForIncognito();
+  // Normally, in-memory contexts never self-close. After this is called, they
+  // can be closed.
+  void Doom();
 
   // Runs `method` on `this`. This exists to facilitate running the setter on
   // the correct sequence.
@@ -336,10 +337,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   storage::BucketInfo bucket_info_;
 
-  // True if this factory should be remain alive due to the storage partition
-  // being for incognito mode, and our backing store being in-memory. This is
-  // used as closing criteria for this object, see CanClose.
-  bool persist_for_incognito_;
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see
   // CanClose.
@@ -392,6 +389,9 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   std::unique_ptr<IndexedDBPreCloseTaskQueue> pre_close_task_queue_;
 
   Delegate delegate_;
+
+  // In-memory contexts will not self-close until they are doomed.
+  bool is_doomed_ = false;
 
   base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
 };

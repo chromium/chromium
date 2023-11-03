@@ -93,13 +93,13 @@ class CONTENT_EXPORT IndexedDBFactory
       const storage::BucketLocator& bucket_locator) const;
 
   // Close all connections to all databases within the bucket. If
-  // `delete_in_memory_store` is true, references to in-memory databases will be
+  // `will_be_deleted` is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).
   //
   // TODO(dmurph): This eventually needs to be async, to support scopes
   // multithreading.
-  void ForceClose(storage::BucketId bucket_id, bool delete_in_memory_store);
+  void ForceClose(storage::BucketId bucket_id, bool will_be_deleted);
 
   void ForceSchemaDowngrade(const storage::BucketLocator& bucket_locator);
   V2SchemaCorruptionStatus HasV2SchemaCorruption(
