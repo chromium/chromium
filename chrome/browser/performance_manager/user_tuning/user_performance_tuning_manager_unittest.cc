@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -53,7 +54,7 @@ class UserPerformanceTuningManagerTest
         local_state_.registry());
   }
 
-  void StartManager() {
+  void RegisterDelegate() {
     auto fake_high_efficiency_mode_delegate =
         std::make_unique<FakeHighEfficiencyModeDelegate>();
 
@@ -61,8 +62,9 @@ class UserPerformanceTuningManagerTest
 
     manager_.reset(new UserPerformanceTuningManager(
         &local_state_, nullptr, std::move(fake_high_efficiency_mode_delegate)));
-    manager()->Start();
   }
+
+  void StartManager() { manager()->Start(); }
 
   UserPerformanceTuningManager* manager() {
     return UserPerformanceTuningManager::GetInstance();
@@ -96,6 +98,12 @@ class UserPerformanceTuningManagerTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class MockUserPerformanceTuningManagerObserver
+    : public UserPerformanceTuningManager::Observer {
+ public:
+  MOCK_METHOD(void, OnHighEfficiencyModeChanged, (), (override));
+};
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     UserPerformanceTuningManagerTest,
@@ -115,6 +123,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(UserPerformanceTuningManagerTest, OnPrefChanged) {
   InstallFeatures();
+  RegisterDelegate();
   StartManager();
   local_state_.SetUserPref(prefs::kHighEfficiencyModeState,
                            ValueForPrefState());
@@ -124,6 +133,7 @@ TEST_P(UserPerformanceTuningManagerTest, OnPrefChanged) {
 
 TEST_P(UserPerformanceTuningManagerTest, OnPrefChangedMultistate) {
   InstallFeatures(/*is_multistate_enabled=*/true);
+  RegisterDelegate();
   StartManager();
 
   // When the HighEfficiencyMultistateMode feature is enabled, all states should
@@ -132,6 +142,26 @@ TEST_P(UserPerformanceTuningManagerTest, OnPrefChangedMultistate) {
                            ValueForPrefState());
   EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
               Optional(GetParam().pref_state));
+}
+
+TEST_F(UserPerformanceTuningManagerTest, HighEfficiencyChangeObserver) {
+  InstallFeatures();
+  RegisterDelegate();
+
+  std::unique_ptr<UserPerformanceTuningManager::Observer> observer =
+      std::make_unique<MockUserPerformanceTuningManagerObserver>();
+  auto* mock_observer =
+      static_cast<MockUserPerformanceTuningManagerObserver*>(observer.get());
+
+  // The observer shouldn't be called on startup.
+  EXPECT_CALL(*mock_observer, OnHighEfficiencyModeChanged).Times(0);
+  manager()->AddObserver(observer.get());
+  StartManager();
+  testing::Mock::VerifyAndClearExpectations(mock_observer);
+
+  // The observer should be called on a subsequent pref change.
+  EXPECT_CALL(*mock_observer, OnHighEfficiencyModeChanged).Times(1);
+  manager()->SetHighEfficiencyModeEnabled(false);
 }
 
 }  // namespace performance_manager::user_tuning
