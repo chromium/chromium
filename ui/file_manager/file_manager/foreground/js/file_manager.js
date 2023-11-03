@@ -24,7 +24,7 @@ import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../.
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isGuestOsEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isGuestOsEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
@@ -384,9 +384,22 @@ export class FileManager extends EventTarget {
 
     /**
      * Whether Drive is enabled. Retrieved from user preferences.
-     * @private @type {?boolean}
+     * @private @type {boolean}
      */
     this.driveEnabled_ = false;
+
+    /**
+     * Whether Drive bulk-pinning is available on this device. Retrieved from
+     * user preferences.
+     * @private @type {boolean}
+     */
+    this.bulkPinningAvailable_ = false;
+
+    /**
+     * Whether Drive bulk-pinning has been initialized in Files App.
+     * @private @type {boolean}
+     */
+    this.bulkPinningInitialized_ = false;
 
     /**
      * A fake Drive placeholder item.
@@ -834,30 +847,28 @@ export class FileManager extends EventTarget {
       fileListPromise,
       currentDirectoryPromise,
       this.setGuestMode_(),
-      this.initBulkPinning_(),
     ]);
   }
 
   /**
    * Subscribes to bulk-pinning events to ensure the store is kept up to date.
    * Also tries to retrieve a first bulk pinning progress to populate the store.
-   * Does nothing if bulk-pinning is disabled.
    * @private
    */
   async initBulkPinning_() {
-    if (!isDriveFsBulkPinningEnabled()) {
-      return;
-    }
-
     try {
       const promise = getBulkPinProgress();
 
-      // @ts-ignore: error TS7006: Parameter 'progress' implicitly has an 'any'
-      // type.
-      chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
-        console.debug('Got bulk-pinning event:', progress);
-        this.store_.dispatch(updateBulkPinProgress(progress));
-      });
+      if (!this.bulkPinningInitialized_) {
+        // @ts-ignore: error TS7006: Parameter 'progress' implicitly has an
+        // 'any' type.
+        chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+          console.debug('Got bulk-pinning event:', progress);
+          this.store_.dispatch(updateBulkPinProgress(progress));
+        });
+
+        this.bulkPinningInitialized_ = true;
+      }
 
       const progress = await promise;
       if (progress) {
@@ -2005,7 +2016,7 @@ export class FileManager extends EventTarget {
     try {
       prefs = await getPreferences();
     } catch (e) {
-      console.error('Failed to retrieve preferences:', e);
+      console.error('Cannot get preferences:', e);
       return;
     }
 
@@ -2016,6 +2027,15 @@ export class FileManager extends EventTarget {
       this.driveEnabled_ = prefs.driveEnabled;
       this.toggleDriveRootOnPreferencesUpdate_();
       redraw = true;
+    }
+
+    if (this.bulkPinningAvailable_ !== prefs.driveFsBulkPinningAvailable) {
+      this.bulkPinningAvailable_ = prefs.driveFsBulkPinningAvailable;
+      console.debug(`Bulk-pinning is now ${
+          this.bulkPinningAvailable_ ? 'available' : 'unavailable'}`);
+      if (this.bulkPinningAvailable_) {
+        await this.initBulkPinning_();
+      }
     }
 
     if (this.trashEnabled !== prefs.trashEnabled) {
@@ -2030,7 +2050,7 @@ export class FileManager extends EventTarget {
       redraw = true;
     }
 
-    this.updateOfficePrefs_(prefs);
+    await this.updateOfficePrefs_(prefs);
 
     if (redraw && !isNewDirectoryTreeEnabled()) {
       // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
