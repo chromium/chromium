@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -147,6 +148,10 @@ class FakeBinaryUploadService : public BinaryUploadService {
 
   void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override {}
 
+  base::WeakPtr<BinaryUploadService> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void SetResponse(const base::FilePath& path,
                    BinaryUploadService::Result result,
                    enterprise_connectors::ContentAnalysisResponse response) {
@@ -194,6 +199,7 @@ class FakeBinaryUploadService : public BinaryUploadService {
   base::RepeatingClosure quit_on_last_request_;
   size_t num_finished_requests_ = 0;
   size_t num_acks_ = 0;
+  base::WeakPtrFactory<FakeBinaryUploadService> weak_ptr_factory_{this};
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {

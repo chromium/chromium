@@ -284,6 +284,10 @@ void CloudBinaryUploadService::MaybeCancelRequests(
   // TODO(1374944): Might consider canceling requests in `request_queue_`.
 }
 
+base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
+  return weakptr_factory_.GetWeakPtr();
+}
+
 void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     std::unique_ptr<CloudBinaryUploadService::Request> request,
     bool authorized) {

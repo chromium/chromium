@@ -294,6 +294,11 @@ void LocalBinaryUploadService::MaybeCancelRequests(
   SendCancelRequestsIfNeeded();
 }
 
+base::WeakPtr<safe_browsing::BinaryUploadService>
+LocalBinaryUploadService::AsWeakPtr() {
+  return factory_.GetWeakPtr();
+}
+
 device_signals::mojom::SystemSignalsService*
 LocalBinaryUploadService::GetSystemSignalsService() {
   auto* host =

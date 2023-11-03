@@ -22,8 +22,7 @@ namespace safe_browsing {
 
 // This class encapsulates the process of getting data scanned through a generic
 // interface.
-class BinaryUploadService : public KeyedService,
-                            public base::SupportsWeakPtr<BinaryUploadService> {
+class BinaryUploadService : public KeyedService {
  public:
   // The maximum size of data that can be uploaded via this service.
   constexpr static size_t kMaxUploadSizeBytes = 50 * 1024 * 1024;  // 50 MB
@@ -320,6 +319,9 @@ class BinaryUploadService : public KeyedService,
   // approach only, since it is possible that requests have been started in a
   // way that they are no longer cancelable.
   virtual void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<BinaryUploadService> AsWeakPtr() = 0;
 };
 
 }  // namespace safe_browsing
