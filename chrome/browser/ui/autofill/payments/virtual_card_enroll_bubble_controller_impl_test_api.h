@@ -32,7 +32,7 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
   }
 
   void SetFields(const VirtualCardEnrollmentFields& fields) {
-    controller_->virtual_card_enrollment_fields_ = fields;
+    controller_->ui_model_.enrollment_fields = fields;
   }
 #endif  // IS_ANDROID
 
