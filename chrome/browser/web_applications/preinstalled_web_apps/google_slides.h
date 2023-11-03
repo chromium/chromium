@@ -9,7 +9,7 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleSlides(bool is_standalone_tabbed);
+ExternalInstallOptions GetConfigForGoogleSlides();
 
 }  // namespace web_app
 

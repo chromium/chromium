@@ -9,7 +9,7 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleDocs(bool is_standalone_tabbed);
+ExternalInstallOptions GetConfigForGoogleDocs();
 
 }  // namespace web_app
 

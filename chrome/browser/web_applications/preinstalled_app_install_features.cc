@@ -4,18 +4,14 @@
 
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 
-#include <string>
-#include <string_view>
-
 #include "base/feature_list.h"
-#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/policy/core/common/management/management_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // IS_CHROMEOS
 
 namespace web_app {
 
@@ -68,34 +64,6 @@ constexpr const FeatureWithEnabledFunction
 };
 
 }  // namespace
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Use `IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed` instead of checking
-// this flag directly to correctly exclude managed devices.
-BASE_FEATURE(kDocsSheetsSlidesDrivePreinstallStandaloneTabbed,
-             "DocsSheetsSlidesDrivePreinstallStandaloneTabbed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          kDocsSheetsSlidesDrivePreinstallStandaloneTabbed)) {
-    return false;
-  }
-  // Exclude managed devices.
-  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
-    return false;
-  }
-  // Exclude managed profiles.
-  if (policy::ManagementServiceFactory::GetForProfile(&profile)->IsManaged()) {
-    return false;
-  }
-  return true;
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
 
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
                                             const Profile& profile) {
