@@ -20195,8 +20195,7 @@
             "platforms": [
                 "chromeos",
                 "mac",
-                "windows",
-                "android"
+                "windows"
             ],
             "experiments": [
                 {

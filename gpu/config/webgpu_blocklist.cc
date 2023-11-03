@@ -14,10 +14,6 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 #if BUILDFLAG(USE_DAWN)
 #include "third_party/dawn/include/dawn/webgpu.h"  // nogncheck
 #endif
@@ -55,21 +51,6 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
     return true;
   }
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-  constexpr uint32_t kARMVendorID = 0x13B5;
-  constexpr uint32_t kQualcommVendorID = 0x5143;
-
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-  // Only Android 12 with an ARM or Qualcomm GPU is enabled for initially.
-  // Other OS versions and GPU vendors may be fine, but have not had sufficient
-  // testing yet.
-  if (build_info->sdk_int() < base::android::SDK_VERSION_S ||
-      (properties.vendorID != kARMVendorID &&
-       properties.vendorID != kQualcommVendorID)) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // TODO(crbug.com/1266550): SwiftShader and CPU adapters are blocked until
   // fully tested.

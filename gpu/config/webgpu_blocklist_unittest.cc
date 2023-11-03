@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "gpu/config/webgpu_blocklist.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/buildflags.h"
 
@@ -14,40 +13,6 @@ namespace gpu {
 
 class WebGPUBlocklistTest : public testing::Test {};
 
-#if BUILDFLAG(IS_ANDROID)
-// Android is currently more restrictive than other platforms around which GPUs
-// are allowed, which causes the usual tests to fail. This test exercises the
-// Android-specific restrictions.
-
-TEST_F(WebGPUBlocklistTest, BlockAndroidVendorId) {
-  WGPUAdapterProperties properties1 = {};
-  properties1.vendorID = 0x13B5;
-
-  WGPUAdapterProperties properties2 = {};
-  properties2.vendorID = 0x5143;
-
-  WGPUAdapterProperties properties3 = {};
-  properties3.vendorID = 0x8086;
-
-  // Test the default vendor blocks
-  EXPECT_FALSE(IsWebGPUAdapterBlocklisted(properties1));
-  EXPECT_FALSE(IsWebGPUAdapterBlocklisted(properties2));
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(properties3));
-
-  // Test that blocking a vendor which is otherwise allowed still works
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(properties1, "13b5"));
-  EXPECT_FALSE(IsWebGPUAdapterBlocklisted(properties2, "13b5"));
-
-  // Test blocking *
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(properties1, "*"));
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(properties2, "*"));
-
-  // Test blocking a list of patterns
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(properties1, "13b5|5143"));
-  EXPECT_TRUE(IsWebGPUAdapterBlocklisted(properties2, "13b5|5143"));
-}
-
-#else
 TEST_F(WebGPUBlocklistTest, BlockVendorId) {
   WGPUAdapterProperties properties1 = {};
   properties1.vendorID = 0x8086;
@@ -180,7 +145,6 @@ TEST_F(WebGPUBlocklistTest, BlockDriverDescription) {
   EXPECT_TRUE(
       IsWebGPUAdapterBlocklisted(properties3, "*:*:D3D12 driver version 31.*"));
 }
-#endif  // BUILDFLAG(IS_ANDROID) else
 
 }  // namespace gpu
 
