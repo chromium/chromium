@@ -275,8 +275,6 @@ void RunAttestationCertificateCallback(
       std::move(callback).Run(PEMCertChain(pem_certificate_chain));
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
-      // TODO(b/259021973): Is it safe to consider
-      // `ATTESTATION_UNSPECIFIED_FAILURE` transient? Check its side effects.
       std::move(callback).Run(base::unexpected(
           SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
       return;
