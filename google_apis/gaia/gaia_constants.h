@@ -93,6 +93,10 @@ extern const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope[];
 
+// OAuth2 scopes for Optimization Guide.
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kOptimizationGuideServiceGetHintsOAuth2Scope[];
+
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];
 

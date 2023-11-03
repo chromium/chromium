@@ -213,9 +213,6 @@ bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
 // |request_context|.
 bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
 
-// Returns the OAuth scopes to use for personalized metadata.
-std::set<std::string> GetOAuthScopesForPersonalizedMetadata();
-
 // Returns the minimum number of seconds to randomly delay before starting to
 // fetch for prediction models and host model features.
 int PredictionModelFetchRandomMinDelaySecs();

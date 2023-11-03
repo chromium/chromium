@@ -181,46 +181,13 @@ TEST(OptimizationGuideFeaturesTest, ShouldPersistSalientImageMetadata) {
   EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("badlocale", "US"));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingScopes) {
-  {
-    EXPECT_THAT(
-        features::GetOAuthScopesForPersonalizedMetadata(),
-        ::testing::UnorderedElementsAre(GaiaConstants::kGoogleUserInfoProfile));
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kOptimizationGuidePersonalizedFetching, {});
-    EXPECT_THAT(
-        features::GetOAuthScopesForPersonalizedMetadata(),
-        ::testing::UnorderedElementsAre(GaiaConstants::kGoogleUserInfoProfile));
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kOptimizationGuidePersonalizedFetching,
-        {
-            {"oauth_scopes", ""},
-        });
-    EXPECT_THAT(
-        features::GetOAuthScopesForPersonalizedMetadata(),
-        ::testing::UnorderedElementsAre(GaiaConstants::kGoogleUserInfoProfile));
-  }
-}
-
 TEST(OptimizationGuideFeaturesTest, OptimizationGuidePersonalizedFetching) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePersonalizedFetching,
       {
           {"allowed_contexts", "CONTEXT_PAGE_NAVIGATION,CONTEXT_BOOKMARKS"},
-          {"oauth_scopes", "scope,scope2"},
       });
-
-  // Check scopes.
-  EXPECT_THAT(features::GetOAuthScopesForPersonalizedMetadata(),
-              ::testing::UnorderedElementsAre("scope", "scope2"));
 
   // Check contexts.
   EXPECT_FALSE(features::ShouldEnablePersonalizedMetadata(
