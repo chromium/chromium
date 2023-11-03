@@ -27,33 +27,6 @@ using testing::NiceMock;
 
 namespace media_router {
 
-class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
- public:
-  TestDeviceDescriptionFetcher(
-      const DialDeviceData& device_data,
-      base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
-      base::OnceCallback<void(const std::string&)> error_cb,
-      network::TestURLLoaderFactory* factory)
-      : DeviceDescriptionFetcher(device_data,
-                                 std::move(success_cb),
-                                 std::move(error_cb)),
-        factory_(factory) {}
-  ~TestDeviceDescriptionFetcher() override = default;
-
-  void Start() override {
-    fetcher_ = std::make_unique<NiceMock<TestDialURLFetcher>>(
-        base::BindOnce(&DeviceDescriptionFetcher::ProcessResponse,
-                       base::Unretained(this)),
-        base::BindOnce(&DeviceDescriptionFetcher::ReportError,
-                       base::Unretained(this)),
-        factory_);
-    fetcher_->Get(device_data_.device_description_url());
-  }
-
- private:
-  const raw_ptr<network::TestURLLoaderFactory> factory_;
-};
-
 class DeviceDescriptionFetcherTest : public testing::Test {
  public:
   DeviceDescriptionFetcherTest() : url_("http://127.0.0.1/description.xml") {}

@@ -17,6 +17,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+using ::testing::NiceMock;
+
 namespace media_router {
 
 MockDialMediaSinkService::MockDialMediaSinkService() = default;
@@ -79,6 +81,28 @@ void TestDialURLFetcher::StartDownload() {
       factory_,
       base::BindOnce(&DialURLFetcher::ProcessResponse, base::Unretained(this)),
       256 * 1024);
+}
+
+TestDeviceDescriptionFetcher::TestDeviceDescriptionFetcher(
+    const DialDeviceData& device_data,
+    base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
+    base::OnceCallback<void(const std::string&)> error_cb,
+    network::TestURLLoaderFactory* factory)
+    : DeviceDescriptionFetcher(device_data,
+                               std::move(success_cb),
+                               std::move(error_cb)),
+      factory_(factory) {}
+
+TestDeviceDescriptionFetcher::~TestDeviceDescriptionFetcher() = default;
+
+void TestDeviceDescriptionFetcher::Start() {
+  fetcher_ = std::make_unique<NiceMock<TestDialURLFetcher>>(
+      base::BindOnce(&DeviceDescriptionFetcher::ProcessResponse,
+                     base::Unretained(this)),
+      base::BindOnce(&DeviceDescriptionFetcher::ReportError,
+                     base::Unretained(this)),
+      factory_);
+  fetcher_->Get(device_data_.device_description_url());
 }
 
 TestDialActivityManager::TestDialActivityManager(

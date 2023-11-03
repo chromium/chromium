@@ -4,6 +4,9 @@
 
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
@@ -13,8 +16,10 @@
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,6 +70,18 @@ class TestDeviceDescriptionService : public DeviceDescriptionService {
 
   MOCK_METHOD2(ParseDeviceDescription,
                void(const DialDeviceData&, const DialDeviceDescriptionData&));
+
+  std::unique_ptr<DeviceDescriptionFetcher> CreateFetcher(
+      const DialDeviceData& device_data,
+      base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
+      base::OnceCallback<void(const std::string&)> error_cb) override {
+    return std::make_unique<TestDeviceDescriptionFetcher>(
+        device_data, std::move(success_cb), std::move(error_cb),
+        &loader_factory_);
+  }
+
+ private:
+  network::TestURLLoaderFactory loader_factory_;
 };
 
 class DeviceDescriptionServiceTest : public ::testing::Test {
