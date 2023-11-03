@@ -67,33 +67,37 @@ FontFormatCheck::FontFormatCheck(sk_sp<SkData> sk_data) {
   colr_version_ = determineCOLRVersion(table_tags_, face.get());
 }
 
-bool FontFormatCheck::IsVariableFont() {
+bool FontFormatCheck::IsVariableFont() const {
   return table_tags_.size() && table_tags_.Contains(HB_TAG('f', 'v', 'a', 'r'));
 }
 
-bool FontFormatCheck::IsCbdtCblcColorFont() {
+bool FontFormatCheck::IsCbdtCblcColorFont() const {
   return table_tags_.size() &&
          table_tags_.Contains(HB_TAG('C', 'B', 'D', 'T')) &&
          table_tags_.Contains(HB_TAG('C', 'B', 'L', 'C'));
 }
 
-bool FontFormatCheck::IsColrCpalColorFontV0() {
+bool FontFormatCheck::IsColrCpalColorFontV0() const {
   return colr_version_ == COLRVersion::kCOLRV0;
 }
 
-bool FontFormatCheck::IsColrCpalColorFontV1() {
+bool FontFormatCheck::IsColrCpalColorFontV1() const {
   return colr_version_ == COLRVersion::kCOLRV1;
 }
 
-bool FontFormatCheck::IsSbixColorFont() {
+bool FontFormatCheck::IsVariableColrV0Font() const {
+  return IsColrCpalColorFontV0() && IsVariableFont();
+}
+
+bool FontFormatCheck::IsSbixColorFont() const {
   return table_tags_.size() && table_tags_.Contains(HB_TAG('s', 'b', 'i', 'x'));
 }
 
-bool FontFormatCheck::IsCff2OutlineFont() {
+bool FontFormatCheck::IsCff2OutlineFont() const {
   return table_tags_.size() && table_tags_.Contains(HB_TAG('C', 'F', 'F', '2'));
 }
 
-bool FontFormatCheck::IsColorFont() {
+bool FontFormatCheck::IsColorFont() const {
   return IsCbdtCblcColorFont() || IsColrCpalColorFont() || IsSbixColorFont();
 }
 

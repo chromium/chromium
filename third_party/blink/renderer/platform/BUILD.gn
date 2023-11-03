@@ -2083,6 +2083,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/typesetting_features_test.cc",
     "fonts/unicode_range_set_test.cc",
     "fonts/utf16_ragel_iterator_test.cc",
+    "fonts/web_font_typeface_factory_test.cc",
     "geometry/calculation_expression_node_test.cc",
     "geometry/float_polygon_test.cc",
     "geometry/float_rounded_rect_test.cc",
