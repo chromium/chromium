@@ -126,6 +126,52 @@ INVALID_SYMBOLS = set([
 ])
 
 
+# Custom search keywords for symbols.
+# By default, symbols do not have search keywords.
+# These are "shortcut" style search keywords based off compose key to provide a
+# fast way to access common symbols.
+CUSTOM_KEYWORDS = {
+    '⅐':['17'],
+    '⅓':['13'],
+    '⅔':['23'],
+    '½':['12'],
+    '¼':['14'],
+    '¾':['34'],
+    '⅕':['15'],
+    '⅖':['25'],
+    '⅗':['35'],
+    '⅘':['45'],
+    '⅙':['16'],
+    '⅛':['18'],
+    '⅜':['38'],
+    '⅝':['58'],
+    '⅞':['78'],
+    '©':['oc', 'co'],
+    '®':['or', 'ro'],
+    '₠':['CE'],
+    '₡':['C/','/C'],
+    '₢':['Cr'],
+    '₣':['Fr'],
+    '¢':['|c', 'c|', 'c/', '/c'],
+    '£': ['L-', '-L'],
+    '₥': ['m/', '/m'],
+    '₦': ['N=', '=N'],
+    '₧': ['P', 't'],
+    '₨': ['R', 's'],
+    '₩': ['W=', '=W'],
+    '₫': ['=d', 'd='],
+    '€': ['C=', '=C', '=E', 'E='],
+    '¥': ['Y=', '=Y', 'Y-', '-Y'],
+    '♩': ['#q'],
+    '♪': ['#e'],
+    '♫': ['#E'],
+    '♬': ['#S'],
+    '♭': ['#b'],
+    '♮': ['#f'],
+    '♯': ['##'],
+}
+
+
 @dataclasses.dataclass
 class EmojiPickerChar:
     """A type representing a single character in EmojiPicker."""
@@ -265,7 +311,8 @@ def _convert_unicode_ranges_to_emoji_chars(
                 unicode_character = chr(code_point)
                 yield EmojiPickerChar(
                     string=unicode_character,
-                    name=unicodedata.name(unicode_character).lower())
+                    name=unicodedata.name(unicode_character).lower(),
+                    keywords=CUSTOM_KEYWORDS.get(unicode_character, []))
             except ValueError:
                 # If ignore_errors is False, raise the exception.
                 if not ignore_errors:
