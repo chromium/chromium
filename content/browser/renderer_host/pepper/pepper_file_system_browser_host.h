@@ -32,9 +32,8 @@ namespace content {
 class BrowserPpapiHost;
 class PepperFileIOHost;
 
-class CONTENT_EXPORT PepperFileSystemBrowserHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperFileSystemBrowserHost> {
+class CONTENT_EXPORT PepperFileSystemBrowserHost final
+    : public ppapi::host::ResourceHost {
  public:
   // Creates a new PepperFileSystemBrowserHost for a file system of a given
   // |type|. The host must be opened before use.
@@ -86,6 +85,10 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
 
   static scoped_refptr<storage::FileSystemContext>
   GetFileSystemContextFromRenderId(int render_process_id);
+
+  base::WeakPtr<PepperFileSystemBrowserHost> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   // All interactions with FileSystemContext must occur on the IO thread as

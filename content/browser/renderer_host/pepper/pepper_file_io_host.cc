@@ -237,7 +237,8 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
         FROM_HERE,
         base::BindOnce(&GetResolvedRenderProcessId, render_process_id_),
         base::BindOnce(&PepperFileIOHost::GotResolvedRenderProcessId,
-                       AsWeakPtr(), context->MakeReplyMessageContext(), path,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       context->MakeReplyMessageContext(), path,
                        platform_file_flags));
   }
   state_manager_.SetPendingOperation(FileIOStateManager::OPERATION_EXCLUSIVE);
@@ -270,10 +271,10 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     return;
   }
 
-  auto open_callback =
-      base::BindOnce(&DidOpenFile, AsWeakPtr(), task_runner_,
-                     base::BindOnce(&PepperFileIOHost::DidOpenInternalFile,
-                                    AsWeakPtr(), reply_context));
+  auto open_callback = base::BindOnce(
+      &DidOpenFile, weak_ptr_factory_.GetWeakPtr(), task_runner_,
+      base::BindOnce(&PepperFileIOHost::DidOpenInternalFile,
+                     weak_ptr_factory_.GetWeakPtr(), reply_context));
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -293,8 +294,9 @@ void PepperFileIOHost::DidOpenInternalFile(
       check_quota_ = true;
       file_system_host_->OpenQuotaFile(
           this, file_system_url_,
-          base::BindOnce(&PepperFileIOHost::DidOpenQuotaFile, AsWeakPtr(),
-                         reply_context, std::move(file)));
+          base::BindOnce(&PepperFileIOHost::DidOpenQuotaFile,
+                         weak_ptr_factory_.GetWeakPtr(), reply_context,
+                         std::move(file)));
       return;
     }
   }
@@ -313,9 +315,10 @@ void PepperFileIOHost::GotResolvedRenderProcessId(
     base::ProcessId resolved_render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = resolved_render_process_id;
-  file_.CreateOrOpen(path, file_flags,
-                     base::BindOnce(&PepperFileIOHost::OnLocalFileOpened,
-                                    AsWeakPtr(), reply_context, path));
+  file_.CreateOrOpen(
+      path, file_flags,
+      base::BindOnce(&PepperFileIOHost::OnLocalFileOpened,
+                     weak_ptr_factory_.GetWeakPtr(), reply_context, path));
 }
 
 int32_t PepperFileIOHost::OnHostMsgTouch(
@@ -330,7 +333,8 @@ int32_t PepperFileIOHost::OnHostMsgTouch(
   if (!file_.SetTimes(
           PPTimeToTime(last_access_time), PPTimeToTime(last_modified_time),
           base::BindOnce(&PepperFileIOHost::ExecutePlatformGeneralCallback,
-                         AsWeakPtr(), context->MakeReplyMessageContext()))) {
+                         weak_ptr_factory_.GetWeakPtr(),
+                         context->MakeReplyMessageContext()))) {
     return PP_ERROR_FAILED;
   }
 
@@ -354,7 +358,8 @@ int32_t PepperFileIOHost::OnHostMsgSetLength(
   if (!file_.SetLength(
           length,
           base::BindOnce(&PepperFileIOHost::ExecutePlatformGeneralCallback,
-                         AsWeakPtr(), context->MakeReplyMessageContext()))) {
+                         weak_ptr_factory_.GetWeakPtr(),
+                         context->MakeReplyMessageContext()))) {
     return PP_ERROR_FAILED;
   }
 
@@ -371,7 +376,8 @@ int32_t PepperFileIOHost::OnHostMsgFlush(
 
   if (!file_.Flush(
           base::BindOnce(&PepperFileIOHost::ExecutePlatformGeneralCallback,
-                         AsWeakPtr(), context->MakeReplyMessageContext()))) {
+                         weak_ptr_factory_.GetWeakPtr(),
+                         context->MakeReplyMessageContext()))) {
     return PP_ERROR_FAILED;
   }
 
@@ -388,7 +394,8 @@ int32_t PepperFileIOHost::OnHostMsgClose(
   }
 
   if (file_.IsValid()) {
-    file_.Close(base::BindOnce(&PepperFileIOHost::DidCloseFile, AsWeakPtr()));
+    file_.Close(base::BindOnce(&PepperFileIOHost::DidCloseFile,
+                               weak_ptr_factory_.GetWeakPtr()));
   }
   return PP_OK;
 }
@@ -423,7 +430,7 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
                      render_process_id_, document_url),
       base::BindOnce(
           &PepperFileIOHost::GotPluginAllowedToCallRequestOSFileHandle,
-          AsWeakPtr(), context->MakeReplyMessageContext()));
+          weak_ptr_factory_.GetWeakPtr(), context->MakeReplyMessageContext()));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -478,7 +485,7 @@ void PepperFileIOHost::OnLocalFileOpened(
         GURL(), std::string(),
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindOnce(&PepperFileIOHost::OnLocalFileQuarantined,
-                           AsWeakPtr(), reply_context, path,
+                           weak_ptr_factory_.GetWeakPtr(), reply_context, path,
                            std::move(quarantine_remote)),
             quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED));
   } else {
