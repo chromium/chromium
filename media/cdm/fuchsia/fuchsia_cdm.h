@@ -51,6 +51,9 @@ class FuchsiaCdm : public ContentDecryptionModule,
   // ContentDecryptionModule implementation:
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
                             std::unique_ptr<SimpleCdmPromise> promise) override;
+  void GetStatusForPolicy(
+      media::HdcpVersion min_hdcp_version,
+      std::unique_ptr<KeyStatusCdmPromise> promise) override;
   void CreateSessionAndGenerateRequest(
       CdmSessionType session_type,
       EmeInitDataType init_data_type,

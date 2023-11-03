@@ -357,6 +357,16 @@ void FuchsiaCdm::SetServerCertificate(
       });
 }
 
+void FuchsiaCdm::GetStatusForPolicy(
+    media::HdcpVersion min_hdcp_version,
+    std::unique_ptr<KeyStatusCdmPromise> promise) {
+  REJECT_PROMISE_AND_RETURN_IF_BAD_CDM(promise, cdm_);
+
+  // Fuchsia devices do not support external display, so the internal display
+  // can support all HDCP levels.
+  promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+}
+
 void FuchsiaCdm::CreateSessionAndGenerateRequest(
     CdmSessionType session_type,
     EmeInitDataType init_data_type,
