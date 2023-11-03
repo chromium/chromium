@@ -10,12 +10,12 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT;
-import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.IN_SIGN_IN_FLOW;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_DISMISS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.SOURCE;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 
 import android.view.View;
@@ -31,6 +31,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -68,7 +69,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                             new PropertyModel.Builder(ALL_KEYS)
                                     .with(PREEXISTING_DEVICE_LOCK, false)
                                     .with(DEVICE_SUPPORTS_PIN_CREATION_INTENT, true)
-                                    .with(IN_SIGN_IN_FLOW, false)
+                                    .with(SOURCE, DeviceLockActivityLauncher.Source.AUTOFILL)
                                     .with(UI_ENABLED, true)
                                     .with(
                                             ON_CREATE_DEVICE_LOCK_CLICKED,
@@ -194,7 +195,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void
             testDeviceLockView_inSignInFlowWithPreExistingLock_dismissButtonHasDismissedSignInText() {
-        mViewModel.set(IN_SIGN_IN_FLOW, true);
+        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
 
         assertEquals(
@@ -207,7 +208,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @SmallTest
     public void testDeviceLockView_inSignInFlowWithNoPreExistingLock_dismissButtonHasNotNowText() {
-        mViewModel.set(IN_SIGN_IN_FLOW, true);
+        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
         mViewModel.set(PREEXISTING_DEVICE_LOCK, false);
 
         assertEquals(
@@ -220,7 +221,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @SmallTest
     public void testDeviceLockView_notInSignInFlow_dismissButtonHasNoThanksText() {
-        mViewModel.set(IN_SIGN_IN_FLOW, false);
+        mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.AUTOFILL);
 
         assertEquals(
                 "The dismiss button should show 'no thanks' text when not in the sign in flow.",

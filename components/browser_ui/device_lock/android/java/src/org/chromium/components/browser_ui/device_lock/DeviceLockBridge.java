@@ -54,10 +54,17 @@ public class DeviceLockBridge {
         if (context != null) {
             DeviceLockActivityLauncher deviceLockActivityLauncher =
                     DeviceLockActivityLauncherSupplier.from(windowAndroid).get();
-            deviceLockActivityLauncher.launchDeviceLockActivity(context, null, false, windowAndroid,
-                    (resultCode, unused)
-                            -> DeviceLockBridgeJni.get().onDeviceLockUiFinished(
-                                    mNativeDeviceLockBridge, resultCode == Activity.RESULT_OK));
+            deviceLockActivityLauncher.launchDeviceLockActivity(
+                    context,
+                    null,
+                    false,
+                    windowAndroid,
+                    (resultCode, unused) ->
+                            DeviceLockBridgeJni.get()
+                                    .onDeviceLockUiFinished(
+                                            mNativeDeviceLockBridge,
+                                            resultCode == Activity.RESULT_OK),
+                    DeviceLockActivityLauncher.Source.AUTOFILL);
         } else {
             DeviceLockBridgeJni.get().onDeviceLockUiFinished(mNativeDeviceLockBridge, false);
         }

@@ -1020,7 +1020,8 @@ public class AccountPickerBottomSheetTest {
                 String selectedAccount,
                 boolean requireDeviceLockReauthentication,
                 WindowAndroid windowAndroid,
-                WindowAndroid.IntentCallback callback) {
+                WindowAndroid.IntentCallback callback,
+                @DeviceLockActivityLauncher.Source String source) {
             mCallback = callback;
             mLaunched = true;
         }

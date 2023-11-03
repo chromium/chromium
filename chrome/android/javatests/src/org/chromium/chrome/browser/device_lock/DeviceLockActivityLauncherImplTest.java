@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for the {@link DeviceLockActivity}. */
@@ -40,7 +41,12 @@ public class DeviceLockActivityLauncherImplTest {
     public void testLaunchDeviceLockActivity_launchesIntent() {
         DeviceLockActivityLauncherImpl.get()
                 .launchDeviceLockActivity(
-                        mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
+                        mContext,
+                        "testSelectedAccount",
+                        true,
+                        mWindowAndroid,
+                        mIntentCallback,
+                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
         verify(mWindowAndroid, times(1))
                 .showIntent(any(Intent.class), eq(mIntentCallback), isNull());
     }
@@ -60,6 +66,11 @@ public class DeviceLockActivityLauncherImplTest {
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
         DeviceLockActivityLauncherImpl.get()
                 .launchDeviceLockActivity(
-                        mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
+                        mContext,
+                        "testSelectedAccount",
+                        true,
+                        mWindowAndroid,
+                        mIntentCallback,
+                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
     }
 }
