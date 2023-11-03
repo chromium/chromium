@@ -179,11 +179,6 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public int getCurrentModelIndex() {
-        return mActiveModelIndex;
-    }
-
-    @Override
     public TabModel getModel(boolean incognito) {
         int index = getModelIndex(incognito);
         if (index == MODEL_NOT_FOUND) return EmptyTabModel.getInstance();

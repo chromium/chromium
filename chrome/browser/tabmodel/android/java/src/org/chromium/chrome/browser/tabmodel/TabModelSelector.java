@@ -75,11 +75,6 @@ public interface TabModelSelector {
     TabModel getModelForTabId(int id);
 
     /**
-     * @return The index of the current {@link TabModel}.
-     */
-    int getCurrentModelIndex();
-
-    /**
      * @return If the incognito {@link TabModel} is current.
      */
     boolean isIncognitoSelected();

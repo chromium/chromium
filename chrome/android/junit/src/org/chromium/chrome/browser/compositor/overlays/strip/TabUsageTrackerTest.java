@@ -103,7 +103,7 @@ public class TabUsageTrackerTest {
         Tab selectedTab = getMockedTab(3);
         // Start with 5 existing tabs and 1 selected tab.
         Mockito.when(mTabModelSelector.getTotalTabCount()).thenReturn(5);
-        Mockito.when(mTabModel.getTabAt(Mockito.anyInt())).thenReturn(selectedTab);
+        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(selectedTab);
         mTabUsageTracker.onResumeWithNative();
 
         // Act: Create 1 tab, select 1 tab and call onStop.

@@ -174,7 +174,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      */
     private boolean mShouldIgnoreNextSelect;
 
-    private int mModelIndexWhenShown;
+    private boolean mIncognitoStateWhenShown;
     private int mTabIdWhenShown;
     private int mIndexInNewModelWhenSwitched;
     private boolean mIsSelectingInTabSwitcher;
@@ -656,7 +656,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
         Tab fromTab = TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), lastId);
         assert fromTab != null;
-        if (mModelIndexWhenShown == mTabModelSelector.getCurrentModelIndex()) {
+        if (mIncognitoStateWhenShown == mTabModelSelector.isIncognitoSelected()) {
             if (tab.getId() == mTabIdWhenShown) {
                 if (mMode == TabListCoordinator.TabListMode.CAROUSEL) {
                     RecordUserAction.record("MobileTabReturnedToCurrentTab.TabCarousel");
@@ -832,7 +832,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (!animate) mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, false);
         setVisibility(true);
         blockTouchInput(false);
-        mModelIndexWhenShown = mTabModelSelector.getCurrentModelIndex();
+        mIncognitoStateWhenShown = mTabModelSelector.isIncognitoSelected();
         mTabIdWhenShown = mTabModelSelector.getCurrentTabId();
         mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, true);
     }
