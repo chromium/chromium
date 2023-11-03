@@ -1678,17 +1678,30 @@ TEST_P(AttributionStorageSqlTest,
     sql::Database raw_db;
     ASSERT_TRUE(raw_db.Open(db_path()));
 
-    static constexpr char kUpdateSql[] =
-        "UPDATE sources SET read_only_source_data=?";
-    sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
-    // `randomized_response_rate` field will not be set in the serialized proto.
-    statement.BindBlob(
-        0, SerializeReadOnlySourceData(
-               *attribution_reporting::EventReportWindows::Create(
-                   base::Seconds(0), {base::Days(1)}),
-               /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1,
-               /*trigger_config=*/nullptr, /*debug_cookie_set=*/nullptr));
-    ASSERT_TRUE(statement.Run());
+    static constexpr char kGetSql[] =
+        "SELECT source_id,read_only_source_data FROM sources";
+    sql::Statement get_statement(raw_db.GetUniqueStatement(kGetSql));
+
+    static constexpr char kSetSql[] =
+        "UPDATE sources SET read_only_source_data=? WHERE source_id=?";
+    sql::Statement set_statement(raw_db.GetUniqueStatement(kSetSql));
+
+    while (get_statement.Step()) {
+      int64_t id = get_statement.ColumnInt64(0);
+
+      std::string blob;
+      ASSERT_TRUE(get_statement.ColumnBlobAsString(1, &blob));
+
+      proto::AttributionReadOnlySourceData msg;
+      ASSERT_TRUE(msg.ParseFromString(blob));
+
+      msg.clear_randomized_response_rate();
+
+      set_statement.Reset(/*clear_bound_vars=*/true);
+      set_statement.BindBlob(0, msg.SerializeAsString());
+      set_statement.BindInt64(1, id);
+      ASSERT_TRUE(set_statement.Run());
+    }
   }
 
   OpenDatabase();

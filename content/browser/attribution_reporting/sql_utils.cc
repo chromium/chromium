@@ -128,14 +128,11 @@ absl::optional<SourceType> DeserializeSourceType(int val) {
   }
 }
 
-std::string SerializeReadOnlySourceData(
+void SetReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
     int max_event_level_reports,
-    double randomized_response_rate,
-    const attribution_reporting::TriggerConfig* trigger_config,
-    const bool* debug_cookie_set) {
+    proto::AttributionReadOnlySourceData& msg) {
   DCHECK_GE(max_event_level_reports, 0);
-  proto::AttributionReadOnlySourceData msg;
 
   msg.set_max_event_level_reports(max_event_level_reports);
   msg.set_event_level_report_window_start_time(
@@ -144,27 +141,35 @@ std::string SerializeReadOnlySourceData(
   for (base::TimeDelta time : event_report_windows.end_times()) {
     msg.add_event_level_report_window_end_times(time.InMicroseconds());
   }
+}
 
-  if (randomized_response_rate >= 0 && randomized_response_rate <= 1) {
-    msg.set_randomized_response_rate(randomized_response_rate);
+std::string SerializeReadOnlySourceData(
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    int max_event_level_reports,
+    double randomized_response_rate,
+    const attribution_reporting::TriggerConfig& trigger_config,
+    bool debug_cookie_set) {
+  DCHECK_GE(randomized_response_rate, 0);
+  DCHECK_LE(randomized_response_rate, 1);
+
+  proto::AttributionReadOnlySourceData msg;
+
+  SetReadOnlySourceData(event_report_windows, max_event_level_reports, msg);
+
+  msg.set_randomized_response_rate(randomized_response_rate);
+
+  switch (trigger_config.trigger_data_matching()) {
+    case TriggerDataMatching::kExact:
+      msg.set_trigger_data_matching(
+          proto::AttributionReadOnlySourceData::EXACT);
+      break;
+    case TriggerDataMatching::kModulus:
+      msg.set_trigger_data_matching(
+          proto::AttributionReadOnlySourceData::MODULUS);
+      break;
   }
 
-  if (trigger_config) {
-    switch (trigger_config->trigger_data_matching()) {
-      case TriggerDataMatching::kExact:
-        msg.set_trigger_data_matching(
-            proto::AttributionReadOnlySourceData::EXACT);
-        break;
-      case TriggerDataMatching::kModulus:
-        msg.set_trigger_data_matching(
-            proto::AttributionReadOnlySourceData::MODULUS);
-        break;
-    }
-  }
-
-  if (debug_cookie_set) {
-    msg.set_debug_cookie_set(*debug_cookie_set);
-  }
+  msg.set_debug_cookie_set(debug_cookie_set);
 
   return msg.SerializeAsString();
 }

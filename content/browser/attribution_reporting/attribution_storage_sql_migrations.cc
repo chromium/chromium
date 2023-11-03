@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
@@ -322,14 +323,11 @@ bool To56(sql::Database& db) {
       continue;
     }
 
+    proto::AttributionReadOnlySourceData msg;
+    SetReadOnlySourceData(*event_report_windows, max_event_level_reports, msg);
+
     set_statement.Reset(/*clear_bound_vars=*/true);
-    // '-1' represents null for the randomized response rate field.
-    set_statement.BindBlob(
-        0, SerializeReadOnlySourceData(*event_report_windows,
-                                       max_event_level_reports,
-                                       /*randomized_response_rate=*/-1,
-                                       /*trigger_config=*/nullptr,
-                                       /*debug_cookie_set=*/nullptr));
+    set_statement.BindBlob(0, msg.SerializeAsString());
     set_statement.BindInt64(1, id);
     if (!set_statement.Run()) {
       return false;

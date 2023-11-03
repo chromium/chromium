@@ -630,7 +630,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       16, SerializeReadOnlySourceData(reg.event_report_windows,
                                       reg.max_event_level_reports,
                                       randomized_response_data.rate(),
-                                      &reg.trigger_config, &debug_cookie_set));
+                                      reg.trigger_config, debug_cookie_set));
 
   if (!statement.Run()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
