@@ -83,6 +83,12 @@ class BrowserManagerFake : public BrowserManager {
 
   int start_count() const { return start_count_; }
 
+  void PrelaunchAtLoginScreen() override { ++prelaunch_count_; }
+
+  int prelaunch_count() const { return prelaunch_count_; }
+
+  void TriggerLoginPromptVisible() { OnLoginPromptVisible(); }
+
   void SetStatePublic(State state) { SetState(state); }
 
   void SimulateLacrosTermination() {
@@ -105,6 +111,7 @@ class BrowserManagerFake : public BrowserManager {
   using BrowserManager::State;
 
   int start_count_ = 0;
+  int prelaunch_count_ = 0;
 };
 
 class MockVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate {
@@ -213,6 +220,13 @@ class BrowserManagerTest : public testing::Test {
 
     // Need to reverse the state back to non set.
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
+
+    // Reset any CPU restrictions.
+    crosapi::browser_util::SetCpuAvailabilityForTesting(absl::nullopt);
+
+    // Reset the session manager state.
+    session_manager::SessionManager::Get()->SetSessionState(
+        session_manager::SessionState::UNKNOWN);
   }
 
   enum class UserType {
@@ -486,6 +500,51 @@ TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
   EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
 
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
+}
+
+TEST_F(BrowserManagerTest, DisallowUseOfLacrosOnOldCPUs) {
+  // As the CTOR needs to be tested, parts of the objects need to be destroyed
+  // and re-created.
+  shelf_controller_.reset();
+  version_service_delegate_ = nullptr;
+  browser_loader_ = nullptr;
+  fake_browser_manager_.reset();
+
+  // Set the used CPU type to really old.
+  crosapi::browser_util::SetCpuAvailabilityForTesting(false);
+
+  // Now re-create the required objects.
+  auto fake_cros_component_manager =
+      base::MakeRefCounted<FakeCrOSComponentManager>();
+  std::unique_ptr<MockBrowserLoader> browser_loader =
+      std::make_unique<testing::StrictMock<MockBrowserLoader>>(
+          fake_cros_component_manager);
+  browser_loader_ = browser_loader.get();
+
+  fake_browser_manager_ = std::make_unique<BrowserManagerFake>(
+      std::move(browser_loader), component_update_service_.get());
+
+  // Simulate that we are ready and the log in screen is shown.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
+  // Trigger the pre-launch logic as the log in screen is ready.
+  fake_browser_manager_->TriggerLoginPromptVisible();
+
+  // Expect the prelaunch logic was not called as the CPU is not sufficient.
+  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 0);
+}
+
+TEST_F(BrowserManagerTest, AllowUseOfLacrosOnNormalCPUs) {
+  // Simulate that we are ready and the log in screen is shown.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
+  // Trigger the pre-launch logic as the log in screen is ready.
+  fake_browser_manager_->TriggerLoginPromptVisible();
+
+  // Expect that the prelaunch logic was called.
+  EXPECT_EQ(fake_browser_manager_->prelaunch_count(), 1);
 }
 
 }  // namespace crosapi
