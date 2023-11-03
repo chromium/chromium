@@ -7539,12 +7539,12 @@
   {
     "name": "tab-pickup-minimum-delay",
     "owners": [ "ewannpv@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 124
   },
   {
     "name": "tab-pickup-threshold",
     "owners": [ "ewannpv@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 124
   },
   {
     "name": "tab-resumption",
