@@ -28,14 +28,24 @@
 namespace blink {
 
 CSSUrlData::CSSUrlData(const AtomicString& unresolved_url,
-                       const KURL& resolved_url)
+                       const KURL& resolved_url,
+                       const Referrer& referrer,
+                       OriginClean origin_clean,
+                       bool is_ad_related)
     : relative_url_(unresolved_url),
       absolute_url_(resolved_url.GetString()),
+      referrer_(referrer),
+      is_from_origin_clean_style_sheet_(origin_clean == OriginClean::kTrue),
+      is_ad_related_(is_ad_related),
       is_local_(unresolved_url.StartsWith('#')),
       potentially_dangling_markup_(resolved_url.PotentiallyDanglingMarkup()) {}
 
 CSSUrlData::CSSUrlData(const AtomicString& resolved_url)
-    : CSSUrlData(resolved_url, KURL(resolved_url)) {}
+    : CSSUrlData(resolved_url,
+                 KURL(resolved_url),
+                 Referrer(),
+                 OriginClean::kTrue,
+                 /*is_ad_related=*/false) {}
 
 KURL CSSUrlData::ResolveUrl(const Document& document) const {
   if (!potentially_dangling_markup_) {
@@ -76,7 +86,8 @@ CSSUrlData CSSUrlData::MakeAbsolute() const {
   if (relative_url_.empty()) {
     return *this;
   }
-  return CSSUrlData(absolute_url_, KURL(absolute_url_));
+  return CSSUrlData(absolute_url_, KURL(absolute_url_), Referrer(),
+                    GetOriginClean(), is_ad_related_);
 }
 
 CSSUrlData CSSUrlData::MakeResolved(const KURL& base_url,
@@ -88,9 +99,16 @@ CSSUrlData CSSUrlData::MakeResolved(const KURL& base_url,
                                 ? KURL(base_url, relative_url_, charset)
                                 : KURL(base_url, relative_url_);
   if (is_local_) {
-    return CSSUrlData(relative_url_, resolved_url);
+    return CSSUrlData(relative_url_, resolved_url, Referrer(), GetOriginClean(),
+                      is_ad_related_);
   }
-  return CSSUrlData(AtomicString(resolved_url.GetString()), resolved_url);
+  return CSSUrlData(AtomicString(resolved_url.GetString()), resolved_url,
+                    Referrer(), GetOriginClean(), is_ad_related_);
+}
+
+CSSUrlData CSSUrlData::MakeWithoutReferrer() const {
+  return CSSUrlData(relative_url_, KURL(absolute_url_), Referrer(),
+                    GetOriginClean(), is_ad_related_);
 }
 
 bool CSSUrlData::IsLocal(const Document& document) const {

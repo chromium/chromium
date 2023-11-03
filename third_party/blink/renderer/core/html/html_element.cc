@@ -2866,10 +2866,10 @@ void HTMLElement::AddHTMLBackgroundImageToStyle(
     return;
   }
   auto* image_value = MakeGarbageCollected<CSSImageValue>(
-      CSSUrlData(AtomicString(url), GetDocument().CompleteURL(url)),
-      Referrer(GetExecutionContext()->OutgoingReferrer(),
-               GetExecutionContext()->GetReferrerPolicy()),
-      OriginClean::kTrue, false /* is_ad_related */);
+      CSSUrlData(AtomicString(url), GetDocument().CompleteURL(url),
+                 Referrer(GetExecutionContext()->OutgoingReferrer(),
+                          GetExecutionContext()->GetReferrerPolicy()),
+                 OriginClean::kTrue, false /* is_ad_related */));
   if (initiator_name) {
     image_value->SetInitiator(initiator_name);
   }

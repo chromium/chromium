@@ -139,25 +139,27 @@ bool CSSFontFaceSrcValue::HasFailedOrCanceledSubresources() const {
 FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
                                          FontResourceClient* client) const {
   if (!fetched_ || fetched_->Options().world_for_csp != world_) {
+    const Referrer& referrer = url_data_.GetReferrer();
     ResourceRequest resource_request(url_data_.ResolvedUrl());
     resource_request.SetReferrerPolicy(
         ReferrerUtils::MojoReferrerPolicyResolveDefault(
-            referrer_.referrer_policy));
-    resource_request.SetReferrerString(referrer_.referrer);
-    if (is_ad_related_) {
+            referrer.referrer_policy));
+    resource_request.SetReferrerString(referrer.referrer);
+    if (url_data_.IsAdRelated()) {
       resource_request.SetIsAdResource();
     }
     ResourceLoaderOptions options(world_);
     options.initiator_info.name = fetch_initiator_type_names::kCSS;
-    if (referrer_.referrer != Referrer::ClientReferrerString()) {
-      options.initiator_info.referrer = referrer_.referrer;
+    if (referrer.referrer != Referrer::ClientReferrerString()) {
+      options.initiator_info.referrer = referrer.referrer;
     }
     FetchParameters params(std::move(resource_request), options);
     if (base::FeatureList::IsEnabled(
             features::kWebFontsCacheAwareTimeoutAdaption)) {
       params.SetCacheAwareLoadingEnabled(kIsCacheAwareLoadingEnabled);
     }
-    params.SetFromOriginDirtyStyleSheet(origin_clean_ != OriginClean::kTrue);
+    params.SetFromOriginDirtyStyleSheet(
+        !url_data_.IsFromFromOriginCleanStyleSheet());
     const SecurityOrigin* security_origin = context->GetSecurityOrigin();
 
     // Local fonts are accessible from file: URLs even when

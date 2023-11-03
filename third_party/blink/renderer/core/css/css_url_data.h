@@ -22,6 +22,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_URL_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_origin_clean.h"
+#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace WTF {
@@ -36,7 +38,11 @@ class KURL;
 // Stores data for a <url> value (url(), src()).
 class CORE_EXPORT CSSUrlData {
  public:
-  CSSUrlData(const AtomicString& unresolved_url, const KURL& resolved_url);
+  CSSUrlData(const AtomicString& unresolved_url,
+             const KURL& resolved_url,
+             const Referrer&,
+             OriginClean,
+             bool is_ad_related);
 
   // Create URL data with a resolved (absolute) URL. Generally used for
   // computed values - the above should otherwise be preferred.
@@ -58,12 +64,26 @@ class CORE_EXPORT CSSUrlData {
   CSSUrlData MakeResolved(const KURL& base_url,
                           const WTF::TextEncoding& charset) const;
 
+  // Returns a copy where the referrer has been reset.
+  CSSUrlData MakeWithoutReferrer() const;
+
   const AtomicString& ValueForSerialization() const {
     return is_local_ || absolute_url_.empty() ? relative_url_ : absolute_url_;
   }
 
   const AtomicString& UnresolvedUrl() const { return relative_url_; }
   const AtomicString& ResolvedUrl() const { return absolute_url_; }
+
+  const Referrer& GetReferrer() const { return referrer_; }
+
+  bool IsFromFromOriginCleanStyleSheet() const {
+    return is_from_origin_clean_style_sheet_;
+  }
+  OriginClean GetOriginClean() const {
+    return is_from_origin_clean_style_sheet_ ? OriginClean::kTrue
+                                             : OriginClean::kFalse;
+  }
+  bool IsAdRelated() const { return is_ad_related_; }
 
   // Returns true if this URL is "local" to the specified Document (either by
   // being a fragment-only URL or by matching the document URL).
@@ -76,6 +96,14 @@ class CORE_EXPORT CSSUrlData {
  private:
   AtomicString relative_url_;
   mutable AtomicString absolute_url_;
+  const Referrer referrer_;
+
+  // Whether the stylesheet that requested this image is origin-clean:
+  // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
+  const bool is_from_origin_clean_style_sheet_;
+
+  // Whether this was created by an ad-related CSSParserContext.
+  const bool is_ad_related_;
 
   const bool is_local_;
 

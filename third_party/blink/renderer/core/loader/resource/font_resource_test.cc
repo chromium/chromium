@@ -235,9 +235,10 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   Document& document = dummy_page_holder->GetDocument();
   ResourceFetcher* fetcher = document.Fetcher();
   CSSFontFaceSrcValue* src_value = CSSFontFaceSrcValue::Create(
-      CSSUrlData(AtomicString(url.GetString()), url),
-      Referrer(document.Url(), document.GetReferrerPolicy()),
-      nullptr /* world */, OriginClean::kTrue, false /* is_ad_related */);
+      CSSUrlData(AtomicString(url.GetString()), url,
+                 Referrer(document.Url(), document.GetReferrerPolicy()),
+                 OriginClean::kTrue, false /* is_ad_related */),
+      nullptr /* world */);
 
   // Route font requests in this test through CSSFontFaceSrcValue::Fetch
   // instead of calling FontResource::Fetch directly. CSSFontFaceSrcValue

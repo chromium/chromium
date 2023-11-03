@@ -40,17 +40,10 @@
 
 namespace blink {
 
-CSSImageValue::CSSImageValue(CSSUrlData url_data,
-                             const Referrer& referrer,
-                             OriginClean origin_clean,
-                             bool is_ad_related,
-                             StyleImage* image)
+CSSImageValue::CSSImageValue(CSSUrlData url_data, StyleImage* image)
     : CSSValue(kImageClass),
       url_data_(std::move(url_data)),
-      referrer_(referrer),
-      cached_image_(image),
-      origin_clean_(origin_clean),
-      is_ad_related_(is_ad_related) {}
+      cached_image_(image) {}
 
 CSSImageValue::~CSSImageValue() = default;
 
@@ -58,12 +51,13 @@ FetchParameters CSSImageValue::PrepareFetch(
     const Document& document,
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) const {
+  const Referrer& referrer = url_data_.GetReferrer();
   ResourceRequest resource_request(url_data_.ResolveUrl(document));
   resource_request.SetReferrerPolicy(
       ReferrerUtils::MojoReferrerPolicyResolveDefault(
-          referrer_.referrer_policy));
-  resource_request.SetReferrerString(referrer_.referrer);
-  if (is_ad_related_) {
+          referrer.referrer_policy));
+  resource_request.SetReferrerString(referrer.referrer);
+  if (url_data_.IsAdRelated()) {
     resource_request.SetIsAdResource();
   }
   ExecutionContext* execution_context = document.GetExecutionContext();
@@ -71,8 +65,8 @@ FetchParameters CSSImageValue::PrepareFetch(
   options.initiator_info.name = initiator_name_.empty()
                                     ? fetch_initiator_type_names::kCSS
                                     : initiator_name_;
-  if (referrer_.referrer != Referrer::ClientReferrerString()) {
-    options.initiator_info.referrer = referrer_.referrer;
+  if (referrer.referrer != Referrer::ClientReferrerString()) {
+    options.initiator_info.referrer = referrer.referrer;
   }
   FetchParameters params(std::move(resource_request), options);
 
@@ -86,7 +80,7 @@ FetchParameters CSSImageValue::PrepareFetch(
     params.SetLazyImageDeferred();
   }
 
-  if (origin_clean_ != OriginClean::kTrue) {
+  if (!url_data_.IsFromFromOriginCleanStyleSheet()) {
     params.SetFromOriginDirtyStyleSheet(true);
   }
 
@@ -106,7 +100,8 @@ StyleImage* CSSImageValue::CacheImage(
     FetchParameters params =
         PrepareFetch(document, image_request_behavior, cross_origin);
     cached_image_ = document.GetStyleEngine().CacheStyleImage(
-        params, origin_clean_, is_ad_related_, override_image_resolution);
+        params, url_data_.GetOriginClean(), url_data_.IsAdRelated(),
+        override_image_resolution);
   }
   return cached_image_.Get();
 }

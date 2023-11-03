@@ -1586,6 +1586,16 @@ StringView ApplyFetchRestrictions(StringView url,
   return url;
 }
 
+CSSUrlData CollectUrlData(const StringView& url,
+                          const CSSParserContext& context) {
+  AtomicString url_string = url.ToAtomicString();
+  return CSSUrlData(
+      url_string, context.CompleteNonEmptyURL(url_string),
+      context.GetReferrer(),
+      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
+      context.IsAdRelated());
+}
+
 }  // namespace
 
 StringView ConsumeUrlAsStringView(CSSParserTokenRange& range,
@@ -1616,9 +1626,8 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
   if (url.IsNull()) {
     return nullptr;
   }
-  AtomicString url_string = url.ToAtomicString();
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
-      CSSUrlData(url_string, context.CompleteNonEmptyURL(url_string)));
+      CollectUrlData(url, context));
 }
 
 static bool ConsumeColorInterpolationSpace(
@@ -3001,12 +3010,8 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
 static CSSImageValue* CreateCSSImageValueWithReferrer(
     const StringView& uri,
     const CSSParserContext& context) {
-  AtomicString raw_value = uri.ToAtomicString();
-  auto* image_value = MakeGarbageCollected<CSSImageValue>(
-      CSSUrlData(raw_value, context.CompleteNonEmptyURL(raw_value)),
-      context.GetReferrer(),
-      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-      context.IsAdRelated());
+  auto* image_value =
+      MakeGarbageCollected<CSSImageValue>(CollectUrlData(uri, context));
   if (context.Mode() == kUASheetMode) {
     image_value->SetInitiator(fetch_initiator_type_names::kUacss);
   }

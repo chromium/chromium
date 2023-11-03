@@ -119,10 +119,11 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
   }
   AtomicString url = url_string.ToAtomicString();
   CSSFontFaceSrcValue* uri_value(CSSFontFaceSrcValue::Create(
-      CSSUrlData(url, context.CompleteNonEmptyURL(url)), context.GetReferrer(),
-      context.JavascriptWorld(),
-      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-      context.IsAdRelated()));
+      CSSUrlData(
+          url, context.CompleteNonEmptyURL(url), context.GetReferrer(),
+          context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
+          context.IsAdRelated()),
+      context.JavascriptWorld()));
 
   // After the url() it's either the end of the src: line, or a comma
   // for the next url() or format().
