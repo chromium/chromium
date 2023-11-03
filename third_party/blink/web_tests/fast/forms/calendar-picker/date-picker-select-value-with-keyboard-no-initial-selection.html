@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-<head>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/testdriver.js"></script>
@@ -8,8 +7,7 @@
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
-</head>
-<body>
+
 <input type="date" id="date0" min="5000-02-14">
 <input type="date" id="date1" max="2019-02-21">
 <input type="date" id="date2">
@@ -66,5 +64,3 @@ promise_test(() => {
 }, "Date picker: If the input's initial value is invalid due to step attribute, should select the nearest valid date");
 
 </script>
-</body>
-</html>
