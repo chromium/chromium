@@ -439,6 +439,7 @@ void RenderWidgetHostViewMac::InitAsPopup(
 
   // This path is used by the time/date picker.
   ns_view_->InitAsPopup(pos, popup_parent_host_view_->ns_view_id_);
+  Show();
 }
 
 RenderWidgetHostViewBase*
