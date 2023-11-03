@@ -415,26 +415,20 @@ class QuickUnlockPrivateUnitTest
     EXPECT_EQ(HasFlag(expected_outcome, PIN_GOOD),
               errors.empty() && warnings.empty());
     EXPECT_EQ(HasFlag(expected_outcome, PIN_TOO_SHORT),
-              base::Contains(errors,
-                             CredentialProblem::CREDENTIAL_PROBLEM_TOO_SHORT));
-    EXPECT_EQ(
-        HasFlag(expected_outcome, PIN_TOO_LONG),
-        base::Contains(errors, CredentialProblem::CREDENTIAL_PROBLEM_TOO_LONG));
+              base::Contains(errors, CredentialProblem::kTooShort));
+    EXPECT_EQ(HasFlag(expected_outcome, PIN_TOO_LONG),
+              base::Contains(errors, CredentialProblem::kTooLong));
     EXPECT_EQ(HasFlag(expected_outcome, PIN_WEAK_WARNING),
-              base::Contains(warnings,
-                             CredentialProblem::CREDENTIAL_PROBLEM_TOO_WEAK));
-    EXPECT_EQ(
-        HasFlag(expected_outcome, PIN_WEAK_ERROR),
-        base::Contains(errors, CredentialProblem::CREDENTIAL_PROBLEM_TOO_WEAK));
-    EXPECT_EQ(
-        HasFlag(expected_outcome, PIN_CONTAINS_NONDIGIT),
-        base::Contains(
-            errors, CredentialProblem::CREDENTIAL_PROBLEM_CONTAINS_NONDIGIT));
+              base::Contains(warnings, CredentialProblem::kTooWeak));
+    EXPECT_EQ(HasFlag(expected_outcome, PIN_WEAK_ERROR),
+              base::Contains(errors, CredentialProblem::kTooWeak));
+    EXPECT_EQ(HasFlag(expected_outcome, PIN_CONTAINS_NONDIGIT),
+              base::Contains(errors, CredentialProblem::kContainsNondigit));
   }
 
   CredentialCheck CheckCredentialUsingPin(const std::string& pin) {
     base::Value::List params;
-    params.Append(ToString(QuickUnlockMode::QUICK_UNLOCK_MODE_PIN));
+    params.Append(ToString(QuickUnlockMode::kPin));
     params.Append(pin);
 
     absl::optional<base::Value> result = RunFunction(
@@ -450,7 +444,7 @@ class QuickUnlockPrivateUnitTest
   void CheckGetCredentialRequirements(int expected_pin_min_length,
                                       int expected_pin_max_length) {
     base::Value::List params;
-    params.Append(ToString(QuickUnlockMode::QUICK_UNLOCK_MODE_PIN));
+    params.Append(ToString(QuickUnlockMode::kPin));
 
     absl::optional<base::Value> result =
         RunFunction(base::MakeRefCounted<
@@ -508,8 +502,8 @@ class QuickUnlockPrivateUnitTest
   // Runs chrome.quickUnlockPrivate.setModes using an invalid token. Expects the
   // function to fail and returns the error.
   std::string RunSetModesWithInvalidToken() {
-    base::Value::List params = GetSetModesParams(
-        kInvalidToken, {QuickUnlockMode::QUICK_UNLOCK_MODE_PIN}, {"111111"});
+    base::Value::List params =
+        GetSetModesParams(kInvalidToken, {QuickUnlockMode::kPin}, {"111111"});
     auto func = base::MakeRefCounted<QuickUnlockPrivateSetModesFunction>();
 
     // Stub out event handling since we are not setting up an event router.
@@ -596,8 +590,7 @@ class QuickUnlockPrivateUnitTest
   }
 
   void SetPin(const std::string& pin) {
-    RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-                {pin});
+    RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {pin});
   }
 
   void SetPinForBackfillTests(const std::string& pin) {
@@ -759,8 +752,7 @@ TEST_P(QuickUnlockPrivateUnitTest, SetLockScreenEnabledFailsWithInvalidToken) {
 // Verifies that this returns PIN for GetAvailableModes, unless it is blocked by
 // policy.
 TEST_P(QuickUnlockPrivateUnitTest, GetAvailableModes) {
-  EXPECT_EQ(GetAvailableModes(),
-            QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN});
+  EXPECT_EQ(GetAvailableModes(), QuickUnlockModeList{QuickUnlockMode::kPin});
 
   // Reset the flags set in Setup.
   DisablePinByPolicy();
@@ -780,10 +772,8 @@ TEST_P(QuickUnlockPrivateUnitTest, SetModes) {
   // Verify there is no active mode.
   EXPECT_EQ(GetActiveModes(), QuickUnlockModeList{});
 
-  RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-              {"111111"});
-  EXPECT_EQ(GetActiveModes(),
-            QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN});
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {"111111"});
+  EXPECT_EQ(GetActiveModes(), QuickUnlockModeList{QuickUnlockMode::kPin});
 }
 
 // Verifies that an invalid password cannot be used to update the mode list.
@@ -810,27 +800,20 @@ TEST_P(QuickUnlockPrivateUnitTest, ModeChangeEventOnlyRaisedWhenModesChange) {
 
   // Turn on PIN unlock, and then verify turning it on again and also changing
   // the password does not trigger an event.
-  ExpectModesChanged(
-      QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN});
-  RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-              {"111111"});
+  ExpectModesChanged(QuickUnlockModeList{QuickUnlockMode::kPin});
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {"111111"});
   FailIfModesChanged();
-  RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-              {"222222"});
-  RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-              {""});
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {"222222"});
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {""});
 }
 
 // Ensures that quick unlock can be enabled and disabled by checking the result
 // of quickUnlockPrivate.GetActiveModes and PinStoragePrefs::IsPinSet.
 TEST_P(QuickUnlockPrivateUnitTest, SetModesAndGetActiveModes) {
   // Update mode to PIN raises an event and updates GetActiveModes.
-  ExpectModesChanged(
-      QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN});
-  RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-              {"111111"});
-  EXPECT_EQ(GetActiveModes(),
-            QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN});
+  ExpectModesChanged(QuickUnlockModeList{QuickUnlockMode::kPin});
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {"111111"});
+  EXPECT_EQ(GetActiveModes(), QuickUnlockModeList{QuickUnlockMode::kPin});
   EXPECT_TRUE(IsPinSetInBackend());
 
   // SetModes can be used to turn off a quick unlock mode.
@@ -845,8 +828,7 @@ TEST_P(QuickUnlockPrivateUnitTest, VerifyAuthenticationAgainstPIN) {
   RunSetModes(QuickUnlockModeList{}, CredentialList{});
   EXPECT_FALSE(IsPinSetInBackend());
 
-  RunSetModes(QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN},
-              {"111111"});
+  RunSetModes(QuickUnlockModeList{QuickUnlockMode::kPin}, {"111111"});
   EXPECT_TRUE(IsPinSetInBackend());
 
   EXPECT_FALSE(TryAuthenticate("000000"));
