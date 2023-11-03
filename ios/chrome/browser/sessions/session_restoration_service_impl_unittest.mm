@@ -878,7 +878,7 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionsCallableAtAnyTime) {
   EXPECT_EQ(ModifiedFiles(), FilePathSet{});
 
   // Check that calling SaveSessions() when Browser are registered with no
-  // changes is a no-op
+  // changes is a no-op.
   TestBrowser browser0 = TestBrowser(browser_state());
   TestBrowser browser1 = TestBrowser(browser_state());
   service()->SetSessionID(&browser0, kIdentifier0);
@@ -921,11 +921,79 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionsCallableAtAnyTime) {
   SnapshotFiles();
 
   // Check that calling SaveSessions() when all Browser have been disconnected
-  // is a no-op;
+  // is a no-op.
   service()->Disconnect(&browser0);
   service()->Disconnect(&browser1);
 
   service()->SaveSessions();
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+}
+
+// Tests that calling ScheduleSaveSessions() is a no-op.
+TEST_F(SessionRestorationServiceImplTest, ScheduleSaveSessions) {
+  // Check that calling ScheduleSaveSessions() when no Browser is observed
+  // is a no-op.
+  service()->ScheduleSaveSessions();
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  // Check that calling ScheduleSaveSessions() when Browser are registered
+  // with no changes is a no-op.
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
+  service()->SetSessionID(&browser0, kIdentifier0);
+  service()->SetSessionID(&browser1, kIdentifier1);
+
+  service()->ScheduleSaveSessions();
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  // Insert a few WebStage in one of the Browser and wait for the changes
+  // to automatically be saved (this is because loading the pages will
+  // take time and may cause automatically saving the session).
+  {
+    InsertTabsWithUrls(browser0, base::make_span(kURLs));
+    WaitForSessionSaveComplete();
+
+    EXPECT_EQ(ModifiedFiles(),
+              ExpectedStorageFilesForBrowser(
+                  SessionPathFromIdentifier(kIdentifier0), &browser0));
+
+    SnapshotFiles();
+  }
+
+  // Check that making a modification and then calling ScheduleSaveSessions()
+  // is also a no-op, and that the save will only happen after the save delay
+  // has expired.
+  ASSERT_NE(browser0.GetWebStateList()->active_index(), 0);
+  browser0.GetWebStateList()->ActivateWebStateAt(0);
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  service()->ScheduleSaveSessions();
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  // Check that the session are saved after waiting to the save delay.
+  WaitForSessionSaveComplete();
+  EXPECT_EQ(ModifiedFiles(),
+            ExpectedStorageFilesForWebStates(
+                SessionPathFromIdentifier(kIdentifier0),
+                /* expect_session_metadata_storage */ true, {}));
+
+  SnapshotFiles();
+
+  // Check that calling SaveSessions() when all Browser have been disconnected
+  // is a no-op.
+  service()->Disconnect(&browser0);
+  service()->Disconnect(&browser1);
+
+  service()->ScheduleSaveSessions();
 
   WaitForBackgroundTaskComplete();
   EXPECT_EQ(ModifiedFiles(), FilePathSet{});
