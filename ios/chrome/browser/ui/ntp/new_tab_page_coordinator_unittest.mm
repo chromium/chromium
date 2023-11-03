@@ -703,15 +703,17 @@ TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
   [coordinator_ didNavigateToNTPInWebState:web_state_];
 
   // Check that initial NTP is scrolled to top.
-  EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition,
-              -[coordinator_.NTPViewController heightAboveFeed], 1);
+  CGFloat scrollPosition = coordinator_.NTPViewController.scrollPosition;
+  EXPECT_NEAR(scrollPosition, -[coordinator_.NTPViewController heightAboveFeed],
+              1);
 
   // Change the selected feed and set some scroll position.
   [coordinator_ selectFeedType:FeedTypeFollowing];
-  [coordinator_.NTPViewController setContentOffsetToTopOfFeedOrLess:500];
+  [coordinator_.NTPViewController
+      setContentOffsetToTopOfFeedOrLess:scrollPosition + 100];
 
   FeedType selectedFeed = coordinator_.selectedFeed;
-  CGFloat scrollPosition = coordinator_.NTPViewController.scrollPosition;
+  scrollPosition = coordinator_.NTPViewController.scrollPosition;
 
   // Navigate away from the NTP and stop the coordinator.
   [coordinator_ didNavigateAwayFromNTP];

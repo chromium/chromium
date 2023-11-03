@@ -218,6 +218,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
+  if (IsIOSLargeFakeboxEnabled()) {
+    self.headerViewController.view.alpha = 1;
+  }
   self.headerViewController.showing = YES;
 
   [self updateNTPLayout];
@@ -709,7 +712,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)omniboxWillResignFirstResponder {
   self.omniboxFocused = NO;
   if (IsIOSLargeFakeboxEnabled()) {
-    self.headerViewController.view.alpha = 1;
     if ([self isFakeboxPinned]) {
       // Return early to allow the omnibox defocus animation show.
       return;
@@ -724,6 +726,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     return;
   }
 
+  if (IsIOSLargeFakeboxEnabled()) {
+    self.headerViewController.view.alpha = 1;
+  }
   [self shiftTilesDownForOmniboxDefocus];
 }
 
@@ -882,26 +887,24 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     // Save the scroll position prior to the animation to allow the user to
     // return to it on defocus.
     self.collectionShiftingOffset =
-        MAX(-[self heightAboveFeed], [self.headerViewController pinnedOffsetY] -
-                                         [self adjustedOffset].y);
+        MAX(-[self heightAboveFeed],
+            AlignValueToPixel([self.headerViewController pinnedOffsetY] -
+                              [self adjustedOffset].y));
   }
 
   // If the fake omnibox is already at the final position, just focus it and
   // return early.
   if ([self shouldSkipScrollToFocusOmnibox]) {
+    self.shouldAnimateHeader = NO;
     if (!self.scrolledToMinimumHeight) {
       // Scroll up to pinned position if it is not pinned already, but don't
       // wait for it to finish to focus the omnibox.
-      self.shouldAnimateHeader = NO;
       __weak __typeof(self) weakSelf = self;
       [UIView animateWithDuration:kMaterialDuration6
           animations:^{
             weakSelf.collectionView.contentOffset =
                 CGPoint(0, pinnedOffsetBeforeAnimation);
             [weakSelf resetFakeOmniboxConstraints];
-          }
-          completion:^(BOOL finished) {
-            weakSelf.shouldAnimateHeader = YES;
           }];
     }
     [self.NTPContentDelegate focusOmnibox];
@@ -1733,7 +1736,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // updates property.
 - (void)updateScrolledToMinimumHeight {
   CGFloat scrollPosition = [self scrollPosition];
-  CGFloat minimumHeightOffset = [self pinnedOffsetY];
+  CGFloat minimumHeightOffset = AlignValueToPixel([self pinnedOffsetY]);
 
   self.scrolledToMinimumHeight = scrollPosition >= minimumHeightOffset;
 }
@@ -1800,7 +1803,12 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Sets the y content offset of the NTP collection view.
 - (void)setContentOffset:(CGFloat)offset {
-  self.collectionView.contentOffset = CGPointMake(0, offset);
+  UICollectionView* collectionView = self.collectionView;
+  CGFloat maxOffset = collectionView.contentSize.height +
+                      collectionView.contentInset.bottom -
+                      collectionView.bounds.size.height;
+  offset = MIN(maxOffset, offset);
+  collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   [self handleStickyElementsForScrollPosition:offset force:YES];
   if (self.feedHeaderViewController) {
