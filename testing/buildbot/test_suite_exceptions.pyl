@@ -1823,6 +1823,11 @@
           'shards': 10, # https://crbug.com/1471857
         },
       },
+      'Linux MSan Tests': {
+        'swarming': {
+          'shards': 10, # https://crbug.com/1497706
+        },
+      },
       'Linux TSan Tests': {
         'ci_only': True, # https://crbug.com/1498240
         'swarming': {
