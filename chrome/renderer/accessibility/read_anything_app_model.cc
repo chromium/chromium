@@ -203,12 +203,12 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
 
   ui::AXNode* first_sibling_node =
       start_parent->GetFirstUnignoredChildCrossingTreeBoundary();
-  ui::AXNode* last_sibling_node =
-      end_parent->GetDeepestLastUnignoredChildCrossingTreeBoundary();
+  ui::AXNode* deepest_last_descendant =
+      end_parent->GetDeepestLastUnignoredDescendantCrossingTreeBoundary();
 
   // If the last sibling node is null, selection is invalid and we should
   // return early.
-  if (last_sibling_node == nullptr) {
+  if (deepest_last_descendant == nullptr) {
     return;
   }
 
@@ -220,7 +220,8 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   // outside of the selected portion but on the same line is still
   // distilled, even if there's special formatting.
   while (first_sibling_node &&
-         first_sibling_node->CompareTo(*last_sibling_node).value_or(1) <= 0) {
+         first_sibling_node->CompareTo(*deepest_last_descendant).value_or(1) <=
+             0) {
     if (!IsNodeIgnoredForReadAnything(first_sibling_node->id())) {
       InsertSelectionNode(first_sibling_node->id());
     }
@@ -267,7 +268,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     // with `DCHECK(content_node)`.
     // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
     // not be the correct approach. Do we need a version of
-    // GetDeepestLastUnignoredChild() that works on ignored nodes?
+    // GetDeepestLastUnignoredDescendant() that works on ignored nodes?
     if (!content_node || content_node->IsIgnored()) {
       continue;
     }
@@ -298,12 +299,12 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
 
     // Add all descendant ids to the set.
     ui::AXNode* next_node = content_node;
-    ui::AXNode* deepest_last_child =
-        content_node->GetDeepestLastUnignoredChild();
-    if (!deepest_last_child) {
+    ui::AXNode* deepest_last_descendant =
+        content_node->GetDeepestLastUnignoredDescendant();
+    if (!deepest_last_descendant) {
       continue;
     }
-    while (next_node != deepest_last_child) {
+    while (next_node != deepest_last_descendant) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
       if (!IsNodeIgnoredForReadAnything(next_node->id())) {
         InsertDisplayNode(next_node->id());

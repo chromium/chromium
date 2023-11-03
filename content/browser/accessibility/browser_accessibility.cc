@@ -269,8 +269,8 @@ BrowserAccessibility* BrowserAccessibility::PlatformDeepestLastChild() const {
 BrowserAccessibility* BrowserAccessibility::InternalDeepestFirstChild() const {
   // By design, this method should be able to traverse platform leaves, hence we
   // don't check for leafiness.
-  ui::AXNode* deepest_child = node()->GetDeepestFirstUnignoredChild();
-  return manager()->GetFromAXNode(deepest_child);
+  ui::AXNode* deepest_descendant = node()->GetDeepestFirstUnignoredDescendant();
+  return manager()->GetFromAXNode(deepest_descendant);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalDeepestLastChild() const {
@@ -278,8 +278,8 @@ BrowserAccessibility* BrowserAccessibility::InternalDeepestLastChild() const {
   // don't check for leafiness. We need to explicitly check for leafiness here
   // instead of relying on `AXNode::IsLeaf()` because Android has a different
   // notion of this concept.
-  ui::AXNode* deepest_child = node()->GetDeepestLastUnignoredChild();
-  return manager()->GetFromAXNode(deepest_child);
+  ui::AXNode* deepest_descendant = node()->GetDeepestLastUnignoredDescendant();
+  return manager()->GetFromAXNode(deepest_descendant);
 }
 
 size_t BrowserAccessibility::InternalChildCount() const {

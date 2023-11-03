@@ -141,16 +141,14 @@ class AX_EXPORT AXNode final {
   AXNode* GetLastUnignoredChild() const;
   AXNode* GetLastUnignoredChildCrossingTreeBoundary() const;
 
-  // TODO(accessibility): Consider renaming all "GetDeepest...Child" methods to
-  // "GetDeepest...Descendant".
-  AXNode* GetDeepestFirstChild() const;
-  AXNode* GetDeepestFirstChildCrossingTreeBoundary() const;
-  AXNode* GetDeepestFirstUnignoredChild() const;
-  AXNode* GetDeepestFirstUnignoredChildCrossingTreeBoundary() const;
-  AXNode* GetDeepestLastChild() const;
-  AXNode* GetDeepestLastChildCrossingTreeBoundary() const;
-  AXNode* GetDeepestLastUnignoredChild() const;
-  AXNode* GetDeepestLastUnignoredChildCrossingTreeBoundary() const;
+  AXNode* GetDeepestFirstDescendant() const;
+  AXNode* GetDeepestFirstDescendantCrossingTreeBoundary() const;
+  AXNode* GetDeepestFirstUnignoredDescendant() const;
+  AXNode* GetDeepestFirstUnignoredDescendantCrossingTreeBoundary() const;
+  AXNode* GetDeepestLastDescendant() const;
+  AXNode* GetDeepestLastDescendantCrossingTreeBoundary() const;
+  AXNode* GetDeepestLastUnignoredDescendant() const;
+  AXNode* GetDeepestLastUnignoredDescendantCrossingTreeBoundary() const;
 
   AXNode* GetNextSibling() const;
   AXNode* GetNextUnignoredSibling() const;
