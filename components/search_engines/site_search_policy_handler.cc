@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -74,13 +75,91 @@ base::Value SiteSearchDictFromPolicyValue(
   return base::Value(std::move(dict));
 }
 
-const std::string& GetShortcut(const base::Value& provider) {
-  const std::string* shortcut =
-      provider.GetDict().FindString(SiteSearchPolicyHandler::kShortcut);
+const std::string& GetField(const base::Value& provider,
+                            const char* field_name) {
+  const std::string* value = provider.GetDict().FindString(field_name);
   // This is safe because `SimpleSchemaValidatingPolicyHandler` guarantees that
   // the policy value is valid according to the schema.
-  CHECK(shortcut);
-  return *shortcut;
+  CHECK(value);
+  return *value;
+}
+
+const std::string& GetShortcut(const base::Value& provider) {
+  return GetField(provider, SiteSearchPolicyHandler::kShortcut);
+}
+
+const std::string& GetName(const base::Value& provider) {
+  return GetField(provider, SiteSearchPolicyHandler::kName);
+}
+
+bool ShortcutIsEmpty(const std::string& policy_name,
+                     const std::string& shortcut,
+                     PolicyErrorMap* errors) {
+  if (!shortcut.empty()) {
+    return false;
+  }
+
+  errors->AddError(policy_name,
+                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY);
+  return true;
+}
+
+bool NameIsEmpty(const std::string& policy_name,
+                 const std::string& name,
+                 PolicyErrorMap* errors) {
+  if (!name.empty()) {
+    return false;
+  }
+
+  errors->AddError(policy_name, IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY);
+  return true;
+}
+
+bool ShortcutHasWhitespace(const std::string& policy_name,
+                           const std::string& shortcut,
+                           PolicyErrorMap* errors) {
+  if (shortcut.find_first_of(base::kWhitespaceASCII) == std::u16string::npos) {
+    return false;
+  }
+
+  errors->AddError(policy_name,
+                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE,
+                   shortcut);
+  return true;
+}
+
+bool ShortcutStartsWithAtSymbol(const std::string& policy_name,
+                                const std::string& shortcut,
+                                PolicyErrorMap* errors) {
+  if (shortcut[0] != '@') {
+    return false;
+  }
+
+  errors->AddError(policy_name,
+                   IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT,
+                   shortcut);
+  return true;
+}
+
+bool ShortcutAlreadySeen(
+    const std::string& policy_name,
+    const std::string& shortcut,
+    const base::flat_set<std::string>& shortcuts_already_seen,
+    PolicyErrorMap* errors,
+    base::flat_set<std::string>* duplicated_shortcuts) {
+  if (shortcuts_already_seen.find(shortcut) == shortcuts_already_seen.end()) {
+    return false;
+  }
+
+  if (duplicated_shortcuts->find(shortcut) == duplicated_shortcuts->end()) {
+    duplicated_shortcuts->insert(shortcut);
+
+    // Only show an error message once per shortcut.
+    errors->AddError(policy_name,
+                     IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT,
+                     shortcut);
+  }
+  return true;
 }
 
 }  // namespace
@@ -132,15 +211,12 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
     // TODO(b/306201833): Implement remaining validation rules.
 
-    if (shortcuts_already_seen.find(shortcut) != shortcuts_already_seen.end()) {
-      // Only show an error message once per shortcut.
-      if (duplicated_shortcuts.find(shortcut) == duplicated_shortcuts.end()) {
-        errors->AddError(policy_name(),
-                         IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT,
-                         shortcut);
-      }
-
-      duplicated_shortcuts.insert(shortcut);
+    if (ShortcutIsEmpty(policy_name(), shortcut, errors) ||
+        NameIsEmpty(policy_name(), GetName(provider), errors) ||
+        ShortcutHasWhitespace(policy_name(), shortcut, errors) ||
+        ShortcutStartsWithAtSymbol(policy_name(), shortcut, errors) ||
+        ShortcutAlreadySeen(policy_name(), shortcut, shortcuts_already_seen,
+                            errors, &duplicated_shortcuts)) {
       ignored_shortcuts_.insert(shortcut);
     }
 
@@ -148,7 +224,13 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   }
 
   // Accept if there is at least one shortcut that should not be ignored.
-  return shortcuts_already_seen.size() > ignored_shortcuts_.size();
+  if (shortcuts_already_seen.size() > ignored_shortcuts_.size()) {
+    return true;
+  }
+
+  errors->AddError(policy_name(),
+                   IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER);
+  return false;
 }
 
 void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
