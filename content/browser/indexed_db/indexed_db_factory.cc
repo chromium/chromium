@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -726,11 +727,15 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
         open_timer.Elapsed());
   }
 
-  if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     bucket_locator);
-
+  if (LIKELY(s.ok())) {
+    base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenSuccessTime",
+                            open_timer.Elapsed());
+  } else {
+    base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenFailureTime",
+                            open_timer.Elapsed());
     if (disk_full) {
+      ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_DISK_FULL,
+                       bucket_locator);
       context_->quota_manager_proxy()->OnClientWriteFailed(
           bucket_locator.storage_key);
       return {IndexedDBBucketContextHandle(), s,
@@ -738,11 +743,11 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
                                      u"Encountered full disk while opening "
                                      "backing store for indexedDB.open."),
               data_loss_info, /*was_cold_open=*/true};
-
-    } else {
-      return {IndexedDBBucketContextHandle(), s, CreateDefaultError(),
-              data_loss_info, /*was_cold_open=*/true};
     }
+    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
+                     bucket_locator);
+    return {IndexedDBBucketContextHandle(), s, CreateDefaultError(),
+            data_loss_info, /*was_cold_open=*/true};
   }
   backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
 
