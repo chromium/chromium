@@ -28,12 +28,9 @@ class WPTAdapterTest(unittest.TestCase):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Linux', 'Release'],
                 'steps': {
-                    'blink_wpt_tests': {
-                        'uses_wptrunner': True,
-                    },
+                    'blink_wpt_tests': {},
                     'fake_flag_blink_wpt_tests': {
                         'flag_specific': 'fake-flag',
-                        'uses_wptrunner': True,
                     },
                 },
             },
@@ -42,7 +39,6 @@ class WPTAdapterTest(unittest.TestCase):
                 'specifiers': ['Linux', 'Release'],
                 'steps': {
                     'blink_wpt_tests': {
-                        'uses_wptrunner': True,
                         'product': 'chrome',
                     },
                 },
@@ -51,9 +47,7 @@ class WPTAdapterTest(unittest.TestCase):
                 'port_name': 'test-mac-mac10.11',
                 'specifiers': ['Mac10.11', 'Release'],
                 'steps': {
-                    'blink_wpt_tests': {
-                        'uses_wptrunner': True,
-                    },
+                    'blink_wpt_tests': {},
                 },
             },
         })

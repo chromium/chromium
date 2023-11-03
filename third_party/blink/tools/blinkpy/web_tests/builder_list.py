@@ -108,7 +108,6 @@ class BuilderList:
             builder
             for builder in self.filter_builders(is_try=True,
                                                 exclude_specifiers={'android'})
-            if self.has_rwt_steps(builder)
         }
         # Remove CQ builders whose port is a duplicate of a *-blink-rel builder
         # to avoid wasting resources.
@@ -224,20 +223,6 @@ class BuilderList:
 
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
-
-    def has_rwt_steps(self, builder_name: str) -> bool:
-        return any(not step.get('uses_wptrunner', False)
-                   for step_name, step in self._steps(builder_name).items())
-
-    def has_wptrunner_steps(self, builder_name: str) -> bool:
-        return any(
-            step.get('uses_wptrunner', False)
-            for step_name, step in self._steps(builder_name).items())
-
-    def uses_wptrunner(self, builder_name: str, step_name: str) -> bool:
-        steps = self._steps(builder_name)
-        return step_name in steps and steps[step_name].get(
-            'uses_wptrunner', False)
 
     def product_for_build_step(self, builder_name: str, step_name: str) -> str:
         try:

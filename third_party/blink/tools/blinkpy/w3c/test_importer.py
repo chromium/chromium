@@ -259,23 +259,11 @@ class TestImporter(object):
         return True
 
     def _trigger_try_jobs(self):
-        _log.info('Triggering try jobs for updating expectations.')
-        rebaselining_builders = self.host.builders.builders_for_rebaselining()
-        wptrunner_builders = {
-            builder
-            for builder in self.host.builders.all_try_builder_names()
-            if self.host.builders.has_wptrunner_steps(builder)
-        }
-        if rebaselining_builders:
-            _log.info('For rebaselining:')
-            for builder in sorted(rebaselining_builders):
-                _log.info('  %s', builder)
-        if wptrunner_builders:
-            _log.info('For updating WPT metadata:')
-            for builder in sorted(wptrunner_builders):
-                _log.info('  %s', builder)
-        self.git_cl.trigger_try_jobs(rebaselining_builders
-                                     | wptrunner_builders)
+        builders = self.host.builders.builders_for_rebaselining()
+        _log.info('Triggering try jobs for updating expectations:')
+        for builder in sorted(builders):
+            _log.info(f'  {builder}')
+        self.git_cl.trigger_try_jobs(builders)
 
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""

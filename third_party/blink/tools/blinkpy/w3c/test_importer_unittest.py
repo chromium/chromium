@@ -63,7 +63,6 @@ class TestImporterTest(LoggingTestCase):
                 'is_try_builder': True,
                 'steps': {
                     'wpt_tests_suite (with patch)': {
-                        'uses_wptrunner': True,
                     },
                 }
             },
@@ -95,11 +94,9 @@ class TestImporterTest(LoggingTestCase):
         success = importer.update_expectations_for_cl()
         self.assertFalse(success)
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
-            'INFO: For rebaselining:\n',
+            'INFO: Triggering try jobs for updating expectations:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
-            'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
             'ERROR: No initial try job results, aborting.\n',
         ])
@@ -119,11 +116,9 @@ class TestImporterTest(LoggingTestCase):
         success = importer.update_expectations_for_cl()
         self.assertFalse(success)
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
-            'INFO: For rebaselining:\n',
+            'INFO: Triggering try jobs for updating expectations:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
-            'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
             'ERROR: The CL was closed, aborting.\n',
         ])
@@ -141,11 +136,9 @@ class TestImporterTest(LoggingTestCase):
             })
         success = importer.update_expectations_for_cl()
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
-            'INFO: For rebaselining:\n',
+            'INFO: Triggering try jobs for updating expectations:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
-            'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
         ])
@@ -166,11 +159,9 @@ class TestImporterTest(LoggingTestCase):
         success = importer.update_expectations_for_cl()
         self.assertTrue(success)
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
-            'INFO: For rebaselining:\n',
+            'INFO: Triggering try jobs for updating expectations:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
-            'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
         ])
