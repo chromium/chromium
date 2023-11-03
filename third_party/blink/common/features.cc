@@ -1524,6 +1524,10 @@ BASE_FEATURE(kConsumeCompileHints,
              "ConsumeCompileHints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLocalCompileHints,
+             "LocalCompileHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kQueueBlockingGestureScrolls,
              "QueueBlockingGestureScrolls",
              base::FEATURE_DISABLED_BY_DEFAULT);

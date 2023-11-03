@@ -42,6 +42,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -141,9 +143,9 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
   // The probe below allows inspector to either inject the cached code
   // or override compile_options to force eager compilation of code
   // when producing the cache.
-  probe::ApplyCompilationModeOverride(ExecutionContext::From(script_state),
-                                      classic_script, &inspector_data,
-                                      &compile_options);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  probe::ApplyCompilationModeOverride(execution_context, classic_script,
+                                      &inspector_data, &compile_options);
   if (inspector_data) {
     v8::ScriptCompiler::Source source(code, origin, inspector_data);
     v8::MaybeLocal<v8::Script> script =
@@ -152,10 +154,41 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     return script;
   }
 
+  static bool local_compile_hints =
+      base::FeatureList::IsEnabled(features::kLocalCompileHints);
+  static bool consume_crowdsourced_compile_hints =
+      base::FeatureList::IsEnabled(features::kConsumeCompileHints);
   switch (compile_options) {
     case v8::ScriptCompiler::kConsumeCompileHints: {
-      ExecutionContext* execution_context =
-          ExecutionContext::From(script_state);
+      // For now, we can only consume local or crowdsourced compile hints, but
+      // not both at the same time.
+      // TODO(chromium:1495723): Enable consuming both at the same time.
+      if (local_compile_hints) {
+        CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
+        CHECK(cache_handler);
+        scoped_refptr<CachedMetadata> cached_metadata =
+            V8CodeCache::GetCachedMetadataForCompileHints(cache_handler);
+        v8_compile_hints::V8LocalCompileHintsConsumer
+            v8_local_compile_hints_consumer(cached_metadata.get());
+        if (v8_local_compile_hints_consumer.IsRejected()) {
+          cache_handler->ClearCachedMetadata(
+              ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+              CachedMetadataHandler::kClearPersistentStorage);
+          // Compile without compile hints.
+          v8::ScriptCompiler::Source source(code, origin);
+          return v8::ScriptCompiler::Compile(
+              script_state->GetContext(), &source,
+              v8::ScriptCompiler::kNoCompileOptions, no_cache_reason);
+        }
+        v8::ScriptCompiler::Source source(
+            code, origin,
+            v8_compile_hints::V8LocalCompileHintsConsumer::GetCompileHint,
+            &v8_local_compile_hints_consumer);
+        return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
+                                           compile_options, no_cache_reason);
+      }
+      CHECK(consume_crowdsourced_compile_hints);
+      // No local compile hints; compile with crowdsourced compile hints.
       // Based on how `can_use_compile_hints` in CompileScript is computed, we
       // must get a non-null LocalDOMWindow and LocalFrame here.
       LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
@@ -602,20 +635,23 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             classic_script->SourceUrl(), classic_script->StartPosition(),
             produce_cache_options);
       }
-
+      if (compile_options == v8::ScriptCompiler::kProduceCompileHints) {
+        CHECK(page);
+        CHECK(frame);
+        // We can produce both crowdsourced and local compile hints at the
+        // same time.
 #if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
-      if (page != nullptr) {
-        if (compile_options == v8::ScriptCompiler::kProduceCompileHints) {
-          // TODO(chromium:1406506): Add a compile hints solution for workers.
-          // TODO(chromium:1406506): Add a compile hints solution for fenced
-          // frames.
-          // TODO(chromium:1406506): Add a compile hints solution for
-          // out-of-process iframes.
-          page->GetV8CrowdsourcedCompileHintsProducer().RecordScript(
-              frame, execution_context, script, script_state);
-        }
+        // TODO(chromium:1406506): Add a compile hints solution for workers.
+        // TODO(chromium:1406506): Add a compile hints solution for fenced
+        // frames.
+        // TODO(chromium:1406506): Add a compile hints solution for
+        // out-of-process iframes.
+        page->GetV8CrowdsourcedCompileHintsProducer().RecordScript(
+            frame, execution_context, script, script_state);
+#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+        frame->GetV8LocalCompileHintsProducer().RecordScript(
+            frame, execution_context, script, classic_script);
       }
-#endif  // BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
     }
 
     // TODO(crbug/1114601): Investigate whether to check CanContinue() in other

@@ -80,6 +80,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -469,6 +470,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(clip_path_paint_image_generator_);
   visitor->Trace(resource_cache_);
   visitor->Trace(lcpp_);
+  visitor->Trace(v8_local_compile_hints_producer_);
 #if !BUILDFLAG(IS_ANDROID)
   visitor->Trace(window_controls_overlay_changed_delegate_);
 #endif
@@ -1693,9 +1695,12 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       text_zoom_factor_(ParentTextZoomFactor(this)),
       inspector_task_runner_(InspectorTaskRunner::Create(
           GetTaskRunner(TaskType::kInternalInspector))),
-      interface_registry_(
-          interface_registry ? interface_registry
-                             : InterfaceRegistry::GetEmptyInterfaceRegistry()) {
+      interface_registry_(interface_registry
+                              ? interface_registry
+                              : InterfaceRegistry::GetEmptyInterfaceRegistry()),
+      v8_local_compile_hints_producer_(
+          MakeGarbageCollected<
+              v8_compile_hints::V8LocalCompileHintsProducer>()) {
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
@@ -2550,6 +2555,7 @@ void LocalFrame::MainFrameInteractive() {
   if (Page* page = GetPage()) {
     page->GetV8CrowdsourcedCompileHintsProducer().GenerateData();
   }
+  v8_local_compile_hints_producer_->GenerateData(this);
 }
 
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {

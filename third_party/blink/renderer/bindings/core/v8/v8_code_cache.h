@@ -50,11 +50,19 @@ class CORE_EXPORT V8CodeCache final {
 
   static uint32_t TagForCodeCache(const CachedMetadataHandler*);
   static uint32_t TagForTimeStamp(const CachedMetadataHandler*);
+  static uint32_t TagForCompileHints(const CachedMetadataHandler*);
   static void SetCacheTimeStamp(CodeCacheHost*, CachedMetadataHandler*);
+
+  static uint64_t GetTimestamp();
 
   // Returns true iff the CachedMetadataHandler contains a code cache
   // that can be consumed by V8.
   static bool HasCodeCache(
+      const CachedMetadataHandler*,
+      CachedMetadataHandler::GetCachedMetadataBehavior behavior =
+          CachedMetadataHandler::kCrashIfUnchecked);
+
+  static bool HasCompileHints(
       const CachedMetadataHandler*,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);
@@ -82,6 +90,10 @@ class CORE_EXPORT V8CodeCache final {
   static bool IsFull(const CachedMetadata* metadata);
 
   static scoped_refptr<CachedMetadata> GetCachedMetadata(
+      const CachedMetadataHandler* cache_handler,
+      CachedMetadataHandler::GetCachedMetadataBehavior behavior =
+          CachedMetadataHandler::kCrashIfUnchecked);
+  static scoped_refptr<CachedMetadata> GetCachedMetadataForCompileHints(
       const CachedMetadataHandler* cache_handler,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);

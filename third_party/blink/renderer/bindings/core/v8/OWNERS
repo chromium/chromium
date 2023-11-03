@@ -7,3 +7,4 @@ per-file v8_code_cache*=leszeks@chromium.org
 per-file v8_wasm_response_extensions.*=ahaas@chromium.org
 per-file v8_compile_hints*=marja@chromium.org
 per-file use_counter_callback.cc=*
+per-file v8_local_compile_hints*=marja@chromium.org,leszeks@chromium.org

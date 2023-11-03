@@ -166,6 +166,10 @@ class URLLoader;
 struct BlinkTransferableMessage;
 struct WebScriptSource;
 
+namespace v8_compile_hints {
+class V8LocalCompileHintsProducer;
+}  // namespace v8_compile_hints
+
 enum class BackForwardCacheAware;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -902,6 +906,11 @@ class CORE_EXPORT LocalFrame final
 
   bool IsSameOrigin();
 
+  v8_compile_hints::V8LocalCompileHintsProducer&
+  GetV8LocalCompileHintsProducer() {
+    return *v8_local_compile_hints_producer_;
+  }
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1159,6 +1168,9 @@ class CORE_EXPORT LocalFrame final
 
   // Reduced accept language for top-level frame.
   AtomicString reduced_accept_language_;
+
+  Member<v8_compile_hints::V8LocalCompileHintsProducer>
+      v8_local_compile_hints_producer_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

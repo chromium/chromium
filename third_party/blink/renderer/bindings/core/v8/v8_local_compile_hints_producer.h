@@ -1,0 +1,49 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_LOCAL_COMPILE_HINTS_PRODUCER_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_LOCAL_COMPILE_HINTS_PRODUCER_H_
+
+#include "third_party/blink/renderer/bindings/buildflags.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8.h"
+
+namespace blink {
+
+class ClassicScript;
+class ExecutionContext;
+class LocalFrame;
+
+namespace v8_compile_hints {
+
+// Produces compile hints suitable for local caching.
+class V8LocalCompileHintsProducer
+    : public GarbageCollected<V8LocalCompileHintsProducer> {
+ public:
+  V8LocalCompileHintsProducer();
+  ~V8LocalCompileHintsProducer() = default;
+  void RecordScript(LocalFrame* frame,
+                    ExecutionContext* execution_context,
+                    const v8::Local<v8::Script> script,
+                    ClassicScript* classic_script);
+  void GenerateData(LocalFrame* frame);
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  static v8::ScriptCompiler::CachedData* CreateCompileHintsCachedDataForScript(
+      std::vector<int>& compile_hints,
+      uint64_t prefix);
+
+  HeapVector<Member<ClassicScript>> classic_scripts_;
+  WTF::Vector<v8::Global<v8::Script>> v8_scripts_;
+  bool should_generate_data_;
+};
+
+}  // namespace v8_compile_hints
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_LOCAL_COMPILE_HINTS_PRODUCER_H_
