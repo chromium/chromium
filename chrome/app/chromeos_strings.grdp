@@ -856,8 +856,8 @@
   <message name="IDS_OOBE_USER_CREATION_CHILD_USE_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device for child.">
     Use your child’s Google Account or a school account. You can also set parental controls.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for work or school.">
-    For work or school
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for work.">
+    For work
   </message>
   <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_DESCRIPTION"  desc="The description of the button that leads to set up device for work or shcool.">
    Use your organization’s email address
