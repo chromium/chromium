@@ -5559,7 +5559,7 @@
   {
     "name": "ntp-realbox-match-searchbox-theme",
     "owners": [ "mahmadi@chromium.org", "mfacey@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-realbox-pedals",
@@ -5569,7 +5569,7 @@
   {
     "name": "ntp-realbox-use-google-g-icon",
     "owners": [ "mahmadi@chromium.org", "mfacey@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-realbox-width-behavior",
