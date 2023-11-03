@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/compose/type_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -40,7 +42,7 @@ namespace {
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
 
 void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Compose.Response.Status", status);
+  UMA_HISTOGRAM_ENUMERATION(compose::kComposeResponseStatus, status);
 }
 
 }  // namespace
@@ -94,23 +96,27 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
   request.set_length(
       optimization_guide::proto::ComposeLength(current_state_->style->length));
   *request.mutable_page_metadata() = std::move(page_metadata);
+  base::TimeTicks request_start = base::TimeTicks::Now();
   executor_->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE,
       request,
       base::BindOnce(&ComposeSession::ModelExecutionCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), request_start));
 }
 
 void ComposeSession::ModelExecutionCallback(
+    base::TimeTicks request_start,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  base::TimeDelta request_delta = base::TimeTicks::Now() - request_start;
   current_state_->has_pending_request = false;
 
   compose::mojom::ComposeStatus status =
       ComposeStatusFromOptimizationGuideResult(result);
 
   if (status != compose::mojom::ComposeStatus::kOk) {
+    compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
     ProcessError(status);
     return;
   }
@@ -119,12 +125,14 @@ void ComposeSession::ModelExecutionCallback(
       optimization_guide::proto::ComposeResponse>(result.value());
 
   if (!response) {
+    compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
     ProcessError(compose::mojom::ComposeStatus::kTryAgain);
     return;
   }
 
   // Log successful response status.
   LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
+  compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
 
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;

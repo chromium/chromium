@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -244,6 +246,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
+  base::HistogramTester histogram_tester;
+
   ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
@@ -268,6 +272,14 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
 
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
+
+  // Check that a response result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
+                                      compose::mojom::ComposeStatus::kOk, 1);
+  // Check that a response duration OK metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 1);
+  // Check that a no response duration Error metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeParams) {
@@ -330,6 +342,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
 // Tests that we return an error if Optimization Guide is unable to parse the
 // response. In this case the response will be absl::nullopt.
 TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
+  base::HistogramTester histogram_tester;
   ShowDialogAndBindMojo();
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
       .WillOnce(testing::WithArg<2>(testing::Invoke(
@@ -351,6 +364,15 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgain, result->status);
+
+  // Check that a response result Try-Again metric was emitted.
+  histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
+                                      compose::mojom::ComposeStatus::kTryAgain,
+                                      1);
+  // Check that a response duration Error metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationError, 1);
+  // Check that a no response duration OK metric was emitted.
+  histogram_tester.ExpectTotalCount(compose::kComposeResponseDurationOk, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {

@@ -6981,6 +6981,7 @@ test("unit_tests") {
     ]
     deps += [
       "//chrome/common/compose",
+      "//components/compose/core/browser:browser",
       "//components/compose/core/browser:features",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
