@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 namespace blink {
 
 ThreadDebuggerCommonImpl::ThreadDebuggerCommonImpl(v8::Isolate* isolate)
@@ -966,20 +966,27 @@ void ThreadDebuggerCommonImpl::GetEventListenersCallback(
   callback_info.GetReturnValue().Set(result);
 }
 
+static uint64_t GetTraceId(ThreadDebuggerCommonImpl* this_thread_debugger,
+                           const v8_inspector::StringView& title_view) {
+  WTF::String title = ToCoreString(title_view);
+  unsigned title_hash = WTF::GetHash(title);
+  return title_hash ^ (reinterpret_cast<uintptr_t>(this_thread_debugger));
+}
+
 void ThreadDebuggerCommonImpl::consoleTime(
-    const v8_inspector::StringView& title) {
-  // TODO(dgozman): we can save on a copy here if trace macro would take a
-  // pointer with length.
+    const v8_inspector::StringView& title_view) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE("console.time",
+                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeEnd(
-    const v8_inspector::StringView& title) {
-  // TODO(dgozman): we can save on a copy here if trace macro would take a
-  // pointer with length.
+    const v8_inspector::StringView& title_view) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE("console.time",
+                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(
