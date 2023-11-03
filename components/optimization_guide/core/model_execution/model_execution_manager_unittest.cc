@@ -10,6 +10,7 @@
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -49,11 +50,11 @@ class ModelExecutionManagerTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
-  base::test::TestMessage test_message;
-  test_message.set_test("some test");
+  proto::ComposeRequest request;
+  request.set_user_input("a user typed this");
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test_message,
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              OptimizationGuideModelExecutionResult result,
