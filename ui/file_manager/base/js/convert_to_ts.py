@@ -488,7 +488,10 @@ def to_build_file(js_fname):
 def find_build_files(js_fname):
     """Finds the BUILD.gn files to process."""
     # Always process the BUILD.gn sibling of the JS file being converted.
-    ret = {to_build_file(js_fname)}
+    sibling_build = to_build_file(js_fname)
+    ret = set()
+    if sibling_build.exists():
+        ret.add(str(sibling_build))
     str_js_path = str(js_fname)
 
     # Avoid mixing the BUILD.gn of the Files app, Integration Tests and Image
