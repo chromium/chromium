@@ -427,7 +427,7 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           password_manager::features::kPasswordSuggestionBottomSheetV2) &&
       keyboard_replacing_surface_visibility_controller_ &&
       !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
-    return false;
+    return keyboard_replacing_surface_visibility_controller_->IsVisible();
   }
 
   password_manager::ContentPasswordManagerDriver* content_driver =
