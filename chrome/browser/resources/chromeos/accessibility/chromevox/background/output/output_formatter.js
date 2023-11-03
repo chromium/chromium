@@ -19,9 +19,11 @@ import {PhoneticData} from '../phonetic_data.js';
 import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputInterface} from './output_interface.js';
+import {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
 import * as outputTypes from './output_types.js';
 
+const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const NameFromType = chrome.automation.NameFromType;
 const RoleType = chrome.automation.RoleType;
@@ -193,6 +195,16 @@ export class OutputFormatter {
       roles.add(currentNode.value);
     }
     return roles;
+  }
+
+  /**
+   * @param {!OutputFormatLogger} formatLog
+   * @param {string} errorMsg
+   * @private
+   */
+  error_(formatLog, errorMsg) {
+    formatLog.writeError(errorMsg);
+    console.error(errorMsg);
   }
 
   /**
@@ -604,28 +616,7 @@ export class OutputFormatter {
     let msgArgs = [];
     formatLog.write(token + '{');
     if (!isPluralized) {
-      let curArg = tree.firstChild;
-      while (curArg) {
-        if (curArg.value[0] !== '$') {
-          const errorMsg = 'Unexpected value: ' + curArg.value;
-          formatLog.writeError(errorMsg);
-          console.error(errorMsg);
-          return;
-        }
-        let msgBuff = [];
-        OutputFormatter.format(this.output_, {
-          node,
-          outputFormat: curArg,
-          outputBuffer: msgBuff,
-          outputFormatLogger: formatLog,
-        });
-        // Fill in empty string if nothing was formatted.
-        if (!msgBuff.length) {
-          msgBuff = [''];
-        }
-        msgArgs = msgArgs.concat(msgBuff);
-        curArg = curArg.nextSibling;
-      }
+      msgArgs = this.getNonPluralizedArguments_(tree, node, formatLog, msgArgs);
     }
     let msg = Msgs.getMsg(msgId, msgArgs);
     try {
@@ -637,35 +628,12 @@ export class OutputFormatter {
     }
 
     if (!msg) {
-      const errorMsg = 'Could not get message ' + msgId;
-      formatLog.writeError(errorMsg);
-      console.error(errorMsg);
+      this.error_(formatLog, 'Could not get message ' + msgId);
       return;
     }
 
     if (isPluralized) {
-      const arg = tree.firstChild;
-      if (!arg || arg.nextSibling) {
-        const errorMsg = 'Pluralized messages take exactly one argument';
-        formatLog.writeError(errorMsg);
-        console.error(errorMsg);
-        return;
-      }
-      if (arg.value[0] !== '$') {
-        const errorMsg = 'Unexpected value: ' + arg.value;
-        formatLog.writeError(errorMsg);
-        console.error(errorMsg);
-        return;
-      }
-      const argBuff = [];
-      OutputFormatter.format(this.output_, {
-        node,
-        outputFormat: arg,
-        outputBuffer: argBuff,
-        outputFormatLogger: formatLog,
-      });
-      const namedArgs = {COUNT: Number(argBuff[0])};
-      msg = new goog.i18n.MessageFormat(msg).format(namedArgs);
+      msg = this.getPluralizedMessage_(tree, node, formatLog, msg);
     }
     formatLog.write('}');
 
@@ -1084,5 +1052,75 @@ export class OutputFormatter {
       this.output_.append(buff, text, options);
       formatLog.writeTokenWithValue(token, text);
     }
+  }
+
+  /**
+   * @param {!OutputFormatTree} tree
+   * @param {?AutomationNode} node
+   * @param {!OutputFormatLogger} formatLog
+   * @param {!Array<string>} msgArgs
+   * @return {!Array<string>}
+   * @private
+   */
+  getNonPluralizedArguments_(tree, node, formatLog, msgArgs) {
+    let curArg = tree.firstChild;
+    while (curArg) {
+      if (curArg.value[0] !== '$') {
+        this.unexpectedValue_(formatLog, curArg.value);
+        return msgArgs;
+      }
+      let msgBuff = [];
+      OutputFormatter.format(this.output_, {
+        node,
+        outputFormat: curArg,
+        outputBuffer: msgBuff,
+        outputFormatLogger: formatLog,
+      });
+      // Fill in empty string if nothing was formatted.
+      if (!msgBuff.length) {
+        msgBuff = [''];
+      }
+      msgArgs = msgArgs.concat(msgBuff);
+      curArg = curArg.nextSibling;
+    }
+    return msgArgs;
+  }
+
+  /**
+   * @param {!OutputFormatTree} tree
+   * @param {?AutomationNode} node
+   * @param {!OutputFormatLogger} formatLog
+   * @param {string} msg
+   * @return {string}
+   * @private
+   */
+  getPluralizedMessage_(tree, node, formatLog, msg) {
+    const arg = tree.firstChild;
+    if (!arg || arg.nextSibling) {
+      this.error_(formatLog, 'Pluralized messages take exactly one argument');
+      return msg;
+    }
+    if (arg.value[0] !== '$') {
+      this.unexpectedValue_(formatLog, arg.value);
+      return msg;
+    }
+    const argBuff = [];
+    OutputFormatter.format(this.output_, {
+      node,
+      outputFormat: arg,
+      outputBuffer: argBuff,
+      outputFormatLogger: formatLog,
+    });
+    const namedArgs = {COUNT: Number(argBuff[0])};
+    return new goog.i18n.MessageFormat(msg).format(namedArgs);
+  }
+
+  /**
+   * @param {!OutputFormatLogger} formatLog
+   * @param {string} value
+   * @private
+   */
+  unexpectedValue_(formatLog, value) {
+    this.error_(formatLog, 'Unexpected value: ' + value);
   }
 }
