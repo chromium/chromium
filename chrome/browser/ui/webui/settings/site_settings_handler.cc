@@ -2518,6 +2518,14 @@ void SiteSettingsHandler::RemoveNonModelData(
         ->SetWebsiteSettingDefaultScope(
             origin.GetURL(), GURL(),
             ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, base::Value());
+    // Once user clears site setting data for `origins`, the Durable storage bit
+    // should also be reset.
+    // TODO(crbug.com/1499305): This should be replaced when integrated with 
+    // the BrowserDataModel.
+    HostContentSettingsMapFactory::GetForProfile(profile_)
+        ->SetWebsiteSettingDefaultScope(origin.GetURL(), GURL(),
+                                        ContentSettingsType::DURABLE_STORAGE,
+                                        base::Value());
   }
 
 #if BUILDFLAG(IS_WIN)

@@ -5974,6 +5974,90 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   EXPECT_EQ(0U, accept_language_settings.size());
 }
 
+TEST_F(SiteSettingsHandlerTest, ClearDurableStorage) {
+  // Confirm that when the user clears durable storage or the eTLD+1
+  // group, durable storage are also cleared.
+  SetupModels();
+  handler()->OnStorageFetched();
+
+  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
+                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Add setting for the hosts.
+  for (const auto& host : hosts) {
+    host_content_settings_map->SetContentSettingDefaultScope(
+        host, GURL(), ContentSettingsType::DURABLE_STORAGE,
+        ContentSetting::CONTENT_SETTING_ALLOW);
+  }
+
+  // Clear at the eTLD+1 level and ensure affected origins are cleared.
+  base::Value::List args;
+  args.Append(GroupingKey::CreateFromEtldPlus1("example.com").Serialize());
+  handler()->HandleClearSiteGroupDataAndCookies(args);
+  ContentSettingsForOneType settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::DURABLE_STORAGE);
+
+  // ContentSettingsType::DURABLE_STORAGE has a default settings type for the
+  // wildcard '*' set to BLOCK. Here, we expect 2 but we put 3.
+  EXPECT_EQ(3U, settings.size());
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
+            settings.at(0).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            settings.at(0).secondary_pattern);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            settings.at(0).setting_value);
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+            settings.at(1).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            settings.at(1).secondary_pattern);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            settings.at(1).setting_value);
+
+  // Clear unpartitioned usage data, which should only affect the specific
+  // origin.
+  args.clear();
+  args.Append("https://google.com/");
+  handler()->HandleClearUnpartitionedUsage(args);
+
+  // Validate the reduce accept language has been cleared.
+  settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::DURABLE_STORAGE);
+
+  // ContentSettingsType::DURABLE_STORAGE has a default settings type for the
+  // wildcard '*' set to BLOCK. Here, we expect 1 but we put 2.
+  EXPECT_EQ(2U, settings.size());
+
+  // www.google.com should be the only remaining entry.
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
+            settings.at(0).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            settings.at(0).secondary_pattern);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            settings.at(0).setting_value);
+
+  // Clear unpartitioned usage data through HTTPS scheme, make sure https site
+  // durable storage have been cleared when the specific origin HTTPS
+  // scheme exist.
+  args.clear();
+  args.Append("http://www.google.com/");
+  handler()->HandleClearUnpartitionedUsage(args);
+
+  // Validate the durable storage has been cleared.
+  settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::DURABLE_STORAGE);
+
+  // ContentSettingsType::DURABLE_STORAGE has a default settings type for the
+  // wildcard '*' set to BLOCK. Therefore, when there's only one rule, it means
+  // that there are none.
+  EXPECT_EQ(1U, settings.size());
+}
+
 TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Confirm that removing unpartitioned storage correctly removes the
   // appropriate nodes.
