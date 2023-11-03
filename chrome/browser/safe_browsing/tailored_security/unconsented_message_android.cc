@@ -196,15 +196,6 @@ void TailoredSecurityUnconsentedMessageAndroid::HandleMessageAccepted() {
 void TailoredSecurityUnconsentedMessageAndroid::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
   LogMessageOutcome(TailoredSecurityOutcome::kDismissed, is_in_flow_);
-  if (is_in_flow_) {
-    base::UmaHistogramEnumeration(
-        "SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageDismissReason",
-        dismiss_reason, messages::DismissReason::COUNT);
-  } else {
-    base::UmaHistogramEnumeration(
-        "SafeBrowsing.TailoredSecurityUnconsentedOutOfFlowMessageDismissReason",
-        dismiss_reason, messages::DismissReason::COUNT);
-  }
   message_.reset();
   // `dismiss_callback_` may delete `this`.
   if (dismiss_callback_)

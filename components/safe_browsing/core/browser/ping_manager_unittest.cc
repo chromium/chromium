@@ -589,10 +589,6 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
       /*expected_user_population=*/absl::nullopt,
       /*expected_page_load_token_value=*/"testing_page_load_token",
       /*expect_cookies_removed=*/false);
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.ClientSafeBrowsingReport.IsPageLoadTokenNull",
-      /*sample=*/false,
-      /*expected_bucket_count=*/1);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsDontAttachDefaultData) {
   SetNewPingManager(
