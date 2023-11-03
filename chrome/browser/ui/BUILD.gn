@@ -6521,10 +6521,10 @@ static_library("ui") {
   }
   if (enable_print_preview) {
     sources += [
-      "webui/print_preview/data_request_filter.cc",
-      "webui/print_preview/data_request_filter.h",
       "webui/print_preview/extension_printer_handler.cc",
       "webui/print_preview/extension_printer_handler.h",
+      "webui/print_preview/parse_data_path.cc",
+      "webui/print_preview/parse_data_path.h",
       "webui/print_preview/pdf_printer_handler.cc",
       "webui/print_preview/pdf_printer_handler.h",
       "webui/print_preview/policy_settings.cc",

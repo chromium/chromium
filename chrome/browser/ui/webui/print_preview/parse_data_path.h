@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_DATA_REQUEST_FILTER_H_
-#define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_DATA_REQUEST_FILTER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PARSE_DATA_PATH_H_
+#define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PARSE_DATA_PATH_H_
 
 #include <string>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace content {
-class WebUIDataSource;
-}  // namespace content
 
 namespace printing {
 
@@ -24,9 +20,6 @@ struct PrintPreviewIdAndPageIndex {
   // print-ready PDF.
   int page_index;
 };
-
-// Adds a request filter for serving preview PDF data.
-void AddDataRequestFilter(content::WebUIDataSource& source);
 
 // Parses a preview PDF data path (i.e., what comes after
 // chrome-untrusted://print/).
@@ -41,4 +34,4 @@ absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
 
 }  // namespace printing
 
-#endif  // CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_DATA_REQUEST_FILTER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PARSE_DATA_PATH_H_

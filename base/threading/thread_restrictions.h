@@ -359,6 +359,7 @@ class LocalPrinterHandlerDefault;
 class PrintBackendServiceImpl;
 #endif
 class PrintBackendServiceManager;
+class PrintPreviewUIUntrusted;
 class PrinterQuery;
 }  // namespace printing
 namespace proxy_resolver {
@@ -618,6 +619,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
       ScopedAllowBlockingForSettingGetter;  // http://crbug.com/69057
   friend class printing::LocalPrinterHandlerDefault;
   friend class printing::PrintBackendServiceManager;
+  friend class printing::PrintPreviewUIUntrusted;
   friend class printing::PrinterQuery;
   friend class remote_cocoa::
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078

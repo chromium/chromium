@@ -9563,13 +9563,14 @@ test("unit_tests") {
         "../browser/printing/print_preview_test.cc",
         "../browser/printing/print_preview_test.h",
         "../browser/printing/print_view_manager_unittest.cc",
-        "../browser/ui/webui/print_preview/data_request_filter_unittest.cc",
         "../browser/ui/webui/print_preview/extension_printer_handler_unittest.cc",
         "../browser/ui/webui/print_preview/fake_print_render_frame.cc",
         "../browser/ui/webui/print_preview/fake_print_render_frame.h",
+        "../browser/ui/webui/print_preview/parse_data_path_unittest.cc",
         "../browser/ui/webui/print_preview/pdf_printer_handler_unittest.cc",
         "../browser/ui/webui/print_preview/print_preview_handler_unittest.cc",
         "../browser/ui/webui/print_preview/print_preview_ui_unittest.cc",
+        "../browser/ui/webui/print_preview/print_preview_ui_untrusted_unittest.cc",
         "../browser/ui/webui/print_preview/print_preview_utils_unittest.cc",
       ]
 
