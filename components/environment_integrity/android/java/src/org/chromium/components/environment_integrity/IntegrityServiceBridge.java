@@ -5,6 +5,7 @@
 package org.chromium.components.environment_integrity;
 
 import androidx.annotation.NonNull;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.core.os.ExecutorCompat;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -131,7 +132,44 @@ public abstract class IntegrityServiceBridge {
     private static IntegrityServiceBridgeDelegate getDelegate() {
         ThreadUtils.checkUiThread();
         if (sDelegate == null) {
-            sDelegate = new IntegrityServiceBridgeDelegateImpl();
+            // Temporary hardcoded implementation to remove the dependency on the downstream version
+            // of this class.
+            sDelegate =
+                    new IntegrityServiceBridgeDelegate() {
+                        private static final String NOT_SUPPORTED_ERROR =
+                                "Environment Integrity not available.";
+
+                        @Override
+                        public ListenableFuture<Long> createEnvironmentIntegrityHandle(
+                                boolean ignored, int timeoutMilliseconds) {
+                            return CallbackToFutureAdapter.getFuture(
+                                    resolver -> {
+                                        resolver.setException(
+                                                new IntegrityException(
+                                                        NOT_SUPPORTED_ERROR,
+                                                        IntegrityResponse.API_NOT_AVAILABLE));
+                                        return "Placeholder.createEnvironmentIntegrityHandle";
+                                    });
+                        }
+
+                        @Override
+                        public ListenableFuture<byte[]> getEnvironmentIntegrityToken(
+                                long handle, byte[] requestHash, int timeoutMilliseconds) {
+                            return CallbackToFutureAdapter.getFuture(
+                                    resolver -> {
+                                        resolver.setException(
+                                                new IntegrityException(
+                                                        NOT_SUPPORTED_ERROR,
+                                                        IntegrityResponse.API_NOT_AVAILABLE));
+                                        return "Placeholder.getEnvironmentIntegrityToken";
+                                    });
+                        }
+
+                        @Override
+                        public boolean canUseGms() {
+                            return false;
+                        }
+                    };
         }
         return sDelegate;
     }
