@@ -41,6 +41,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -202,16 +203,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     // Whether these settings were opened from GroupedWebsitesSettings.
     private boolean mFromGrouped;
 
-    // The Preference key for chooser object permissions.
-    private static final String CHOOSER_PERMISSION_PREFERENCE_KEY = "chooser_permission_list";
+    private final List<ChromeSwitchPreference> mEmbeddedPermissionPreferences = new ArrayList<>();
 
-    // The Preference key for embedded permissions such as StorageAccess.
-    private static final String EMBEDDED_PERMISSION_PREFERENCE_KEY = "embedded_permission_list";
-
-    // The number of user and policy chosen object permissions displayed.
-    private int mObjectUserPermissionCount;
-    private int mObjectPolicyPermissionCount;
-    private int mEmbeddedPermissionCount;
+    private final List<ChromeImageViewPreference> mChooserPermissionPreferences = new ArrayList<>();
 
     // Records previous notification permission on Android O+ to allow detection of permission
     // revocation within the Android system permission activity.
@@ -792,11 +786,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     /**
      * Creates a ChromeImageViewPreference for each object permission with a
      * ManagedPreferenceDelegate that configures the Preference's widget to display a managed icon
-     * and show a toast if a managed permission is clicked. The number of object permissions are
-     * tracked by |mObjectPolicyPermissionCount| and |mObjectUserPermissionCount|, which are used
-     * when permissions are modified to determine if this preference list should be displayed or
-     * not. The preferences are added to the preference screen using |maxPermissionOrder| to order
-     * the preferences in the list.
+     * and show a toast if a managed permission is clicked. The preferences are added to the
+     * preference screen using |maxPermissionOrder| to order the preferences in the list.
      */
     private void setUpChosenObjectPreferences() {
         PreferenceScreen preferenceScreen = getPreferenceScreen();
@@ -806,14 +797,16 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     new ChromeImageViewPreference(getStyledContext());
             assert arrayContains(
                     SiteSettingsUtil.CHOOSER_PERMISSIONS, info.getContentSettingsType());
-            preference.setKey(CHOOSER_PERMISSION_PREFERENCE_KEY);
+            mChooserPermissionPreferences.add(preference);
             preference.setIcon(getContentSettingsIcon(info.getContentSettingsType(), null));
             preference.setTitle(info.getName());
-            preference.setImageView(R.drawable.ic_delete_white_24dp,
-                    R.string.website_settings_revoke_device_permission, (View view) -> {
+            preference.setImageView(
+                    R.drawable.ic_delete_white_24dp,
+                    R.string.website_settings_revoke_device_permission,
+                    (View view) -> {
                         info.revoke(getSiteSettingsDelegate().getBrowserContextHandle());
                         preferenceScreen.removePreference(preference);
-                        mObjectUserPermissionCount--;
+                        mChooserPermissionPreferences.remove(preference);
 
                         if (!hasPermissionsPreferences()) {
                             removePreferenceSafely(PREF_PERMISSIONS_HEADER);
@@ -830,12 +823,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     return info.isManaged();
                 }
             });
-
-            if (info.isManaged()) {
-                mObjectPolicyPermissionCount++;
-            } else {
-                mObjectUserPermissionCount++;
-            }
 
             preference.setOrder(++mMaxPermissionOrder);
             preferenceScreen.addPreference(preference);
@@ -859,10 +846,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 assert arrayContains(
                         SiteSettingsUtil.EMBEDDED_PERMISSIONS, info.getContentSettingType());
                 var preference = new ChromeSwitchPreference(getStyledContext());
-                preference.setKey(EMBEDDED_PERMISSION_PREFERENCE_KEY);
-                preference.setIcon(getContentSettingsIcon(info.getContentSettingType(), null));
-                preference.setTitle(ContentSettingsResources.getTitle(
-                        info.getContentSettingType(), getSiteSettingsDelegate()));
+                mEmbeddedPermissionPreferences.add(preference);
+                preference.setIcon(
+                        getContentSettingsIcon(
+                                info.getContentSettingType(), info.getContentSetting()));
+                preference.setTitle(
+                        ContentSettingsResources.getTitle(
+                                info.getContentSettingType(), getSiteSettingsDelegate()));
                 var pattern = WebsiteAddress.create(info.getPrimaryPattern());
                 preference.setSummary(
                         getEmbeddedPermissionSummary(pattern.getHost(), info.getContentSetting()));
@@ -879,6 +869,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                             preference.setSummary(
                                     getEmbeddedPermissionSummary(
                                             pattern.getHost(), contentSetting));
+                            preference.setIcon(
+                                    getContentSettingsIcon(
+                                            info.getContentSettingType(), contentSetting));
 
                             if (mWebsiteSettingsObserver != null) {
                                 mWebsiteSettingsObserver.onPermissionChanged();
@@ -889,7 +882,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     preference.setBackgroundColor(mHighlightColor);
                 }
 
-                mEmbeddedPermissionCount++;
                 preference.setOrder(++mMaxPermissionOrder);
                 preferenceScreen.addPreference(preference);
             }
@@ -1013,8 +1005,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     private boolean hasPermissionsPreferences() {
-        if (mObjectUserPermissionCount > 0 || mObjectPolicyPermissionCount > 0
-                || mEmbeddedPermissionCount > 0) {
+        if (!mChooserPermissionPreferences.isEmpty() || !mEmbeddedPermissionPreferences.isEmpty()) {
             return true;
         }
         PreferenceScreen preferenceScreen = getPreferenceScreen();
@@ -1263,25 +1254,23 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 removePreferenceSafely(key);
             }
         }
-        var preference = findPreference(EMBEDDED_PERMISSION_PREFERENCE_KEY);
-        while (preference != null) {
+        for (var preference : mEmbeddedPermissionPreferences) {
             getPreferenceScreen().removePreference(preference);
-            preference = findPreference(EMBEDDED_PERMISSION_PREFERENCE_KEY);
         }
+        mEmbeddedPermissionPreferences.clear();
 
         // Clearing stored data implies popping back to parent menu if there is nothing left to
         // show. Therefore, we only need to explicitly close the activity if there's no stored data
         // to begin with. The only exception to this is if there are policy managed permissions as
         // those cannot be reset and will always show.
-        boolean finishActivityImmediately = mSite.getTotalUsage() == 0
-                && mObjectPolicyPermissionCount == 0 && mEmbeddedPermissionCount == 0;
+        boolean finishActivityImmediately =
+                mSite.getTotalUsage() == 0 && !hasManagedChooserPermissions();
 
         SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite);
         SiteDataCleaner.clearData(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite, mDataClearedCallback);
 
-        // Deletion horizontal product metrics
         RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE, DeleteBrowsingDataAction.MAX_VALUE);
         if (finishActivityImmediately) {
@@ -1306,13 +1295,16 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
      * Removes any user granted chosen object preference(s) from the preference screen.
      */
     private void removeUserChosenObjectPreferences() {
-        Preference preference = findPreference(CHOOSER_PERMISSION_PREFERENCE_KEY);
-        if (preference != null && !((ChromeImageViewPreference) preference).isManaged()) {
-            getPreferenceScreen().removePreference(preference);
+        var it = mChooserPermissionPreferences.iterator();
+        while (it.hasNext()) {
+            var preference = it.next();
+            if (preference != null && !((ChromeImageViewPreference) preference).isManaged()) {
+                getPreferenceScreen().removePreference(preference);
+                it.remove();
+            }
         }
-        mObjectUserPermissionCount = 0;
 
-        if (mObjectPolicyPermissionCount > 0) {
+        if (hasManagedChooserPermissions()) {
             ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getContext());
         }
     }
@@ -1367,5 +1359,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
                         .show();
+    }
+
+    boolean hasManagedChooserPermissions() {
+        for (var preference : mChooserPermissionPreferences) {
+            if (preference.isManaged()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
