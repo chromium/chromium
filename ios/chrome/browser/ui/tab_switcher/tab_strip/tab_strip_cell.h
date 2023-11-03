@@ -22,6 +22,9 @@
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripCellDelegate> delegate;
 
+// Whether the associated tab is loading.
+@property(nonatomic, assign) BOOL loading;
+
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;
 // Sets the favicon for the page. Passing nil sets the default image.

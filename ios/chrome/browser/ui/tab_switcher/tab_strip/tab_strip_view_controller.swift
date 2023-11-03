@@ -150,6 +150,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
     tabCellRegistration = UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem> {
       (cell, indexPath, item) in
       cell.setTitle(item.title)
+      cell.loading = item.showsActivity
       cell.delegate = self
 
       weak var weakSelf = self

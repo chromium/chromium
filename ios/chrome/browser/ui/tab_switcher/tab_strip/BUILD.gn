@@ -55,7 +55,8 @@ source_set("tab_strip_ui") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/common/ui/colors",
-    "//ios/web/public",
+    "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
   ]
 }
 

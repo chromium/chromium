@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 
+#import <MaterialComponents/MaterialActivityIndicator.h>
+
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/web/public/web_state_id.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
@@ -31,6 +33,7 @@ UIImage* DefaultFavicon() {
   UIButton* _closeButton;
   UILabel* _titleLabel;
   UIImageView* _faviconView;
+  MDCActivityIndicator* _activityIndicator;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -40,53 +43,54 @@ UIImage* DefaultFavicon() {
     self.layer.borderColor = UIColor.blackColor.CGColor;
     self.layer.borderWidth = 1;
 
-    _faviconView = [[UIImageView alloc] initWithImage:DefaultFavicon()];
-    _faviconView.contentMode = UIViewContentModeScaleAspectFit;
+    UIView* contentView = self.contentView;
 
-    [self.contentView addSubview:_faviconView];
-    _faviconView.translatesAutoresizingMaskIntoConstraints = NO;
+    UILayoutGuide* leadingImageGuide = [[UILayoutGuide alloc] init];
+    [self addLayoutGuide:leadingImageGuide];
+
+    _faviconView = [self createFaviconView];
+    [contentView addSubview:_faviconView];
+
+    _activityIndicator = [self createActivityIndicatior];
+    [contentView addSubview:_activityIndicator];
+
+    _closeButton = [self createCloseButton];
+    [contentView addSubview:_closeButton];
+
+    _titleLabel = [self createTitleLabel];
+    [contentView addSubview:_titleLabel];
+
     [NSLayoutConstraint activateConstraints:@[
-      [_faviconView.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
+      [leadingImageGuide.leadingAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kFaviconLeadingMargin],
-      [_faviconView.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [_faviconView.widthAnchor constraintEqualToConstant:kFaviconSize],
-      [_faviconView.heightAnchor
-          constraintEqualToAnchor:_faviconView.widthAnchor],
+      [leadingImageGuide.centerYAnchor
+          constraintEqualToAnchor:contentView.centerYAnchor],
+      [leadingImageGuide.widthAnchor constraintEqualToConstant:kFaviconSize],
+      [leadingImageGuide.heightAnchor
+          constraintEqualToAnchor:leadingImageGuide.widthAnchor],
     ]];
 
-    UIImage* close =
-        DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
-    _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_closeButton setImage:close forState:UIControlStateNormal];
-    [self.contentView addSubview:_closeButton];
-    _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    AddSameConstraints(leadingImageGuide, _faviconView);
+    AddSameConstraints(leadingImageGuide, _activityIndicator);
+
     [NSLayoutConstraint activateConstraints:@[
       [_closeButton.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
                          constant:-kCloseButtonMargin],
       [_closeButton.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
+          constraintEqualToAnchor:contentView.centerYAnchor],
     ]];
-    [_closeButton addTarget:self
-                     action:@selector(closeButtonTapped:)
-           forControlEvents:UIControlEventTouchUpInside];
 
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.font = [UIFont systemFontOfSize:kFontSize
-                                         weight:UIFontWeightMedium];
-    [self.contentView addSubview:_titleLabel];
-    _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
       [_titleLabel.leadingAnchor
-          constraintEqualToAnchor:_faviconView.trailingAnchor
+          constraintEqualToAnchor:leadingImageGuide.trailingAnchor
                          constant:kTitleInset],
       [_titleLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
                                    constant:-kTitleInset],
       [_titleLabel.centerYAnchor
-          constraintEqualToAnchor:_faviconView.centerYAnchor],
+          constraintEqualToAnchor:contentView.centerYAnchor],
     ]];
   }
   return self;
@@ -102,6 +106,39 @@ UIImage* DefaultFavicon() {
   } else {
     _faviconView.image = image;
   }
+}
+
+- (void)setLoading:(BOOL)loading {
+  if (_loading == loading) {
+    return;
+  }
+  _loading = loading;
+  if (loading) {
+    _activityIndicator.hidden = NO;
+    [_activityIndicator startAnimating];
+    _faviconView.hidden = YES;
+    _faviconView.image = DefaultFavicon();
+  } else {
+    _activityIndicator.hidden = YES;
+    [_activityIndicator stopAnimating];
+    _faviconView.hidden = NO;
+  }
+}
+
+#pragma mark - Accessor
+
+- (void)setSelected:(BOOL)selected {
+  [super setSelected:selected];
+  self.backgroundColor = selected ? UIColor.blueColor : UIColor.whiteColor;
+  // Style the favicon tint color.
+  _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
+                                    : [UIColor colorNamed:kGrey500Color];
+  // Style the close button tint color.
+  _closeButton.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
+                                    : [UIColor colorNamed:kGrey500Color];
+  // Style the title tint color.
+  _titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
+                                   : [UIColor colorNamed:kGrey600Color];
 }
 
 #pragma mark - UICollectionViewCell
@@ -120,18 +157,43 @@ UIImage* DefaultFavicon() {
   [self.delegate closeButtonTappedForCell:self];
 }
 
-- (void)setSelected:(BOOL)selected {
-  [super setSelected:selected];
-  self.backgroundColor = selected ? UIColor.blueColor : UIColor.whiteColor;
-  // Style the favicon tint color.
-  _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
-                                    : [UIColor colorNamed:kGrey500Color];
-  // Style the close button tint color.
-  _closeButton.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
-                                    : [UIColor colorNamed:kGrey500Color];
-  // Style the title tint color.
-  _titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
-                                   : [UIColor colorNamed:kGrey600Color];
+// Returns a new favicon view.
+- (UIImageView*)createFaviconView {
+  UIImageView* faviconView =
+      [[UIImageView alloc] initWithImage:DefaultFavicon()];
+  faviconView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconView.contentMode = UIViewContentModeScaleAspectFit;
+  return faviconView;
+}
+
+// Returns a new close button.
+- (UIButton*)createCloseButton {
+  UIImage* close =
+      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
+  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [closeButton setImage:close forState:UIControlStateNormal];
+  [closeButton addTarget:self
+                  action:@selector(closeButtonTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+  return closeButton;
+}
+
+// Returns a new title label.
+- (UILabel*)createTitleLabel {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabel.font = [UIFont systemFontOfSize:kFontSize
+                                      weight:UIFontWeightMedium];
+  return titleLabel;
+}
+
+// Returns a new Activity Indicator.
+- (MDCActivityIndicator*)createActivityIndicatior {
+  MDCActivityIndicator* activityIndicator = [[MDCActivityIndicator alloc] init];
+  activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  activityIndicator.hidden = YES;
+  return activityIndicator;
 }
 
 @end
