@@ -282,21 +282,11 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
         [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero
                                            primaryAction:readMoreAction];
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-      buttonConfiguration.attributedTitle = readMoreString;
-      _expandURLButton.configuration = buttonConfiguration;
-    } else {
-      UIEdgeInsets insets = UIEdgeInsetsMake(CGFLOAT_EPSILON, CGFLOAT_EPSILON,
-                                             CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-      SetTitleEdgeInsets(_expandURLButton, insets);
-      SetContentEdgeInsets(_expandURLButton, insets);
-      [_expandURLButton setAttributedTitle:readMoreString
-                                  forState:UIControlStateNormal];
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+    buttonConfiguration.attributedTitle = readMoreString;
+    _expandURLButton.configuration = buttonConfiguration;
 
     _expandURLButton.backgroundColor = self.view.backgroundColor;
     _expandURLButton.translatesAutoresizingMaskIntoConstraints = NO;
