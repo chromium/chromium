@@ -20,7 +20,7 @@ suite('ApnSubpageTest', function() {
   /** @type {?CrosNetworkConfigRemote} */
   let mojoApi_ = null;
 
-  setup(function() {
+  setup(async function() {
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
@@ -29,6 +29,12 @@ suite('ApnSubpageTest', function() {
     mojoApi_.setManagedPropertiesForTest(OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular'));
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+
+    // Start at BASIC route so that if the APN subpage navigates backwards, it
+    // goes back to BASIC and not the previous tests' last page (crbug/1497312).
+    Router.getInstance().navigateTo(routes.BASIC);
+    await flushTasks();
+
     apnSubpage = document.createElement('apn-subpage');
     document.body.appendChild(apnSubpage);
     const params = new URLSearchParams();
