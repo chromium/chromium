@@ -65,10 +65,6 @@ void NetworkListNetworkHeaderView::SetToggleState(bool enabled,
                                                   bool is_on,
                                                   bool animate_toggle) {
   entry_row()->SetEnabled(enabled);
-  // Update the on/off label.
-  entry_row()->text_label()->SetText(l10n_util::GetStringUTF16(
-      is_on ? enabled_label_id_ : IDS_ASH_QUICK_SETTINGS_NETWORK_DISABLED));
-
   toggle_->SetEnabled(enabled);
   toggle_->SetAcceptsEvents(enabled);
   if (animate_toggle) {
