@@ -16,15 +16,12 @@
 
 namespace ash {
 
-// Parameterized by feature QsRevamp and whether user feedback is enabled.
+// Parameterized by whether user feedback is enabled.
 class ChannelIndicatorQuickSettingsViewTest
     : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  ChannelIndicatorQuickSettingsViewTest() {
-    // TODO(b/305075031) clean up after the flag is removed.
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
+  ChannelIndicatorQuickSettingsViewTest() = default;
   ChannelIndicatorQuickSettingsViewTest(
       const ChannelIndicatorQuickSettingsViewTest&) = delete;
   ChannelIndicatorQuickSettingsViewTest& operator=(
@@ -37,7 +34,7 @@ class ChannelIndicatorQuickSettingsViewTest
 
     // Param 1 is whether user feedback is allowed.
     system_tray_client_ = GetSystemTrayClient();
-    system_tray_client_->set_user_feedback_enabled(std::get<1>(GetParam()));
+    system_tray_client_->set_user_feedback_enabled(GetParam());
 
     // Instantiate view.
     auto view = std::make_unique<ChannelIndicatorQuickSettingsView>(
@@ -75,8 +72,7 @@ class ChannelIndicatorQuickSettingsViewTest
 // Run the `Visible` test below for each value of version_info::Channel.
 INSTANTIATE_TEST_SUITE_P(ChannelValues,
                          ChannelIndicatorQuickSettingsViewTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 TEST_P(ChannelIndicatorQuickSettingsViewTest, Visible) {
   // View exists.

@@ -35,13 +35,9 @@ void ExpectPrivacyIndicatorsVisible(bool visible) {
   for (ash::RootWindowController* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? root_window_controller->GetStatusAreaWidget()
-                  ->notification_center_tray()
-                  ->privacy_indicators_view()
-            : root_window_controller->GetStatusAreaWidget()
-                  ->unified_system_tray()
-                  ->privacy_indicators_view();
+        root_window_controller->GetStatusAreaWidget()
+            ->notification_center_tray()
+            ->privacy_indicators_view();
 
     EXPECT_EQ(privacy_indicators_view->GetVisible(), visible);
   }

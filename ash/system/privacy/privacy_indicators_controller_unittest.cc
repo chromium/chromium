@@ -89,11 +89,8 @@ void ExpectPrivacyIndicatorsTrayItemVisible(bool visible,
     StatusAreaWidget* status_area_widget =
         root_window_controller->GetStatusAreaWidget();
     PrivacyIndicatorsTrayItemView* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
 
     ASSERT_TRUE(privacy_indicators_view);
     EXPECT_EQ(visible, privacy_indicators_view->GetVisible());
@@ -122,8 +119,7 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
   // Get the notification view from message center associated with `id`.
   message_center::NotificationViewBase* GetNotificationViewFromMessageCenter(
       const std::string& id) {
-    // Privacy notifications have been moved to the notification center tray if
-    // QsRevamp is enabled.
+    // Privacy notifications is in the notification center tray.
     message_center::MessageView* view;
     NotificationCenterTray* notification_center_tray =
         Shell::GetPrimaryRootWindowController()
@@ -161,15 +157,10 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
 
   PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
       const {
-    return features::IsQsRevampEnabled()
-               ? Shell::GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->notification_center_tray()
-                     ->privacy_indicators_view()
-               : Shell::GetPrimaryRootWindowController()
-                     ->GetStatusAreaWidget()
-                     ->unified_system_tray()
-                     ->privacy_indicators_view();
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->privacy_indicators_view();
   }
 
  private:
@@ -781,27 +772,23 @@ TEST_F(PrivacyIndicatorsControllerTest, UpdateUsageStageInLockScreen) {
   EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
 }
 
-// Tests enabling both `kPrivacyIndicators` and `kVideoConference`,
-// parameterized with `kQsRevamp` enabled and disabled.
+// Tests enabling both `kPrivacyIndicators` and `kVideoConference`.
 class PrivacyIndicatorsControllerVideoConferenceTest
     : public AshTestBase,
       public testing::WithParamInterface<bool> {
  public:
   PrivacyIndicatorsControllerVideoConferenceTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPrivacyIndicators, true},
-         {features::kVideoConference, true},
-         {features::kCameraEffectsSupportedByHardware, true},
-         {features::kQsRevamp, IsQsRevampEnabled()}});
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kPrivacyIndicators, true},
+        {features::kVideoConference, true},
+        {features::kCameraEffectsSupportedByHardware, true},
+    });
   }
   PrivacyIndicatorsControllerVideoConferenceTest(
       const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
   PrivacyIndicatorsControllerVideoConferenceTest& operator=(
       const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
   ~PrivacyIndicatorsControllerVideoConferenceTest() override = default;
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() { return true; }
 
   // AshTestBase:
   void SetUp() override {
@@ -823,13 +810,9 @@ class PrivacyIndicatorsControllerVideoConferenceTest
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrivacyIndicatorsControllerVideoConferenceTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
-
 // Make sure that when `kPrivacyIndicators` and `kVideoConference` are both
 // enabled, the privacy indicators view and the controller is not created.
-TEST_P(PrivacyIndicatorsControllerVideoConferenceTest, ObjectsCreation) {
+TEST_F(PrivacyIndicatorsControllerVideoConferenceTest, ObjectsCreation) {
   EXPECT_FALSE(PrivacyIndicatorsController::Get());
 
   for (auto* root_window_controller :
@@ -839,11 +822,8 @@ TEST_P(PrivacyIndicatorsControllerVideoConferenceTest, ObjectsCreation) {
     DCHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
 
     EXPECT_FALSE(privacy_indicators_view);
   }

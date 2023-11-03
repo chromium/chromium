@@ -41,9 +41,7 @@ message_center::Notification* GetDoNotDisturbNotification() {
 
 }  // namespace
 
-class DoNotDisturbNotificationControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class DoNotDisturbNotificationControllerTest : public AshTestBase {
  public:
   DoNotDisturbNotificationControllerTest() = default;
   DoNotDisturbNotificationControllerTest(
@@ -51,39 +49,19 @@ class DoNotDisturbNotificationControllerTest
   DoNotDisturbNotificationControllerTest& operator=(
       const DoNotDisturbNotificationControllerTest&) = delete;
   ~DoNotDisturbNotificationControllerTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kQsRevamp,
-                                              /*enabled=*/IsQsRevampEnabled());
-    AshTestBase::SetUp();
-  }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() { return true; }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DoNotDisturbNotificationControllerTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
 
 // Tests that enabling/disabling Do not disturb mode adds/removes the Do not
 // disturb notification.
-TEST_P(DoNotDisturbNotificationControllerTest, AddRemoveNotification) {
+TEST_F(DoNotDisturbNotificationControllerTest, AddRemoveNotification) {
   auto* message_center = MessageCenter::Get();
   ASSERT_FALSE(GetDoNotDisturbNotification());
 
   // Turn on Do not disturb mode.
   message_center->SetQuietMode(true);
   auto* notification = GetDoNotDisturbNotification();
-  if (IsQsRevampEnabled()) {
     EXPECT_TRUE(notification);
     EXPECT_EQ(notification->message(), GetDoNotDisturbDescription());
-  } else {
-    EXPECT_FALSE(notification);
-  }
 
   // Turn off Do not disturb mode.
   message_center->SetQuietMode(false);
@@ -92,13 +70,8 @@ TEST_P(DoNotDisturbNotificationControllerTest, AddRemoveNotification) {
 
 // Tests that clicking the notification's "Turn off" button turns off Do not
 // disturb mode and dismisses the Do not disturb notification.
-TEST_P(DoNotDisturbNotificationControllerTest,
+TEST_F(DoNotDisturbNotificationControllerTest,
        NotificationButtonTurnsOffDoNotDisturbMode) {
-  if (!IsQsRevampEnabled()) {
-    // The notification only appears when QsRevamp is enabled.
-    return;
-  }
-
   // Show the notification by turning on Do not disturb mode.
   auto* message_center = MessageCenter::Get();
   message_center->SetQuietMode(true);
