@@ -15,10 +15,12 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -321,6 +323,18 @@ void OnInternalDisplayZoomChanged(float zoom_factor) {
 // Returns true if two ids has the same output index.
 bool HasSameOutputIndex(int64_t id1, int64_t id2) {
   return (id1 & 0xFF) == (id2 & 0xFF);
+}
+
+std::string ToString(DisplayManager::MultiDisplayMode mode) {
+  switch (mode) {
+    case DisplayManager::MultiDisplayMode::EXTENDED:
+      return "extended";
+    case DisplayManager::MultiDisplayMode::MIRRORING:
+      return "mirroring";
+    case DisplayManager::MultiDisplayMode::UNIFIED:
+      return "unified";
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -781,8 +795,16 @@ gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {
 
 void DisplayManager::OnNativeDisplaysChanged(
     const DisplayInfoList& updated_displays) {
-  DISPLAY_LOG(EVENT) << "Displays updated, count:" << updated_displays.size()
-                     << " active:" << active_display_list_.size();
+  DISPLAY_LOG(EVENT) << "Native displays updated"
+                     << ". Unified desktop allowed: "
+                     << unified_desktop_enabled_ << ", Multi display mode: "
+                     << ToString(multi_display_mode_)
+                     << ", count:" << updated_displays.size()
+                     << " currently active:" << active_display_list_.size();
+  for (const auto& display : updated_displays) {
+    DISPLAY_LOG(EVENT) << display.ToString();
+  }
+
   if (updated_displays.empty()) {
     // If the device is booted without display, or chrome is started
     // without --ash-host-window-bounds on linux desktop, use the
@@ -819,9 +841,6 @@ void DisplayManager::OnNativeDisplaysChanged(
       }
     }
     return;
-  }
-  for (const auto& display : updated_displays) {
-    DISPLAY_LOG(EVENT) << display.ToString();
   }
 
   first_display_id_ = updated_displays[0].id();
@@ -1134,7 +1153,11 @@ void DisplayManager::UpdateDisplaysWith(
   }
 
   if (new_displays != active_display_list_) {
-    DISPLAY_LOG(EVENT) << "Displays updated, count:" << new_displays.size();
+    DISPLAY_LOG(EVENT) << "Displays update applied"
+                       << ". Unified desktop allowed: "
+                       << unified_desktop_enabled_ << ", Multi display mode: "
+                       << ToString(multi_display_mode_)
+                       << ", count:" << new_displays.size();
     for (const auto& display : new_displays) {
       DISPLAY_LOG(EVENT) << display.ToString();
     }
@@ -1333,6 +1356,12 @@ void DisplayManager::ClearMirroringSourceAndDestination() {
 }
 
 void DisplayManager::SetUnifiedDesktopEnabled(bool enable) {
+  DISPLAY_LOG(EVENT) << "Unified Desktop is now " << (enable ? "" : "not ")
+                     << "allowed."
+                     << (IsInMirrorMode()
+                             ? " The displays will not be reconfigured since "
+                               "mirror mode is active."
+                             : "");
   unified_desktop_enabled_ = enable;
   // There is no need to update the displays in mirror mode. Doing
   // this in hardware mirroring mode can cause crash because display
