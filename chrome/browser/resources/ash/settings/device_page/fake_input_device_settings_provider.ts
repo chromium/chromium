@@ -247,8 +247,7 @@ export class FakeInputDeviceSettingsProvider implements
   notifyKeboardListUpdated(): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
     // Make a deep copy to notify the functions observing keyboard settings.
-    const keyboardsClone =
-        !keyboards ? keyboards : JSON.parse(JSON.stringify(keyboards));
+    const keyboardsClone = !keyboards ? keyboards : structuredClone(keyboards);
     for (const observer of this.keyboardObservers) {
       observer.onKeyboardListUpdated(keyboardsClone);
     }
