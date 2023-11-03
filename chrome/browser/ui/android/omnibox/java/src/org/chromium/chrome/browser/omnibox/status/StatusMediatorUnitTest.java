@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -59,8 +60,10 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -96,6 +99,8 @@ public final class StatusMediatorUnitTest {
 
     private @Mock WebContents mWebContents;
     private @Mock StatusView mStatusView;
+    @Mock UserPrefsJni mMockUserPrefsJni;
+    @Mock private PrefService mPrefs;
 
     Context mContext;
     Resources mResources;
@@ -128,6 +133,9 @@ public final class StatusMediatorUnitTest {
                 .when(mSearchEngineLogoUtils)
                 .getSearchEngineLogo(
                         eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
+
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
+        doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
 
         setupStatusMediator(/* isTablet= */ false);
     }
@@ -596,8 +604,7 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void testCookieControlsIcon_animateOnPageStoppedLoading() {
-        mMediator.setUrlHasFocus(true);
-        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        setupCookieControlsTest();
 
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
@@ -620,11 +627,17 @@ public final class StatusMediatorUnitTest {
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
     }
 
+    private void setupCookieControlsTest() {
+        mMediator.setUrlHasFocus(true);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        doReturn(2).when(mPrefs).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION);
+    }
+
     @Test
     @SmallTest
     public void iphReminder3pcd_trackingProtectionsEnabled_cookieBlockingEnabled() {
-        mMediator.setUrlHasFocus(true);
-        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        setupCookieControlsTest();
 
         mMediator.onStatusChanged(
                 CookieControlsStatus.ENABLED,
@@ -641,9 +654,47 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void iphReminder3pcd_withNoSecureConnection() {
+        setupCookieControlsTest();
+
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.NONE, false, false);
+
+        mMediator.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+
+        // IPH should NOT be shown
+        mMediator.onPageLoadStopped();
+        verify(mPageInfoIPHController, never())
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+    }
+
+    @Test
+    @SmallTest
+    public void iphReminder3pcd_onboardingNoticeNotYetAcked() {
+        setupCookieControlsTest();
+
+        // No interaction with the Tracking Protection onboarding Notice yet.
+        doReturn(0).when(mPrefs).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION);
+
+        mMediator.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+
+        // IPH should NOT be shown
+        mMediator.onPageLoadStopped();
+        verify(mPageInfoIPHController, never())
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any(Runnable.class));
+    }
+
+    @Test
+    @SmallTest
     public void iphReminder3pcd_trackingProtectionsEnabled_cookieBlockingDisabled() {
-        mMediator.setUrlHasFocus(true);
-        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        setupCookieControlsTest();
 
         mMediator.onStatusChanged(
                 CookieControlsStatus.DISABLED,
@@ -661,8 +712,7 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     public void iphReminder3pcd_trackingProtectionsDisabled_cookieBlockingEnabled() {
-        mMediator.setUrlHasFocus(true);
-        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        setupCookieControlsTest();
 
         mMediator.onStatusChanged(
                 CookieControlsStatus.ENABLED,
