@@ -344,6 +344,10 @@ base::Version GetInstalledLacrosComponentVersion(
 void SetCachedLacrosAvailabilityForTesting(
     ash::standalone_browser::LacrosAvailability lacros_availability);
 
+// Exposed for testing. When |value| is given, the CPU availability gets
+// overridden with the value.
+void SetCpuAvailabilityForTesting(absl::optional<bool> value);
+
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 ash::standalone_browser::LacrosAvailability

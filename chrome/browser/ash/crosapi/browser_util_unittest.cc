@@ -118,6 +118,7 @@ class BrowserUtilTest : public testing::Test {
   void TearDown() override {
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
     fake_user_manager_.Reset();
+    browser_util::SetCpuAvailabilityForTesting(absl::nullopt);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -388,6 +389,19 @@ TEST_F(BrowserUtilTest, LacrosOnlyBrowserByFlags) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
+}
+
+TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
+  AddRegularUser("user@test.com");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+  EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
+
+  browser_util::SetCpuAvailabilityForTesting(false);
+  EXPECT_EQ(browser_util::LacrosMode::kDisabled, browser_util::GetLacrosMode());
+  browser_util::SetCpuAvailabilityForTesting(true);
   EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 }
 
