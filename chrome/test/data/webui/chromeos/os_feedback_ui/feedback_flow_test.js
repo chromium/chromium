@@ -449,7 +449,7 @@ export function FeedbackFlowTestSuite() {
   // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is false if
   // - is not internal account.
   // - wifi, wi-fi, internet, network, and hotspot are mentioned in description.
-  test('DoNotShowWifiDebugLogsCheckBox', async () => {
+  test('DoNotShowWifiDebugLogsCheckBox_ExternalAccount', async () => {
     await initializePage();
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
 
@@ -469,10 +469,35 @@ export function FeedbackFlowTestSuite() {
 
   // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is true if
   // - is internal account.
+  // - wifiDebugLogsAllowed is false.
+  // - Wi-fi is mentioned in description.
+  test('DoNotShowWifiDebugLogsCheckBox_NotAllowed', async () => {
+    testWithInternalAccount();
+    await initializePage();
+    assertFalse(getFeedbackContext_().wifiDebugLogsAllowed);
+    assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
+
+    const searchPage = findChildElement(page, '.iron-selected');
+    assertTrue(!!searchPage);
+    assertEquals('searchPage', searchPage.id);
+
+    findChildElement(searchPage, 'textarea').value = 'wi-fi';
+    // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
+    // button is clicked.
+    findChildElement(searchPage, '#buttonContinue').click();
+    await flushTasks();
+
+    assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
+  });
+
+  // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is true if
+  // - is internal account.
+  // - wifiDebugLogsAllowed is true.
   // - Wi-fi is mentioned in description.
   test('ShowWifiDebugLogsCheckBox', async () => {
     testWithInternalAccount();
     await initializePage();
+    getFeedbackContext_().wifiDebugLogsAllowed = true;
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
 
     const searchPage = findChildElement(page, '.iron-selected');

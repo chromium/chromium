@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
@@ -20,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -200,6 +202,17 @@ ChromeOsFeedbackDelegate::GetLinkedPhoneMacAddress() {
     return absl::nullopt;
   }
   return remote_device_ref.value().bluetooth_public_address();
+}
+
+bool ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed() const {
+  const base::Value::List& allowed_list = profile_->GetPrefs()->GetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
+  for (const auto& item : allowed_list) {
+    if (item == "all" || item == "wifi") {
+      return true;
+    }
+  }
+  return false;
 }
 
 int ChromeOsFeedbackDelegate::GetPerformanceTraceId() {

@@ -422,6 +422,7 @@ export class FeedbackFlowElement extends PolymerElement {
       assistantDebugInfoAllowed: false,
       fromSettingsSearch: feedbackInfo.fromSettingsSearch ?? false,
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
+      wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
       pageUrl: {url: feedbackInfo.pageUrl ?? ''},
       fromAssistant: feedbackInfo.fromAssistant ?? false,
@@ -629,6 +630,7 @@ export class FeedbackFlowElement extends PolymerElement {
   /** @private */
   computeShouldShowWifiDebugLogsCheckbox_() {
     return this.feedbackContext_ && this.feedbackContext_.isInternalAccount &&
+        this.feedbackContext_.wifiDebugLogsAllowed &&
         wifiRegEx.test(this.description_);
   }
 

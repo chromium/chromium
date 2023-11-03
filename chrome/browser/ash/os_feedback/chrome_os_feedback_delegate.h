@@ -44,6 +44,7 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   absl::optional<GURL> GetLastActivePageUrl() override;
   absl::optional<std::string> GetSignedInUserEmail() const override;
   absl::optional<std::string> GetLinkedPhoneMacAddress() override;
+  bool IsWifiDebugLogsAllowed() const override;
   int GetPerformanceTraceId() override;
   void GetScreenshotPng(GetScreenshotPngCallback callback) override;
   void SendReport(os_feedback_ui::mojom::ReportPtr report,

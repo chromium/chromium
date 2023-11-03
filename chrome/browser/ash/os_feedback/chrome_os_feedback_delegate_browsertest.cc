@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
@@ -351,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetLastActivePageUrl) {
   EXPECT_EQ(GetLastActivePageUrl()->spec(), kPageUrl);
 }
 
-// Test GetSignedInUserEmail returns primary account of signed in user if any..
+// Test GetSignedInUserEmail returns primary account of signed in user if any.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -364,6 +365,65 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
   signin::MakePrimaryAccountAvailable(identity_manager, kSignedInUserEmail,
                                       signin::ConsentLevel::kSignin);
   EXPECT_EQ(feedback_delegate.GetSignedInUserEmail(), kSignedInUserEmail);
+}
+
+// Test IsWifiDebugLogsAllowed returns true when
+// - UserFeedbackWithLowLevelDebugDataAllowed = ["all"].
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       WifiDebugLogsAllowed_True_For_All) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
+      base::Value::List().Append("all"));
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_TRUE(feedback_delegate.IsWifiDebugLogsAllowed());
+}
+
+// Test IsWifiDebugLogsAllowed returns true when
+// - UserFeedbackWithLowLevelDebugDataAllowed = ["wifi"].
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       WifiDebugLogsAllowed_True_For_Wifi) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
+      base::Value::List().Append("wifi"));
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_TRUE(feedback_delegate.IsWifiDebugLogsAllowed());
+}
+
+// Test IsWifiDebugLogsAllowed returns true when
+// - UserFeedbackWithLowLevelDebugDataAllowed = ["wifi", "bluetooth"].
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       WifiDebugLogsAllowed_True_For_Wifi_And_Bluetooth) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
+      base::Value::List().Append("wifi").Append("bluetooth"));
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_TRUE(feedback_delegate.IsWifiDebugLogsAllowed());
+}
+
+// Test IsWifiDebugLogsAllowed returns false when
+// - UserFeedbackWithLowLevelDebugDataAllowed = [].
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       WifiDebugLogsAllowed_False_For_Empty) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed, base::Value::List());
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_FALSE(feedback_delegate.IsWifiDebugLogsAllowed());
+}
+
+// Test IsWifiDebugLogsAllowed returns false when
+// - UserFeedbackWithLowLevelDebugDataAllowed = ["other"].
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       WifiDebugLogsAllowed_False_For_Other) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
+      base::Value::List().Append("other"));
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  EXPECT_FALSE(feedback_delegate.IsWifiDebugLogsAllowed());
 }
 
 // Test GetPerformanceTraceId returns id for performance trace data if any.
