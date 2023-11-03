@@ -182,10 +182,13 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   NSLayoutConstraint* _gestureIndicatorMarginConstraint;
   NSLayoutConstraint* _gestureIndicatorCenterConstraint;
 
-  // Whether the bubble and the gesture indicator needs to be redrawn; value
-  // would usually be YES right after a size class change, and back to NO after
-  // redrawing completes.
-  BOOL _needsRedrawBubbleAndGestureIndicator;
+  // Animator object that handles the animation.
+  UIViewPropertyAnimator* _animator;
+
+  // Whether the bubble and the gesture indicator needs to be repositioned;
+  // value would usually be YES right after a size class change, and back to NO
+  // after redrawing completes.
+  BOOL _needsRepositionBubbleAndGestureIndicator;
 
   // Number of times the animation has already repeated.
   int _currentAnimationRepeatCount;
@@ -196,7 +199,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
               arrowDirection:(BubbleArrowDirection)direction {
   if (self = [super initWithFrame:CGRectZero]) {
     self.isAccessibilityElement = YES;
-    _needsRedrawBubbleAndGestureIndicator = NO;
+    _needsRepositionBubbleAndGestureIndicator = NO;
     _currentAnimationRepeatCount = 0;
     _dismissCallback = ^(IPHDismissalReasonType reason,
                          feature_engagement::Tracker::SnoozeAction action) {
@@ -233,16 +236,7 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
       [_gestureIndicator.widthAnchor
           constraintEqualToConstant:kFadingGestureIndicatorRadius * 2]
     ];
-    _gestureIndicatorMarginConstraint =
-        [self initialGestureIndicatorMarginConstraint];
-    _gestureIndicatorCenterConstraint =
-        [self initialGestureIndicatorCenterConstraint];
-    NSArray<NSLayoutConstraint*>* initialGestureIndicatorConstraints =
-        [_gestureIndicatorSizeConstraints arrayByAddingObjectsFromArray:@[
-          _gestureIndicatorMarginConstraint,
-          _gestureIndicatorCenterConstraint,
-        ]];
-    [NSLayoutConstraint activateConstraints:initialGestureIndicatorConstraints];
+    [NSLayoutConstraint activateConstraints:_gestureIndicatorSizeConstraints];
 
     // Dismiss button.
     __weak SideSwipeBubbleView* weakSelf = self;
@@ -260,18 +254,19 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   [super traitCollectionDidChange:previousTraitCollection];
   if (GestureIndicatorShouldOffsetFromCenter(previousTraitCollection) !=
       GestureIndicatorShouldOffsetFromCenter(self.traitCollection)) {
-    // TODO(crbug.com/1467873): Stop animations.
-    _needsRedrawBubbleAndGestureIndicator = YES;
+    [_animator pauseAnimation];
+    _needsRepositionBubbleAndGestureIndicator = YES;
   }
 }
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  if (_needsRedrawBubbleAndGestureIndicator) {
-    // TODO(crbug.com/1467873): Reposition bubble and restart
-    // animation. Constraints may need to be deactivated and reactivated as
-    // well.
-    _needsRedrawBubbleAndGestureIndicator = NO;
+  if (_needsRepositionBubbleAndGestureIndicator) {
+    _bubbleView.frame =
+        GetInitialBubbleFrameForView(self.frame.size, _bubbleView);
+    [self repositionGestureIndicator];
+    [_animator startAnimation];
+    _needsRepositionBubbleAndGestureIndicator = NO;
   }
 }
 
@@ -283,16 +278,17 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
 
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay {
   __weak SideSwipeBubbleView* weakSelf = self;
-  ProceduralBlock timeoutAction = ^{
-    [weakSelf dismissWithReason:IPHDismissalReasonType::kTimedOut];
-  };
+
   if (UIAccessibilityIsReduceMotionEnabled()) {
     // Dismiss after the same timeout as with animation enabled.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(timeoutAction),
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf dismissWithReason:IPHDismissalReasonType::kTimedOut];
+        }),
         kAnimationDuration * kMaxAnimationRepeatCount);
     return;
   }
+
   double gestureIndicatorSizeChangeDuration =
       GetRelativeTimeForKeyframeAnimation(kGestureIndicatorShrinkOrExpandTime);
   double startSlidingTime =
@@ -323,27 +319,43 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
                                     keyframeThatExpandsAndHidesGestureIndicator];
                               }];
   };
+  ProceduralBlock animationWithKeyframesWithCompletionHandler = ^{
+    [UIView
+        animateKeyframesWithDuration:kAnimationDuration.InSecondsF()
+                               delay:0
+                             options:UIViewKeyframeAnimationOptionLayoutSubviews
+                          animations:keyframes
+                          completion:^(BOOL completed) {
+                            if (completed) {
+                              [weakSelf onAnimationCycleComplete];
+                            }
+                          }];
+  };
 
-  // Force layout to set the initial frame of the animation.
-  [self layoutIfNeeded];
-  int remainingAnimationRepeatCount =
-      kMaxAnimationRepeatCount - _currentAnimationRepeatCount;
-  [UIView animateKeyframesWithDuration:kAnimationDuration.InSecondsF()
-      delay:delay.InSecondsF()
-      options:UIViewAnimationOptionRepeat | UIViewAnimationOptionCurveEaseInOut
-      animations:^{
-        [UIView modifyAnimationsWithRepeatCount:remainingAnimationRepeatCount
-                                   autoreverses:NO
-                                     animations:keyframes];
-      }
-      completion:^(BOOL completed) {
-        if (completed) {
-          timeoutAction();
-        }
-      }];
+  // Position gesture indicator at the start of each animation cycle, as it
+  // might have been shifted away from its original position at the end of the
+  // last cycle.
+  [self repositionGestureIndicator];
+  _animator = [UIViewPropertyAnimator
+      runningPropertyAnimatorWithDuration:kAnimationDuration.InSecondsF()
+                                    delay:delay.InSecondsF()
+                                  options:UIViewAnimationOptionCurveEaseInOut
+                               animations:
+                                   animationWithKeyframesWithCompletionHandler
+                               completion:nil];
 }
 
 #pragma mark - Private
+
+// Handles the completion of each round of animation.
+- (void)onAnimationCycleComplete {
+  _currentAnimationRepeatCount++;
+  if (_currentAnimationRepeatCount == kMaxAnimationRepeatCount) {
+    [self dismissWithReason:IPHDismissalReasonType::kTimedOut];
+  } else {
+    [self startAnimation];
+  }
+}
 
 // Dismiss the view with `reason`.
 - (void)dismissWithReason:(IPHDismissalReasonType)reason {
@@ -353,7 +365,27 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
                        feature_engagement::Tracker::SnoozeAction::DISMISSED);
 }
 
-#pragma mark - Initial constraint helpers
+#pragma mark - Initial positioning helpers
+
+// Puts the gesture indicator at its initial position.
+- (void)repositionGestureIndicator {
+  if (_gestureIndicatorMarginConstraint.active &&
+      _gestureIndicatorCenterConstraint.active) {
+    [NSLayoutConstraint deactivateConstraints:@[
+      _gestureIndicatorMarginConstraint,
+      _gestureIndicatorCenterConstraint,
+    ]];
+  }
+  _gestureIndicatorMarginConstraint =
+      [self initialGestureIndicatorMarginConstraint];
+  _gestureIndicatorCenterConstraint =
+      [self initialGestureIndicatorCenterConstraint];
+  [NSLayoutConstraint activateConstraints:@[
+    _gestureIndicatorMarginConstraint,
+    _gestureIndicatorCenterConstraint,
+  ]];
+  [self layoutIfNeeded];
+}
 
 // Returns the desired value of `_gestureIndicatorMarginConstraint`.
 //
@@ -528,7 +560,6 @@ double GetRelativeTimeForKeyframeAnimation(base::TimeDelta time) {
   _bubbleView.frame = newFrame;
   [_bubbleView setArrowHidden:YES animated:YES];
   [self layoutIfNeeded];
-  _currentAnimationRepeatCount++;
 }
 
 @end
