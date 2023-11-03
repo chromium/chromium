@@ -62,27 +62,27 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
   }
 
   ScopedCFTypeRef<CFUUIDRef> uuid(CFUUIDCreate(NULL));
-  ScopedCFTypeRef<CFStringRef> item_ref(CFUUIDCreateString(NULL, uuid));
+  ScopedCFTypeRef<CFStringRef> item_ref(CFUUIDCreateString(NULL, uuid.get()));
   ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
       CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(attributes, kSecClass, kSecClassGenericPassword);
+  CFDictionarySetValue(attributes.get(), kSecClass, kSecClassGenericPassword);
 
   // It does not matter which attribute we use to identify the keychain
   // item as long as it uniquely identifies it. We are arbitrarily choosing the
   // |kSecAttrAccount| attribute for this purpose.
-  CFDictionarySetValue(attributes, kSecAttrAccount, item_ref);
+  CFDictionarySetValue(attributes.get(), kSecAttrAccount, item_ref.get());
   std::string plain_text_utf8 = base::UTF16ToUTF8(plain_text);
   ScopedCFTypeRef<CFDataRef> data(
       CFDataCreate(NULL, reinterpret_cast<const UInt8*>(plain_text_utf8.data()),
                    plain_text_utf8.size()));
-  CFDictionarySetValue(attributes, kSecValueData, data);
+  CFDictionarySetValue(attributes.get(), kSecValueData, data.get());
 
   // Only allow access when the device has been unlocked.
-  CFDictionarySetValue(attributes, kSecAttrAccessible,
+  CFDictionarySetValue(attributes.get(), kSecAttrAccessible,
                        kSecAttrAccessibleWhenUnlocked);
 
-  OSStatus status = SecItemAdd(attributes, NULL);
+  OSStatus status = SecItemAdd(attributes.get(), NULL);
   if (status != errSecSuccess) {
     // TODO(crbug.com/1091121): This was a NOTREACHED() that would trigger when
     // sync runs on a locked device. When the linked bug is resolved it may be
@@ -91,7 +91,7 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
     return false;
   }
 
-  *keychain_identifier = base::SysCFStringRefToUTF8(item_ref);
+  *keychain_identifier = base::SysCFStringRefToUTF8(item_ref.get());
   return true;
 }
 
@@ -104,26 +104,27 @@ OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
 
   ScopedCFTypeRef<CFStringRef> item_ref(
       base::SysUTF8ToCFStringRef(keychain_identifier));
-  if (item_ref == nil) {
+  if (!item_ref) {
     return kUnknownRetrievalError;
   }
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
+  CFDictionarySetValue(query.get(), kSecClass, kSecClassGenericPassword);
 
   // We are using the account attribute to store item references.
-  CFDictionarySetValue(query, kSecAttrAccount, item_ref);
-  CFDictionarySetValue(query, kSecReturnData, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecAttrAccount, item_ref.get());
+  CFDictionarySetValue(query.get(), kSecReturnData, kCFBooleanTrue);
 
   ScopedCFTypeRef<CFTypeRef> data_cftype;
-  OSStatus status = SecItemCopyMatching(query, data_cftype.InitializeInto());
+  OSStatus status =
+      SecItemCopyMatching(query.get(), data_cftype.InitializeInto());
   if (status != errSecSuccess) {
     OSSTATUS_LOG(INFO, status) << "Failed to retrieve password from keychain";
     return status;
   }
 
-  CFDataRef data = base::apple::CFCast<CFDataRef>(data_cftype);
+  CFDataRef data = base::apple::CFCast<CFDataRef>(data_cftype.get());
   const size_t size = CFDataGetLength(data);
   std::unique_ptr<UInt8[]> buffer(new UInt8[size]);
   CFDataGetBytes(data, CFRangeMake(0, size), buffer.get());
@@ -143,14 +144,14 @@ void DeleteEncryptedPasswordFromKeychain(
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
+  CFDictionarySetValue(query.get(), kSecClass, kSecClassGenericPassword);
 
   ScopedCFTypeRef<CFStringRef> item_ref(
       base::SysUTF8ToCFStringRef(keychain_identifier));
   // We are using the account attribute to store item references.
-  CFDictionarySetValue(query, kSecAttrAccount, item_ref);
+  CFDictionarySetValue(query.get(), kSecAttrAccount, item_ref.get());
 
-  OSStatus status = SecItemDelete(query);
+  OSStatus status = SecItemDelete(query.get());
   base::UmaHistogramSparse("PasswordManager.LoginDatabase.DeleteFromKeychain",
                            static_cast<int>(status));
 
@@ -169,19 +170,19 @@ OSStatus GetAllPasswordsFromKeychain(
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(NULL, 4, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
-  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
-  CFDictionarySetValue(query, kSecAttrAccessible,
+  CFDictionarySetValue(query.get(), kSecClass, kSecClassGenericPassword);
+  CFDictionarySetValue(query.get(), kSecReturnAttributes, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
+  CFDictionarySetValue(query.get(), kSecAttrAccessible,
                        kSecAttrAccessibleWhenUnlocked);
-  CFDictionarySetValue(query, kSecReturnData, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecReturnData, kCFBooleanTrue);
 
   ScopedCFTypeRef<CFTypeRef> result;
-  OSStatus status = SecItemCopyMatching(query, result.InitializeInto());
+  OSStatus status = SecItemCopyMatching(query.get(), result.InitializeInto());
   if (status != errSecSuccess) {
     return status;
   }
-  CFArrayRef results = base::apple::CFCast<CFArrayRef>(result);
+  CFArrayRef results = base::apple::CFCast<CFArrayRef>(result.get());
   const CFIndex count = CFArrayGetCount(results);
   for (CFIndex i = 0; i < count; ++i) {
     CFDictionaryRef dict = base::apple::CFCast<CFDictionaryRef>(

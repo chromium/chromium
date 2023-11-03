@@ -337,14 +337,14 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
     ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
         CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(attributes, kSecClass, kSecClassGenericPassword);
-    CFDictionarySetValue(attributes, kSecAttrAccount, item_ref);
+    CFDictionarySetValue(attributes.get(), kSecClass, kSecClassGenericPassword);
+    CFDictionarySetValue(attributes.get(), kSecAttrAccount, item_ref.get());
     std::string plain_text_utf8 = base::UTF16ToUTF8(value);
     ScopedCFTypeRef<CFDataRef> data(CFDataCreate(
         NULL, reinterpret_cast<const UInt8*>(plain_text_utf8.data()),
         plain_text_utf8.size()));
-    CFDictionarySetValue(attributes, kSecValueData, data);
-    EXPECT_EQ(errSecSuccess, SecItemAdd(attributes, NULL));
+    CFDictionarySetValue(attributes.get(), kSecValueData, data.get());
+    EXPECT_EQ(errSecSuccess, SecItemAdd(attributes.get(), NULL));
   }
 
   std::vector<std::string> GetEncryptedPasswordValues() const {
