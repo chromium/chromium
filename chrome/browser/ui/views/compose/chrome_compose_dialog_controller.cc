@@ -68,16 +68,21 @@ void ChromeComposeDialogController::ShowComposeDialog(
   // Allows the bubble bounds to escape the browser window.
   bubble_view->set_has_parent(false);
 
-  auto weak_ptr = bubble_view->GetWeakPtr();
+  bubble_ = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
 
-  weak_ptr->set_adjust_if_offscreen(true);
-  weak_ptr->ShowUI();
+  bubble_->set_adjust_if_offscreen(true);
 }
 
 BubbleContentsWrapperT<ComposeUI>*
 ChromeComposeDialogController::GetBubbleWrapper() const {
   return bubble_wrapper_.get();
+}
+
+void ChromeComposeDialogController::ShowUI() {
+  if (bubble_) {
+    bubble_->ShowUI();
+  }
 }
 
 // TODO(b/300939629): Flesh out implementation and cover other closing paths.

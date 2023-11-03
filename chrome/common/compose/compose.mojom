@@ -138,6 +138,8 @@ interface ComposeSessionPageHandler {
 
 // Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeClientPageHandler {
+  // Asks the receiver to show the compose dialog.
+  ShowUI();
   // Asks the receiver to close the compose dialog. `reason` describes
   // the user action that triggered the close.
   CloseUI(CloseReason reason);

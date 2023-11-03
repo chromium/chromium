@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 #include "chrome/browser/ui/webui/compose/compose_ui.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
@@ -33,12 +34,16 @@ class ChromeComposeDialogController : public compose::ComposeDialogController {
   // is not currently shown.
   BubbleContentsWrapperT<ComposeUI>* GetBubbleWrapper() const;
 
+  // Shows the current dialog view, if there is one.
+  void ShowUI() override;
+
   void Close() override;
 
  private:
   friend class ChromeComposeDialogControllerTest;
 
   std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper_;
+  base::WeakPtr<WebUIBubbleDialogView> bubble_;
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ChromeComposeDialogController> weak_ptr_factory_{this};

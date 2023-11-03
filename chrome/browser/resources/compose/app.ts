@@ -233,6 +233,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
           this.editedInput_ = appState.editedInput!;
         }
       }
+      // Wait for one timeout to flush Polymer tasks, then wait for the next
+      // render.
+      setTimeout(() => {
+        requestAnimationFrame(() => this.apiProxy_.showUi());
+      });
     });
   }
 

@@ -58,6 +58,8 @@ class ChromeComposeClient
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
 
   // ComposeClientPageHandler
+  // Shows the compose dialog.
+  void ShowUI() override;
   // Closes the compose dialog. `reason` describes the user action that
   // triggered the close.
   void CloseUI(compose::mojom::CloseReason reason) override;

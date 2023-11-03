@@ -118,6 +118,12 @@ bool ChromeComposeClient::HasSession(
   return it != sessions_.end();
 }
 
+void ChromeComposeClient::ShowUI() {
+  if (compose_dialog_controller_) {
+    compose_dialog_controller_->ShowUI();
+  }
+}
+
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kCloseButton:

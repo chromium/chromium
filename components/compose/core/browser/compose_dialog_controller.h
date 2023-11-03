@@ -11,6 +11,7 @@ namespace compose {
 class ComposeDialogController {
  public:
   virtual ~ComposeDialogController() = default;
+  virtual void ShowUI() = 0;
   virtual void Close() = 0;
 };
 

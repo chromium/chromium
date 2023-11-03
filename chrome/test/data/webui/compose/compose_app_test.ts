@@ -87,6 +87,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   setUndoResponse(state: ComposeState|null) {
     this.undoResponse_ = state;
   }
+
+  showUi() {}
 }
 
 suite('ComposeApp', () => {

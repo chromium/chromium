@@ -13,6 +13,7 @@ export interface ComposeApiProxy {
   openBugReportingLink(): void;
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
+  showUi(): void;
   undo(): Promise<(ComposeState | null)>;
 }
 
@@ -68,6 +69,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   saveWebuiState(state: string): void {
     this.composeSessionPageHandler.saveWebUIState(state);
+  }
+
+  showUi() {
+    this.composeClientPageHandler.showUI();
   }
 
   undo(): Promise<(ComposeState | null)> {
