@@ -1935,57 +1935,52 @@ TEST_F(StyleResolverTest, IsInertWithAttributeAndDialog) {
   Node* dialog_text = dialog->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
-  EXPECT_EQ(dialog_text->GetComputedStyle(), nullptr);
+  EXPECT_EQ(dialog_text->GetLayoutObject(), nullptr);
 
   div->SetBooleanAttribute(html_names::kInertAttr, false);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
-  EXPECT_EQ(dialog_text->GetComputedStyle(), nullptr);
+  EXPECT_EQ(dialog_text->GetLayoutObject(), nullptr);
 
   dialog->showModal(exception_state);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(dialog_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog_text->GetLayoutObject()->StyleRef().IsInert());
 
   div->SetBooleanAttribute(html_names::kInertAttr, true);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(dialog_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog_text->GetLayoutObject()->StyleRef().IsInert());
 
   dialog->close();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
-  EXPECT_EQ(dialog_text->GetComputedStyle(), nullptr);
+  EXPECT_EQ(dialog_text->GetLayoutObject(), nullptr);
 }
 
 TEST_F(StyleResolverTest, IsInertWithDialogs) {
@@ -2015,16 +2010,15 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
   UpdateAllLifecyclePhasesForTest();
 
   auto ExpectState0 = [&]() {
-    EXPECT_FALSE(document.GetComputedStyle()->IsInert());
     EXPECT_FALSE(html->GetComputedStyle()->IsInert());
     EXPECT_FALSE(body->GetComputedStyle()->IsInert());
     EXPECT_EQ(dialog1->GetComputedStyle(), nullptr);
-    EXPECT_EQ(dialog1_text->GetComputedStyle(), nullptr);
+    EXPECT_EQ(dialog1_text->GetLayoutObject(), nullptr);
     EXPECT_EQ(dialog2->GetComputedStyle(), nullptr);
-    EXPECT_EQ(dialog2_text->GetComputedStyle(), nullptr);
+    EXPECT_EQ(dialog2_text->GetLayoutObject(), nullptr);
     EXPECT_FALSE(div->GetComputedStyle()->IsInert());
     EXPECT_EQ(dialog3->GetComputedStyle(), nullptr);
-    EXPECT_EQ(dialog3_text->GetComputedStyle(), nullptr);
+    EXPECT_EQ(dialog3_text->GetLayoutObject(), nullptr);
   };
   ExpectState0();
 
@@ -2032,16 +2026,15 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
   UpdateAllLifecyclePhasesForTest();
 
   auto ExpectState1 = [&]() {
-    EXPECT_FALSE(document.GetComputedStyle()->IsInert());
     EXPECT_TRUE(html->GetComputedStyle()->IsInert());
     EXPECT_TRUE(body->GetComputedStyle()->IsInert());
     EXPECT_FALSE(dialog1->GetComputedStyle()->IsInert());
-    EXPECT_FALSE(dialog1_text->GetComputedStyle()->IsInert());
+    EXPECT_FALSE(dialog1_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_EQ(dialog2->GetComputedStyle(), nullptr);
-    EXPECT_EQ(dialog2_text->GetComputedStyle(), nullptr);
+    EXPECT_EQ(dialog2_text->GetLayoutObject(), nullptr);
     EXPECT_TRUE(div->GetComputedStyle()->IsInert());
     EXPECT_EQ(dialog3->GetComputedStyle(), nullptr);
-    EXPECT_EQ(dialog3_text->GetComputedStyle(), nullptr);
+    EXPECT_EQ(dialog3_text->GetLayoutObject(), nullptr);
   };
   ExpectState1();
 
@@ -2049,16 +2042,15 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
   UpdateAllLifecyclePhasesForTest();
 
   auto ExpectState2 = [&]() {
-    EXPECT_FALSE(document.GetComputedStyle()->IsInert());
     EXPECT_TRUE(html->GetComputedStyle()->IsInert());
     EXPECT_TRUE(body->GetComputedStyle()->IsInert());
     EXPECT_TRUE(dialog1->GetComputedStyle()->IsInert());
-    EXPECT_TRUE(dialog1_text->GetComputedStyle()->IsInert());
+    EXPECT_TRUE(dialog1_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_FALSE(dialog2->GetComputedStyle()->IsInert());
-    EXPECT_FALSE(dialog2_text->GetComputedStyle()->IsInert());
+    EXPECT_FALSE(dialog2_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_TRUE(div->GetComputedStyle()->IsInert());
     EXPECT_EQ(dialog3->GetComputedStyle(), nullptr);
-    EXPECT_EQ(dialog3_text->GetComputedStyle(), nullptr);
+    EXPECT_EQ(dialog3_text->GetLayoutObject(), nullptr);
   };
   ExpectState2();
 
@@ -2066,16 +2058,15 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
   UpdateAllLifecyclePhasesForTest();
 
   auto ExpectState3 = [&]() {
-    EXPECT_FALSE(document.GetComputedStyle()->IsInert());
     EXPECT_TRUE(html->GetComputedStyle()->IsInert());
     EXPECT_TRUE(body->GetComputedStyle()->IsInert());
     EXPECT_TRUE(dialog1->GetComputedStyle()->IsInert());
-    EXPECT_TRUE(dialog1_text->GetComputedStyle()->IsInert());
+    EXPECT_TRUE(dialog1_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_TRUE(dialog2->GetComputedStyle()->IsInert());
-    EXPECT_TRUE(dialog2_text->GetComputedStyle()->IsInert());
+    EXPECT_TRUE(dialog2_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_TRUE(div->GetComputedStyle()->IsInert());
     EXPECT_FALSE(dialog3->GetComputedStyle()->IsInert());
-    EXPECT_FALSE(dialog3_text->GetComputedStyle()->IsInert());
+    EXPECT_FALSE(dialog3_text->GetLayoutObject()->StyleRef().IsInert());
   };
   ExpectState3();
 
@@ -2129,56 +2120,52 @@ TEST_F(StyleResolverTest, IsInertWithFullscreen) {
   UpdateAllLifecyclePhasesForTest();
 
   auto ExpectState0 = [&]() {
-    EXPECT_FALSE(document.GetComputedStyle()->IsInert());
     EXPECT_FALSE(html->GetComputedStyle()->IsInert());
     EXPECT_FALSE(body->GetComputedStyle()->IsInert());
     EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-    EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+    EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_FALSE(span->GetComputedStyle()->IsInert());
-    EXPECT_FALSE(span_text->GetComputedStyle()->IsInert());
+    EXPECT_FALSE(span_text->GetLayoutObject()->StyleRef().IsInert());
     EXPECT_FALSE(p->GetComputedStyle()->IsInert());
-    EXPECT_FALSE(p_text->GetComputedStyle()->IsInert());
+    EXPECT_FALSE(p_text->GetLayoutObject()->StyleRef().IsInert());
   };
   ExpectState0();
 
   EnterFullscreen(document, *div);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_FALSE(span->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(span_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(span_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_TRUE(p->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(p_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(p_text->GetLayoutObject()->StyleRef().IsInert());
 
   EnterFullscreen(document, *span);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_FALSE(span->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(span_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(span_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_TRUE(p->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(p_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(p_text->GetLayoutObject()->StyleRef().IsInert());
 
   EnterFullscreen(document, *p);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_TRUE(span->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(span_text->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(span_text->GetLayoutObject()->StyleRef().IsInert());
   EXPECT_FALSE(p->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(p_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(p_text->GetLayoutObject()->StyleRef().IsInert());
 
   ExitFullscreen(document);
   UpdateAllLifecyclePhasesForTest();
@@ -2197,38 +2184,34 @@ TEST_F(StyleResolverTest, IsInertWithFrameAndFullscreen) {
   Node* div_text = div->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
 
   EnterFullscreen(document, *div);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
 
   EnterFullscreen(document, *body);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_TRUE(html->GetComputedStyle()->IsInert());
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
 
   EnterFullscreen(document, *html);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(document.GetComputedStyle()->IsInert());
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
-  EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div_text->GetLayoutObject()->StyleRef().IsInert());
   ExitFullscreen(document);
 }
 
