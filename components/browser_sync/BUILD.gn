@@ -19,6 +19,8 @@ static_library("browser_sync") {
     "sync_api_component_factory_impl.h",
     "sync_client_utils.cc",
     "sync_client_utils.h",
+    "sync_to_signin_migration.cc",
+    "sync_to_signin_migration.h",
   ]
 
   public_deps = [ "//components/sync" ]
@@ -69,6 +71,7 @@ source_set("unit_tests") {
   sources = [
     "active_devices_provider_impl_unittest.cc",
     "sync_client_utils_unittest.cc",
+    "sync_to_signin_migration_unittest.cc",
   ]
 
   deps = [
@@ -83,7 +86,9 @@ source_set("unit_tests") {
     "//components/history/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/reading_list/core:test_support",
+    "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/sync:test_support",
     "//components/sync_bookmarks",

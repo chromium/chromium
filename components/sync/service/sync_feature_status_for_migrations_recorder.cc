@@ -75,6 +75,21 @@ void SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(
   }
 }
 
+// static
+SyncFeatureStatusForSyncToSigninMigration
+SyncFeatureStatusForMigrationsRecorder::
+    GetSyncFeatureStatusForSyncToSigninMigration(const PrefService* prefs) {
+  return SyncFeatureStatusForSyncToSigninMigrationFromInt(prefs->GetInteger(
+      prefs::internal::kSyncFeatureStatusForSyncToSigninMigration));
+}
+
+// static
+bool SyncFeatureStatusForMigrationsRecorder::
+    GetSyncDataTypeActiveForSyncToSigninMigration(const PrefService* prefs,
+                                                  ModelType type) {
+  return prefs->GetBoolean(GetModelTypeStatusPrefName(type));
+}
+
 void SyncFeatureStatusForMigrationsRecorder::OnStateChanged(SyncService* sync) {
   // Determine overall Sync-the-feature status and persist it to prefs.
   SyncFeatureStatusForSyncToSigninMigration status =

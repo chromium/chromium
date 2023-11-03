@@ -77,6 +77,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
 
+<variants name="SyncModelTypeForSyncToSigninMigration">
+  <variant name=".BOOKMARK" summary="BOOKMARK"/>
+  <variant name=".PASSWORD" summary="PASSWORD"/>
+  <variant name=".READING_LIST" summary="READING_LIST"/>
+</variants>
+
+<variants name="SyncToSigninMigrationMode">
+  <variant name=".DryRun" summary="run the migration in dry-run mode"/>
+  <variant name=".Migration" summary="run the migration"/>
+</variants>
+
 <variants name="TrustedVaultTimeSinceMigrationSuffix">
   <variant name=""
       summary="Includes data for users that went through migration any time
@@ -1555,6 +1566,34 @@ chromium-metrics-reviews@google.com.
     records true on timeout and false on success, but doesn't record anything if
     the fetch failed for any other reason.
   </summary>
+</histogram>
+
+<histogram name="Sync.SyncToSigninMigrationDecision"
+    enum="SyncToSigninMigrationDecisionOverall" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The outcome of the decision whether the Sync-to-Signin migration should run
+    or not (and why). Recorded on profile creation/startup, only on iOS.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.SyncToSigninMigrationDecision{SyncToSigninMigrationMode}{SyncModelTypeForSyncToSigninMigration}"
+    enum="SyncToSigninMigrationDataTypeDecision" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The outcome of the decision whether the Sync-to-Signin migration should run
+    or not (and why) for {SyncModelTypeForSyncToSigninMigration}. Recorded on
+    profile creation/startup, only on iOS, and when the overall decision was to
+    {SyncToSigninMigrationMode} (see `Sync.SyncToSigninMigrationDecision`).
+  </summary>
+  <token key="SyncToSigninMigrationMode" variants="SyncToSigninMigrationMode"/>
+  <token key="SyncModelTypeForSyncToSigninMigration"
+      variants="SyncModelTypeForSyncToSigninMigration"/>
 </histogram>
 
 <histogram name="Sync.ThrottledAllModelTypes" enum="Boolean"

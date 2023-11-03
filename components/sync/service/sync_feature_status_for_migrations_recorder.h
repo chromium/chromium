@@ -48,6 +48,13 @@ class SyncFeatureStatusForMigrationsRecorder : public SyncServiceObserver {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  static SyncFeatureStatusForSyncToSigninMigration
+  GetSyncFeatureStatusForSyncToSigninMigration(const PrefService* prefs);
+
+  static bool GetSyncDataTypeActiveForSyncToSigninMigration(
+      const PrefService* prefs,
+      ModelType type);
+
   // SyncServiceObserver implementation.
   void OnStateChanged(SyncService* sync) override;
   void OnSyncShutdown(SyncService* sync) override;

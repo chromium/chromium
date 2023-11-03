@@ -11,6 +11,7 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/commerce/core/pref_names.h"
 #import "components/component_updater/component_updater_service.h"
@@ -826,9 +827,13 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 10/2023.
   MigrateArrayOfDatesPreferenceFromUserDefaults(
       kActivityBucketLastReportedDateArrayKey, prefs, defaults);
+
+  // Added 10/2023, but DO NOT REMOVE after the usual year!
+  // TODO(crbug.com/1486420): Remove ~one year after full launch.
+  browser_sync::MaybeMigrateSyncingUserToSignedIn(prefs);
 }
 
-void MigrateObsoleteUserDefault(void) {
+void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   // Added 08/2023.
