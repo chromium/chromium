@@ -129,28 +129,26 @@ class ChromeDriver(object):
     elif chrome_binary:
       options['binary'] = chrome_binary
 
+    if chrome_switches is None:
+      chrome_switches = []
+
     if sys.platform.startswith('linux') and android_package is None:
-      if chrome_switches is None:
-        chrome_switches = []
       # Workaround for crbug.com/611886.
       chrome_switches.append('no-sandbox')
       # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1695
       chrome_switches.append('disable-gpu')
 
-    if chrome_switches is None:
-      chrome_switches = []
     chrome_switches.append('force-color-profile=srgb')
 
     # Resampling can change the distance of a synthetic scroll.
     chrome_switches.append('disable-features=ResamplingScrollEvents')
 
-    if chrome_switches:
-      assert type(chrome_switches) is list
-      options['args'] = chrome_switches
+    assert type(chrome_switches) is list
+    options['args'] = chrome_switches
 
-      # TODO(crbug.com/1011000): Work around a bug with headless on Mac.
-      if util.GetPlatformName() == 'mac' and '--headless' in chrome_switches:
-        options['excludeSwitches'] = ['--enable-logging']
+    # TODO(crbug.com/1011000): Work around a bug with headless on Mac.
+    if util.GetPlatformName() == 'mac' and '--headless' in chrome_switches:
+      options['excludeSwitches'] = ['--enable-logging']
 
     if mobile_emulation:
       assert type(mobile_emulation) is dict
