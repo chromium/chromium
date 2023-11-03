@@ -362,10 +362,14 @@ void DoSplitviewClipRectAnimation(
   layer->SetClipRect(target_clip_rect);
 }
 
-// TODO(michelefan@): Restore the snap group.
+// TODO(michelefan): Revisit the logics when split view refactor is ready to
+// make everything works with `kSnapGroup` enabled.
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
-  if (!ShouldAllowSplitView() ||
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  const bool should_restore =
+      ShouldAllowSplitView() &&
+      (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+       SnapGroupController::Get());
+  if (!should_restore) {
     return;
   }
 

@@ -20,6 +20,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -2335,8 +2336,10 @@ TEST_F(SnapGroupEntryPointArm1Test, GroupItemSnapBehaviorInOverview) {
 }
 
 // Tests that the two windows contained in the overview group item will be moved
-// from the original desk to another desk on drag complete.
-TEST_F(SnapGroupEntryPointArm1Test, DragOverviewGroupItemToAnotherDeskBasic) {
+// from the original desk to another desk on drag complete and that the two
+// windows will still be in a snap group. The divider will show up in the
+// destination desk on target desk activated.
+TEST_F(SnapGroupEntryPointArm1Test, DragOverviewGroupItemToAnotherDesk) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
@@ -2377,6 +2380,13 @@ TEST_F(SnapGroupEntryPointArm1Test, DragOverviewGroupItemToAnotherDeskBasic) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   ASSERT_EQ(desks_util::GetDeskForContext(window0.get()), desk1);
   ASSERT_EQ(desks_util::GetDeskForContext(window1.get()), desk1);
+  EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window0.get(),
+                                                                window1.get()));
+  ActivateDesk(desk1);
+  EXPECT_TRUE(split_view_divider());
+  EXPECT_EQ(desks_util::GetDeskForContext(
+                split_view_divider()->divider_widget()->GetNativeWindow()),
+            desk1);
 }
 
 // Tests that the hit area of the split view divider can be outside of its

@@ -11,6 +11,8 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -269,7 +271,13 @@ void OverviewGroupItem::UpdateCannotSnapWarningVisibility(bool animate) {}
 
 void OverviewGroupItem::HideCannotSnapWarning(bool animate) {}
 
-void OverviewGroupItem::OnMovingItemToAnotherDesk() {}
+void OverviewGroupItem::OnMovingItemToAnotherDesk() {
+  is_moving_to_another_desk_ = true;
+
+  for (const auto& overview_item : overview_items_) {
+    overview_item->OnMovingItemToAnotherDesk();
+  }
+}
 
 void OverviewGroupItem::UpdateMirrorsForDragging(bool is_touch_dragging) {}
 
