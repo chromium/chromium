@@ -102,43 +102,48 @@ bool UrlMatcherWithBypass::IsPopulated() {
 
 UrlMatcherWithBypass::MatchResult UrlMatcherWithBypass::Matches(
     const GURL& request_url,
-    const GURL& top_frame_url) {
-  auto vlog = [&](std::string_view message,
-                  const UrlMatcherWithBypass::MatchResult& match_result) {
+    const net::SchemefulSite& top_frame_site,
+    bool skip_bypass_check) {
+  auto dvlog = [&](std::string_view message,
+                   const UrlMatcherWithBypass::MatchResult& match_result) {
     std::string result_message = base::StrCat(
         {" - matches: ", match_result.matches ? "true" : "false",
          ", third-party: ", match_result.is_third_party ? "true" : "false"});
-    VLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
-            << top_frame_url << ") - " << message << result_message;
+    DVLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
+             << top_frame_site << ") - " << message << result_message;
   };
   // Result defaults to {matches = false, is_third_party = false}.
   MatchResult result;
 
-  // If there is no top frame URL, the matches cannot be performed.
-  if (!IsPopulated() || top_frame_url.is_empty()) {
-    vlog("skipped (not populated or empty top_frame_url)", result);
+  if (!IsPopulated()) {
+    dvlog("skipped (match list not populated)", result);
     return result;
   }
 
   net::SchemefulSite request_site(request_url);
-  net::SchemefulSite top_site(top_frame_url);
-  result.is_third_party = request_site != top_site;
+  result.is_third_party = skip_bypass_check || (request_site != top_frame_site);
 
   std::string resource_host_suffix = PartitionMapKey(request_url.host());
 
-  if (match_list_with_bypass_map_.contains(resource_host_suffix)) {
-    for (const auto& [rule, bypass_matcher] :
-         match_list_with_bypass_map_.at(resource_host_suffix)) {
-      auto rule_result = rule->Evaluate(request_url);
-      if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
-        result.matches = true;
-        result.is_third_party = bypass_matcher.Evaluate(top_frame_url) ==
-                                net::SchemeHostPortMatcherResult::kNoMatch;
-      }
+  if (!match_list_with_bypass_map_.contains(resource_host_suffix)) {
+    dvlog("no suffix match", result);
+    return result;
+  }
+
+  for (const auto& [rule, bypass_matcher] :
+       match_list_with_bypass_map_.at(resource_host_suffix)) {
+    auto rule_result = rule->Evaluate(request_url);
+    if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
+      result.matches = true;
+      result.is_third_party =
+          skip_bypass_check ||
+          bypass_matcher.Evaluate(top_frame_site.GetURL()) ==
+              net::SchemeHostPortMatcherResult::kNoMatch;
+      break;
     }
   }
 
-  vlog("success", result);
+  dvlog("success", result);
   return result;
 }
 

@@ -87,7 +87,7 @@ TEST_F(NetworkServiceProxyAllowListTest, Matches_EmptyNak) {
                                   net::NetworkAnonymizationKey()));
 }
 
-TEST_F(NetworkServiceProxyAllowListTest, Matches_TransientNak) {
+TEST_F(NetworkServiceProxyAllowListTest, Matches_NoMatchWithTransientNak) {
   NetworkServiceProxyAllowList allow_list;
   MaskedDomainList mdl;
   auto* resource_owner = mdl.add_resource_owners();
@@ -96,8 +96,21 @@ TEST_F(NetworkServiceProxyAllowListTest, Matches_TransientNak) {
   allow_list.UseMaskedDomainList(mdl);
 
   EXPECT_FALSE(
-      allow_list.Matches(GURL("http://example.com"),
+      allow_list.Matches(GURL("http://other.com"),
                          net::NetworkAnonymizationKey::CreateTransient()));
+}
+
+TEST_F(NetworkServiceProxyAllowListTest, Matches_SkipBypassWithTransientNak) {
+  NetworkServiceProxyAllowList allowList;
+  MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
+  allowList.UseMaskedDomainList(mdl);
+
+  EXPECT_TRUE(
+      allowList.Matches(GURL("http://example.com"),
+                        net::NetworkAnonymizationKey::CreateTransient()));
 }
 
 }  // namespace network

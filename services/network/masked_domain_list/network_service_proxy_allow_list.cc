@@ -81,13 +81,14 @@ bool NetworkServiceProxyAllowList::Matches(
     return false;
   }
 
-  // TODO(aakallam): Check if the NAK is transient - if the top_frame_site is
-  // opaque or the NAK has a nonce, we should skip the 1st party check.
   net::SchemefulSite top_frame_site =
       network_anonymization_key.GetTopFrameSite().value();
   DVLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_site << ")";
-  UrlMatcherWithBypass::MatchResult result =
-      url_matcher_with_bypass_.Matches(request_url, top_frame_site.GetURL());
+
+  // If the NAK is transient (has a nonce and/or top_frame_origin is opaque), we
+  // should skip the first party check and match only on the request_url.
+  UrlMatcherWithBypass::MatchResult result = url_matcher_with_bypass_.Matches(
+      request_url, top_frame_site, network_anonymization_key.IsTransient());
   return result.matches && result.is_third_party;
 }
 
