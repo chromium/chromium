@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <type_traits>
