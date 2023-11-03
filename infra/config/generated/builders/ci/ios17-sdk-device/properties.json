@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios16-sdk-device",
+              "builder": "ios17-sdk-device",
               "project": "chromium"
             },
             "builder_spec": {
@@ -33,7 +33,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios16-sdk-device",
+          "builder": "ios17-sdk-device",
           "project": "chromium"
         }
       ]

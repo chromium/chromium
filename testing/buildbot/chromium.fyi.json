@@ -29175,11 +29175,6 @@
       }
     ]
   },
-  "ios16-sdk-device": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "ios16-sdk-simulator": {
     "additional_compile_targets": [
       "all"
@@ -37068,6 +37063,11 @@
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone 14 17.2"
       }
+    ]
+  },
+  "ios17-sdk-device": {
+    "additional_compile_targets": [
+      "all"
     ]
   },
   "ios17-sdk-simulator": {
