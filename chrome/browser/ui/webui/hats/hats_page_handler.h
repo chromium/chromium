@@ -21,7 +21,8 @@ class HatsPageHandlerDelegate {
   virtual std::vector<std::string> GetLanguageList() = 0;
   // Returns the product specific data associated with this survey.
   virtual base::Value::Dict GetProductSpecificDataJson() = 0;
-  // TODO(crbug.com/1121586): Add OnSurveyLoaded and OnSurveyClosed.
+  virtual void OnSurveyLoaded() = 0;
+  virtual void OnSurveyClosed() = 0;
 };
 
 class HatsPageHandler : public hats::mojom::PageHandler {
@@ -34,6 +35,10 @@ class HatsPageHandler : public hats::mojom::PageHandler {
   HatsPageHandler& operator=(const HatsPageHandler&) = delete;
 
   ~HatsPageHandler() override;
+
+  // hats::mojom::PageHandler:
+  void OnSurveyLoaded() override;
+  void OnSurveyClosed() override;
 
  private:
   mojo::Receiver<hats::mojom::PageHandler> receiver_;

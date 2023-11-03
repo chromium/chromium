@@ -59,6 +59,8 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   bool GetEnableTesting() override;
   std::vector<std::string> GetLanguageList() override;
   base::Value::Dict GetProductSpecificDataJson() override;
+  void OnSurveyLoaded() override;
+  void OnSurveyClosed() override;
 
  protected:
   friend class MockHatsNextWebDialog;
@@ -99,7 +101,8 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   virtual void ShowWidget();
 
   // Called by the dialog to close the widget due to timeout or the survey being
-  // closed. Virtual to allow mocking in tests.
+  // closed. After the widget is closed, both the widget and this class are
+  // destroyed. Virtual to allow mocking in tests.
   virtual void CloseWidget();
 
   // Updates dialog size to desired contents size. Virtual to allow mocking in

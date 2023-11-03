@@ -26,4 +26,14 @@ HatsPageHandler::HatsPageHandler(
                        product_specific_data_json);
 }
 
+// Triggered by onSurveyLoaded() call in TS.
+void HatsPageHandler::OnSurveyLoaded() {
+  delegate_->OnSurveyLoaded();
+}
+
+// Triggered by onSurveyClosed() call in TS.
+void HatsPageHandler::OnSurveyClosed() {
+  delegate_->OnSurveyClosed();
+}
+
 HatsPageHandler::~HatsPageHandler() = default;

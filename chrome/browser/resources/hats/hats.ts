@@ -49,7 +49,7 @@ async function requestSurvey(
   const surveyListener = {
     // Provide survey state to the WebContentsObserver via URL fragments.
     surveyClosed: function() {
-      history.pushState('', '', '#close');
+      browserProxy!.handler.onSurveyClosed();
     },
 
     surveyPositioning: function(_: any, size: any, animationSpec: any) {
@@ -57,7 +57,7 @@ async function requestSurvey(
       // animation has completed.
       if (!loadedSent) {
         setTimeout(function() {
-          history.pushState('', '', '#loaded');
+          browserProxy!.handler.onSurveyLoaded();
         }, animationSpec.duration * 1000);
         loadedSent = true;
       }
@@ -81,7 +81,7 @@ async function requestSurvey(
     preferredSurveyLanguageList: languageList,
     callback: (requestSurveyCallbackParam: any) => {
       if (!requestSurveyCallbackParam.surveyData) {
-        history.pushState('', '', '#close');
+        browserProxy!.handler.onSurveyClosed();
         return;
       }
       helpApi.presentSurvey({

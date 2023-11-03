@@ -14,7 +14,12 @@ interface PageHandlerFactory {
 
 // Called from TS side of chrome-untrusted://hats (Renderer -> Browser)
 interface PageHandler {
-  // TODO(crbug.com/1121586): Add OnSurveyLoaded and OnSurveyClosed.
+  // Notifies the browser that a survey has been successfully loaded and is
+  // being displayed within the WebContents.
+  OnSurveyLoaded();
+  // Notifies the browser that the survey has been closed and is not being
+  // displayed.
+  OnSurveyClosed();
 };
 
 // Called from C++ side of chrome-untrusted://hats. (Browser -> Renderer)
