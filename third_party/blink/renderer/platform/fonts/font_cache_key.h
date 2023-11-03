@@ -34,6 +34,7 @@
 #include <limits>
 
 #include "base/memory/values_equivalent.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
@@ -66,7 +67,8 @@ struct FontCacheKey {
                scoped_refptr<FontVariantAlternates> font_variant_alternates,
                bool is_unique_match)
       : creation_params_(creation_params),
-        font_size_(font_size * kFontSizePrecisionMultiplier),
+        font_size_(base::saturated_cast<unsigned>(
+            font_size * kFontSizePrecisionMultiplier)),
         options_(options),
         device_scale_factor_(device_scale_factor),
         size_adjust_(size_adjust),
