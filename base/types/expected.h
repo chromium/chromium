@@ -160,6 +160,10 @@ class ok<T, /* is_void_v<T> = */ false> final {
 
   friend constexpr void swap(ok& x, ok& y) noexcept { x.swap(y); }
 
+  std::string ToString() const {
+    return StrCat({"ok(", base::ToString(value()), ")"});
+  }
+
  private:
   T value_;
 };
@@ -168,11 +172,19 @@ template <typename T>
 class ok<T, /* is_void_v<T> = */ true> final {
  public:
   constexpr explicit ok() noexcept = default;
+
+  std::string ToString() const { return "ok()"; }
 };
 
 template <typename T, typename U>
 constexpr bool operator==(const ok<T>& lhs, const ok<U>& rhs) noexcept {
-  return lhs.value() == rhs.value();
+  if constexpr (std::is_void_v<T> && std::is_void_v<U>) {
+    return true;
+  } else if constexpr (std::is_void_v<T> || std::is_void_v<U>) {
+    return false;
+  } else {
+    return lhs.value() == rhs.value();
+  }
 }
 
 template <typename T, typename U>
@@ -220,6 +232,15 @@ class unexpected final {
 
   friend constexpr void swap(unexpected& x, unexpected& y) noexcept {
     x.swap(y);
+  }
+
+  // Deviation from the Standard: stringification support.
+  //
+  // If we move to `std::unexpected` someday, we would need to either forego
+  // nice formatted output or move to `std::format` or similar, which can have
+  // customized output for STL types.
+  std::string ToString() const noexcept {
+    return StrCat({"Unexpected(", base::ToString(error()), ")"});
   }
 
  private:
@@ -996,12 +1017,18 @@ constexpr bool operator==(const U& v, const expected<T, E>& x) noexcept {
   return x == v;
 }
 
-template <typename T, typename E, typename U, internal::EnableIfNotVoid<T> = 0>
+template <typename T, typename E, typename U>
 constexpr bool operator==(const expected<T, E>& x, const ok<U>& o) noexcept {
-  return x.has_value() && x.value() == o.value();
+  if constexpr (std::is_void_v<T> && std::is_void_v<U>) {
+    return x.has_value();
+  } else if constexpr (std::is_void_v<T> || std::is_void_v<U>) {
+    return false;
+  } else {
+    return x.has_value() && x.value() == o.value();
+  }
 }
 
-template <typename T, typename E, typename U, internal::EnableIfNotVoid<T> = 0>
+template <typename T, typename E, typename U>
 constexpr bool operator==(const ok<U>& o, const expected<T, E>& x) noexcept {
   return x == o;
 }
@@ -1034,12 +1061,12 @@ constexpr bool operator!=(const U& v, const expected<T, E>& x) noexcept {
   return !(v == x);
 }
 
-template <typename T, typename E, typename U, internal::EnableIfNotVoid<T> = 0>
+template <typename T, typename E, typename U>
 constexpr bool operator!=(const expected<T, E>& x, const ok<U>& o) noexcept {
   return !(x == o);
 }
 
-template <typename T, typename E, typename U, internal::EnableIfNotVoid<T> = 0>
+template <typename T, typename E, typename U>
 constexpr bool operator!=(const ok<U>& o, const expected<T, E>& x) noexcept {
   return !(o == x);
 }
