@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -19,7 +20,6 @@
 #include "net/cert/pem.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
-#include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source_x509.h"
@@ -759,7 +759,6 @@ class WebTransportWithCustomCertificateTest : public WebTransportTest {
   ~WebTransportWithCustomCertificateTest() override = default;
 
   static std::unique_ptr<quic::ProofSource> CreateProofSource() {
-    auto proof_source = std::make_unique<net::ProofSourceChromium>();
     base::FilePath certs_dir = net::GetTestCertsDirectory();
     base::FilePath cert_path = certs_dir.AppendASCII("quic-short-lived.pem");
     base::FilePath key_path = certs_dir.AppendASCII("quic-ecdsa-leaf.key");
