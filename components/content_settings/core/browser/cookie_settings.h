@@ -111,12 +111,17 @@ class CookieSettings
                                     const GURL& first_party_url) const;
 
   // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
-  // `first_party_url`) pair, for the provided `ttl`.
+  // `first_party_url`) pair, for the provided `ttl`. If
+  // `use_schemeless_pattern` is set, the patterns will be generated from
+  // `ContentSettingsPattern::FromUrl`, which maps HTTP URLs onto a wildcard
+  // scheme.
   //
   // This should only be called on the UI thread.
-  void SetTemporaryCookieGrantForHeuristic(const GURL& url,
-                                           const GURL& first_party_url,
-                                           base::TimeDelta ttl);
+  void SetTemporaryCookieGrantForHeuristic(
+      const GURL& url,
+      const GURL& first_party_url,
+      base::TimeDelta ttl,
+      bool use_schemeless_patterns = false);
 
   // Represents the TTL of each User Bypass entries.
   static constexpr base::TimeDelta kUserBypassEntriesTTL = base::Days(90);

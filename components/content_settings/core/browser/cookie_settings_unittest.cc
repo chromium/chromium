@@ -1686,6 +1686,51 @@ TEST_P(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicOverrides) {
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_BLOCK);
 }
+
+TEST_P(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicSchemeless) {
+  const GURL first_party_http_url(kHttpSite);
+  const GURL first_party_https_url(kHttpsSite);
+  const GURL third_party_url(kAllowedSite);
+  const base::TimeDelta expiration = base::Seconds(5);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+
+  // Expect that cookies are blocked before setting the temporary grant.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Set a (schemeful) cookie grant on the HTTP URL.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_http_url, expiration);
+
+  // This grant should not affect the HTTPS URL.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Set a schemeless cookie grant on the HTTP URL.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_http_url, expiration,
+      /*use_schemeless_patterns=*/true);
+
+  // This grant should enable cookie access on the HTTPS first-party URL.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Expect that cookies are blocked again after the grant expires.
+  FastForwardTime(expiration + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+}
 #endif
 
 TEST_P(CookieSettingsTest, ExtensionsRegularSettings) {
