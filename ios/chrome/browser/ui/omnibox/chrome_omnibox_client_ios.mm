@@ -253,7 +253,8 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  if (base::FeatureList::IsEnabled(kOmniboxPopulateShortcutsDatabase) &&
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxPopulateShortcutsDatabase) &&
       location_bar_->GetWebState()) {
     web::WebState* web_state = location_bar_->GetWebState();
     const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
@@ -276,7 +277,8 @@ LocationBarModel* ChromeOmniboxClientIOS::GetLocationBarModel() {
 void ChromeOmniboxClientIOS::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  CHECK(base::FeatureList::IsEnabled(kOmniboxPopulateShortcutsDatabase));
+  CHECK(
+      base::FeatureList::IsEnabled(omnibox::kOmniboxPopulateShortcutsDatabase));
 
   const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
   ShortcutElement shortcut = web_state_tracker_.extract(web_state_id).mapped();
@@ -292,7 +294,8 @@ void ChromeOmniboxClientIOS::DidFinishNavigation(
 }
 
 void ChromeOmniboxClientIOS::WebStateDestroyed(web::WebState* web_state) {
-  CHECK(base::FeatureList::IsEnabled(kOmniboxPopulateShortcutsDatabase));
+  CHECK(
+      base::FeatureList::IsEnabled(omnibox::kOmniboxPopulateShortcutsDatabase));
 
   const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
   web_state_tracker_.erase(web_state_id);

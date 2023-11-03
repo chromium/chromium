@@ -11,6 +11,7 @@
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/fake_autocomplete_provider.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -150,7 +151,8 @@ void ChromeOmniboxClientIOSTest::FailCurrentNavigation() {
 // Tests that successful navigations are added to the shortcuts database.
 TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kOmniboxPopulateShortcutsDatabase);
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kOmniboxPopulateShortcutsDatabase);
 
   InitShortcutsBackend();
 
@@ -176,7 +178,8 @@ TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
 // shortcuts database.
 TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kOmniboxPopulateShortcutsDatabase);
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kOmniboxPopulateShortcutsDatabase);
 
   InitShortcutsBackend();
 
