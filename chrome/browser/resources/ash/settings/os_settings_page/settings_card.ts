@@ -17,8 +17,6 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-
 import {getTemplate} from './settings_card.html.js';
 
 export class SettingsCardElement extends PolymerElement {
@@ -36,19 +34,10 @@ export class SettingsCardElement extends PolymerElement {
         type: String,
         value: '',
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
     };
   }
 
   headerText: string;
-  private isRevampWayfindingEnabled_: boolean;
 }
 
 declare global {
