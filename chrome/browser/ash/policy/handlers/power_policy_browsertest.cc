@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(PowerPolicyInSessionBrowserTest, AllowScreenWakeLocks) {
   // Pretend an extension grabs a screen wake lock.
   const char kExtensionId[] = "abcdefghijklmnopabcdefghijlkmnop";
   extensions::PowerAPI::Get(browser()->profile())
-      ->AddRequest(kExtensionId, extensions::api::power::LEVEL_DISPLAY);
+      ->AddRequest(kExtensionId, extensions::api::power::Level::kDisplay);
 
   // The PowerAPI requests system wake lock asynchronously.
   base::RunLoop run_loop;
