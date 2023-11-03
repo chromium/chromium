@@ -44,7 +44,7 @@ void OobeStructuredMetricsWatcher::OnProfileAdded(
 }
 
 bool OobeStructuredMetricsWatcher::ShouldUpload() const {
-  return service_->recorder()->can_provide_metrics() &&
+  return service_->recorder()->CanProvideMetrics() &&
          event_count_ >= max_events_;
 }
 

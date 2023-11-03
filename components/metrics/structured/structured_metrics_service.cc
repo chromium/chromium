@@ -136,7 +136,7 @@ void StructuredMetricsService::RotateLogsAndSend() {
 
   // Verify that the recorder has been initialized and can be providing metrics.
   // And if it is, then see if there are any events ready to be uploaded.
-  if (!recorder_->can_provide_metrics() ||
+  if (!recorder_->CanProvideMetrics() ||
       recorder_->events()->non_uma_events_size() == 0) {
     return;
   }
@@ -214,7 +214,7 @@ MetricsServiceClient* StructuredMetricsService::GetMetricsServiceClient()
 void StructuredMetricsService::ManualUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!recorder_->can_provide_metrics() ||
+  if (!recorder_->CanProvideMetrics() ||
       recorder_->events()->non_uma_events_size() == 0) {
     return;
   }

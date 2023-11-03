@@ -287,10 +287,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
         std::make_unique<TestKeyDataProvider>(device_key_path_));
   }
 
-  bool is_initialized() {
-    return recorder_->init_state_ ==
-           StructuredMetricsRecorder::InitState::kInitialized;
-  }
+  bool is_initialized() { return recorder_->IsInitialized(); }
 
   bool is_recording_enabled() { return recorder_->recording_enabled_; }
 

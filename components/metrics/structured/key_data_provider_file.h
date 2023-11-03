@@ -40,6 +40,7 @@ class KeyDataProviderFile : public KeyDataProvider, KeyDataProvider::Observer {
   bool is_data_loaded_ = false;
 
   std::unique_ptr<KeyData> key_data_;
+  base::OnceClosure on_key_ready_callback_;
 
   base::WeakPtrFactory<KeyDataProviderFile> weak_ptr_factory_{this};
 };

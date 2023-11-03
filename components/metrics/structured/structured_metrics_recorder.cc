@@ -98,12 +98,30 @@ void StructuredMetricsRecorder::DisableRecording() {
 
 void StructuredMetricsRecorder::OnKeyReady() {
   DCHECK(base::CurrentUIThread::IsSet());
-  UpdateAndCheckInitState();
+
+  // If key data has not been initialized, it is highly likely that the key data
+  // is initialized.
+  if (!init_state_.Has(State::kKeyDataInitialized)) {
+    init_state_.Put(State::kKeyDataInitialized);
+  }
+
+  // If kKeyDataInitialized, then this is the second time this callback is being
+  // called, which must be the profile keys.
+  else if (init_state_.Has(State::kProfileAdded)) {
+    init_state_.Put(State::kProfileKeyDataInitialized);
+  }
+
+  // If recorder is now ready then hash events in-memory and store them in
+  // persistent storage.
+  if (CanProvideMetrics()) {
+    HashUnhashedEventsAndPersist();
+    std::move(on_ready_callback_).Run();
+  }
 }
 
 void StructuredMetricsRecorder::ProvideUmaEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
-  if (!can_provide_metrics()) {
+  if (!CanProvideMetrics()) {
     return;
   }
 
@@ -117,7 +135,7 @@ void StructuredMetricsRecorder::ProvideUmaEventMetrics(
 
 void StructuredMetricsRecorder::ProvideEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
-  if (!can_provide_metrics()) {
+  if (!CanProvideMetrics()) {
     return;
   }
 
@@ -136,6 +154,16 @@ void StructuredMetricsRecorder::ProvideEventMetrics(
 
   // Applies custom metadata providers.
   Recorder::GetInstance()->OnProvideIndependentMetrics(&uma_proto);
+}
+
+bool StructuredMetricsRecorder::CanProvideMetrics() {
+  return recording_enabled() && IsInitialized();
+}
+
+bool StructuredMetricsRecorder::IsInitialized() {
+  return init_state_.HasAll(InitState{State::kKeyDataInitialized,
+                                      State::kEventStorageInitialized,
+                                      State::kProfileKeyDataInitialized});
 }
 
 void StructuredMetricsRecorder::InitializeKeyDataProvider(
@@ -159,7 +187,14 @@ void StructuredMetricsRecorder::OnRead(const ReadStatus status) {
       break;
   }
 
-  UpdateAndCheckInitState();
+  init_state_.Put(State::kEventStorageInitialized);
+
+  // If recorder is now ready then hash events in-memory and store them in
+  // persistent storage.
+  if (CanProvideMetrics()) {
+    HashUnhashedEventsAndPersist();
+    std::move(on_ready_callback_).Run();
+  }
 }
 
 void StructuredMetricsRecorder::OnWrite(const WriteStatus status) {
@@ -194,7 +229,7 @@ void StructuredMetricsRecorder::OnExternalMetricsCollected(
 
 void StructuredMetricsRecorder::Purge() {
   // Only purge if the recorder has been initialized.
-  if (!is_init_state(InitState::kInitialized)) {
+  if (!IsInitialized()) {
     return;
   }
   DCHECK(IsKeyDataInitialized());
@@ -210,14 +245,12 @@ void StructuredMetricsRecorder::OnProfileAdded(
 
   // We do not handle multiprofile, instead initializing with the state stored
   // in the first logged-in user's cryptohome. So if a second profile is added
-  // we should ignore it. All init state beyond |InitState::kUninitialized|
-  // mean a profile has already been added.
-  if (init_state_ != InitState::kUninitialized) {
+  // we should ignore it.
+  if (init_state_.Has(State::kProfileAdded)) {
     return;
   }
-  init_state_ = InitState::kProfileAdded;
-
   key_data_provider_->OnProfileAdded(profile_path);
+  init_state_.Put(State::kProfileAdded);
 
   // The directory used to store unsent logs. Relative to the user's cryptohome.
   // This file is created by chromium.
@@ -259,9 +292,9 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
     // Events should be ignored if recording is disabled.
     LogEventRecordingState(EventRecordingState::kRecordingDisabled);
     return;
-  } else if (init_state_ != InitState::kInitialized) {
-    // If keys have not loaded yet, then hold the data in memory until the
-    // keys have been loaded.
+  } else if (!IsInitialized()) {
+    // If recorder is not ready to record metrics, then store the events
+    // in-memory until they are ready to be persisted.
     LogEventRecordingState(EventRecordingState::kProviderUninitialized);
     RecordEventBeforeInitialization(event);
     return;
@@ -304,7 +337,7 @@ void StructuredMetricsRecorder::OnReportingStateChanged(bool enabled) {
   //
   // Note that Purge will ensure the events are deleted from disk even if the
   // PersistentProto hasn't itself finished being read.
-  if (init_state_ == InitState::kUninitialized) {
+  if (!IsInitialized()) {
     purge_state_on_init_ = true;
   } else {
     Purge();
@@ -328,7 +361,7 @@ void StructuredMetricsRecorder::ProvideSystemProfile(
 void StructuredMetricsRecorder::WriteNowForTest() {
   // The event proto may not be initialized yet. Check that the proto is ready
   // before attempting to write.
-  if (can_provide_metrics()) {
+  if (CanProvideMetrics()) {
     events_->StartWrite();
   }
 }
@@ -347,14 +380,14 @@ void StructuredMetricsRecorder::SetExternalMetricsDirForTest(
 void StructuredMetricsRecorder::SetOnReadyToRecord(base::OnceClosure callback) {
   on_ready_callback_ = std::move(callback);
 
-  if (init_state_ == InitState::kInitialized) {
+  if (IsInitialized()) {
     std::move(on_ready_callback_).Run();
   }
 }
 
 void StructuredMetricsRecorder::RecordEventBeforeInitialization(
     const Event& event) {
-  DCHECK_NE(init_state_, InitState::kInitialized);
+  DCHECK(!IsInitialized());
   unhashed_events_.emplace_back(event.Clone());
 }
 
@@ -565,15 +598,6 @@ void StructuredMetricsRecorder::AddDisallowedProjectForTest(
 
 bool StructuredMetricsRecorder::IsKeyDataInitialized() {
   return key_data_provider_ && key_data_provider_->IsReady();
-}
-
-void StructuredMetricsRecorder::UpdateAndCheckInitState() {
-  ++init_count_;
-  if (init_count_ == kTargetInitCount) {
-    init_state_ = InitState::kInitialized;
-    HashUnhashedEventsAndPersist();
-    std::move(on_ready_callback_).Run();
-  }
 }
 
 void StructuredMetricsRecorder::SetEventRecordCallbackForTest(

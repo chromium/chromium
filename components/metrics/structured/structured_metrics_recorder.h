@@ -7,6 +7,7 @@
 #include <deque>
 #include <memory>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -83,9 +84,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   void InitializeKeyDataProvider(
       std::unique_ptr<KeyDataProvider> key_data_provider);
 
-  bool can_provide_metrics() const {
-    return recording_enabled() && is_init_state(InitState::kInitialized);
-  }
+  // Returns true if ready to provide metrics via ProvideEventMetrics.
+  bool CanProvideMetrics();
 
   // KeyDataProvider::Observer:
   void OnKeyReady() override;
@@ -115,19 +115,27 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsServiceTest;
 
-  // files that are asynchronously read from disk at startup. When all files
-  // have been read, the provider has been initialized.
-  enum class InitState {
-    kUninitialized = 1,
-    // Set once InitializeKeyDataProvider has been called.
-    kKeyDataInitialized = 2,
-    // Set after we observe the recorder, which happens on construction.
-    kProfileAdded = 3,
-    // Set after all key and event files are read from disk.
-    kInitialized = 4,
+  // Different initialization states for the recorder.
+  enum State {
+    kUninitialized,
+    // Set once OnKeyReady has been called once.
+    kKeyDataInitialized,
+    // Set once events storage have been read once.
+    kEventStorageInitialized,
+    // Set once OnProfileAdded has been called once.
+    kProfileAdded,
+    // Set once the profile key data has been initialized.
+    kProfileKeyDataInitialized,
+    kMaxValue = kProfileKeyDataInitialized,
   };
 
-  bool is_init_state(InitState state) const { return init_state_ == state; }
+  // Collection of InitValues that represents the current initialization state
+  // of the recorder.
+  //
+  // For events to be persisted, both kKeyDataInitialized, kEventsInitialized,
+  // and kProfileKeyDataInitialized msut be set for events to be recorded.
+  using InitState =
+      base::EnumSet<State, State::kUninitialized, State::kMaxValue>;
 
   void OnRead(ReadStatus status);
   void OnWrite(WriteStatus status);
@@ -178,8 +186,8 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // Returns true if key data is ready to use.
   bool IsKeyDataInitialized();
 
-  // Increments |init_count_| and checks if the recorder is ready.
-  void UpdateAndCheckInitState();
+  // Returns true if ready to record events.
+  bool IsInitialized();
 
   // Returns whether the |event| can be recorded event if metrics is opted-out.
   // Note that uploading is still guarded by metrics opt-in state and that these
@@ -196,15 +204,13 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   static int kMaxEventsPerUpload;
 
   // Whether the metrics provider has completed initialization. Initialization
-  // occurs across OnProfileAdded and OnInitializationCompleted. No incoming
+  // occurs across OnProfileAdded and OnKeyReady. No incoming
   // events are recorded until initialization has succeeded.
   //
   // Execution is:
   //  - A profile is added.
   //  - OnProfileAdded is called, which constructs |storage_| and
-  //    asynchronously reads events and keys.
-  //  - OnInitializationCompleted is called once reading from disk is complete,
-  //    which sets |init_count_| to kInitialized.
+  //    asynchronously reads events and keys are loaded.
   //
   // The metrics provider does not handle multiprofile: initialization happens
   // only once, for the first-logged-in account aka. primary user.
@@ -213,9 +219,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // per-profile keys, per-device keys, and unsent events. |init_count_| tracks
   // how many of these have been read and, when it reaches 3, we set
   // |init_state_| to kInitialized.
-  InitState init_state_ = InitState::kUninitialized;
-  int init_count_ = 0;
-  static constexpr int kTargetInitCount = 3;
+  InitState init_state_;
 
   // Tracks the recording state signalled to the metrics provider by
   // OnRecordingEnabled and OnRecordingDisabled. This is false until

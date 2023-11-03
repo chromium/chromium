@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_P(MetadataProcessorTest, DISABLED_UserMetadata) {
 
   structured_metrics_mixin_.WaitUntilKeysReady();
 
-  ASSERT_TRUE(structured_metrics_mixin_.GetRecorder()->can_provide_metrics());
+  ASSERT_TRUE(structured_metrics_mixin_.GetRecorder()->CanProvideMetrics());
 
   NoMetricsEvent().Record();
 

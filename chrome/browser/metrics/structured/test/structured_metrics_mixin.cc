@@ -114,7 +114,7 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
     uint64_t project_name_hash,
     uint64_t event_name_hash) {
   std::vector<StructuredEventProto> events_vector;
-  if (!GetRecorder()->can_provide_metrics()) {
+  if (!GetRecorder()->CanProvideMetrics()) {
     return events_vector;
   }
 

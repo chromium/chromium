@@ -60,7 +60,7 @@ const EventsProto& TestStructuredMetricsProvider::ReadEvents() {
 absl::optional<const StructuredEventProto*>
 TestStructuredMetricsProvider::FindEvent(uint64_t project_name_hash,
                                          uint64_t event_name_hash) {
-  if (!structured_metrics_provider_->recorder().can_provide_metrics()) {
+  if (!structured_metrics_provider_->recorder().CanProvideMetrics()) {
     return absl::nullopt;
   }
 
@@ -79,7 +79,7 @@ std::vector<const StructuredEventProto*>
 TestStructuredMetricsProvider::FindEvents(uint64_t project_name_hash,
                                           uint64_t event_name_hash) {
   std::vector<const StructuredEventProto*> events_vector;
-  if (!structured_metrics_provider_->recorder().can_provide_metrics()) {
+  if (!structured_metrics_provider_->recorder().CanProvideMetrics()) {
     return events_vector;
   }
 
