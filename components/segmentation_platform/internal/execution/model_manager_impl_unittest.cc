@@ -200,8 +200,9 @@ TEST_F(ModelManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
             segment_info_from_db->model_update_time_s());
 }
 
-TEST_F(ModelManagerTest,
-       OnSegmentationModelUpdatedWithPreviousMetadataAndPredictionResult) {
+TEST_F(
+    ModelManagerTest,
+    OnSegmentationModelUpdatedWithPreviousMetadataAndPredictionResultAndTrainingData) {
   base::MockCallback<ModelManager::SegmentationModelUpdatedCallback> callback;
   auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   CreateModelManager({segment_id}, callback.Get());
@@ -211,6 +212,16 @@ TEST_F(ModelManagerTest,
   segment_database_->AddUserActionFeature(segment_id, "hello", 2, 2,
                                           proto::Aggregation::BUCKETED_COUNT);
   segment_database_->AddPredictionResult(segment_id, 2, clock_.Now());
+
+  proto::TrainingData training_data;
+  training_data.add_inputs(1);
+  training_data.set_request_id(
+      TrainingRequestId::FromUnsafeValue(1).GetUnsafeValue());
+  // Store a training data request to the DB.
+  segment_database_->SaveTrainingData(segment_id,
+                                      proto::ModelSource::SERVER_MODEL_SOURCE,
+                                      training_data, base::DoNothing());
+
   segment_database_->FindOrCreateSegment(segment_id)
       ->set_model_version(kOldModelVersion);
 
@@ -223,12 +234,14 @@ TEST_F(ModelManagerTest,
   EXPECT_TRUE(segment_info_from_db_1.has_value());
   EXPECT_EQ(segment_id, segment_info_from_db_1->segment_id());
 
-  // Verify the old metadata and prediction result has been stored correctly.
+  // Verify the old metadata and prediction result and training data has been
+  // stored correctly.
   EXPECT_EQ(456u, segment_info_from_db_1->model_metadata().bucket_duration());
   EXPECT_THAT(segment_info_from_db_1->prediction_result().result(),
               testing::ElementsAre(2));
   EXPECT_EQ(ModelSource::SERVER_MODEL_SOURCE,
             segment_info_from_db_1->model_source());
+  EXPECT_EQ(1, segment_info_from_db_1->training_data_size());
 
   // Verify the metadata features have been stored correctly.
   EXPECT_EQ(proto::SignalType::USER_ACTION,

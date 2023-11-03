@@ -177,6 +177,13 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
       if (old_segment_info->has_model_update_time_s()) {
         new_model_update_time_s = old_segment_info->model_update_time_s();
       }
+
+      if (old_segment_info->training_data_size() > 0) {
+        for (int i = 0; i < old_segment_info->training_data_size(); i++) {
+          new_segment_info.add_training_data()->CopyFrom(
+              old_segment_info->training_data(i));
+        }
+      }
     }
   }
   new_segment_info.set_model_update_time_s(new_model_update_time_s);
