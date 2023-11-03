@@ -527,7 +527,7 @@
   {
     "name": "autofill-enable-admin-level-2",
     "owners": ["sebsg@chromium.org"],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "autofill-enable-android-n-key-for-fido-authentication",
@@ -537,7 +537,7 @@
   {
     "name": "autofill-enable-between-streets",
     "owners": ["sebsg@chromium.org"],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "autofill-enable-card-art-image",
@@ -577,7 +577,7 @@
   {
     "name": "autofill-enable-landmark",
     "owners": [ "sebsg@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "autofill-enable-manual-fallback-for-virtual-cards",
