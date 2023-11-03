@@ -2534,13 +2534,16 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
         supported_profile == HEVCPROFILE_MAIN10 ||
         supported_profile == HEVCPROFILE_MAIN_STILL_PICTURE ||
         supported_profile == HEVCPROFILE_REXT) {
-      if (!workarounds.disable_accelerated_hevc_decode &&
-          HasPlatformHevcSupport()) {
-        // Success! We have HEVC hardware decoding (or software
-        // decoding if the hardware is not good enough) support too.
-        // max supported resolution -> 8k 👍
-        max_dimension = 8192;
+      if (workarounds.disable_accelerated_hevc_decode) {
+        continue;
       }
+      if (!HasPlatformHevcSupport()) {
+        continue;
+      }
+      // Success! We have HEVC hardware decoding (or software
+      // decoding if the hardware is not good enough) support too.
+      // max supported resolution -> 8k 👍
+      max_dimension = 8192;
     }
 
     SupportedProfile profile;
