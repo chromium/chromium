@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/events/event.h"
 #include "ui/views/view.h"
+
+namespace ui {
+class LocatedEvent;
+}  // namespace ui
 
 namespace views {
 class Label;
@@ -70,6 +74,18 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // Updates changes depending on whether `is_zero_state` is true.
   void UpdateOnZeroState(bool is_zero_state);
 
+  // Updates the `add_container_` background. If `add_background` is true, add
+  // a default background to `add_container_`. Otherwise, remove the background.
+  void UpdateAddContainerBackground(bool add_background);
+
+  // Updates the `scroll_view_` when the `scroll_content_` changes. If
+  // `scroll_to_bottom` is true, scroll `scroll_view_` to the bottom.
+  void UpdateScrollView(bool scroll_to_bottom);
+  // Called when `scroll_view_` is scrolled.
+  void OnScrollViewScrolled();
+  // Returns true if `scroll_view_` is scrolled with an offset.
+  bool HasScrollOffset();
+
   // Functions related to buttons.
   void OnAddButtonPressed();
   void OnDoneButtonPressed();
@@ -122,6 +138,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
+
+  base::CallbackListSubscription on_scroll_view_scrolled_subscription_;
 };
 
 }  // namespace arc::input_overlay

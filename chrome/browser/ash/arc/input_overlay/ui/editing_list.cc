@@ -22,8 +22,10 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
@@ -120,7 +122,8 @@ void EditingList::OnGestureEvent(ui::GestureEvent* event) {
 void EditingList::Init() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, /*radius=*/24));
-  SetBorder(views::CreateEmptyBorder(kEditingListInsideBorderInsets));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kEditingListInsideBorderInsets, 0)));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kVertical))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
@@ -130,6 +133,9 @@ void EditingList::Init() {
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetBackgroundColor(absl::nullopt);
+  on_scroll_view_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          &EditingList::OnScrollViewScrolled, base::Unretained(this)));
   scroll_content_ = scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_content_
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -137,6 +143,8 @@ void EditingList::Init() {
           /*inside_border_insets=*/gfx::Insets(),
           /*between_child_spacing=*/8))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  scroll_content_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(0, kEditingListInsideBorderInsets)));
 
   // Add contents.
   if (HasControls()) {
@@ -181,7 +189,9 @@ void EditingList::AddHeader() {
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, views::TableLayout::kFixedSize);
   header_container->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(0, 0, kHeaderBottomMargin, 0));
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, kEditingListInsideBorderInsets, kHeaderBottomMargin,
+                        kEditingListInsideBorderInsets));
 
   // Add header title.
   editing_header_label_ =
@@ -213,8 +223,7 @@ void EditingList::AddActionAddRow() {
   // +-----------------------------------+
   add_container_ = AddChildView(std::make_unique<views::TableLayoutView>());
   add_container_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(14, 16)));
-  add_container_->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, /*radius=*/16.0f));
+  UpdateAddContainerBackground(/*add_background=*/true);
   add_container_
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
                   /*v_align=*/views::LayoutAlignment::kStart,
@@ -285,7 +294,9 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
   DCHECK(add_container_);
   add_container_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, is_zero_state_ ? 0 : kAddRowBottomMargin, 0));
+      gfx::Insets::TLBR(0, kEditingListInsideBorderInsets,
+                        is_zero_state_ ? 0 : kAddRowBottomMargin,
+                        kEditingListInsideBorderInsets));
 
   DCHECK(add_title_);
   // TODO(b/274690042): Replace it with localized strings.
@@ -310,6 +321,37 @@ void EditingList::OnHelpButtonPressed() {
 void EditingList::UpdateAddButtonState() {
   add_button_->SetEnabled(controller_->GetActiveActionsSize() <
                           kMaxActionCount);
+}
+
+void EditingList::UpdateAddContainerBackground(bool add_background) {
+  // No need to update the background if there is an expected background.
+  if (add_background == !!add_container_->GetBackground()) {
+    return;
+  }
+
+  add_container_->SetBackground(
+      add_background ? views::CreateThemedRoundedRectBackground(
+                           cros_tokens::kCrosSysSystemOnBase, /*radius=*/16.0f)
+                     : nullptr);
+}
+
+void EditingList::UpdateScrollView(bool scroll_to_bottom) {
+  scroll_view_->InvalidateLayout();
+  if (scroll_to_bottom) {
+    scroll_view_->ScrollByOffset(
+        gfx::PointF(0, scroll_content_->GetPreferredSize().height()));
+  }
+
+  UpdateWidget();
+  UpdateAddContainerBackground(/*add_background=*/!HasScrollOffset());
+}
+
+void EditingList::OnScrollViewScrolled() {
+  UpdateAddContainerBackground(/*add_background=*/!HasScrollOffset());
+}
+
+bool EditingList::HasScrollOffset() {
+  return scroll_view_->GetVisibleRect().y() != 0;
 }
 
 void EditingList::OnDragStart(const ui::LocatedEvent& event) {
@@ -441,13 +483,10 @@ void EditingList::OnActionAdded(Action& action) {
   }
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));
-  scroll_view_->InvalidateLayout();
   // Scroll the list to bottom when a new action is added.
-  scroll_view_->ScrollByOffset(
-      gfx::PointF(0, scroll_content_->GetPreferredSize().height()));
+  UpdateScrollView(/*scroll_to_bottom=*/true);
 
   UpdateAddButtonState();
-  UpdateWidget();
 }
 
 void EditingList::OnActionRemoved(const Action& action) {
@@ -457,6 +496,7 @@ void EditingList::OnActionRemoved(const Action& action) {
     DCHECK(list_item);
     if (list_item->action() == &action) {
       scroll_content_->RemoveChildViewT(list_item);
+      UpdateScrollView(/*scroll_to_bottom=*/false);
       break;
     }
   }
@@ -465,12 +505,9 @@ void EditingList::OnActionRemoved(const Action& action) {
     UpdateOnZeroState(/*is_zero_state=*/true);
     // TODO(b/274690042): Replace it with localized strings.
     controller_->AddNudgeWidget(add_button_, u"Add your first button here");
-  } else {
-    scroll_view_->InvalidateLayout();
   }
 
   UpdateAddButtonState();
-  UpdateWidget();
 }
 
 void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
@@ -483,12 +520,10 @@ void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
       scroll_content_->RemoveChildViewT(list_item);
       scroll_content_->AddChildViewAt(
           std::make_unique<ActionViewListItem>(controller_, new_action), i);
-      scroll_view_->InvalidateLayout();
-      break;
+      UpdateScrollView(/*scroll_to_bottom=*/false);
+      return;
     }
   }
-
-  UpdateWidget();
 }
 
 void EditingList::OnActionInputBindingUpdated(const Action& action) {
