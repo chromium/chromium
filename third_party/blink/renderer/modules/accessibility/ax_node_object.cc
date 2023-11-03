@@ -835,13 +835,29 @@ absl::optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
 
 // The following lists are for deciding whether the tags aside,
 // header and footer can be interpreted as roles complementary, banner and
-// contentInfo or if they should be interpreted as generic. This list
-// includes all roles that correspond to the html sectioning content elements.
+// contentInfo or if they should be interpreted as generic.
+// This function only handles the complementary, banner, and contentInfo roles,
+// which belong to the landmark roles set.
 static HashSet<ax::mojom::blink::Role>& GetLandmarkIsNotAllowedAncestorRoles(
     ax::mojom::blink::Role landmark) {
   // clang-format off
   DEFINE_STATIC_LOCAL(
-      HashSet<ax::mojom::blink::Role>, sectioning_content_roles,
+      // https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2
+      // The aside element should not assume the complementary role when nested
+      // within the following sectioning content elements.
+      HashSet<ax::mojom::blink::Role>, complementary_is_not_allowed_roles,
+      ({
+        ax::mojom::blink::Role::kArticle,
+        ax::mojom::blink::Role::kComplementary,
+        ax::mojom::blink::Role::kNavigation,
+        ax::mojom::blink::Role::kSection
+      }));
+      // https://w3c.github.io/html-aam/#el-header-ancestorbody
+      // The header and footer elements should not assume the banner and
+      // contentInfo roles, respectively, when nested within any of the
+      // sectioning content elements or the main element.
+  DEFINE_STATIC_LOCAL(
+      HashSet<ax::mojom::blink::Role>, landmark_is_not_allowed_roles,
       ({
         ax::mojom::blink::Role::kArticle,
         ax::mojom::blink::Role::kComplementary,
@@ -851,21 +867,10 @@ static HashSet<ax::mojom::blink::Role>& GetLandmarkIsNotAllowedAncestorRoles(
       }));
   // clang-format on
 
-  DEFINE_STATIC_LOCAL(HashSet<ax::mojom::blink::Role>,
-                      aside_is_not_allowed_roles, ());
-
-  // Main can contain complementary element but not header or footer.
   if (landmark == ax::mojom::blink::Role::kComplementary) {
-    if (aside_is_not_allowed_roles.empty()) {
-      for (const auto& role : sectioning_content_roles) {
-        if (role != ax::mojom::blink::Role::kMain) {
-          aside_is_not_allowed_roles.insert(role);
-        }
-      }
-    }
-    return aside_is_not_allowed_roles;
+    return complementary_is_not_allowed_roles;
   }
-  return sectioning_content_roles;
+  return landmark_is_not_allowed_roles;
 }
 
 bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
