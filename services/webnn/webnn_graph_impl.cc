@@ -394,6 +394,36 @@ bool ValidateElu(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
+                              const mojom::ElementWiseUnaryPtr& operation) {
+  switch (operation->kind) {
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      // Only uint8 is supported
+      auto* input =
+          GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+      auto* output =
+          GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+      if (ValidateUnaryOperation(input, output)) {
+        return input->data_type == mojom::Operand::DataType::kUint8;
+      }
+      return false;
+    }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      // All data types are supported
+      return ValidateUnaryOperation(id_to_operand_map, operation);
+    }
+    case mojom::ElementWiseUnary::Kind::kSqrt:
+      [[fallthrough]];
+    case mojom::ElementWiseUnary::Kind::kErf:
+      [[fallthrough]];
+    case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      // Only float data type is supported
+      return ValidateFloatingPointUnaryOperation(id_to_operand_map, operation);
+    }
+  }
+  return false;
+}
+
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
                   const mojom::GemmPtr& gemm) {
   auto* a = GetMojoOperand(id_to_operand_map, gemm->a_operand_id);
@@ -735,6 +765,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                                        operation->get_element_wise_binary());
     case mojom::Operation::Tag::kElu:
       return ValidateElu(id_to_operand_map, operation->get_elu());
+    case mojom::Operation::Tag::kElementWiseUnary:
+      return ValidateElementWiseUnary(id_to_operand_map,
+                                      operation->get_element_wise_unary());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
     case mojom::Operation::Tag::kLeakyRelu:

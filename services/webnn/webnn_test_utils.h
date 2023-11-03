@@ -145,6 +145,10 @@ class GraphInfoBuilder final {
                 uint64_t output_operand_id,
                 float alpha);
 
+  void BuildElementWiseUnary(mojom::ElementWiseUnary::Kind kind,
+                             uint64_t input_operand,
+                             uint64_t output_operand);
+
   // A `GemmAttributes` type should have the following members:
   // struct GemmAttributes {
   //   absl::optional<uint64_t> c_operand_id,

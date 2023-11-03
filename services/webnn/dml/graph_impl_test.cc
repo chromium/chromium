@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <DirectML.h>
+#include <stdint.h>
 #include <wrl.h>
+#include <cmath>
 #include <type_traits>
 
 #include "base/run_loop.h"
@@ -827,6 +829,100 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
   }
 }
 
+template <typename T>
+struct ElementWiseUnaryTester {
+  OperandInfo<T> input;
+  mojom::ElementWiseUnary::Kind kind;
+  OperandInfo<T> output;
+  void Test() {
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildElementWiseUnary(kind, input_operand_id, output_operand_id);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+    EXPECT_EQ(BigBufferToVector<T>(std::move(named_outputs["output"])),
+              output.values);
+  }
+};
+
+// Test building and computing a DML graph with element-wise unary operator.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
+  {
+    ElementWiseUnaryTester<uint8_t>{
+        .input = {.type = mojom::Operand::DataType::kUint8,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {0, 2, 0, 4, 5, 255}},
+        .kind = mojom::ElementWiseUnary::Kind::kLogicalNot,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {1, 0, 1, 0, 0, 0}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<uint8_t>{
+        .input = {.type = mojom::Operand::DataType::kUint8,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {0, 2, 0, 4, 5, 255}},
+        .kind = mojom::ElementWiseUnary::Kind::kIdentity,
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 2, 0, 4, 5, 255}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {0, 2, 0, 4, 5, 255}},
+        .kind = mojom::ElementWiseUnary::Kind::kIdentity,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 2, 0, 4, 5, 255}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {0, 4, 2, 16, 64, 3}},
+        .kind = mojom::ElementWiseUnary::Kind::kSqrt,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 2, sqrt(2.0f), 4, 8, sqrt(3.0f)}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {0, 4, 0, 16, 64, -5}},
+        .kind = mojom::ElementWiseUnary::Kind::kErf,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {0, 1, 0, 1, 1, -1}}}
+        .Test();
+  }
+  {
+    ElementWiseUnaryTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = {1, 4, 2, 16, 64, 2}},
+        .kind = mojom::ElementWiseUnary::Kind::kReciprocal,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 1},
+                   .values = {1, 0.25, 0.5, 0.0625, 0.015625, 0.5}}}
+        .Test();
+  }
+}
+
 struct Pool2dAttributes {
   std::vector<uint32_t> window_dimensions;
   std::vector<uint32_t> padding;
@@ -865,7 +961,8 @@ struct Pool2dTester {
   }
 };
 
-// Test building and computing a DML graph with single operator average pool2d.
+// Test building and computing a DML graph with single operator average
+// pool2d.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
   {
     // Test average pool2d with nchw layout, float 32 data type.
@@ -943,8 +1040,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
   }
 }
 
-// Test building and computing a DML graph with single operator max pool2d with
-// nchw layout.
+// Test building and computing a DML graph with single operator max pool2d
+// with nchw layout.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMaxPool2d) {
   // Test max pool2d with nchw layout, strides=1, padding=0, and floor
   // rounding.

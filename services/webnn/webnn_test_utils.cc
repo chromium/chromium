@@ -180,6 +180,17 @@ void GraphInfoBuilder::BuildMatmul(uint64_t a_operand_id,
       mojom::Operation::NewMatmul(std::move(matmul)));
 }
 
+void GraphInfoBuilder::BuildElementWiseUnary(mojom::ElementWiseUnary::Kind kind,
+                                             uint64_t input_operand,
+                                             uint64_t output_operand) {
+  mojom::ElementWiseUnaryPtr unary = mojom::ElementWiseUnary::New();
+  unary->kind = kind;
+  unary->input_operand_id = input_operand;
+  unary->output_operand_id = output_operand;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewElementWiseUnary(std::move(unary)));
+}
+
 void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
                                   uint64_t slope_operand_id,
                                   uint64_t output_operand_id) {

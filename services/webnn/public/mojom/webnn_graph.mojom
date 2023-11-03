@@ -146,6 +146,27 @@ struct ElementWiseBinary  {
   uint64 output_operand;
 };
 
+// Represents an element-wise unary operation, mathematically equivalent to:
+// <output_operand> = <operation_kind>(<input_operand>);
+struct ElementWiseUnary  {
+  enum Kind {
+    kLogicalNot,
+    kIdentity,
+    kSqrt,
+    kErf,
+    kReciprocal,
+  };
+
+  // The kind of unary operation.
+  Kind kind;
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
 // Specifies the different ways to pad a tensor. The padding value is only
 // specified when the mode is "constant".
 struct ConstantPadding {
@@ -447,6 +468,7 @@ union Operation {
   Conv2d conv2d;
   ElementWiseBinary element_wise_binary;
   Elu elu;
+  ElementWiseUnary element_wise_unary;
   Gemm gemm;
   LeakyRelu leaky_relu;
   Matmul matmul;

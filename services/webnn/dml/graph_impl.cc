@@ -97,6 +97,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "element-wise binary";
     case Operation::Tag::kElu:
       return "elu";
+    case Operation::Tag::kElementWiseUnary:
+      return "element-wise unary";
     case Operation::Tag::kGemm:
       return "gemm";
     case Operation::Tag::kLeakyRelu:
@@ -547,7 +549,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     const mojom::ElementWiseBinaryPtr& operation,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
-  // The input a and b tensor descriptions may be broadcated.
+  // The input a and b tensor descriptions may be broadcasted.
   const NodeOutput* input_a =
       GetNodeOutputForOperand(id_to_node_output_map, operation->lhs_operand);
   auto input_a_tensor_desc = input_a->GetTensorDesc();
@@ -1004,6 +1006,42 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
   return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElementWiseUnary(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ElementWiseUnaryPtr& operation,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  switch (operation->kind) {
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      return CreateOperatorNodeForUnary<
+          DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,
+          DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kSqrt: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SQRT_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_SQRT>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kErf: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ERF_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_ERF>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_RECIP_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_RECIP>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+  }
+  NOTREACHED_NORETURN();
 }
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
@@ -1769,6 +1807,12 @@ void GraphImpl::CreateAndBuild(
         create_operator_result =
             CreateOperatorNodeForElu(id_to_operand_map, operation->get_elu(),
                                      graph_builder, id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kElementWiseUnary: {
+        create_operator_result = CreateOperatorNodeForElementWiseUnary(
+            id_to_operand_map, operation->get_element_wise_unary(),
+            graph_builder, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kGemm: {
