@@ -592,8 +592,7 @@ bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
     return true;
   }
 
-  curr_frame_header_.initial_frame_context = curr_frame_header_.frame_context =
-      context_to_load.frame_context();
+  curr_frame_header_.frame_context = context_to_load.frame_context();
 
   Vp9CompressedHeaderParser compressed_parser;
   bool parse_success;

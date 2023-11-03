@@ -256,8 +256,7 @@ struct MEDIA_EXPORT Vp9FrameHeader {
   size_t uncompressed_header_size;
 
   Vp9CompressedHeader compressed_header;
-  // Initial frame entropy context after load_probs2(frame_context_idx).
-  Vp9FrameContext initial_frame_context;
+
   // Current frame entropy context after header parsing.
   Vp9FrameContext frame_context;
 

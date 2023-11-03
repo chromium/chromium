@@ -32,8 +32,7 @@ class D3D11VP9Accelerator : public D3DAccelerator,
   Status SubmitDecode(scoped_refptr<VP9Picture> picture,
                       const Vp9SegmentationParams& segmentation_params,
                       const Vp9LoopFilterParams& loop_filter_params,
-                      const Vp9ReferenceFrameVector& reference_frames,
-                      base::OnceClosure on_finished_cb) override;
+                      const Vp9ReferenceFrameVector& reference_frames) override;
 
   bool OutputPicture(scoped_refptr<VP9Picture> picture) override;
 

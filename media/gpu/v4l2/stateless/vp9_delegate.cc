@@ -152,8 +152,7 @@ DecodeStatus VP9Delegate::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
-    const Vp9ReferenceFrameVector& ref_frames,
-    base::OnceClosure done_cb) {
+    const Vp9ReferenceFrameVector& ref_frames) {
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DVLOGF(4);
   DCHECK(frame_hdr);

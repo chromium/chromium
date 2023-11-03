@@ -45,7 +45,6 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   const Vp9SegmentationParams segm_params = {0};
   const Vp9LoopFilterParams lf_params = {0};
   const Vp9ReferenceFrameVector reference_frames;
-  base::OnceClosure done_cb;
 
   constexpr uint8_t frame_data[] = {0x01};
 
@@ -59,8 +58,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
-  accelerator_->SubmitDecode(pic, segm_params, lf_params, reference_frames,
-                             std::move(done_cb));
+  accelerator_->SubmitDecode(pic, segm_params, lf_params, reference_frames);
   accelerator_->OutputPicture(pic);
 
   // Verify `sample`.
@@ -75,7 +73,6 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   const Vp9SegmentationParams segm_params = {0};
   const Vp9LoopFilterParams lf_params = {0};
   const Vp9ReferenceFrameVector reference_frames;
-  base::OnceClosure done_cb;
 
   constexpr uint8_t frame_data1[] = {0x01};
   constexpr uint8_t frame_data2[] = {0x02};
@@ -95,8 +92,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
-  accelerator_->SubmitDecode(pic1, segm_params, lf_params, reference_frames,
-                             std::move(done_cb));
+  accelerator_->SubmitDecode(pic1, segm_params, lf_params, reference_frames);
   accelerator_->OutputPicture(pic2);
 
   // Verify `sample`.

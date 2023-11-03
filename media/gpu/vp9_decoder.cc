@@ -381,11 +381,9 @@ VP9Decoder::VP9Accelerator::Status VP9Decoder::DecodeAndOutputPicture(
   DCHECK(!pic_size_.IsEmpty());
   DCHECK(pic->frame_hdr);
 
-  base::OnceClosure done_cb;
   const Vp9Parser::Context& context = parser_.context();
   VP9Accelerator::Status status = accelerator_->SubmitDecode(
-      pic, context.segmentation(), context.loop_filter(), ref_frames_,
-      std::move(done_cb));
+      pic, context.segmentation(), context.loop_filter(), ref_frames_);
   if (status != VP9Accelerator::Status::kOk) {
     if (status == VP9Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);

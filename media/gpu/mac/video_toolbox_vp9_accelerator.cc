@@ -41,12 +41,9 @@ VideoToolboxVP9Accelerator::Status VideoToolboxVP9Accelerator::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
-    const Vp9ReferenceFrameVector& reference_frames,
-    const base::OnceClosure done_cb) {
+    const Vp9ReferenceFrameVector& reference_frames) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // No callback because SupportsContextProbabilityReadback() returns false.
-  DCHECK(!done_cb);
   // `show_existing_frame` pictures go directly to OutputPicture().
   DCHECK(!pic->frame_hdr->show_existing_frame);
 
