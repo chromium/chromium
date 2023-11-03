@@ -99,6 +99,8 @@ std::string GetFlowString(EnrollmentScreenView::FlowType type) {
       return "enterpriseLicense";
     case EnrollmentScreenView::FlowType::kEducationLicense:
       return "educationLicense";
+    case EnrollmentScreenView::FlowType::kDeviceEnrollment:
+      return "deviceEnrollment";
   }
 }
 

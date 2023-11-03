@@ -300,7 +300,11 @@ void EnrollmentScreen::UpdateFlowType() {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
   } else {
-    view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    if (features::IsOobeSoftwareUpdateEnabled()) {
+      view_->SetFlowType(EnrollmentScreenView::FlowType::kDeviceEnrollment);
+    } else {
+      view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    }
     if (!features::IsKioskEnrollmentInOobeEnabled()) {
       view_->SetGaiaButtonsType(
           EnrollmentScreenView::GaiaButtonsType::kDefault);

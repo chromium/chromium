@@ -52,7 +52,8 @@ class EnrollmentScreenView
     kEnterprise,
     kCFM,
     kEnterpriseLicense,
-    kEducationLicense
+    kEducationLicense,
+    kDeviceEnrollment,
   };
   enum class GaiaButtonsType {
     kDefault,
