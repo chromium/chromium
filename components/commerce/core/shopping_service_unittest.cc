@@ -703,8 +703,9 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_WAA) {
-  test_features_.InitWithFeatures({kShoppingList},
-                                  {kShoppingListRegionLaunched});
+  test_features_.InitWithFeatures(
+      {kShoppingList},
+      {kShoppingListRegionLaunched, kShoppingListWAARestrictionRemoval});
 
   TestingPrefServiceSimple prefs;
   RegisterPrefs(prefs.registry());
