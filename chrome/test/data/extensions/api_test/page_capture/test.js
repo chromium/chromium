@@ -11,7 +11,7 @@ const assertTrue = chrome.test.assertTrue;
 var testUrl = 'http://www.a.com:PORT' +
     '/extensions/api_test/page_capture/google.html';
 
-function testPageCapture(data, isFile) {
+function verifyPageCapture(data, isFile) {
   assertEq(undefined, chrome.runtime.lastError);
   assertTrue(data != null);
   // It should contain few KBs of data.
@@ -47,43 +47,47 @@ chrome.test.getConfig(function(config) {
           tabId, changeInfo, tab) {
         if (tab.status == 'complete') {
           chrome.tabs.onUpdated.removeListener(listener);
-          chrome.pageCapture.saveAsMHTML(
-              {tabId: tab.id}, function(data) {
-                if (config.customArg == 'REQUEST_DENIED') {
-                  chrome.test.assertLastError('User denied request.');
-                  chrome.test.succeed();
-                  return;
-                }
-                testPageCapture(data, false);
-              });
+          chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
+            verifyPageCapture(data, false);
+          });
         }
       });
       chrome.tabs.create({url: testUrl});
     },
 
-    function saveFileUrlAsMHTML() {
+    function saveAsMHTML_FileAccessRequiredForFileUrls() {
       var captureUrl = config.testDataDirectory + '/';
       chrome.tabs.onUpdated.addListener(function listener(
           tabId, changeInfo, tab) {
         if (tab.status == 'complete' && tab.url == captureUrl) {
           chrome.tabs.onUpdated.removeListener(listener);
-          chrome.pageCapture.saveAsMHTML(
-              {tabId: tab.id}, function(data) {
-            if (config.customArg == 'REQUEST_DENIED') {
-              chrome.test.assertLastError('User denied request.');
-              chrome.test.succeed();
-            } else if (config.customArg == 'ONLY_PAGE_CAPTURE_PERMISSION') {
+          chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
+            if (config.customArg == 'ONLY_PAGE_CAPTURE_PERMISSION') {
               chrome.test.assertLastError(
-                  'Don\'t have permissions required to capture this ' +
-                    'page.');
+                  `Don't have permissions required to capture this page.`);
               chrome.test.succeed();
             } else {
-              testPageCapture(data, true /* isFile */);
+              verifyPageCapture(data, true /* isFile */);
             }
           });
         }
       });
       chrome.test.openFileUrl(captureUrl);
-    }
+    },
+
+    function saveAsMHTML_RestrictedUrlReturnsError() {
+      chrome.tabs.onUpdated.addListener(function listener(
+          tabId, changeInfo, tab) {
+        if (tab.status == 'complete') {
+          chrome.tabs.onUpdated.removeListener(listener);
+          chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
+            chrome.test.assertLastError(
+                `Don't have permissions required to capture this page.`);
+            chrome.test.succeed();
+          });
+        }
+      });
+      chrome.tabs.create({url: 'chrome://version'});
+    },
   ]);
 });
