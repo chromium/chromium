@@ -225,6 +225,9 @@ enum PermissionsPolicyFeature {
   // Client hint for prefers-reduced-transparency
   kClientHintPrefersReducedTransparency = 112,
 
+  // Web Printing API
+  kWebPrinting = 113,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

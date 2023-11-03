@@ -7627,6 +7627,7 @@ domain Page
       unload
       usb
       vertical-scroll
+      web-printing
       web-share
       # Alias for 'window-placement' (crbug.com/1328581).
       window-management

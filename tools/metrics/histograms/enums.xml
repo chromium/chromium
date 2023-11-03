@@ -35431,6 +35431,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="110" label="PrivateStateTokenIssuance"/>
   <int value="111" label="ClientHintUAFormFactor"/>
   <int value="112" label="ClientHintPrefersReducedTransparency"/>
+  <int value="113" label="WebPrinting"/>
 </enum>
 
 <enum name="FeatureUsageEvent">

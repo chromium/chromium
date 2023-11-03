@@ -73,6 +73,7 @@ sync-xhr
 unload
 usb
 vertical-scroll
+web-printing
 window-management
 xr-spatial-tracking
 

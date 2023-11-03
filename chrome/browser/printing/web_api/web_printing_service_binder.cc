@@ -8,8 +8,10 @@
 
 #include "base/feature_list.h"
 #include "content/public/browser/isolated_context_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
 #include "chrome/browser/printing/web_api/web_printing_service_chromeos.h"
@@ -20,9 +22,15 @@ namespace printing {
 void CreateWebPrintingServiceForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver) {
-  // TODO(b/302505962): Check the permissions policy feature once it's ready.
   if (!base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {
     mojo::ReportBadMessage("The WebPrinting API is disabled.");
+    return;
+  }
+  if (!render_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kWebPrinting)) {
+    mojo::ReportBadMessage(
+        "Access to the feature \"web-printing\" is disallowed by permissions "
+        "policy.");
     return;
   }
   // There are some security concerns around this API's fingerprinting surface

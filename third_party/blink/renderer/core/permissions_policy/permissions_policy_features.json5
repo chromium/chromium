@@ -413,6 +413,11 @@
       depends_on: ["ExperimentalPolicies"],
     },
     {
+      name: "WebPrinting",
+      permissions_policy_name: "web-printing",
+      depends_on: ["WebPrinting"],
+    },
+    {
       name: "WebShare",
       permissions_policy_name: "web-share",
       depends_on: ["WebShare"],
