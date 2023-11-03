@@ -17,9 +17,13 @@ namespace {
 // Computes a stable profile identifier based on the profile path. `CityHash64`
 // is defined as unchanging.
 uint64_t ProfileHash(const std::string& profile_path) {
-  // Leave the lowest bit unset to account for potential future updates.
-  return base::legacy::CityHash64(base::as_bytes(base::make_span(profile_path)))
-         << 1;
+  // The result is defined as taking the 63 upper bits from CityHash64 and
+  // setting the lowest bit to 1. This gives us two properties:
+  //  1. We can use the value 0 as a natural invalid/unset indicator.
+  //  2. Any other even number is reserved for future use.
+  return base::legacy::CityHash64(
+             base::as_bytes(base::make_span(profile_path))) |
+         1;
 }
 
 mojom::LacrosProfileSummaryPtr CreateProfileSummary(
