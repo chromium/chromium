@@ -90,8 +90,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
     Profile* profile = Profile::FromBrowserContext(context);
 
     if (!SearchEngineChoiceServiceFactory::
-            IsProfileEligibleForChoiceScreenForTesting(
-                CHECK_DEREF(g_browser_process->policy_service()), *profile)) {
+            IsProfileEligibleForChoiceScreenForTesting(CHECK_DEREF(profile))) {
       return nullptr;
     }
 
@@ -235,6 +234,14 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
       int count) {
     histogram_tester_.ExpectBucketCount(
         search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+        condition, count);
+  }
+
+  void CheckProfileInitConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions condition,
+      int count) {
+    histogram_tester_.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
         condition, count);
   }
 
@@ -438,33 +445,69 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
                        DialogGetsDisplayedOnlyForFirstProfile) {
+  // Start a first profile that will later show the dialog.
   Profile* first_profile = browser()->profile();
   Browser* browser_with_first_profile = browser();
   auto* first_profile_service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(first_profile));
+  ASSERT_TRUE(first_profile_service);
 
-  // Navigate to a URL to display the dialog.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser_with_first_profile, GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-  EXPECT_TRUE(
-      first_profile_service->IsShowingDialog(browser_with_first_profile));
-
-  // Create another profile and open a browser with it.
+  // Create the second profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* second_profile = &profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
   auto* second_profile_service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(second_profile));
-  Browser* browser_with_second_profile = CreateBrowser(second_profile);
+  ASSERT_TRUE(second_profile_service);
 
-  // Make sure that the browser with the second profile doesn't have a
-  // dialog opened.
+  // Navigate to a URL to display the dialog in the first profile.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser_with_first_profile, GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(
+      first_profile_service->IsShowingDialog(browser_with_first_profile));
+  CheckChoiceScreenWasDisplayedRecordedOnce();
+
+  // So far, no dialog check should have been failed based on a profile having
+  // claimed the dialog.
+  EXPECT_EQ(0, histogram_tester().GetBucketCount(
+                   search_engines::
+                       kSearchEngineChoiceScreenNavigationConditionsHistogram,
+                   search_engines::SearchEngineChoiceScreenConditions::
+                       kProfileOutOfScope));
+
+  // Open a browser with the second profile, it should not have a dialog opened.
+  Browser* browser_with_second_profile = CreateBrowser(second_profile);
   EXPECT_FALSE(
       second_profile_service->IsShowingDialog(browser_with_second_profile));
+
+  // No additional success record should have been made.
   CheckChoiceScreenWasDisplayedRecordedOnce();
+
+  // We are allowing the bucket to contain more than 1 record because based on
+  // other tests running in the environment, if the browser was in the
+  // background we would record a check twice: once for the page load finishing,
+  // and once for the browser becoming visible.
+  EXPECT_GE(histogram_tester().GetBucketCount(
+                search_engines::
+                    kSearchEngineChoiceScreenNavigationConditionsHistogram,
+                search_engines::SearchEngineChoiceScreenConditions::
+                    kProfileOutOfScope),
+            1);
+
+  // Create a third profile.
+  Profile* third_profile = &profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  auto* third_profile_service = static_cast<MockSearchEngineChoiceService*>(
+      SearchEngineChoiceServiceFactory::GetForProfile(third_profile));
+
+  // The third profile should not even have the service, because it was created
+  // after a static condition flipped.
+  EXPECT_EQ(nullptr, third_profile_service);
+  CheckProfileInitConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::kProfileOutOfScope,
+      1);
 
   // Test that the second profile will display the dialog when forced to.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -527,6 +570,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_FALSE(service->IsShowingDialog(browser()));
+
+  CheckNavigationConditionRecorded(
+      search_engines::SearchEngineChoiceScreenConditions::
+          kSuppressedByOtherDialog,
+      1);
 }
 #endif
 
@@ -581,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
 
   CheckNavigationConditionRecorded(
-      search_engines::SearchEngineChoiceScreenConditions::kExtensionContolled,
+      search_engines::SearchEngineChoiceScreenConditions::kExtensionControlled,
       1);
 }
 
