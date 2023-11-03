@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -873,7 +874,7 @@ bool PasswordFormManager::ProvisionallySave(
   CalculateSubmittedFormFrameMetric();
   CalculateSubmittedFormTypeMetric();
   metrics_recorder_->set_possible_username_used(false);
-  votes_uploader_.clear_single_username_vote_data();
+  votes_uploader_.clear_single_username_votes_data();
 
   if (possible_usernames && !possible_usernames->empty()) {
     HandleUsernameFirstFlow(*possible_usernames,
@@ -1358,15 +1359,29 @@ void PasswordFormManager::HandleUsernameFirstFlow(
     // Happens when there is no username field in the password form as well.
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
-    votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData());
+    votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData());
     return;
   }
   const UsernameFoundOutsideOfForm& picked_username = best_candidate.value();
-  votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
-      picked_username.data.renderer_id, picked_username.data.value,
-      picked_username.data.form_predictions.value_or(FormPredictions()),
-      form_fetcher_->GetBestMatches(),
-      picked_username.password_form_had_matching_username));
+  if (base::FeatureList::IsEnabled(
+          features::kUsernameFirstFlowWithIntermediateValuesVoting)) {
+    // Send votes on all candidates outside of the password form.
+    for (const auto& it : possible_usernames) {
+      votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData(
+          it.second.renderer_id, it.second.value,
+          it.second.form_predictions.value_or(FormPredictions()),
+          form_fetcher_->GetBestMatches(),
+          FormMatchesUsername(*parsed_submitted_form_.get(), it.second.value)));
+    }
+  } else {
+    // Send vote only on the best possible username candidate user modified
+    // field.
+    votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData(
+        picked_username.data.renderer_id, picked_username.data.value,
+        picked_username.data.form_predictions.value_or(FormPredictions()),
+        form_fetcher_->GetBestMatches(),
+        picked_username.password_form_had_matching_username));
+  }
 
   // Suggest the possible username value in a prompt in three cases:
   // (1) If single username field is a server override.

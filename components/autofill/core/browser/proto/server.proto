@@ -225,7 +225,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 46
+// Next available id: 47
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -373,6 +373,16 @@ message AutofillUploadContents {
     // The type of the username first flow vote signal, set iff |autofill_type|
     // is SINGLE_USERNAME, SINGLE_USERNAME_FORGOT_PASSWORD or NOT_USERNAME.
     optional SingleUsernameVoteType single_username_vote_type = 41;
+
+    // Only set for Username First Flow votes (`autofill_type` is
+    // `SINGLE_USERNAME` or `NOT_USERNAME`). Otherwise, set to `std::nullopt`.
+    // If set to true, the field is username candidate in Username First Flow
+    // and the field has no intermediate fields (like OTP/Captcha) between the
+    // candidate and the password form.
+    // If set to false, the field is username candidate in Username First Flow,
+    // but has intermediate fields between the candidate and the password
+    // form.
+    optional bool is_most_recent_single_username_candidate = 46;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;

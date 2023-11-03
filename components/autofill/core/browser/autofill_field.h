@@ -44,6 +44,18 @@ enum class DeprecatedFormControlType {
   kMaxValue = kSelectlist,
 };
 
+// Specifies if the Username First Flow vote has intermediate values.
+enum class IsMostRecentSingleUsernameCandidate {
+  // Field is not part of Username First Flow.
+  kNotPartOfUsernameFirstFlow = 0,
+  // Field is candidate for username in Username First Flow and has no
+  // intermediate fields
+  kMostRecentCandidate = 1,
+  // Field is candidate for username in Username First Flow and has intermediate
+  // fields between candidate and password form.
+  kHasIntermediateValuesInBetween = 2,
+};
+
 class AutofillField : public FormFieldData {
  public:
   using FieldLogEventType = absl::variant<absl::monostate,
@@ -272,6 +284,18 @@ class AutofillField : public FormFieldData {
     return single_username_vote_type_;
   }
 
+  void set_is_most_recent_single_username_candidate(
+      IsMostRecentSingleUsernameCandidate
+          is_most_recent_single_username_candidate) {
+    is_most_recent_single_username_candidate_ =
+        is_most_recent_single_username_candidate;
+  }
+
+  IsMostRecentSingleUsernameCandidate is_most_recent_single_username_candidate()
+      const {
+    return is_most_recent_single_username_candidate_;
+  }
+
   // Getter and Setter methods for
   // |value_not_autofilled_over_existing_value_hash_|.
   void set_value_not_autofilled_over_existing_value_hash(
@@ -426,6 +450,18 @@ class AutofillField : public FormFieldData {
   // Strength of the single username vote signal, if applicable.
   absl::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
       single_username_vote_type_;
+
+  // If set to `kMostRecentCandidate`, the field is candidate for username
+  // in Username First Flow and the field has no intermediate
+  // fields (like OTP/Captcha) between the candidate and the password form.
+  // If set to `kHasIntermediateValuesInBetween`, the field is candidate for
+  // username in Username First Flow, but has intermediate fields between the
+  // candidate and the password form.
+  // If set to `kNotPartOfUsernameFirstFlow`, the field is not part of Username
+  // First Flow.
+  IsMostRecentSingleUsernameCandidate
+      is_most_recent_single_username_candidate_ =
+          IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
 
   // Stores the hash of the value which is supposed to be autofilled in the
   // field but was not due to a prefilled value.
