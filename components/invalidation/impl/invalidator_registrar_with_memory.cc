@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -38,6 +39,35 @@ absl::optional<TopicData> FindAnyDuplicatedTopic(
     return intersection[0];
   }
   return absl::nullopt;
+}
+
+std::string DumpRegisteredHandlers(
+    const base::ObserverList<InvalidationHandler, true>& handlers) {
+  if (handlers.empty()) {
+    return "empty";
+  }
+
+  std::vector<std::string> handler_names;
+  for (const auto& handler : handlers) {
+    handler_names.emplace_back(handler.GetOwnerName());
+  }
+
+  return base::JoinString(handler_names, ",");
+}
+
+std::string DumpRegisteredHandlersToTopics(
+    const std::map<InvalidationHandler*, std::set<TopicData>, std::less<>>&
+        registered_handler_to_topics_map) {
+  if (registered_handler_to_topics_map.empty()) {
+    return "empty";
+  }
+
+  std::vector<std::string> handler_names;
+  for (const auto& [handler, topics] : registered_handler_to_topics_map) {
+    handler_names.emplace_back(handler->GetOwnerName());
+  }
+
+  return base::JoinString(handler_names, ",");
 }
 
 }  // namespace
@@ -103,13 +133,11 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
 
 InvalidatorRegistrarWithMemory::~InvalidatorRegistrarWithMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This should never print anything. Exceptions:
-  //  - except https://crbug.com/1186159 and
-  //  - https://crbug.com/1475104.
-  for (const auto& [handler, topics] : registered_handler_to_topics_map_) {
-    LOG(ERROR) << handler->GetOwnerName();
-  }
-  CHECK(registered_handler_to_topics_map_.empty());
+  CHECK(registered_handler_to_topics_map_.empty() && handlers_.empty())
+      << "Registered handlers during destruction: "
+      << DumpRegisteredHandlers(handlers_) << ". Handlers listening to topics: "
+      << DumpRegisteredHandlersToTopics(registered_handler_to_topics_map_)
+      << ".";
 }
 
 void InvalidatorRegistrarWithMemory::AddObserver(InvalidationHandler* handler) {
