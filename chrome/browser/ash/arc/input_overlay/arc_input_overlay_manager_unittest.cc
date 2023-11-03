@@ -31,11 +31,13 @@
 namespace arc::input_overlay {
 namespace {
 // Package names for testing.
-constexpr char kEnabledPackageName[] = "org.chromium.arc.testapp.inputoverlay";
 constexpr char kRandomPackageName[] =
     "org.chromium.arc.testapp.inputoverlay_no_data";
 constexpr char kRandomGamePackageName[] =
     "org.chromium.arc.testapp.inputoverlay_game";
+constexpr char kGameControlsOptOutPackageName[] =
+    "org.chromium.arc.testapp.inputoverlay_opt_out";
+
 constexpr const float kTolerance = 0.999f;
 
 }  // namespace
@@ -125,16 +127,14 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
         base::WrapUnique(new TestArcInputOverlayManager());
   }
 
-  std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  // ash::AshTestBase:
   void TearDown() override {
     arc_test_input_overlay_manager_->Shutdown();
     arc_test_input_overlay_manager_.reset();
     ash::AshTestBase::TearDown();
   }
+
+  std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // -----------------------------------------------------------------------------
@@ -158,10 +158,34 @@ class VersionArcInputOverlayManagerTest
     } else {
       scoped_feature_list_.InitWithFeatures({}, {});
     }
+
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_.set_wait_compatibility_mode(true);
+    arc_app_test_.SetUp(profile_.get());
+
+    SimulatedAppInstalled(task_environment(), arc_app_test_,
+                          kEnabledPackageName,
+                          /*is_gc_opt_out=*/false,
+                          /*is_game=*/true);
+    SimulatedAppInstalled(task_environment(), arc_app_test_,
+                          kRandomGamePackageName,
+                          /*is_gc_opt_out=*/false,
+                          /*is_game=*/true);
+  }
+
+  void TearDown() override {
+    arc_app_test_.TearDown();
+    profile_.reset();
+    ArcInputOverlayManagerTest::TearDown();
   }
 
  protected:
   bool IsBetaVersion() const { return GetParam(); }
+
+  ArcAppTest arc_app_test_;
+
+ private:
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_P(VersionArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
@@ -514,15 +538,7 @@ TEST_P(VersionArcInputOverlayManagerTest, TestGameWithDefaultMapping) {
 }
 
 TEST_P(VersionArcInputOverlayManagerTest, TestGameWithoutDefaultMapping) {
-  std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
-  ArcAppTest arc_app_test;
-  arc_app_test.set_wait_compatibility_mode(true);
-  arc_app_test.SetUp(profile.get());
-
   // Test with a random non-O4C game.
-  arc_app_test.compatibility_mode_instance()->set_is_gio_applicable(
-      IsBetaVersion());
-  task_environment()->RunUntilIdle();
   auto game_window =
       CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                       gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
@@ -555,7 +571,47 @@ TEST_P(VersionArcInputOverlayManagerTest, TestGameWithoutDefaultMapping) {
   }
 
   game_window.reset();
-  arc_app_test.TearDown();
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestGameControlsOptOut) {
+  SimulatedAppInstalled(task_environment(), arc_app_test_,
+                        kGameControlsOptOutPackageName,
+                        /*is_gc_opt_out=*/true,
+                        /*is_game=*/true);
+  auto game_window = CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                                     gfx::Rect(10, 10, 100, 100),
+                                     kGameControlsOptOutPackageName);
+  EXPECT_FALSE(GetTouchInjector(game_window->GetNativeWindow()));
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestO4CGame) {
+  // Test an O4C game without any input mapping.
+  arc_app_test_.compatibility_mode_instance()->set_o4c_pkg(
+      kRandomGamePackageName);
+  auto game_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
+  task_environment()->FastForwardBy(kIORead);
+  auto* injector = GetTouchInjector(game_window->GetNativeWindow());
+  EXPECT_FALSE(injector);
+  game_window.reset();
+  task_environment()->RunUntilIdle();
+
+  // Test an O4C game with input mappings.
+  arc_app_test_.compatibility_mode_instance()->set_o4c_pkg(kEnabledPackageName);
+  game_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
+  task_environment()->FastForwardBy(kIORead);
+  injector = GetTouchInjector(game_window->GetNativeWindow());
+  EXPECT_TRUE(injector);
+  EXPECT_EQ(3u, injector->actions().size());
+  if (IsBetaVersion()) {
+    EXPECT_FALSE(injector->touch_injector_enable());
+  } else {
+    EXPECT_TRUE(injector->touch_injector_enable());
+  }
+  game_window.reset();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -424,20 +423,6 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
                      std::move(touch_injector)));
 }
 
-void ArcInputOverlayManager::OnDidCheckGioApplicable(
-    std::unique_ptr<TouchInjector> touch_injector,
-    bool is_gio_applicable) {
-  // For Optimized-for-Chromebook (O4C) games (which shouldn't apply GIO), GIO
-  // still applies if the associated `TouchInjector` is not empty. For example,
-  // users may have the mapping customization before games become O4C games and
-  // users may want to keep the previous mapping.
-  if (!is_gio_applicable && touch_injector->actions().empty()) {
-    ResetForPendingTouchInjector(std::move(touch_injector));
-  } else {
-    OnLoadingFinished(std::move(touch_injector));
-  }
-}
-
 void ArcInputOverlayManager::OnProtoDataAvailable(
     std::unique_ptr<TouchInjector> touch_injector,
     std::unique_ptr<AppDataProto> proto) {
@@ -454,34 +439,19 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
     return;
   }
 
-  // Check if GIO is applicable from mojom instance.
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    LOG(ERROR) << "Failed to get ArcServiceManager";
-    MayKeepTouchInjectorAfterError(std::move(touch_injector));
-    return;
-  }
-  auto* compatibility_mode =
-      arc_service_manager->arc_bridge_service()->compatibility_mode();
-  if (!compatibility_mode || !compatibility_mode->IsConnected()) {
-    LOG(ERROR) << "No supported Android connection.";
-    MayKeepTouchInjectorAfterError(std::move(touch_injector));
-    return;
-  }
-  auto* instance =
-      ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, IsGioApplicable);
-  if (!instance) {
-    LOG(ERROR) << "IsGioApplicable method for ARC is not available";
-    MayKeepTouchInjectorAfterError(std::move(touch_injector));
+  // Steps to check whether enablings Game Controls for `package_name`.
+  // 1) Check whether the app opts out Game Controls explicitly.
+  // 2) Check whether the app is a game.
+  // 3) Check whether the app is an Optimized-for-ChromeOS app.
+
+  // If Game Controls is opt-out explicitly, Game Controls is not available for
+  // this app.
+  if (IsGameControlsOptOut(touch_injector->package_name())) {
+    ResetForPendingTouchInjector(std::move(touch_injector));
     return;
   }
 
-  std::string package_name = touch_injector->package_name();
-  VLOG(2) << "Check if GIO applicable on package: " << package_name;
-  instance->IsGioApplicable(
-      package_name,
-      base::BindOnce(&ArcInputOverlayManager::OnDidCheckGioApplicable,
-                     Unretained(this), std::move(touch_injector)));
+  CheckAppCategory(std::move(touch_injector));
 }
 
 void ArcInputOverlayManager::OnSaveProtoFile(
@@ -496,6 +466,127 @@ void ArcInputOverlayManager::OnSaveProtoFile(
           &DataController::WriteProtoToFile, std::move(proto),
           data_controller_->GetFilePathFromPackageName(package_name)),
       base::BindOnce(&CheckWriteResult, package_name));
+}
+
+bool ArcInputOverlayManager::IsGameControlsOptOut(
+    const std::string& package_name) {
+  auto* prefs = GetArcAppListPrefs();
+  CHECK(prefs);
+  std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
+      prefs->GetPackage(package_name);
+  return package && package->game_controls_opt_out;
+}
+
+void ArcInputOverlayManager::CheckAppCategory(
+    std::unique_ptr<TouchInjector> touch_injector) {
+  auto* prefs = GetArcAppListPrefs();
+  CHECK(prefs);
+  const std::string package_name = touch_injector->package_name();
+  const auto app_category =
+      prefs->GetAppCategory(prefs->GetAppIdByPackageName(package_name));
+  // If the app is not a game, Game Controls is not available for this app.
+  if (app_category != arc::mojom::AppCategory::kUndefined &&
+      app_category != arc::mojom::AppCategory::kGame) {
+    ResetForPendingTouchInjector(std::move(touch_injector));
+    return;
+  }
+
+  if (app_category == arc::mojom::AppCategory::kGame) {
+    // Check if it is an O4C game.
+    CheckO4C(std::move(touch_injector));
+  } else {
+    // It is possible that `app_category` is not cached yet. If `app_category`
+    // is not cached, it calls mojom function explicitly to fetch `app_category`
+    // from Android side.
+    auto* connection = prefs->app_connection_holder();
+    if (!connection) {
+      LOG(ERROR)
+          << "Unable to get access to GetAppCategory for nullptr |connection|.";
+      MayKeepTouchInjectorAfterError(std::move(touch_injector));
+      return;
+    }
+
+    auto* instance = ARC_GET_INSTANCE_FOR_METHOD(connection, GetAppCategory);
+    if (!instance) {
+      LOG(ERROR) << "GetAppCategory method for ARC is not available";
+      MayKeepTouchInjectorAfterError(std::move(touch_injector));
+      return;
+    }
+
+    instance->GetAppCategory(
+        package_name,
+        base::BindOnce(&ArcInputOverlayManager::OnDidCheckAppCategory,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(touch_injector)));
+  }
+}
+
+void ArcInputOverlayManager::OnDidCheckAppCategory(
+    std::unique_ptr<TouchInjector> touch_injector,
+    arc::mojom::AppCategory app_category) {
+  // If the app is not a game, Game Controls is not available for this app.
+  if (app_category != arc::mojom::AppCategory::kGame) {
+    ResetForPendingTouchInjector(std::move(touch_injector));
+    return;
+  }
+  // Check whether it is an Optimized-for-ChromeOS games.
+  CheckO4C(std::move(touch_injector));
+}
+
+void ArcInputOverlayManager::CheckO4C(
+    std::unique_ptr<TouchInjector> touch_injector) {
+  // Check if it is an O4C app from mojom instance.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    LOG(ERROR) << "Failed to get ArcServiceManager";
+    OnLoadingFinished(std::move(touch_injector));
+    return;
+  }
+  auto* compatibility_mode =
+      arc_service_manager->arc_bridge_service()->compatibility_mode();
+  if (!compatibility_mode || !compatibility_mode->IsConnected()) {
+    // This mojom is available for R and newer.
+    LOG(ERROR) << "No supported Android connection for compatibility_mode.";
+    OnLoadingFinished(std::move(touch_injector));
+    return;
+  }
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, IsOptimizedForCrosApp);
+  if (!instance) {
+    LOG(ERROR) << "IsOptimizedForCrosApp method for ARC is not available.";
+    OnLoadingFinished(std::move(touch_injector));
+    return;
+  }
+
+  std::string package_name = touch_injector->package_name();
+  VLOG(2) << "Check if pkg: " << package_name << " is an O4C app.";
+
+  instance->IsOptimizedForCrosApp(
+      package_name, base::BindOnce(&ArcInputOverlayManager::OnDidCheckO4C,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(touch_injector)));
+}
+
+void ArcInputOverlayManager::OnDidCheckO4C(
+    std::unique_ptr<TouchInjector> touch_injector,
+    bool is_o4c) {
+  bool remove_touch_injector = false;
+  if (is_o4c) {
+    if (touch_injector->actions().empty()) {
+      remove_touch_injector = true;
+    } else {
+      // Game Controls is still available but disabled if it is o4c because
+      // there is mapping set up before.
+      touch_injector->store_touch_injector_enable(false);
+      touch_injector->store_input_mapping_visible(false);
+    }
+  }
+
+  if (remove_touch_injector) {
+    ResetForPendingTouchInjector(std::move(touch_injector));
+  } else {
+    OnLoadingFinished(std::move(touch_injector));
+  }
 }
 
 void ArcInputOverlayManager::NotifyTextInputState() {
@@ -674,6 +765,12 @@ void ArcInputOverlayManager::MayKeepTouchInjectorAfterError(
   } else {
     OnLoadingFinished(std::move(touch_injector));
   }
+}
+
+ArcAppListPrefs* ArcInputOverlayManager::GetArcAppListPrefs() {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(arc::IsArcAllowedForProfile(profile));
+  return ArcAppListPrefs::Get(profile);
 }
 
 aura::Window* ArcInputOverlayManager::GetGameWindow(aura::Window* window) {

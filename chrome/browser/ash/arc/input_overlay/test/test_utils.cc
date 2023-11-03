@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +72,25 @@ void CheckActions(TouchInjector* injector,
     EXPECT_EQ(expect_types[i], injector->actions()[i]->GetType());
     EXPECT_EQ(expect_ids[i], injector->actions()[i]->id());
   }
+}
+
+void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
+                           ArcAppTest& arc_app_test,
+                           const std::string& package_name,
+                           bool is_gc_opt_out,
+                           bool is_game) {
+  auto package = arc::mojom::ArcPackageInfo::New();
+  package->package_name = package_name;
+  package->game_controls_opt_out = is_gc_opt_out;
+  arc_app_test.AddPackage(package->Clone());
+
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.emplace_back(arc::mojom::AppInfo::New(package_name, package_name,
+                                             package_name + ".activiy"))
+      ->app_category = is_game ? arc::mojom::AppCategory::kGame
+                               : arc::mojom::AppCategory::kProductivity;
+  arc_app_test.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+  task_environment->RunUntilIdle();
 }
 
 }  // namespace arc::input_overlay

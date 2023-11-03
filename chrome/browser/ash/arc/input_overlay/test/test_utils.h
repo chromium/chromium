@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/gfx/geometry/rect.h"
 
+class ArcAppTest;
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -29,6 +31,9 @@ namespace arc::input_overlay {
 
 // I/O time to wait.
 constexpr base::TimeDelta kIORead = base::Milliseconds(50);
+
+inline constexpr char kEnabledPackageName[] =
+    "org.chromium.arc.testapp.inputoverlay";
 
 class TouchInjector;
 
@@ -50,6 +55,12 @@ void CheckActions(TouchInjector* injector,
                   size_t expect_size,
                   const std::vector<ActionType>& expect_types,
                   const std::vector<int>& expect_ids);
+
+void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
+                           ArcAppTest& arc_app_test,
+                           const std::string& package_name,
+                           bool is_gc_opt_out,
+                           bool is_game);
 
 }  // namespace arc::input_overlay
 
