@@ -21,7 +21,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
@@ -49,6 +49,7 @@ export interface WallpaperSearchElement {
     hueSlider: ThemeHueSliderDialogElement,
     loading: HTMLElement,
     submitButton: CrButtonElement,
+    wallpaperSearch: HTMLElement,
   };
 }
 
@@ -59,8 +60,9 @@ function getRandomDescriptorA(descriptorArrayA: DescriptorA[]): string {
   return randomLabels[Math.floor(Math.random() * randomLabels.length)];
 }
 
-export class WallpaperSearchElement extends I18nMixin
-(PolymerElement) {
+const WallpaperSearchElementBase = I18nMixin(PolymerElement);
+
+export class WallpaperSearchElement extends WallpaperSearchElementBase {
   static get is() {
     return 'customize-chrome-wallpaper-search';
   }
@@ -108,12 +110,10 @@ export class WallpaperSearchElement extends I18nMixin
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyContainers_: number[];
-  private errorState_:
-    ErrorState|null = null;
+  private errorState_: ErrorState|null = null;
   private loading_: boolean;
   private results_: WallpaperSearchResult[];
-  private status_:
-    WallpaperSearchStatus;
+  private status_: WallpaperSearchStatus;
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
   private selectedDescriptorC_: string|null;
@@ -125,6 +125,8 @@ export class WallpaperSearchElement extends I18nMixin
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private wallpaperSearchHandler_: WallpaperSearchHandlerInterface;
   private setThemeListenerId_: number|null = null;
+  private loadingUiResizeObserver_: ResizeObserver|null = null;
+  private loadingUiDebouncer_: Debouncer|null = null;
 
   constructor() {
     super();
@@ -147,12 +149,22 @@ export class WallpaperSearchElement extends I18nMixin
           this.theme_ = theme;
         });
     this.pageHandler_.updateTheme();
+    this.loadingUiResizeObserver_ = new ResizeObserver(() => {
+      // Timeout of 20ms was decided by manual testing to see how often the
+      // resizes can be debounced before appearing janky.
+      this.loadingUiDebouncer_ = Debouncer.debounce(
+          this.loadingUiDebouncer_, timeOut.after(20),
+          () => this.generateLoadingUi_());
+    });
+    this.loadingUiResizeObserver_.observe(this);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.setThemeListenerId_);
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
+    this.loadingUiResizeObserver_!.disconnect();
+    this.loadingUiResizeObserver_ = null;
   }
 
   focusOnBackButton() {
@@ -174,6 +186,46 @@ export class WallpaperSearchElement extends I18nMixin
   private computeSubmitBtnText_() {
     return this.results_ && this.results_.length > 0 ? 'Search Again' :
                                                        'Search';
+  }
+
+  /**
+   * The loading gradient is rendered using a SVG clip path. As typical CSS
+   * layouts such as grid cannot apply to clip paths, this ResizeObserver
+   * callback resizes the loading tiles based on the current width of the
+   * side panel.
+   */
+  private generateLoadingUi_() {
+    const availableWidth = this.$.wallpaperSearch.offsetWidth;
+    if (availableWidth === 0) {
+      // Wallpaper search is likely hidden.
+      return;
+    }
+
+    const columns = 3;
+    const gapBetweenTiles = 10;
+    const tileSize =
+        (availableWidth - (gapBetweenTiles * (columns - 1))) / columns;
+
+    const svg = this.$.loading.querySelector('svg')!;
+    const rects = svg.querySelectorAll<SVGRectElement>('rect');
+    const rows = Math.ceil(rects.length / columns);
+
+    svg.setAttribute('width', `${availableWidth}`);
+    svg.setAttribute(
+        'height', `${(rows * tileSize) + ((rows - 1) * gapBetweenTiles)}`);
+
+    for (let row = 0; row < rows; row++) {
+      for (let column = 0; column < columns; column++) {
+        const rect = rects[column + (row * columns)];
+        if (!rect) {
+          return;
+        }
+        rect.setAttribute('height', `${tileSize}`);
+        rect.setAttribute('width', `${tileSize}`);
+        rect.setAttribute('x', `${column * (tileSize + gapBetweenTiles)}`);
+        rect.setAttribute('y', `${row * (tileSize + gapBetweenTiles)}`);
+      }
+    }
   }
 
   private isBackgroundSelected_(id: Token): boolean {

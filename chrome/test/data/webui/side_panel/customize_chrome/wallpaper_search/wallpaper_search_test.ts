@@ -15,7 +15,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from '../test_support.js';
 
@@ -305,6 +305,46 @@ suite('WallpaperSearchTest', () => {
       await waitAfterNextRender(wallpaperSearchElement);
       result = $$(wallpaperSearchElement, '.tile.result, .tile.empty');
       assertTrue(!!result);
+    });
+
+    test('sizes loading tiles', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      // Force a width on the element for more consistent testing.
+      wallpaperSearchElement.style.display = 'block';
+      wallpaperSearchElement.style.width = '300px';
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // Assert that the svg takes the full width of the content area.
+      const svg =
+          wallpaperSearchElement.$.loading.querySelector<HTMLElement>('svg')!;
+      const contentWidth = wallpaperSearchElement.$.wallpaperSearch.offsetWidth;
+      assertTrue(contentWidth < 300);
+      await whenCheck(
+          svg, () => svg.getAttribute('width') === `${contentWidth}`);
+
+      // Assert that loading tiles are sized the same as result tiles.
+      const resultTile =
+          wallpaperSearchElement.shadowRoot!.querySelector<HTMLElement>(
+              '.tile.result')!;
+      const rects = wallpaperSearchElement.$.loading.querySelectorAll('rect');
+      rects.forEach((rect) => {
+        // Offset width/height values are automatically rounded, so round the
+        // rect's dimensions. The difference in decimal pixel values is
+        // negligible.
+        assertEquals(
+            resultTile.offsetWidth,
+            Math.round(Number(rect.getAttribute('width'))));
+        assertEquals(
+            resultTile.offsetHeight,
+            Math.round(Number(rect.getAttribute('height'))));
+      });
     });
 
     test('handles changing submit button text', async () => {
