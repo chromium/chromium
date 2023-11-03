@@ -379,8 +379,10 @@ void RulesetInfo::CreateVerifiedMatcher() {
       source_.CreateVerifiedMatcher(*expected_checksum_, &matcher_);
 }
 
-LoadRequestData::LoadRequestData(ExtensionId extension_id)
-    : extension_id(std::move(extension_id)) {}
+LoadRequestData::LoadRequestData(ExtensionId extension_id,
+                                 base::Version extension_version)
+    : extension_id(std::move(extension_id)),
+      extension_version(std::move(extension_version)) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;
