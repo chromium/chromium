@@ -487,6 +487,7 @@ repack("pak") {
 
   sources = [
     "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
+    "$root_gen_dir/components/ukm_resources.pak",
     "$root_gen_dir/content/attribution_internals_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
@@ -517,6 +518,7 @@ repack("pak") {
   deps = [
     ":resources",
     "//base/tracing/protos:chrome_track_event_resources",
+    "//components/ukm/debug:resources",
     "//content:content_resources",
     "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",

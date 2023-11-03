@@ -12,6 +12,7 @@ include_rules = [
   "+components/download/public/common",
   "+components/file_access",
   "+components/filename_generation",
+  "+components/grit",
   "+components/permissions/features.h",
   "+components/power_monitor",
   "+components/services/font",

@@ -62,6 +62,7 @@ static_library("ukm") {
 
   public_deps = [
     ":ukm_recorder",
+    "//components/ukm/debug:resources",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",

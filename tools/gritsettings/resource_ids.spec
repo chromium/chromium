@@ -542,6 +542,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4500],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/ukm/debug/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [4510],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_home/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [4520],
