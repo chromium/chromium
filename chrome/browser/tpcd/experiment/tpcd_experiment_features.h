@@ -70,6 +70,20 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kTpcdBackfillPopupHeuristicsGrants;
 
+// Whether to create a short-term grant when observing the Redirect scenario.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWriteRedirectHeuristicGrants;
+
+// Whether to require an A-B-A flow (where the first party preceded the
+// third-party redirect in the tab history) when applying the Redirect
+// heuristic.
+extern const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow;
+
+// Whether to require the third-party interaction to be in the current
+// navigation when applying the Redirect heuristic.
+extern const base::FeatureParam<bool>
+    kTpcdRedirectHeuristicRequireCurrentInteraction;
+
 }  // namespace tpcd::experiment
 
 #endif  // CHROME_BROWSER_TPCD_EXPERIMENT_TPCD_EXPERIMENT_FEATURES_H_

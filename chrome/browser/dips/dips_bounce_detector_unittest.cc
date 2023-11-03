@@ -10,7 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -118,6 +121,11 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   }
 
   void IncrementPageSpecificBounceCount(const GURL& final_url) override {}
+
+  std::set<std::string> AllSitesFollowingFirstParty(
+      const GURL& first_party_url) override {
+    return std::set<std::string>();
+  }
 
   // Get the (committed) URL that the SourceId was generated for.
   const std::string& URLForSourceId(ukm::SourceId source_id) {
@@ -1197,7 +1205,8 @@ std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
 
 DIPSRedirectInfoPtr MakeClientRedirect(
     std::string url,
-    SiteDataAccessType access_type = SiteDataAccessType::kReadWrite) {
+    SiteDataAccessType access_type = SiteDataAccessType::kReadWrite,
+    bool has_sticky_activation = false) {
   return std::make_unique<DIPSRedirectInfo>(
       /*url=*/GURL(url),
       /*redirect_type=*/DIPSRedirectType::kClient,
@@ -1205,7 +1214,7 @@ DIPSRedirectInfoPtr MakeClientRedirect(
       /*source_id=*/ukm::SourceId(),
       /*time=*/base::Time::Now(),
       /*client_bounce_delay=*/base::Seconds(1),
-      /*has_sticky_activation=*/false,
+      /*has_sticky_activation=*/has_sticky_activation,
       /*web_authn_assertion_request_succeeded*/ false);
 }
 
@@ -1615,4 +1624,116 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
                         HasSiteDataAccessType(SiteDataAccessType::kNone)),
                   AllOf(HasUrl("http://i.test/"),
                         HasSiteDataAccessType(SiteDataAccessType::kRead))));
+}
+
+TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      content_settings::features::kTpcdHeuristicsGrants,
+      {{"TpcdRedirectHeuristicRequireABAFlow", "false"},
+       {"TpcdRedirectHeuristicRequireCurrentInteraction", "false"}});
+
+  GURL first_party_url("http://a.test/");
+  GURL current_interaction_url("http://b.test/");
+  GURL no_current_interaction_url("http://c.test/");
+
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL(),
+      /*redirect_prefix_count=*/0);
+
+  context.AppendCommitted(first_party_url,
+                          {MakeServerRedirects({"http://c.test"})},
+                          current_interaction_url, false);
+  context.AppendCommitted(
+      MakeClientRedirect("http://b.test/", SiteDataAccessType::kNone,
+                         /*has_sticky_activation=*/true),
+      {}, first_party_url, false);
+
+  ASSERT_EQ(context.size(), 2u);
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          context.GetRedirectHeuristicURLs(first_party_url, absl::nullopt);
+  EXPECT_THAT(
+      sites_to_url_and_current_interaction,
+      testing::UnorderedElementsAre(
+          std::pair<std::string, std::pair<GURL, bool>>(
+              "b.test", std::make_pair(current_interaction_url, true)),
+          std::pair<std::string, std::pair<GURL, bool>>(
+              "c.test", std::make_pair(no_current_interaction_url, false))));
+}
+
+TEST(DIPSRedirectContextTest, GetRedirectHeuristicURLs_RequireABAFlow) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      content_settings::features::kTpcdHeuristicsGrants,
+      {{"TpcdRedirectHeuristicRequireABAFlow", "true"},
+       {"TpcdRedirectHeuristicRequireCurrentInteraction", "false"}});
+
+  GURL first_party_url("http://a.test/");
+  GURL aba_url("http://b.test/");
+  GURL no_aba_url("http://c.test/");
+
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL(),
+      /*redirect_prefix_count=*/0);
+
+  context.AppendCommitted(
+      first_party_url,
+      {MakeServerRedirects({"http://b.test", "http://c.test"})},
+      first_party_url, false);
+
+  ASSERT_EQ(context.size(), 2u);
+
+  std::set<std::string> allowed_sites = {GetSiteForDIPS(aba_url)};
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          context.GetRedirectHeuristicURLs(first_party_url, allowed_sites);
+  EXPECT_THAT(sites_to_url_and_current_interaction,
+              testing::UnorderedElementsAre(
+                  std::pair<std::string, std::pair<GURL, bool>>(
+                      "b.test", std::make_pair(aba_url, false))));
+}
+
+TEST(DIPSRedirectContextTest,
+     GetRedirectHeuristicURLs_RequireCurrentInteraction) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      content_settings::features::kTpcdHeuristicsGrants,
+      {{"TpcdRedirectHeuristicRequireABAFlow", "false"},
+       {"TpcdRedirectHeuristicRequireCurrentInteraction", "true"}});
+
+  GURL first_party_url("http://a.test/");
+  GURL current_interaction_url("http://b.test/");
+  GURL no_current_interaction_url("http://c.test/");
+
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL(),
+      /*redirect_prefix_count=*/0);
+
+  context.AppendCommitted(first_party_url,
+                          {MakeServerRedirects({"http://c.test"})},
+                          current_interaction_url, false);
+  context.AppendCommitted(
+      MakeClientRedirect("http://b.test/", SiteDataAccessType::kNone,
+                         /*has_sticky_activation=*/true),
+      {}, first_party_url, false);
+
+  ASSERT_EQ(context.size(), 2u);
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          context.GetRedirectHeuristicURLs(first_party_url, absl::nullopt);
+  EXPECT_THAT(
+      sites_to_url_and_current_interaction,
+      testing::UnorderedElementsAre(
+          std::pair<std::string, std::pair<GURL, bool>>(
+              "b.test", std::make_pair(current_interaction_url, true))));
 }

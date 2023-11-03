@@ -103,4 +103,16 @@ const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
     /*name=*/"TpcdBackfillPopupHeuristicsGrants", base::TimeDelta()};
 
+const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    /*name=*/"TpcdWriteRedirectHeuristicGrants", base::TimeDelta()};
+
+const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    /*name=*/"TpcdRedirectHeuristicRequireABAFlow", true};
+
+const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireCurrentInteraction{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    /*name=*/"TpcdRedirectHeuristicRequireCurrentInteraction", true};
+
 }  // namespace tpcd::experiment
