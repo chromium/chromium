@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -26,7 +25,6 @@
 
 namespace performance_manager::metrics {
 
-class CpuProbe;
 class PageTimelineMonitorUnitTest;
 
 // Periodically reports tab state via UKM, to enable analysis of usage patterns
@@ -61,12 +59,7 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     kMaxValue = kMixedForegroundBackground,
   };
 
-  using PageCPUUsageVector = std::vector<std::pair<const PageNode*, double>>;
-
-  // If `enable_system_cpu_probe` is false, `system_cpu_probe_` will be left
-  // null. This is mainly intended for tests.
-  explicit PageTimelineMonitor(bool enable_system_cpu_probe = true);
-
+  PageTimelineMonitor();
   ~PageTimelineMonitor() override;
   PageTimelineMonitor(const PageTimelineMonitor& other) = delete;
   PageTimelineMonitor& operator=(const PageTimelineMonitor&) = delete;
@@ -134,14 +127,15 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     kDelayed,
   };
 
+  using PageCPUUsageVector = std::vector<std::pair<const PageNode*, double>>;
+
   // Asynchronously collects the PageResourceUsage UKM. Calls `done_closure`
   // when finished.
   void CollectPageResourceUsage(base::OnceClosure done_closure);
 
   // Invoked asynchronously from CollectPageResourceUsage() when measurements
   // are ready.
-  void OnPageResourceUsageResult(PageCPUUsageVector page_cpu_usage,
-                                 absl::optional<PressureSample> system_cpu);
+  void OnPageResourceUsageResult(const PageCPUUsageVector& page_cpu_usage);
 
   // Method collecting a slice for the PageTimelineState UKM.
   void CollectSlice();
@@ -154,25 +148,24 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   // Invoked asynchronously from CheckDelayedCPUInterventionMetrics() when
   // measurements are ready.
-  void OnDelayedCPUInterventionMetricsResult(PageCPUUsageVector page_cpu_usage);
+  void OnDelayedCPUInterventionMetricsResult(
+      const PageCPUUsageVector& page_cpu_usage);
 
   // Log CPU intervention metrics with the provided suffix.
-  void LogCPUInterventionMetrics(
-      const PageCPUUsageVector& page_cpu_usage,
-      const absl::optional<PressureSample>& system_cpu,
-      const base::TimeTicks now,
-      CPUInterventionSuffix histogram_suffix);
+  void LogCPUInterventionMetrics(const PageCPUUsageVector& page_cpu_usage,
+                                 const base::TimeTicks now,
+                                 CPUInterventionSuffix histogram_suffix);
 
   // Asynchronously calculates per-PageNode CPU usage, converts the results to a
   // vector, and passes them to `callback`.
   void CalculatePageCPUUsage(
-      base::OnceCallback<void(PageCPUUsageVector)> callback);
+      base::OnceCallback<void(const PageCPUUsageVector&)> callback);
 
   // Invoked asynchronously from CalculatePageCPUUsage() when measurements are
   // ready. Converts the measurements in `cpu_usage_map` to a vector and passes
   // them to `callback`.
   void OnCPUUsageResult(
-      base::OnceCallback<void(PageCPUUsageVector)> callback,
+      base::OnceCallback<void(const PageCPUUsageVector&)> callback,
       const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map);
 
   // If this is called, CollectSlice() and CollectPageResourceUsage() will not
@@ -225,9 +218,6 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   // Helper to take CPU measurements for the UKM.
   PageTimelineCPUMonitor cpu_monitor_;
-
-  // Helper to take system CPU measurements for UMA.
-  std::unique_ptr<CpuProbe> system_cpu_probe_;
 
   // WeakPtrFactory for the RepeatingTimer to call a method on this object.
   base::WeakPtrFactory<PageTimelineMonitor> weak_factory_{this};
