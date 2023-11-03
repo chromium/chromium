@@ -101,6 +101,10 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // Return the default element info map used by the browser.
   static ToolbarController::ResponsiveElementInfoMap GetDefaultElementInfoMap();
 
+  // Return the action name from element identifier. Return empty if not found.
+  static std::string GetActionNameFromElementIdentifier(
+      ui::ElementIdentifier identifier);
+
   // Force the UI element with the identifier to show. Return whether the action
   // is successful.
   virtual bool PopOut(ui::ElementIdentifier identifier);

@@ -15,6 +15,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -811,20 +812,32 @@ void ToolbarView::Layout() {
   // indicator of overflow not the cause. (See crbug.com/1484294)
   // In the first pass turn off overflow button right before each layout.
   // TODO(pengchaocai): Explore possible optimizations.
-  views::ManualLayoutUtil manual_layout_util(layout_manager_);
   if (toolbar_controller_) {
+    // TODO(crbug.com/1499021) Move this logic into LayoutManager.
+    views::ManualLayoutUtil manual_layout_util(layout_manager_);
+    const bool was_overflow_button_visible =
+        toolbar_controller_->overflow_button()->GetVisible();
     manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                      true);
-  }
-
-  // Call super implementation to ensure layout manager and child layouts
-  // happen.
-  AccessiblePaneView::Layout();
-
-  if (toolbar_controller_ && toolbar_controller_->ShouldShowOverflowButton()) {
-    // This is the second pass layout that shows overflow button if necessary.
-    manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
-                                     false);
+    AccessiblePaneView::Layout();
+    if (toolbar_controller_->ShouldShowOverflowButton()) {
+      // This is the second pass layout that shows overflow button if necessary.
+      manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
+                                       false);
+      AccessiblePaneView::Layout();
+      if (!was_overflow_button_visible) {
+        base::RecordAction(
+            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonShown"));
+      }
+    } else {
+      if (was_overflow_button_visible) {
+        base::RecordAction(
+            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonHidden"));
+      }
+    }
+  } else {
+    // Call super implementation to ensure layout manager and child layouts
+    // happen.
     AccessiblePaneView::Layout();
   }
 }

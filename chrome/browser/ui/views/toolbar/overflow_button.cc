@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -41,6 +43,8 @@ void OverflowButton::RunMenu() {
       menu_button_controller_->button()->GetWidget(), menu_button_controller_,
       menu_button_controller_->button()->GetAnchorBoundsInScreen(),
       views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
+  base::RecordAction(
+      base::UserMetricsAction("ResponsiveToolbar.OverflowButtonActivated"));
 }
 
 OverflowButton::~OverflowButton() = default;

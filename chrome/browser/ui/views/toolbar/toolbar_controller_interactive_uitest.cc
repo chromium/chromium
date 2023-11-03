@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -213,13 +214,26 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
   SetBrowserWidth(overflow_threshold_width());
   EXPECT_FALSE(overflow_button()->GetVisible());
 
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonShown"));
+
   // Resize browser a bit narrower. Should see overflow.
   SetBrowserWidth(overflow_threshold_width() - 1);
   EXPECT_TRUE(overflow_button()->GetVisible());
 
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonShown"));
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonHidden"));
+
   // Resize browser back to threshold width. Should not see overflow.
   SetBrowserWidth(overflow_threshold_width());
   EXPECT_FALSE(overflow_button()->GetVisible());
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonHidden"));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
@@ -284,6 +298,11 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
   const auto back_url = embedded_test_server()->GetURL("/back");
   const auto forward_url = embedded_test_server()->GetURL("/forward");
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonActivated"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.MenuItemActivated.ForwardButton"));
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       NavigateWebContents(kPrimaryTabPageElementId, back_url),
@@ -301,4 +320,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
 
       // Forward navigation is triggered after activating menu item.
       WaitForWebContentsNavigation(kPrimaryTabPageElementId, forward_url));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonActivated"));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }
