@@ -77,23 +77,28 @@ Profile* GetOTROrActiveProfile() {
   return otr_profile;
 }
 
-std::unique_ptr<ui::WebDialogDelegate> CreateWebDialogDelegate(GURL url) {
-  auto delegate = std::make_unique<ui::WebDialogDelegate>();
-  delegate->set_can_close(true);
-  delegate->set_can_resize(false);
-  delegate->set_dialog_content_url(url);
-  delegate->set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
-  delegate->set_dialog_title(
-      l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_AUTHORIZATION_DIALOG_NAME));
-  delegate->set_show_dialog_title(true);
+class SigninWebDialogDelegate : public ui::WebDialogDelegate {
+ public:
+  explicit SigninWebDialogDelegate(GURL url) {
+    set_can_close(true);
+    set_can_resize(false);
+    set_dialog_content_url(url);
+    set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+    set_dialog_title(l10n_util::GetStringUTF16(
+        IDS_CAPTIVE_PORTAL_AUTHORIZATION_DIALOG_NAME));
+    set_show_dialog_title(true);
 
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
-  const float kScale = 0.8;
-  delegate->set_dialog_size(gfx::ScaleToRoundedSize(display.size(), kScale));
+    const float kScale = 0.8;
+    set_dialog_size(gfx::ScaleToRoundedSize(
+        display::Screen::GetScreen()->GetPrimaryDisplay().size(), kScale));
+  }
 
-  return delegate;
-}
+  ~SigninWebDialogDelegate() override = default;
+
+  void OnLoadingStateChanged(content::WebContents* source) override {
+    NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
+  }
+};
 
 }  // namespace
 
@@ -225,22 +230,40 @@ void NetworkPortalSigninController::OnWidgetDestroying(views::Widget* widget) {
   dialog_widget_observation_.Reset();
   dialog_widget_ = nullptr;
   SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
+
+  network_state_handler_observation_.Reset();
+}
+
+void NetworkPortalSigninController::PortalStateChanged(
+    const NetworkState* default_network,
+    NetworkState::PortalState portal_state) {
+  if (default_network && default_network->IsOnline()) {
+    if (dialog_widget_) {
+      dialog_widget_->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
+    }
+  }
 }
 
 void NetworkPortalSigninController::ShowDialog(Profile* profile,
                                                const GURL& url) {
   if (dialog_widget_) {
+    dialog_widget_->Show();
     return;
   }
 
-  std::unique_ptr<ui::WebDialogDelegate> web_dialog_delegate =
-      CreateWebDialogDelegate(url);
+  auto web_dialog_delegate = std::make_unique<SigninWebDialogDelegate>(url);
 
   dialog_widget_ = views::Widget::GetWidgetForNativeWindow(
       // ui::WebDialogDelegate is self-deleting, so pass ownership of it (as a
       // raw pointer) in here.
       chrome::ShowWebDialog(nullptr, profile, web_dialog_delegate.release()));
   dialog_widget_observation_.Observe(dialog_widget_.get());
+
+  if (!network_state_handler_observation_.IsObserving()) {
+    network_state_handler_observation_.Observe(
+        NetworkHandler::Get()->network_state_handler());
+  }
 }
 
 void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
