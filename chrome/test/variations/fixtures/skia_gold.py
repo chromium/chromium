@@ -19,10 +19,12 @@ from typing import List, Tuple
 # to the search path.
 from chrome.test.variations.test_utils import SRC_DIR
 sys.path.append(os.path.join(SRC_DIR, 'build'))
-from chrome.test.variations.fixtures.result_sink import AddTag
 from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session_manager as sgsm
 from skia_gold_common.skia_gold_session import SkiaGoldSession
+
+from chrome.test.variations.fixtures.result_sink import AddTag
+from chrome.test.variations.fixtures.test_options import TestOptions
 
 _CORPUS ='finch-smoke-tests'
 
@@ -124,6 +126,7 @@ class VariationsSkiaGoldUtil:
 def skia_gold_util(
   request: pytest.FixtureRequest,
   tmp_path_factory: pytest.TempPathFactory,
+  test_options: TestOptions,
   add_tag: AddTag
   ) -> VariationsSkiaGoldUtil:
   """Returns VariationsSkiaGoldUtil to help compare gold images."""
@@ -143,8 +146,8 @@ def skia_gold_util(
 
   config = request.config
   session = skia_gold_session_manager.GetSkiaGoldSession({
-    'platform': config.getoption('target_platform'),
-    'channel': config.getoption('channel'),
+    'platform': test_options.platform,
+    'channel': test_options.channel,
   }, _CORPUS)
 
   test_file = os.path.relpath(request.module.__file__, SRC_DIR)

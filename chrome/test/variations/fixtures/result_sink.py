@@ -120,17 +120,6 @@ def add_tag(request: pytest.FixtureRequest) -> AddTag:
     )
   return add
 
-@pytest.fixture(autouse=True)
-def tag_common_test_params(pytestconfig, add_tag) -> None:
-  # Add test parameters to result logs.
-  platform = pytestconfig.getoption('target_platform')
-  channel = pytestconfig.getoption('channel')
-  chrome_version = pytestconfig.getoption('chrome_version')
-  add_tag('platform', platform)
-  add_tag('channel', channel)
-  if chrome_version:
-    add_tag('chrome_version', chrome_version)
-
 
 def _report_test_result(result: pytest.TestReport,
                         item: pytest.Item,
