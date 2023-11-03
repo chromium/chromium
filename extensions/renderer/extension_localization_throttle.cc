@@ -186,10 +186,15 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     ipc_target = content::RenderThread::Get();
     (void)render_frame_id_;
 #else
-    content::RenderFrame* render_frame =
-        content::RenderFrame::FromRoutingID(render_frame_id_);
-    if (render_frame) {
-      ipc_target = ExtensionFrameHelper::Get(render_frame)->GetRendererHost();
+    // TODO(dtapuska): content::RenderThread::Get() returns nullptr so the old
+    // version will never send it to the browser. Figure out why we are even
+    // doing this on worker threads.
+    if (content::RenderThread::IsMainThread()) {
+      content::RenderFrame* render_frame =
+          content::RenderFrame::FromRoutingID(render_frame_id_);
+      if (render_frame) {
+        ipc_target = ExtensionFrameHelper::Get(render_frame)->GetRendererHost();
+      }
     }
 #endif
     extensions::SharedL10nMap::GetInstance().ReplaceMessages(
