@@ -8,6 +8,8 @@
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
+#include "components/webapps/common/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -23,11 +25,19 @@ class WebContents;
 
 namespace apps {
 
+struct AppIdsToLaunchForUrl;
+
 class ChromeOsLinkCapturingDelegate
     : public apps::LinkCapturingNavigationThrottle::Delegate {
  public:
   ChromeOsLinkCapturingDelegate();
   ~ChromeOsLinkCapturingDelegate() override;
+
+  // Returns the app id to launch for a navigation, if any. Exposed for testing.
+  static absl::optional<std::string> GetLaunchAppId(
+      const AppIdsToLaunchForUrl& app_ids_to_launch,
+      bool is_navigation_from_link,
+      absl::optional<webapps::AppId> source_app_id);
 
   // Method intended for testing purposes only.
   // Set clock used for timing to enable manipulation during tests.

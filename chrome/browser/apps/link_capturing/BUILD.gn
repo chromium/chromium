@@ -98,8 +98,12 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    sources += [ "metrics/intent_handling_metrics_unittest.cc" ]
+    sources += [
+      "chromeos_link_capturing_delegate_unittest.cc",
+      "metrics/intent_handling_metrics_unittest.cc",
+    ]
     deps += [
+      "//chrome/browser/apps/app_service",
       "//chrome/test:test_support",
       "//components/prefs:test_support",
       "//content/test:test_support",

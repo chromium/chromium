@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -125,51 +126,6 @@ absl::optional<webapps::AppId> GetSourceAppId(
   return app_id ? absl::optional<webapps::AppId>(*app_id) : absl::nullopt;
 }
 
-// Returns the App ID that should be launched for this link click, if any.
-absl::optional<std::string> GetLaunchAppId(
-    const AppIdsToLaunchForUrl& app_ids_to_launch,
-    bool is_navigation_from_link,
-    absl::optional<webapps::AppId> source_app_id) {
-  if (app_ids_to_launch.candidates.empty()) {
-    return absl::nullopt;
-  }
-
-  if (ShouldOnlyCaptureLinks(app_ids_to_launch.candidates) &&
-      !is_navigation_from_link) {
-    return absl::nullopt;
-  }
-
-  if (app_ids_to_launch.preferred) {
-    return app_ids_to_launch.preferred;
-  }
-
-  // If there is one candidate app that's not preferred, but the link was
-  // clicked from within an app window, we may still launch the app.
-  if (app_ids_to_launch.candidates.size() == 1 && source_app_id.has_value()) {
-    // When AppToAppLinkCapturing is enabled, always capture links from within
-    // app windows.
-    if (base::FeatureList::IsEnabled(apps::features::kAppToAppLinkCapturing)) {
-      return app_ids_to_launch.candidates[0];
-    }
-
-    // When AppToAppLinkCapturingWorkspaceApps is enabled, launch the app if
-    // both source and destination are Workspace apps.
-    if (base::FeatureList::IsEnabled(
-            apps::features::kAppToAppLinkCapturingWorkspaceApps)) {
-      constexpr auto kWorkspaceApps = base::MakeFixedFlatSet<std::string_view>(
-          {web_app::kGoogleDriveAppId, web_app::kGoogleDocsAppId,
-           web_app::kGoogleSheetsAppId, web_app::kGoogleSlidesAppId});
-
-      if (kWorkspaceApps.contains(source_app_id.value()) &&
-          kWorkspaceApps.contains(app_ids_to_launch.candidates[0])) {
-        return app_ids_to_launch.candidates[0];
-      }
-    }
-  }
-
-  return absl::nullopt;
-}
-
 void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
                const std::string& app_id,
                int32_t event_flags,
@@ -199,6 +155,62 @@ static const base::TickClock*& GetTickClock() {
 }
 
 }  // namespace
+
+// static
+absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
+    const AppIdsToLaunchForUrl& app_ids_to_launch,
+    bool is_navigation_from_link,
+    absl::optional<webapps::AppId> source_app_id) {
+  if (app_ids_to_launch.candidates.empty()) {
+    return absl::nullopt;
+  }
+
+  if (ShouldOnlyCaptureLinks(app_ids_to_launch.candidates) &&
+      !is_navigation_from_link) {
+    return absl::nullopt;
+  }
+
+  if (app_ids_to_launch.preferred) {
+    return app_ids_to_launch.preferred;
+  }
+
+  // If there's no user preference, but the link was clicked from within an app
+  // window, we may still launch the app.
+  if (!source_app_id.has_value()) {
+    return absl::nullopt;
+  }
+
+  // When AppToAppLinkCapturing is enabled, always capture links from within
+  // app windows, if there is only one candidate app.
+  if (app_ids_to_launch.candidates.size() == 1 &&
+      base::FeatureList::IsEnabled(apps::features::kAppToAppLinkCapturing)) {
+    return app_ids_to_launch.candidates[0];
+  }
+
+  // When AppToAppLinkCapturingWorkspaceApps is enabled, launch the app if
+  // both source and destination are Workspace apps.
+  if (base::FeatureList::IsEnabled(
+          apps::features::kAppToAppLinkCapturingWorkspaceApps)) {
+    constexpr auto kWorkspaceApps = base::MakeFixedFlatSet<std::string_view>(
+        {web_app::kGoogleDriveAppId, web_app::kGoogleDocsAppId,
+         web_app::kGoogleSheetsAppId, web_app::kGoogleSlidesAppId});
+
+    if (!kWorkspaceApps.contains(source_app_id.value())) {
+      return absl::nullopt;
+    }
+
+    auto dest_app =
+        base::ranges::find_if(app_ids_to_launch.candidates,
+                              [&kWorkspaceApps](const std::string& app_id) {
+                                return kWorkspaceApps.contains(app_id);
+                              });
+    if (dest_app != app_ids_to_launch.candidates.end()) {
+      return *dest_app;
+    }
+  }
+
+  return absl::nullopt;
+}
 
 // static
 base::AutoReset<const base::TickClock*>
