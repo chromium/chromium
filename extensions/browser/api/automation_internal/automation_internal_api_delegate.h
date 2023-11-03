@@ -5,12 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_AUTOMATION_INTERNAL_AUTOMATION_INTERNAL_API_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_AUTOMATION_INTERNAL_AUTOMATION_INTERNAL_API_DELEGATE_H_
 
-#include <memory>
-
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
-
-class ExtensionFunction;
 
 namespace extensions {
 class AutomationInternalApiDelegate;
@@ -41,19 +37,6 @@ class AutomationInternalApiDelegate {
   virtual bool CanRequestAutomation(const Extension* extension,
                                     const AutomationInfo* automation_info,
                                     content::WebContents* contents) = 0;
-  // Sets |contents| to point to the web contents object associated with the
-  // given tab id.  Otherwise, sets |error_msg| with a reason why the
-  // tab could not be found. Returns true on success.
-  virtual bool GetTabById(int tab_id,
-                          content::BrowserContext* browser_context,
-                          bool include_incognito,
-                          content::WebContents** contents,
-                          std::string* error_msg) = 0;
-  // Finds the tab id associated with the given web contents object.
-  virtual int GetTabId(content::WebContents* contents) = 0;
-  // Retrieves the active web contents.
-  virtual content::WebContents* GetActiveWebContents(
-      ExtensionFunction* function) = 0;
   // Enable automation nodes on the specified ax tree. Returns true if the
   // request is handled in the delegation.
   virtual bool EnableTree(const ui::AXTreeID& tree_id) = 0;
