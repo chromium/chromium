@@ -711,6 +711,32 @@ TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
       /*is_off_the_record=*/false));
 }
 
+TEST_F(PlusAddressServiceEnabledTest, OTRWithNoExistingAddress) {
+  // With a signed in user, an off-the-record session, and no existing address,
+  // the `SupportsPlusAddresses` function should return `false`.
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressService service(identity_test_env.identity_manager());
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example")),
+      /*is_off_the_record=*/true));
+}
+
+TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
+  // With a signed in user, an off-the-record session, and an existing address,
+  // the `SupportsPlusAddresses` function should return `true`.
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  url::Origin site = url::Origin::Create(GURL("https://foo.com"));
+
+  PlusAddressService service(identity_test_env.identity_manager());
+  service.SavePlusAddress(site, "plus@plus.plus");
+
+  EXPECT_TRUE(service.SupportsPlusAddresses(site, /*is_off_the_record=*/true));
+}
+
 TEST_F(PlusAddressServiceEnabledTest, DefaultLabel) {
   // Override not set? Show the default generic text.
   PlusAddressService service;

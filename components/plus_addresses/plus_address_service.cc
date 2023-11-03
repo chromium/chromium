@@ -61,9 +61,18 @@ PlusAddressService::PlusAddressService(
 bool PlusAddressService::SupportsPlusAddresses(url::Origin origin,
                                                bool is_off_the_record) {
   // TODO(b/295187452): Also check `origin` here.
-  // TODO(b/308988053): implement OTR behavior. Only existing can be offered in
-  // that mode.
-  return is_enabled();
+  // First, check prerequisites (the feature enabled, etc.)
+  if (!is_enabled()) {
+    return false;
+  }
+  // We've met the prerequisites. If this isn't an OTR session, plus_addresses
+  // are supported.
+  if (!is_off_the_record) {
+    return true;
+  }
+  // Prerequisites are met, but it's an off-the-record session. If there's an
+  // existing plus_address, it's supported, otherwise it is not.
+  return GetPlusAddress(origin).has_value();
 }
 
 absl::optional<std::string> PlusAddressService::GetPlusAddress(
