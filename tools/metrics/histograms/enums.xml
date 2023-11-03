@@ -62301,7 +62301,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="20" label="Sync failed"/>
   <int value="21" label="Sync error cancelled and deleted"/>
   <int value="22" label="Sync error cancelled and trashed"/>
-  <int value="23" label="Upload not started: Reauthentication needed"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">

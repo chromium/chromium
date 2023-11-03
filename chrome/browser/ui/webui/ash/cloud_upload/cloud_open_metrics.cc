@@ -362,8 +362,6 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeFilesUploadResult::kSyncError:
               case OfficeFilesUploadResult::kSyncCancelledAndDeleted:
               case OfficeFilesUploadResult::kSyncCancelledAndTrashed:
-              case OfficeFilesUploadResult::
-                  kUploadNotStartedReauthenticationRequired:
                 SetWrongValueLogged(upload_result);
                 break;
             }
@@ -487,27 +485,6 @@ void CloudOpenMetrics::CheckForInconsistencies(
     } else if (upload_result.value ==
                OfficeFilesUploadResult::kMoveOperationError) {
       ExpectLogged(move_error);
-    } else if (upload_result.value ==
-               OfficeFilesUploadResult::
-                   kUploadNotStartedReauthenticationRequired) {
-      ExpectNotLogged(copy_error);
-      ExpectNotLogged(move_error);
-      switch (task_result.value) {
-        case OfficeTaskResult::kFailedToUpload:
-          break;
-        case OfficeTaskResult::kFallbackQuickOffice:
-        case OfficeTaskResult::kFallbackOther:
-        case OfficeTaskResult::kOpened:
-        case OfficeTaskResult::kMoved:
-        case OfficeTaskResult::kCancelledAtConfirmation:
-        case OfficeTaskResult::kFailedToOpen:
-        case OfficeTaskResult::kCopied:
-        case OfficeTaskResult::kCancelledAtFallback:
-        case OfficeTaskResult::kCancelledAtSetup:
-        case OfficeTaskResult::kLocalFileTask:
-          SetWrongValueLogged(task_result);
-          break;
-      }
     }
   }
 

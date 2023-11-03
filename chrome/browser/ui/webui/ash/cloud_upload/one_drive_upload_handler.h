@@ -56,12 +56,6 @@ class OneDriveUploadHandler
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
   void Run(UploadCallback callback);
 
-  // If reauth is required show an error and finish, or else start the IOTask
-  // for copy/move.
-  void CheckReauthenticationAndStartIOTask(
-      const FileSystemURL& destination_folder_url,
-      base::expected<ODFSMetadata, base::File::Error> metadata_or_error);
-
   // Ends upload and runs Upload callback.
   void OnEndUpload(
       base::expected<storage::FileSystemURL, std::string> url_or_error,
