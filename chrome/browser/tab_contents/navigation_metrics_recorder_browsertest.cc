@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -229,15 +230,18 @@ class
     // When features are disabled, IsForceThirdPartyCookieBlockingEnabled will
     // return false, cookies are allowed.
     if (test_case_.is_third_party_cookies_allowed) {
-      force_3pc_blocking_feature_list_.InitAndDisableFeature(
-          net::features::kForceThirdPartyCookieBlocking);
-      storage_partitioning_3pc_feature_list_.InitAndDisableFeature(
-          net::features::kThirdPartyStoragePartitioning);
+      cookies_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              content_settings::features::kTrackingProtection3pcd,
+              net::features::kForceThirdPartyCookieBlocking,
+              net::features::kThirdPartyStoragePartitioning});
     } else {
-      force_3pc_blocking_feature_list_.InitAndEnableFeature(
-          net::features::kForceThirdPartyCookieBlocking);
-      storage_partitioning_3pc_feature_list_.InitAndEnableFeature(
-          net::features::kThirdPartyStoragePartitioning);
+      cookies_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {net::features::kForceThirdPartyCookieBlocking,
+           net::features::kThirdPartyStoragePartitioning},
+          /*disabled_features=*/{});
     }
   }
 
@@ -259,8 +263,7 @@ class
   const ExperimentVersusActualCookieStatusHistogramBrowserTestCase test_case_ =
       GetParam();
   base::test::ScopedFeatureList tpcd_experiment_feature_list_;
-  base::test::ScopedFeatureList force_3pc_blocking_feature_list_;
-  base::test::ScopedFeatureList storage_partitioning_3pc_feature_list_;
+  base::test::ScopedFeatureList cookies_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(
