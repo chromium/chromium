@@ -855,7 +855,7 @@ try_.builder(
     mirrors = ["ci/chromeos-js-code-coverage"],
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 50,
         location_filters = [
             cq.location_filter(path_regexp = r".*\.(js|ts)"),
         ],
