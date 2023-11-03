@@ -166,7 +166,12 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="OOBENetworkError">
-  <variant name="AuthExtTimeout"/>
+  <variant name="AuthExtTimeout">
+    <obsolete>
+      This histogram is replaced by `LoadingTimeout` histogram.
+    </obsolete>
+  </variant>
+  <variant name="LoadingTimeout"/>
   <variant name="None"/>
   <variant name="Offline"/>
   <variant name="Portal"/>

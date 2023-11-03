@@ -45,8 +45,8 @@ std::string GetErrorStateString(NetworkError::ErrorState state) {
       return ".Offline";
     case NetworkError::ERROR_STATE_PROXY:
       return ".Proxy";
-    case NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT:
-      return ".AuthExtTimeout";
+    case NetworkError::ERROR_STATE_LOADING_TIMEOUT:
+      return ".LoadingTimeout";
     case NetworkError::ERROR_STATE_NONE:
       return ".None";
     default:

@@ -60661,7 +60661,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Portal"/>
   <int value="2" label="Offline"/>
   <int value="3" label="Proxy"/>
-  <int value="4" label="AuthExtTimeout"/>
+  <int value="4" label="LoadingTimeout"/>
   <int value="5" label="None"/>
 </enum>
 

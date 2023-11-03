@@ -250,7 +250,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
     }
     SetErrorState(NetworkError::ERROR_STATE_PORTAL, network_name);
   } else if (is_loading_timeout) {
-    SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT, network_name);
+    SetErrorState(NetworkError::ERROR_STATE_LOADING_TIMEOUT, network_name);
   } else {
     SetErrorState(NetworkError::ERROR_STATE_OFFLINE, std::string());
   }
@@ -260,7 +260,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
   AllowGuestSignin(guest_signin_allowed);
   ShowOfflineLoginOption(
       g_offline_login_allowed_ && g_offline_login_per_user_allowed_ &&
-      GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT);
+      GetErrorState() != NetworkError::ERROR_STATE_LOADING_TIMEOUT);
 
   // No need to show the screen again if it is already shown.
   if (is_hidden()) {
