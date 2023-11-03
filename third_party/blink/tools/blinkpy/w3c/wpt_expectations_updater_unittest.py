@@ -1555,7 +1555,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         # In this test we make sure that we dedupe the inherited results.
         host = self.mock_host()
         # Set up a fake list of try builders.
-        # This uses 3 Macs, 2 Wins and 1 Linux.
+        # This uses 2 Macs, 2 Wins and 1 Linux.
         host.builders = BuilderList({
             'MOCK Try Mac10.10': {
                 'port_name': 'test-mac-mac10.10',
@@ -1565,11 +1565,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'MOCK Try Mac10.11': {
                 'port_name': 'test-mac-mac10.11',
                 'specifiers': ['Mac10.11', 'Release'],
-                'is_try_builder': True,
-            },
-            'MOCK Try Mac10.12': {
-                'port_name': 'test-mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release'],
                 'is_try_builder': True,
             },
             'MOCK Try Trusty': {
@@ -1618,3 +1613,40 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             {'FAIL', 'TIMEOUT'},
             set(filled_results.result_for_test(test_name).actual_results()))
+
+    def test_no_fill_skipped(self):
+        host = self.mock_host()
+        host.builders = BuilderList({
+            'MOCK Try Mac10.10': {
+                'port_name': 'test-mac-mac10.10',
+                'specifiers': ['Mac10.10', 'Release'],
+                'is_try_builder': True,
+            },
+            'MOCK Try Mac10.11': {
+                'port_name': 'test-mac-mac10.11',
+                'specifiers': ['Mac10.11', 'Release'],
+                'is_try_builder': True,
+            },
+        })
+        port = host.port_factory.get('test-mac-mac10.11')
+        host.filesystem.write_text_file(
+            port.path_to_never_fix_tests_file(),
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 ]
+                # results: [ Skip ]
+                # Simulate an old platform that runs fewer tests.
+                [ Mac10.10 ] external/wpt/x.html [ Skip ]
+                """))
+        updater = WPTExpectationsUpdater(host)
+        completed_results = [
+            WebTestResults.from_rdb_responses(
+                {'external/wpt/x.html': [{
+                    'status': 'FAIL'
+                }]},
+                builder_name='MOCK Try Mac10.11'),
+        ]
+        filled_results = updater.fill_missing_results(
+            WebTestResults([], builder_name='MOCK Try Mac10.10'),
+            completed_results)
+        self.assertIsNone(
+            filled_results.result_for_test('external/wpt/x.html'))

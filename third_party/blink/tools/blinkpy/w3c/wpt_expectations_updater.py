@@ -265,6 +265,9 @@ class WPTExpectationsUpdater:
         _log.warning('No results for %s on %s, inheriting from other builds',
                      missing_results.step_name(), missing_results.builder_name)
         for test_name in self._tests(completed_results):
+            if self.host.builders.version_specifier_for_port_name(
+                    missing_port) in self.skipped_specifiers(test_name):
+                continue
             # The union of all other actual statuses is used when there is
             # no similar OS to inherit from (eg: no results on Linux, and
             # inheriting from Mac and Win).
