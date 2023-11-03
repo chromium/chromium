@@ -298,13 +298,13 @@ void FlossManagerClient::Init(dbus::Bus* bus,
       service_name, dbus::ObjectPath(kObjectManagerPath));
   object_manager_->RegisterInterface(kManagerInterface, this);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Enable Floss and retry a few times until it is set.
   SetFlossEnabled(floss::features::IsFlossEnabled(), kSetFlossRetryCount,
                   kSetFlossRetryDelayMs,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
 
-#if BUILDFLAG(IS_CHROMEOS)
   SetDevCoredump(base::BindOnce([](DBusResult<Void> ret) {
                    if (!ret.has_value()) {
                      LOG(ERROR) << "Fail to set devcoredump.\n";
@@ -312,7 +312,6 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                  }),
                  base::FeatureList::IsEnabled(
                      chromeos::bluetooth::features::kBluetoothFlossCoredump));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   SetLLPrivacy(
       base::BindOnce([](DBusResult<bool> ret) {
@@ -323,6 +322,7 @@ void FlossManagerClient::Init(dbus::Bus* bus,
         }
       }),
       base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void FlossManagerClient::HandleGetDefaultAdapter(DBusResult<int32_t> response) {

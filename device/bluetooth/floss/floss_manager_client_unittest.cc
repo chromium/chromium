@@ -501,6 +501,7 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   EXPECT_TRUE(method_called_[manager::kRegisterCallback] == 0);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(FlossManagerClientTest, SetFlossEnabledRetries) {
   base::RunLoop loop;
 
@@ -525,6 +526,7 @@ TEST_F(FlossManagerClientTest, SetFlossEnabledRetries) {
   EXPECT_EQ(method_called_[manager::kSetFlossEnabled], 2);
   EXPECT_EQ(method_called_[manager::kGetFlossEnabled], 2);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(FlossManagerClientTest, GetFlossApiVersion) {
   base::Version version = floss::version::IntoVersion(floss_api_version_);
