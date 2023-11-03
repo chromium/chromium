@@ -576,8 +576,10 @@ void ChipController::OnPromptExpired() {
     active_chip_permission_request_manager_.reset();
   }
 
-  if (permission_prompt_model_ &&
-      permission_prompt_model_->GetDelegate().get()) {
+  // Because `OnPromptExpired` is called async, make sure that there is an
+  // existing permission request before resolving it as `Ignore`.
+  if (permission_prompt_model_ && permission_prompt_model_->GetDelegate() &&
+      !permission_prompt_model_->GetDelegate()->Requests().empty()) {
     permission_prompt_model_->GetDelegate()->Ignore();
   }
 
