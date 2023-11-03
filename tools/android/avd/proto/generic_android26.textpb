@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "n0-cZ-eL1bIvD52ZN_KKo5rHDXA-1ttEKlF6RUndGVIC"  # 32.1.14
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
   dest_path: "generic_android26"
 }
 
@@ -19,7 +19,7 @@ system_image_name: "system-images;android-26;google_apis;x86"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-26/google_apis/x86"
-  version: "dJhPFMHuMH8bU8CEBkgnoa9-9ARLGLY3l1gRbRyOcNkC"
+  version: "a37g5qJWR-Cg_kOY1d66zrnCPvBUUWyfQESYmfVbnpcC"
   dest_path: "generic_android26"
 }
 avd_name: "android_26_google_apis_x86"
