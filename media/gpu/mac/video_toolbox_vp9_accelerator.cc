@@ -180,8 +180,9 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     active_format_.reset();
 
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
-        CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,
-                               hdr_metadata);
+        CreateFormatExtensions(kCMVideoCodecType_VP9, profile,
+                               pic->frame_hdr->bit_depth, color_space,
+                               hdr_metadata, absl::nullopt);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
           << "Failed to create format extensions";
