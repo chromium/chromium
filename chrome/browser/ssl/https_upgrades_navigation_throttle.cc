@@ -74,7 +74,6 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
-    hfm_service->MaybeEnableHttpsFirstModeForUrl(handle->GetURL());
     interstitial_state.enabled_by_typically_secure_browsing =
         hfm_service->IsInterstitialEnabledByTypicallySecureUserHeuristic();
   }

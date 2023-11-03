@@ -7,9 +7,11 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -238,20 +240,19 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
               : kHttpsFirstModeSyntheticFieldTrialDisabledGroup,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
-  // Run the Typically Secure heuristic and maybe set the prefs. This will
-  // almost always be a no-op in browser tests because it checks that the clock
-  // is sufficiently advanced, and tests can't change the clock before getting
-  // here. Therefore, browser tests need to call
-  // CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode explicitly.
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(FROM_HERE, base::BindOnce(&HttpsFirstModeService::AfterStartup,
+                                           weak_factory_.GetWeakPtr()));
+}
+
+void HttpsFirstModeService::AfterStartup() {
   if (base::FeatureList::IsEnabled(
           features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &HttpsFirstModeService::
-                    CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode,
-                weak_factory_.GetWeakPtr()));
+    CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForEngagedSites)) {
+    MaybeEnableHttpsFirstModeForEngagedSites(base::OnceClosure());
   }
 }
 
@@ -407,7 +408,8 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
   return enable_https_first_mode;
 }
 
-void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(const GURL& url) {
+void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
+    base::OnceClosure done_callback) {
   // Ideal parameter order is kHttpsAddThreshold > kHttpsRemoveThreshold >
   // kHttpRemoveThreshold > kHttpAddThreshold.
   if (!(kHttpsAddThreshold.Get() > kHttpsRemoveThreshold.Get() &&
@@ -415,28 +417,60 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(const GURL& url) {
         kHttpRemoveThreshold.Get() > kHttpAddThreshold.Get())) {
     return;
   }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          &site_engagement::SiteEngagementService::GetAllDetailsInBackground,
+          clock_->Now(),
+          base::WrapRefCounted(
+              HostContentSettingsMapFactory::GetForProfile(profile_))),
+      base::BindOnce(&HttpsFirstModeService::ProcessEngagedSitesList,
+                     weak_factory_.GetWeakPtr(), std::move(done_callback)));
+}
 
+void HttpsFirstModeService::ProcessEngagedSitesList(
+    base::OnceClosure done_callback,
+    const std::vector<site_engagement::mojom::SiteEngagementDetails>& details) {
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile_->GetSSLHostStateDelegate());
-
   // StatefulSSLHostStateDelegate can be null during tests. In that case, we
   // can't save the site setting.
   if (!state) {
     return;
   }
+  auto* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile_);
 
+  // TODO(crbug.com/1435222): Sites dropping off from the engaged sites list
+  // should no longer have HTTPS enforced.
+  for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
+    if (detail.origin.SchemeIsHTTPOrHTTPS()) {
+      MaybeEnableHttpsFirstModeForUrl(detail.origin, engagement_service, state);
+    }
+  }
+
+  if (!done_callback.is_null()) {
+    std::move(done_callback).Run();
+  }
+}
+
+void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
+    const GURL& url,
+    site_engagement::SiteEngagementService* engagement_service,
+    StatefulSSLHostStateDelegate* state) {
   bool enforced = state->IsHttpsEnforcedForHost(
       url.host(), profile_->GetDefaultStoragePartition());
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
   GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
 
-  auto* engagement_svc = site_engagement::SiteEngagementService::Get(profile_);
-
-  double https_score = engagement_svc->GetScore(https_url);
-  double http_score = engagement_svc->GetScore(http_url);
+  double https_score = engagement_service->GetScore(https_url);
+  double http_score = engagement_service->GetScore(http_url);
   bool should_enable = https_score >= kHttpsAddThreshold.Get() &&
                        http_score <= kHttpAddThreshold.Get();
+
   if (!enforced && should_enable) {
     state->SetHttpsEnforcementForHost(url.host(),
                                       /*enforced=*/true,

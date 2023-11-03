@@ -679,6 +679,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   }
 }
 
+void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
+    HttpsFirstModeService* hfm_service) {
+  base::RunLoop run_loop;
+  hfm_service->MaybeEnableHttpsFirstModeForEngagedSites(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 // TODO(https://crbug.com/1435222): Fails on the linux-wayland-rel bot.
 #if defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement \
@@ -715,6 +722,9 @@ IN_PROC_BROWSER_TEST_P(
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
   SetSiteEngagementScore(http_url, kLowSiteEngagementScore);
   SetSiteEngagementScore(https_url, kHighSiteEnagementScore);
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(hfm_service);
 
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
@@ -796,6 +806,7 @@ IN_PROC_BROWSER_TEST_P(
   // the clock.
   SetSiteEngagementScore(https_url, 5);
   clock_ptr->Advance(base::Hours(1));
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(hfm_service);
 
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
@@ -2317,6 +2328,7 @@ IN_PROC_BROWSER_TEST_P(
   }
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
   // Without any policy allowlist, navigate to an HTTP URL. It should show the
   // HFM+SE interstitial.
@@ -2325,13 +2337,16 @@ IN_PROC_BROWSER_TEST_P(
   SetSiteEngagementScore(http_url, kLowSiteEngagementScore);
   SetSiteEngagementScore(https_url, kHighSiteEnagementScore);
 
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(hfm_service);
+
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
       contents));
 
   // Artificially add the pref that gets mapped from the enterprise policy.
-  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   auto* prefs = profile->GetPrefs();
   base::Value::List allowlist;
   allowlist.Append("bad-https.com");
