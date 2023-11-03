@@ -121,6 +121,17 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   // Returns the current muting state for the microphone.
   static bool IsMuted(AudioDeviceID device_id);
 
+  // Finds the first subdevice, in an aggregate device, with output streams.
+  static AudioDeviceID FindFirstOutputSubdevice(
+      AudioDeviceID aggregate_device_id);
+
+  // If successful, this function returns no error and populates the out
+  // parameter `input_format` with a valid ASBD. Otherwise, an error status code
+  // will be returned.
+  static OSStatus GetInputDeviceStreamFormat(
+      AudioUnit audio_unit,
+      AudioStreamBasicDescription* input_format);
+
   // Returns a vector with the IDs of all devices related to the given
   // |device_id|. The vector is empty if there are no related devices or
   // if there is an error.

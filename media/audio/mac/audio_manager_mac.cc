@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
@@ -20,6 +21,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_checker.h"
@@ -1463,6 +1465,58 @@ bool AudioManagerMac::IsMuted(AudioDeviceID device_id) {
                                                nullptr, &size, &muted);
   DLOG_IF(WARNING, result != noErr) << "Failed to get mute state";
   return result == noErr && muted != 0;
+}
+
+// static
+AudioDeviceID AudioManagerMac::FindFirstOutputSubdevice(
+    AudioDeviceID aggregate_device_id) {
+  const AudioObjectPropertyAddress property_address = {
+      kAudioAggregateDevicePropertyFullSubDeviceList,
+      kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
+  base::apple::ScopedCFTypeRef<CFArrayRef> subdevices;
+  UInt32 size = sizeof(subdevices);
+  OSStatus result = AudioObjectGetPropertyData(
+      aggregate_device_id, &property_address, 0 /* inQualifierDataSize */,
+      nullptr /* inQualifierData */, &size, subdevices.InitializeInto());
+
+  if (result != noErr) {
+    OSSTATUS_LOG(WARNING, result)
+        << "Failed to read property "
+        << kAudioAggregateDevicePropertyFullSubDeviceList << " for device "
+        << aggregate_device_id;
+    return kAudioObjectUnknown;
+  }
+
+  AudioDeviceID output_subdevice_id = kAudioObjectUnknown;
+  DCHECK_EQ(CFGetTypeID(subdevices.get()), CFArrayGetTypeID());
+  const CFIndex count = CFArrayGetCount(subdevices.get());
+  for (CFIndex i = 0; i < count; ++i) {
+    CFStringRef value = base::apple::CFCast<CFStringRef>(
+        CFArrayGetValueAtIndex(subdevices.get(), i));
+    if (value) {
+      std::string uid = base::SysCFStringRefToUTF8(value);
+      output_subdevice_id = AudioManagerMac::GetAudioDeviceIdByUId(false, uid);
+      if (output_subdevice_id != kAudioObjectUnknown &&
+          core_audio_mac::GetNumStreams(output_subdevice_id, false) > 0) {
+        return output_subdevice_id;
+      }
+    }
+  }
+
+  return kAudioObjectUnknown;
+}
+
+// static
+OSStatus AudioManagerMac::GetInputDeviceStreamFormat(
+    AudioUnit audio_unit,
+    AudioStreamBasicDescription* input_format) {
+  DCHECK(audio_unit);
+  UInt32 property_size = sizeof(*input_format);
+  // Get the audio stream data format on the input scope of the input element
+  // since it is connected to the current input device.
+  return AudioUnitGetProperty(audio_unit, kAudioUnitProperty_StreamFormat,
+                              kAudioUnitScope_Input, AUElement::INPUT,
+                              input_format, &property_size);
 }
 
 // static

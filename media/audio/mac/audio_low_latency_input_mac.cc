@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "media/audio/mac/audio_low_latency_input_mac.h"
 
-#include <CoreAudio/AudioHardware.h>
 #include <CoreServices/CoreServices.h>
 #include <dlfcn.h>
 #include <memory>
@@ -107,60 +106,8 @@ static OSStatus OnGetPlayoutData(void* in_ref_con,
   return noErr;
 }
 
-static OSStatus GetInputDeviceStreamFormat(
-    AudioUnit audio_unit,
-    AudioStreamBasicDescription* format) {
-  DCHECK(audio_unit);
-  UInt32 property_size = sizeof(*format);
-  // Get the audio stream data format on the input scope of the input element
-  // since it is connected to the current input device.
-  OSStatus result = AudioUnitGetProperty(
-      audio_unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input,
-      AUElement::INPUT, format, &property_size);
-  DVLOG(1) << "Input device stream format: " << *format;
-  return result;
-}
-
-// Finds the first subdevice, in an aggregate device, with output streams.
-static AudioDeviceID FindFirstOutputSubdevice(
-    AudioDeviceID aggregate_device_id) {
-  const AudioObjectPropertyAddress property_address = {
-      kAudioAggregateDevicePropertyFullSubDeviceList,
-      kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
-  base::apple::ScopedCFTypeRef<CFArrayRef> subdevices;
-  UInt32 size = sizeof(subdevices);
-  OSStatus result = AudioObjectGetPropertyData(
-      aggregate_device_id, &property_address, 0 /* inQualifierDataSize */,
-      nullptr /* inQualifierData */, &size, subdevices.InitializeInto());
-
-  if (result != noErr) {
-    OSSTATUS_LOG(WARNING, result)
-        << "Failed to read property "
-        << kAudioAggregateDevicePropertyFullSubDeviceList << " for device "
-        << aggregate_device_id;
-    return kAudioObjectUnknown;
-  }
-
-  AudioDeviceID output_subdevice_id = kAudioObjectUnknown;
-  DCHECK_EQ(CFGetTypeID(subdevices.get()), CFArrayGetTypeID());
-  const CFIndex count = CFArrayGetCount(subdevices.get());
-  for (CFIndex i = 0; i != count; ++i) {
-    CFStringRef value = base::apple::CFCast<CFStringRef>(
-        CFArrayGetValueAtIndex(subdevices.get(), i));
-    if (value) {
-      std::string uid = base::SysCFStringRefToUTF8(value);
-      output_subdevice_id = AudioManagerMac::GetAudioDeviceIdByUId(false, uid);
-      if (output_subdevice_id != kAudioObjectUnknown &&
-          core_audio_mac::GetNumStreams(output_subdevice_id, false) > 0) {
-        break;
-      }
-    }
-  }
-
-  return output_subdevice_id;
-}
-
-// See "Technical Note TN2091 - Device input using the HAL Output Audio Unit"
+// See "Technical Note TN2091 - Device input using the HAL Output Audio
+// Unit"
 // http://developer.apple.com/library/mac/#technotes/tn2091/_index.html
 // for more details and background regarding this implementation.
 
@@ -397,7 +344,9 @@ bool AUAudioInputStream::OpenAUHAL() {
   // in the AUHAL, only *simple* conversions, e.g., 32-bit float to 16-bit
   // signed integer format.
   AudioStreamBasicDescription input_device_format = {0};
-  GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
+  AudioManagerMac::GetInputDeviceStreamFormat(audio_unit_,
+                                              &input_device_format);
+  DVLOG(1) << "Input device stream format: " << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR) << "Input device's sample rate does not match the client's "
                   "sample rate; input_device_format="
@@ -539,7 +488,9 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   // in the AUHAL, only *simple* conversions, e.g., 32-bit float to 16-bit
   // signed integer format.
   AudioStreamBasicDescription input_device_format = {0};
-  GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
+  AudioManagerMac::GetInputDeviceStreamFormat(audio_unit_,
+                                              &input_device_format);
+  DVLOG(1) << "Input device stream format: " << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR)
         << "Input device's sample rate does not match the client's sample rate";
@@ -770,7 +721,7 @@ void AUAudioInputStream::SetOutputDeviceForAec(
   if (core_audio_mac::GetDeviceTransportType(audio_device_id) ==
       kAudioDeviceTransportTypeAggregate) {
     const AudioDeviceID output_subdevice_id =
-        FindFirstOutputSubdevice(audio_device_id);
+        AudioManagerMac::FindFirstOutputSubdevice(audio_device_id);
 
     if (output_subdevice_id == kAudioObjectUnknown) {
       log_callback_.Run(base::StringPrintf(

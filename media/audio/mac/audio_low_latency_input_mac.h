@@ -37,7 +37,6 @@
 #define MEDIA_AUDIO_MAC_AUDIO_LOW_LATENCY_INPUT_MAC_H_
 
 #include <AudioUnit/AudioUnit.h>
-#include <CoreAudio/CoreAudio.h>
 
 #include <memory>
 #include <vector>
