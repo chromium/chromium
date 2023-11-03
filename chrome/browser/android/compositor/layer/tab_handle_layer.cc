@@ -192,9 +192,6 @@ void TabHandleLayer::SetProperties(
     start_divider_->SetUIResourceId(divider_resource->ui_resource()->id());
     start_divider_->SetBounds(divider_resource->size());
     int divider_x = is_rtl ? width - divider_offset_x : divider_offset_x;
-    if (foreground_) {
-      divider_x += original_x;
-    }
     start_divider_->SetPosition(gfx::PointF(divider_x, divider_y));
     start_divider_->SetOpacity(1.0f);
   }
@@ -206,9 +203,6 @@ void TabHandleLayer::SetProperties(
     end_divider_->SetUIResourceId(divider_resource->ui_resource()->id());
     end_divider_->SetBounds(divider_resource->size());
     int divider_x = is_rtl ? divider_offset_x : width - divider_offset_x;
-    if (foreground_) {
-      divider_x += original_x;
-    }
     end_divider_->SetPosition(gfx::PointF(divider_x, divider_y));
     end_divider_->SetOpacity(1.0f);
   }

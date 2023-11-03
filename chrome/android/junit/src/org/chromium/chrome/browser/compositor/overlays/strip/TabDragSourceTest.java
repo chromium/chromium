@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -205,7 +207,8 @@ public class TabDragSourceTest {
         simulateDragDropEvents(/* withinStripLayout= */ true);
 
         // Verify appropriate events are generated to simulate movement within the strip layout.
-        verify(mStripLayoutHelper, times(1)).dragActiveClickedTabOntoStrip(anyLong(), anyFloat());
+        verify(mStripLayoutHelper, times(1))
+                .onDownInternal(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyInt());
         verify(mStripLayoutHelper, times(4))
                 .drag(
                         anyLong(),
@@ -218,11 +221,6 @@ public class TabDragSourceTest {
         verify(mStripLayoutHelper, times(TAB_ID)).onUpOrCancel(anyLong());
     }
 
-    /**
-     * Tests the instance of the local class {@link TabDragSource#OnDragListenerImpl}.
-     *
-     * <p>Checks that it successfully sends the drag events to the {@link StripLayoutHelper}.
-     */
     @Test
     public void test_OnDragListenerImpl_SimulateDragDropOutsideStripLayout_ReturnsSuccess() {
         // Call startDrag to set class variables.
@@ -233,8 +231,8 @@ public class TabDragSourceTest {
         simulateDragDropEvents(/* withinStripLayout= */ false);
 
         // Verify appropriate events are generated to simulate movement outside the strip layout.
-        verify(mStripLayoutHelper, times(1)).dragActiveClickedTabOntoStrip(anyLong(), anyFloat());
-        verify(mStripLayoutHelper, times(1)).dragActiveClickedTabOutOfStrip(anyLong());
+        verify(mStripLayoutHelper, times(TAB_ID))
+                .onDownInternal(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyInt());
         verify(mStripLayoutHelper, times(5))
                 .drag(
                         anyLong(),
@@ -244,6 +242,7 @@ public class TabDragSourceTest {
                         anyFloat(),
                         anyFloat(),
                         anyFloat());
+        verify(mStripLayoutHelper, times(TAB_ID)).onUpOrCancel(anyLong());
     }
 
     @Test
@@ -424,7 +423,6 @@ public class TabDragSourceTest {
                         0));
     }
 
-    /** Tests the instance of the local class {@link TabDragSource} get and clear methods. */
     @Test
     @Config(qualifiers = "sw600dp-w600dp")
     public void test_canAcceptTabDrop_SimulateDragDrops_ReturnsSuccess() {
