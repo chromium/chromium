@@ -20,7 +20,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
@@ -168,9 +167,9 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
             ReadCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    auto reader = storage::FileStreamReader::CreateForIndexedDBDataItemReader(
-        file_task_runner_.get(), file_path_, storage::CreateFilesystemProxy(),
-        offset, expected_modification_time_);
+    auto reader = storage::FileStreamReader::CreateForLocalFile(
+        file_task_runner_.get(), file_path_, offset,
+        expected_modification_time_);
     auto adapter = std::make_unique<FileStreamReaderToDataPipe>(
         std::move(reader), std::move(pipe));
     auto* raw_adapter = adapter.get();

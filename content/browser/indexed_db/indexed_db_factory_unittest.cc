@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
@@ -221,7 +220,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
        BasicFactoryCreationAndTearDown) {
-  auto filesystem_proxy = storage::CreateFilesystemProxy();
   SetUpContext();
 
   const blink::StorageKey storage_key_1 =
@@ -322,16 +320,11 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   context()->GetUsage(infos_future.GetCallback());
   auto infos = infos_future.Take();
 
-  int64_t bucket_size_1 =
-      filesystem_proxy->ComputeDirectorySize(file_1.DirName());
-  int64_t bucket_size_2 =
-      filesystem_proxy->ComputeDirectorySize(file_2.DirName());
-  int64_t bucket_size_3 =
-      filesystem_proxy->ComputeDirectorySize(file_3.DirName());
-  int64_t bucket_size_4 =
-      filesystem_proxy->ComputeDirectorySize(file_4.DirName());
-  int64_t bucket_size_5 =
-      filesystem_proxy->ComputeDirectorySize(file_5.DirName());
+  int64_t bucket_size_1 = base::ComputeDirectorySize(file_1.DirName());
+  int64_t bucket_size_2 = base::ComputeDirectorySize(file_2.DirName());
+  int64_t bucket_size_3 = base::ComputeDirectorySize(file_3.DirName());
+  int64_t bucket_size_4 = base::ComputeDirectorySize(file_4.DirName());
+  int64_t bucket_size_5 = base::ComputeDirectorySize(file_5.DirName());
 
   // Buckets 1, 4, and 5 merge if partitioning is on. If partitioning is off
   // buckets 1 and 5 merge.

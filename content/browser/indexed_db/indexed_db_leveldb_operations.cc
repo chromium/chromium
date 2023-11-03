@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -101,10 +102,9 @@ base::FilePath ComputeCorruptionFileName(
       .Append(FILE_PATH_LITERAL("corruption_info.json"));
 }
 
-bool IsPathTooLong(storage::FilesystemProxy* filesystem,
-                   const base::FilePath& leveldb_dir) {
+bool IsPathTooLong(const base::FilePath& leveldb_dir) {
   absl::optional<int> limit =
-      filesystem->GetMaximumPathComponentLength(leveldb_dir.DirName());
+      base::GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
 // In limited testing, ChromeOS returns 143, other OSes 255.
@@ -130,46 +130,42 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
   return false;
 }
 
-std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
-                               const base::FilePath& path_base,
+std::string ReadCorruptionInfo(const base::FilePath& path_base,
                                const storage::BucketLocator& bucket_locator) {
   const base::FilePath info_path =
       path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
   std::string message;
-  if (IsPathTooLong(filesystem_proxy, info_path))
+  if (IsPathTooLong(info_path)) {
     return message;
+  }
 
   const int64_t kMaxJsonLength = 4096;
 
-  absl::optional<base::File::Info> file_info =
-      filesystem_proxy->GetFileInfo(info_path);
-  if (!file_info.has_value())
+  base::File::Info file_info;
+  if (!base::GetFileInfo(info_path, &file_info)) {
     return message;
-  if (!file_info->size || file_info->size > kMaxJsonLength) {
-    filesystem_proxy->DeleteFile(info_path);
+  }
+  if (!file_info.size || file_info.size > kMaxJsonLength) {
+    base::DeleteFile(info_path);
     return message;
   }
 
-  base::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
-      info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (file_or_error.has_value()) {
-    auto& file = file_or_error.value();
-    if (file.IsValid()) {
-      std::string input_js(file_info->size, '\0');
-      if (file_info->size ==
-          file.Read(0, std::data(input_js), file_info->size)) {
-        absl::optional<base::Value> val = base::JSONReader::Read(input_js);
-        if (val && val->is_dict()) {
-          std::string* s = val->GetDict().FindString("message");
-          if (s)
-            message = *s;
+  base::File file(info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (file.IsValid()) {
+    std::string input_js(file_info.size, '\0');
+    if (file_info.size == file.Read(0, std::data(input_js), file_info.size)) {
+      absl::optional<base::Value> val = base::JSONReader::Read(input_js);
+      if (val && val->is_dict()) {
+        std::string* s = val->GetDict().FindString("message");
+        if (s) {
+          message = *s;
         }
       }
-      file.Close();
     }
+    file.Close();
   }
 
-  filesystem_proxy->DeleteFile(info_path);
+  base::DeleteFile(info_path);
 
   return message;
 }

@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -76,7 +77,6 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
@@ -84,7 +84,6 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
                               bucket_locator,
                               blob_path,
                               std::move(db),
-                              std::move(filesystem_proxy),
                               std::move(blob_files_cleaned),
                               std::move(report_outstanding_blobs),
                               std::move(idb_task_runner)) {}
@@ -132,7 +131,6 @@ class TestIDBFactory : public IndexedDBFactory {
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
           report_outstanding_blobs,
@@ -142,8 +140,8 @@ class TestIDBFactory : public IndexedDBFactory {
     // use a different context from what is stored in the IndexedDBContext.
     return std::make_unique<TestableIndexedDBBackingStore>(
         backing_store_mode, bucket_locator, blob_path, std::move(db),
-        std::move(filesystem_proxy), std::move(blob_files_cleaned),
-        std::move(report_outstanding_blobs), std::move(idb_task_runner));
+        std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
+        std::move(idb_task_runner));
   }
 };
 
@@ -189,9 +187,7 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
     writes_.emplace_back(std::move(blob), path);
 
     if (write_files_to_disk_) {
-      auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
-          storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
-      filesystem_proxy->WriteFileAtomically(path, "fake contents");
+      base::ImportantFileWriter::WriteFileAtomically(path, "fake contents");
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1651,23 +1647,18 @@ TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
 
 TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForOpaqueStorageKey) {
-  auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
-      storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
   storage::BucketLocator bucket_locator;
   bucket_locator.storage_key =
       blink::StorageKey::CreateFirstParty(url::Origin());
   bucket_locator.is_default = true;
 
   // No `path_base`.
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(),
-                                             base::FilePath(), bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(base::FilePath(), bucket_locator).empty());
 }
 
 TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForFirstPartyStorageKey) {
-  auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
-      storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
   storage::BucketLocator bucket_locator;
   const base::FilePath path_base = temp_dir_.GetPath();
   bucket_locator.storage_key =
@@ -1677,9 +1668,8 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   ASSERT_FALSE(path_base.empty());
 
   // File not found.
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
 
   const base::FilePath info_path =
       path_base.AppendASCII("http_www.google.com_0.indexeddb.leveldb")
@@ -1689,59 +1679,52 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   // Empty file.
   std::string dummy_data;
   ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // File size > 4 KB.
   dummy_data.resize(5000, 'c');
   ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Random string.
   ASSERT_TRUE(base::WriteFile(info_path, "foo bar"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Not a dictionary.
   ASSERT_TRUE(base::WriteFile(info_path, "[]"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Empty dictionary.
   ASSERT_TRUE(base::WriteFile(info_path, "{}"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Dictionary, no message key.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"foo\":\"bar\"}"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Dictionary, message key.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"bar\"}"));
-  std::string message = indexed_db::ReadCorruptionInfo(
-      filesystem_proxy.get(), path_base, bucket_locator);
+  std::string message =
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator);
   EXPECT_FALSE(message.empty());
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("bar", message);
 
   // Dictionary, message key and more.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"foo\",\"bar\":5}"));
-  message = indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                           bucket_locator);
+  message = indexed_db::ReadCorruptionInfo(path_base, bucket_locator);
   EXPECT_FALSE(message.empty());
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("foo", message);
@@ -1749,8 +1732,6 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
 
 TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForThirdPartyStorageKey) {
-  auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
-      storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
   storage::BucketLocator bucket_locator;
   bucket_locator.storage_key = blink::StorageKey::Create(
       url::Origin::Create(GURL("http://www.google.com/")),
@@ -1762,9 +1743,8 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   ASSERT_FALSE(path_base.empty());
 
   // File not found.
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
 
   base::FilePath info_path =
       path_base.AppendASCII("http_www.google.com_0.indexeddb.leveldb")
@@ -1778,59 +1758,52 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   // Empty file.
   std::string dummy_data;
   ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // File size > 4 KB.
   dummy_data.resize(5000, 'c');
   ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Random string.
   ASSERT_TRUE(base::WriteFile(info_path, "foo bar"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Not a dictionary.
   ASSERT_TRUE(base::WriteFile(info_path, "[]"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Empty dictionary.
   ASSERT_TRUE(base::WriteFile(info_path, "{}"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Dictionary, no message key.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"foo\":\"bar\"}"));
-  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                             bucket_locator)
-                  .empty());
+  EXPECT_TRUE(
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator).empty());
   EXPECT_FALSE(PathExists(info_path));
 
   // Dictionary, message key.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"bar\"}"));
-  std::string message = indexed_db::ReadCorruptionInfo(
-      filesystem_proxy.get(), path_base, bucket_locator);
+  std::string message =
+      indexed_db::ReadCorruptionInfo(path_base, bucket_locator);
   EXPECT_FALSE(message.empty());
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("bar", message);
 
   // Dictionary, message key and more.
   ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"foo\",\"bar\":5}"));
-  message = indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
-                                           bucket_locator);
+  message = indexed_db::ReadCorruptionInfo(path_base, bucket_locator);
   EXPECT_FALSE(message.empty());
   EXPECT_FALSE(PathExists(info_path));
   EXPECT_EQ("foo", message);
@@ -2318,9 +2291,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
 
     // Pick a blob we wrote arbitrarily and delete it.
     auto path = blob_context_->writes()[1].path;
-    auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
-        storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
-    filesystem_proxy->DeleteFile(path);
+    base::DeleteFile(path);
 
     DestroyFactoryAndBackingStore();
     CreateFactoryAndBackingStore();

@@ -28,7 +28,6 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
@@ -388,7 +387,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
@@ -735,9 +733,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   const Mode backing_store_mode_;
   const storage::BucketLocator bucket_locator_;
   const base::FilePath blob_path_;
-
-  // Filesystem proxy to use for file operations.  nullptr if in memory.
-  const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
 
   // The origin identifier is a key prefix, unique to the storage key's origin,
   // used in the leveldb backing store to partition data by origin. It is a

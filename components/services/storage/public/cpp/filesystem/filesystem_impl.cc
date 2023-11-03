@@ -203,13 +203,6 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
   std::move(callback).Run(error, std::move(file));
 }
 
-void FilesystemImpl::WriteFileAtomically(const base::FilePath& path,
-                                         const std::string& contents,
-                                         WriteFileAtomicallyCallback callback) {
-  std::move(callback).Run(base::ImportantFileWriter::WriteFileAtomically(
-      MakeAbsolute(path), std::move(contents)));
-}
-
 void FilesystemImpl::CreateDirectory(const base::FilePath& path,
                                      CreateDirectoryCallback callback) {
   base::File::Error error = base::File::FILE_OK;
@@ -220,12 +213,6 @@ void FilesystemImpl::CreateDirectory(const base::FilePath& path,
 void FilesystemImpl::DeleteFile(const base::FilePath& path,
                                 DeleteFileCallback callback) {
   std::move(callback).Run(base::DeleteFile(MakeAbsolute(path)));
-}
-
-void FilesystemImpl::DeletePathRecursively(
-    const base::FilePath& path,
-    DeletePathRecursivelyCallback callback) {
-  std::move(callback).Run(base::DeletePathRecursively(MakeAbsolute(path)));
 }
 
 void FilesystemImpl::GetFileInfo(const base::FilePath& path,
@@ -240,14 +227,6 @@ void FilesystemImpl::GetFileInfo(const base::FilePath& path,
 void FilesystemImpl::GetPathAccess(const base::FilePath& path,
                                    GetPathAccessCallback callback) {
   std::move(callback).Run(GetPathAccessLocal(MakeAbsolute(path)));
-}
-
-void FilesystemImpl::GetMaximumPathComponentLength(
-    const base::FilePath& path,
-    GetMaximumPathComponentLengthCallback callback) {
-  int len = base::GetMaximumPathComponentLength(MakeAbsolute(path));
-  bool success = len != -1;
-  return std::move(callback).Run(success, len);
 }
 
 void FilesystemImpl::RenameFile(const base::FilePath& old_path,

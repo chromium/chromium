@@ -150,7 +150,6 @@ class CONTENT_EXPORT IndexedDBFactory
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
           report_outstanding_blobs,
@@ -205,7 +204,6 @@ class CONTENT_EXPORT IndexedDBFactory
       base::FilePath database_path,
       base::FilePath blob_path,
       PartitionedLockManager* lock_manager,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       bool is_first_attempt,
       bool create_if_missing);
 

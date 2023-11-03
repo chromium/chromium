@@ -34,7 +34,6 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"

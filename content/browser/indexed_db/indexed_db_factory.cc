@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -34,13 +35,11 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
-#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
@@ -105,11 +104,10 @@ IndexedDBDatabaseError CreateDefaultError() {
 std::tuple<base::FilePath /*leveldb_path*/,
            base::FilePath /*blob_path*/,
            leveldb::Status>
-CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
-                          const base::FilePath& path_base,
+CreateDatabaseDirectories(const base::FilePath& path_base,
                           const storage::BucketLocator& bucket_locator) {
   leveldb::Status status;
-  if (filesystem->CreateDirectory(path_base) != base::File::Error::FILE_OK) {
+  if (!base::CreateDirectory(path_base)) {
     status =
         leveldb::Status::IOError("Unable to create IndexedDB database path");
     LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
@@ -123,7 +121,7 @@ CreateDatabaseDirectories(storage::FilesystemProxy* filesystem,
       path_base.Append(indexed_db::GetLevelDBFileName(bucket_locator));
   base::FilePath blob_path =
       path_base.Append(indexed_db::GetBlobStoreFileName(bucket_locator));
-  if (indexed_db::IsPathTooLong(filesystem, leveldb_path)) {
+  if (indexed_db::IsPathTooLong(leveldb_path)) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
                      bucket_locator);
     status = leveldb::Status::IOError("File path too long");
@@ -661,16 +659,14 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
       indexed_db::kBackingStoreActionUmaName,
       indexed_db::IndexedDBAction::kBackingStoreOpenAttempt);
 
-  bool is_incognito_and_in_memory = data_directory.empty();
+  bool in_memory = data_directory.empty();
   base::FilePath blob_path;
   base::FilePath database_path;
   leveldb::Status s = leveldb::Status::OK();
   const storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
-  if (!is_incognito_and_in_memory) {
-    // The database will be on-disk and not in-memory.
-    auto filesystem_proxy = storage::CreateFilesystemProxy();
-    std::tie(database_path, blob_path, s) = CreateDatabaseDirectories(
-        filesystem_proxy.get(), data_directory, bucket_locator);
+  if (!in_memory) {
+    std::tie(database_path, blob_path, s) =
+        CreateDatabaseDirectories(data_directory, bucket_locator);
     if (!s.ok()) {
       return {IndexedDBBucketContextHandle(), s, CreateDefaultError(),
               IndexedDBDataLossInfo(), /*was_cold_open=*/true};
@@ -685,14 +681,10 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   leveldb::Status first_try_status;
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
-    auto filesystem_proxy = !is_incognito_and_in_memory
-                                ? storage::CreateFilesystemProxy()
-                                : nullptr;
     std::tie(backing_store, s, data_loss_info, disk_full) =
         OpenAndVerifyIndexedDBBackingStore(
             bucket_locator, data_directory, database_path, blob_path,
-            lock_manager.get(), std::move(filesystem_proxy), is_first_attempt,
-            create_if_missing);
+            lock_manager.get(), is_first_attempt, create_if_missing);
     if (LIKELY(is_first_attempt)) {
       first_try_status = s;
     }
@@ -751,7 +743,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   }
   backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
 
-  if (!is_incognito_and_in_memory) {
+  if (!in_memory) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,
                      bucket_locator);
   }
@@ -824,15 +816,14 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactory::CreateBackingStore(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
-    std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
     IndexedDBBackingStore::ReportOutstandingBlobsCallback
         report_outstanding_blobs,
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner) {
   return std::make_unique<IndexedDBBackingStore>(
       backing_store_mode, bucket_locator, blob_path, std::move(db),
-      std::move(filesystem_proxy), std::move(blob_files_cleaned),
-      std::move(report_outstanding_blobs), std::move(idb_task_runner));
+      std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
+      std::move(idb_task_runner));
 }
 std::tuple<std::unique_ptr<IndexedDBBackingStore>,
            leveldb::Status,
@@ -844,7 +835,6 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
     base::FilePath database_path,
     base::FilePath blob_path,
     PartitionedLockManager* lock_manager,
-    std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     bool is_first_attempt,
     bool create_if_missing) {
   // Please see docs/open_and_verify_leveldb_database.code2flow, and the
@@ -856,15 +846,15 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
   DCHECK_EQ(blob_path.empty(), data_directory.empty());
   TRACE_EVENT0("IndexedDB", "indexed_db::OpenAndVerifyLevelDBDatabase");
 
-  bool is_incognito_and_in_memory = data_directory.empty();
+  bool in_memory = data_directory.empty();
   leveldb::Status status;
   IndexedDBDataLossInfo data_loss_info;
   data_loss_info.status = blink::mojom::IDBDataLoss::None;
-  if (!is_incognito_and_in_memory) {
+  if (!in_memory) {
     // Check for previous corruption, and if found then try to delete the
     // database.
-    std::string corruption_message = indexed_db::ReadCorruptionInfo(
-        filesystem_proxy.get(), data_directory, bucket_locator);
+    std::string corruption_message =
+        indexed_db::ReadCorruptionInfo(data_directory, bucket_locator);
     if (UNLIKELY(!corruption_message.empty())) {
       LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
                     "database.";
@@ -968,19 +958,17 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
   bool first_open_since_startup =
       backends_opened_since_startup_.insert(bucket_locator).second;
   IndexedDBBackingStore::Mode backing_store_mode =
-      is_incognito_and_in_memory ? IndexedDBBackingStore::Mode::kInMemory
-                                 : IndexedDBBackingStore::Mode::kOnDisk;
+      in_memory ? IndexedDBBackingStore::Mode::kInMemory
+                : IndexedDBBackingStore::Mode::kOnDisk;
   std::unique_ptr<IndexedDBBackingStore> backing_store = CreateBackingStore(
       backing_store_mode, bucket_locator, blob_path, std::move(database),
-      std::move(filesystem_proxy),
       base::BindRepeating(&IndexedDBFactory::BlobFilesCleaned,
                           weak_factory_.GetWeakPtr(), bucket_locator),
       base::BindRepeating(&IndexedDBFactory::ReportOutstandingBlobs,
                           weak_factory_.GetWeakPtr(), bucket_locator),
       context_->IDBTaskRunner());
   status = backing_store->Initialize(
-      /*clean_active_blob_journal=*/(!is_incognito_and_in_memory &&
-                                     first_open_since_startup));
+      /*clean_active_blob_journal=*/(!in_memory && first_open_since_startup));
 
   if (UNLIKELY(!status.ok())) {
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
