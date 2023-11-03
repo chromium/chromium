@@ -211,6 +211,7 @@ public class PageInsightsMediatorTest {
         mMediator =
                 new PageInsightsMediator(
                         context,
+                        new View(ContextUtils.getApplicationContext()),
                         mMockTabProvider,
                         mShareDelegateSupplier,
                         mProfileSupplier,

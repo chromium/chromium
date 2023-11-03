@@ -167,6 +167,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     public PageInsightsMediator(
             Context context,
+            View layoutView,
             ObservableSupplier<Tab> tabObservable,
             Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<Profile> profileSupplier,
@@ -181,7 +182,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mTabObservable = tabObservable;
         mProfileSupplier = profileSupplier;
         mSheetContent =
-                new PageInsightsSheetContent(mContext, view -> loadMyActivityUrl(tabObservable));
+                new PageInsightsSheetContent(
+                        mContext, layoutView, view -> loadMyActivityUrl(tabObservable));
         mSheetController = bottomSheetController;
         mBottomUiController = bottomUiController;
         mCurrentTime = System::currentTimeMillis;
@@ -486,7 +488,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     private float getPeekHeightRatio() {
-        float fullHeight = mSheetContent.getFullHeightRatio() * mSheetContainer.getHeight();
+        float fullHeight = PageInsightsSheetContent.FULL_HEIGHT_RATIO * mSheetContainer.getHeight();
         return mSheetContent.getPeekHeight() / fullHeight;
     }
 

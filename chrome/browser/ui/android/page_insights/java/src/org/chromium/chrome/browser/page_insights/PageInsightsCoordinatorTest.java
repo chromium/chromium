@@ -223,6 +223,7 @@ public class PageInsightsCoordinatorTest {
         mPageInsightsCoordinator =
                 new PageInsightsCoordinator(
                         activity,
+                        new View(ContextUtils.getApplicationContext()),
                         mTabProvider,
                         mShareDelegateSupplier,
                         mProfileSupplier,
