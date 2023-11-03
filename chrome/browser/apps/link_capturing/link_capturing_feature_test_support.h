@@ -6,20 +6,37 @@
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURE_TEST_SUPPORT_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "base/types/expected.h"
+#include "components/webapps/common/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace apps {
+class Profile;
+
+namespace apps::test {
 
 // The functions should only be called from tests, and is used to enable or
 // disable link capturing UXes. Only use these if link capturing needs to be
 // enabled on all platforms, i.e. ChromeOS, Windows, Mac and Linux. For platform
 // specific implementations, prefer initializing the feature list in the test
 // file itself.
-void EnableLinkCapturingUXForTesting(
-    base::test::ScopedFeatureList& scoped_feature_list);
-void DisableLinkCapturingUXForTesting(
-    base::test::ScopedFeatureList& scoped_feature_list);
+// Note: `captures_by_default` being set to true is not supported by ChromeOS.
+std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
+    absl::optional<bool> override_captures_by_default = absl::nullopt);
 
-}  // namespace apps
+std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX();
+
+// Enables link capturing as if the user did it from the app settings page.
+// Returns the error description if there was an error.
+base::expected<void, std::string> EnableLinkCapturingByUser(
+    Profile* profile,
+    const webapps::AppId& app_id);
+
+// Disables link capturing as if the user did it from the app settings page.
+// Returns the error description if there was an error.
+base::expected<void, std::string> DisableLinkCapturingByUser(
+    Profile* profile,
+    const webapps::AppId& app_id);
+
+}  // namespace apps::test
 
 #endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURE_TEST_SUPPORT_H_

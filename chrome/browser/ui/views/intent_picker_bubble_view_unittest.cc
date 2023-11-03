@@ -61,7 +61,8 @@ using content::Referrer;
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() {
-    apps::DisableLinkCapturingUXForTesting(feature_list_);
+    feature_list_.InitWithFeatures(
+        {}, apps::test::GetFeaturesToDisableLinkCapturingUX());
   }
 
   IntentPickerBubbleViewTest(const IntentPickerBubbleViewTest&) = delete;
@@ -351,9 +352,11 @@ class IntentPickerBubbleViewLayoutTest
  public:
   IntentPickerBubbleViewLayoutTest() {
     if (GetParam() == BubbleInterfaceType::kGridView) {
-      apps::EnableLinkCapturingUXForTesting(feature_list_);
+      feature_list_.InitWithFeaturesAndParameters(
+          apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
     } else {
-      apps::DisableLinkCapturingUXForTesting(feature_list_);
+      feature_list_.InitWithFeatures(
+          {}, apps::test::GetFeaturesToDisableLinkCapturingUX());
     }
   }
 
@@ -505,7 +508,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 class IntentPickerBubbleViewGridLayoutTest : public IntentPickerBubbleViewTest {
  public:
   IntentPickerBubbleViewGridLayoutTest() {
-    apps::EnableLinkCapturingUXForTesting(feature_list_);
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
 
  private:

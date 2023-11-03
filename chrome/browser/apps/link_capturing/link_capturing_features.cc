@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 
 namespace apps::features {
 
@@ -15,10 +16,6 @@ namespace apps::features {
 BASE_FEATURE(kLinkCapturingUiUpdate,
              "LinkCapturingUiUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kDesktopPWAsLinkCapturing,
-             "DesktopPWAsLinkCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -35,7 +32,7 @@ bool ShouldShowLinkCapturingUX() {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);
 #else
-  return base::FeatureList::IsEnabled(kDesktopPWAsLinkCapturing);
+  return base::FeatureList::IsEnabled(::features::kDesktopPWAsLinkCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -72,8 +73,8 @@ class EnableLinkCapturingInfobarBrowserTest
     : public WebAppNavigationBrowserTest {
  public:
   EnableLinkCapturingInfobarBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        apps::features::kDesktopPWAsLinkCapturing);
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
 
   IntentChipButton* GetIntentPickerIcon() {

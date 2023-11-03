@@ -3919,6 +3919,19 @@ const flags_ui::FeatureEntry::FeatureVariation
          std::size(kParcelTrackingTestDataOutForDelivery), nullptr},
 };
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const flags_ui::FeatureEntry::FeatureParam
+    kDesktopPWAsLinkCapturingDefaultOn[] = {{"default_on", "true"}};
+const flags_ui::FeatureEntry::FeatureParam
+    kDesktopPWAsLinkCapturingDefaultOff[] = {{"default_on", "false"}};
+const flags_ui::FeatureEntry::FeatureVariation
+    kDesktopPWAsLinkCapturingVariations[] = {
+        {"On by default", kDesktopPWAsLinkCapturingDefaultOn,
+         std::size(kDesktopPWAsLinkCapturingDefaultOn), nullptr},
+        {"Off by default", kDesktopPWAsLinkCapturingDefaultOff,
+         std::size(kDesktopPWAsLinkCapturingDefaultOff), nullptr}};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10837,7 +10850,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsUserLinkCapturingName,
      flag_descriptions::kDesktopPWAsUserLinkCapturingDescription,
      kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(apps::features::kDesktopPWAsLinkCapturing)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsLinkCapturing,
+                                    kDesktopPWAsLinkCapturingVariations,
+                                    "DesktopPWAsLinkCapturing")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
     {"forgot-password-form-support",

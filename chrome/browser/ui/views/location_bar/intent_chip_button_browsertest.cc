@@ -50,7 +50,8 @@ class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentChipButtonBrowserTest() {
-    apps::EnableLinkCapturingUXForTesting(scoped_feature_list_);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
 
   void SetUpOnMainThread() override {
@@ -306,7 +307,8 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsAppIconInChip) {
 class IntentChipButtonBrowserUiTest : public UiBrowserTest {
  public:
   IntentChipButtonBrowserUiTest() {
-    apps::EnableLinkCapturingUXForTesting(scoped_feature_list_);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
 
   // UiBrowserTest:

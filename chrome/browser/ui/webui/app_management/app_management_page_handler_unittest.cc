@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -76,10 +77,10 @@ class AppManagementPageHandlerTestBase : public testing::Test {
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile_.get(), *delegate_.get());
 #if !BUILDFLAG(IS_CHROMEOS)
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsLinkCapturing,
-         blink::features::kWebAppEnableScopeExtensions},
-        {});
+    auto features_to_enable = apps::test::GetFeaturesToEnableLinkCapturingUX();
+    features_to_enable.push_back(
+        {blink::features::kWebAppEnableScopeExtensions, {}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 

@@ -13,10 +13,6 @@ namespace apps::features {
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables user link capturing on CrOS.
 BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
-#else
-// Enables user link capturing on desktop platforms, i.e. Windows, Mac
-// Linux amd Fuchsia.
-BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

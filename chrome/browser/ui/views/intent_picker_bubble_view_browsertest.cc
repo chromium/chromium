@@ -374,7 +374,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerIconBrowserTest,
 class IntentPickerIconBrowserBubbleTest : public IntentPickerIconBrowserTest {
  public:
   IntentPickerIconBrowserBubbleTest() {
-    apps::EnableLinkCapturingUXForTesting(feature_list_);
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
 
  private:

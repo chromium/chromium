@@ -630,7 +630,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 #else
   // This allows us to bypass showing the supported links item on the PWA app
   // settings page on Windows, Mac and Linux platforms.
-  if (base::FeatureList::IsEnabled(apps::features::kDesktopPWAsLinkCapturing)) {
+  if (apps::features::ShouldShowLinkCapturingUX()) {
     app->supported_links = GetSupportedLinksForPWAs(app->id, *provider);
   } else {
     app->supported_links = std::vector<std::string>();

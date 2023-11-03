@@ -140,8 +140,7 @@ bool WebAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
   // Launch app directly only if |url| is in the scope of |app_id|.
   // TODO(b/294079334): Use `IsUrlInAppExtendedScope` to support scope
   // extensions for user link capturing on desktop platforms.
-  return base::FeatureList::IsEnabled(
-             apps::features::kDesktopPWAsLinkCapturing) &&
+  return features::ShouldShowLinkCapturingUX() &&
          provider_->registrar_unsafe().IsUrlInAppScope(url, app_id);
 }
 
@@ -193,8 +192,7 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
   if (entry_type == apps::PickerEntryType::kWeb) {
     provider_->ui_manager().ReparentAppTabToWindow(web_contents, launch_name,
                                                    /*shortcut_created=*/true);
-    if (base::FeatureList::IsEnabled(
-            apps::features::kDesktopPWAsLinkCapturing)) {
+    if (features::ShouldShowLinkCapturingUX()) {
       provider_->ui_manager().MaybeCreateEnableSupportedLinksInfobar(
           web_contents, launch_name);
     }

@@ -6,31 +6,81 @@
 
 #include "base/check_is_test.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace apps {
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#endif
 
-void EnableLinkCapturingUXForTesting(
-    base::test::ScopedFeatureList& scoped_feature_list) {
+namespace apps::test {
+
+std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
+    absl::optional<bool> override_captures_by_default) {
   CHECK_IS_TEST();
 #if BUILDFLAG(IS_CHROMEOS)
-  scoped_feature_list.InitAndEnableFeature(
-      apps::features::kLinkCapturingUiUpdate);
+  CHECK(!override_captures_by_default || !override_captures_by_default.value());
+  return {{::apps::features::kLinkCapturingUiUpdate, {}}};
 #else
-  scoped_feature_list.InitAndEnableFeature(
-      apps::features::kDesktopPWAsLinkCapturing);
+  return {{features::kDesktopPWAsLinkCapturing,
+           {{features::kLinksCapturedByDefault.name,
+             std::string(override_captures_by_default.value_or(
+                             features::kLinksCapturedByDefault.default_value)
+                             ? "true"
+                             : "false")}}}};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {
+  CHECK_IS_TEST();
+#if BUILDFLAG(IS_CHROMEOS)
+  return {::apps::features::kLinkCapturingUiUpdate};
+#else
+  return {features::kDesktopPWAsLinkCapturing};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void DisableLinkCapturingUXForTesting(
-    base::test::ScopedFeatureList& scoped_feature_list) {
+base::expected<void, std::string> EnableLinkCapturingByUser(
+    Profile* profile,
+    const webapps::AppId& app_id) {
   CHECK_IS_TEST();
 #if BUILDFLAG(IS_CHROMEOS)
-  scoped_feature_list.InitAndDisableFeature(
-      apps::features::kLinkCapturingUiUpdate);
+  apps_util::SetSupportedLinksPreferenceAndWait(profile, app_id);
 #else
-  scoped_feature_list.InitAndDisableFeature(
-      apps::features::kDesktopPWAsLinkCapturing);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile);
+  base::test::TestFuture<void> preference_set;
+  provider->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+      app_id, /*set_to_preferred=*/true, preference_set.GetCallback());
+  if (!preference_set.Wait()) {
+    return base::unexpected("Enable link capturing command never completed.");
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  return base::ok();
 }
 
-}  // namespace apps
+base::expected<void, std::string> DisableLinkCapturingByUser(
+    Profile* profile,
+    const webapps::AppId& app_id) {
+  CHECK_IS_TEST();
+#if BUILDFLAG(IS_CHROMEOS)
+  apps_util::RemoveSupportedLinksPreferenceAndWait(profile, app_id);
+#else
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile);
+  base::test::TestFuture<void> preference_set;
+  provider->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
+      app_id, /*set_to_preferred=*/false, preference_set.GetCallback());
+  if (!preference_set.Wait()) {
+    return base::unexpected("Disable link capturing command never completed.");
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return base::ok();
+}
+
+}  // namespace apps::test

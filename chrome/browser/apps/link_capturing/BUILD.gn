@@ -29,6 +29,7 @@ source_set("link_capturing") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
+    "//chrome/common:chrome_features",
     "//components/keep_alive_registry",
     "//components/page_load_metrics/browser",
     "//components/webapps/common:common",
@@ -83,6 +84,10 @@ source_set("test_support") {
   deps = [
     ":link_capturing",
     "//base/test:test_support",
+    "//chrome/browser:test_support",
+    "//chrome/browser/web_applications:web_applications",
+    "//chrome/common:chrome_features",
+    "//components/webapps/common",
   ]
 }
 

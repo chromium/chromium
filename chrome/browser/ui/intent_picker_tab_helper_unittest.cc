@@ -42,7 +42,8 @@ class IntentPickerTabHelperPlatformAgnosticTest
     : public IntentPickerTabHelperTest {
  public:
   IntentPickerTabHelperPlatformAgnosticTest() {
-    apps::EnableLinkCapturingUXForTesting(scoped_feature_list_);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
 
  private:
