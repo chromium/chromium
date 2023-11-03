@@ -221,9 +221,6 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
     allow_web_contents_creation_ = allow_web_contents_creation;
   }
 
-  // Stores the dialog bounds.
-  virtual void StoreDialogSize(const gfx::Size& dialog_size) {}
-
   // Returns the accelerators handled by the delegate.
   virtual std::vector<Accelerator> GetAccelerators();
 
