@@ -3812,22 +3812,6 @@
           'isolated_scripts': 'wpt_web_tests',
         },
       },
-      'linux-wpt-identity-fyi-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_identity',
-        },
-      },
-      'linux-wpt-input-fyi-rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_input',
-        },
-      },
       'mac-fieldtrial-tester': {
         'mixins': [
           'finch-chromium-swarming-pool',

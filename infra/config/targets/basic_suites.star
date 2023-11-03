@@ -6626,57 +6626,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "wpt_web_tests_identity",
-    tests = {
-        "wpt_tests_suite": targets.legacy_test_config(
-            test = "chrome_wpt_tests",
-            results_handler = "layout tests",
-            args = [
-                "--no-wpt-internal",
-                "webauthn/",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-            merge = targets.merge(
-                script = "//third_party/blink/tools/merge_web_test_results.py",
-                args = [
-                    "--verbose",
-                ],
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "wpt_web_tests_input",
-    tests = {
-        "wpt_tests_suite": targets.legacy_test_config(
-            test = "chrome_wpt_tests",
-            results_handler = "layout tests",
-            args = [
-                "--no-wpt-internal",
-                "infrastructure/testdriver/actions/",
-                "input-events/",
-                "pointerevents/",
-                "touch-events/",
-                "uievents/",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-            merge = targets.merge(
-                script = "//third_party/blink/tools/merge_web_test_results.py",
-                args = [
-                    "--verbose",
-                ],
-            ),
-            experiment_percentage = 100,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "wpt_web_tests_not_site_per_process",
     tests = {
         "wpt_tests_suite_not_site_per_process": targets.legacy_test_config(

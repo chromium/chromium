@@ -626,8 +626,7 @@ class TestImporter(object):
         # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
         # Try linux-blink-rel to make sure no breakage in webdriver tests
         description += (
-            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
-            'linux-wpt-input-fyi-rel,linux-blink-rel')
+            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel')
 
         return description
 

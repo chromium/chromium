@@ -480,8 +480,7 @@ class TestImporterTest(LoggingTestCase):
             'NOAUTOREVERT=true\n'
             'No-Export: true\n'
             'Validate-Test-Flakiness: skip\n'
-            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
-            'linux-wpt-input-fyi-rel,linux-blink-rel')
+            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel')
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])

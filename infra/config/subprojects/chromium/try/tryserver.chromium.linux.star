@@ -407,18 +407,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-wpt-identity-fyi-rel",
-    mirrors = ["ci/linux-wpt-identity-fyi-rel"],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-wpt-input-fyi-rel",
-    mirrors = ["ci/linux-wpt-input-fyi-rel"],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-x64-castos",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [

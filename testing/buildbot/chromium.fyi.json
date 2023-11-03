@@ -48235,63 +48235,6 @@
       }
     ]
   },
-  "linux-wpt-identity-fyi-rel": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "--no-wpt-internal",
-          "webauthn/"
-        ],
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "wpt_tests_suite",
-        "results_handler": "layout tests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_wpt_tests",
-        "test_id_prefix": "ninja://:chrome_wpt_tests/"
-      }
-    ]
-  },
-  "linux-wpt-input-fyi-rel": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "--no-wpt-internal",
-          "infrastructure/testdriver/actions/",
-          "input-events/",
-          "pointerevents/",
-          "touch-events/",
-          "uievents/"
-        ],
-        "experiment_percentage": 100,
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "wpt_tests_suite",
-        "results_handler": "layout tests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_wpt_tests",
-        "test_id_prefix": "ninja://:chrome_wpt_tests/"
-      }
-    ]
-  },
   "mac-fieldtrial-tester": {
     "gtest_tests": [
       {
