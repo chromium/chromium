@@ -906,11 +906,6 @@ export class BrowsingContextImpl {
       case 'box':
         return {x: clip.x, y: clip.y, width: clip.width, height: clip.height};
       case 'element': {
-        if (clip.scrollIntoView) {
-          throw new UnsupportedOperationException(
-            `'scrollIntoView' is currently not supported`
-          );
-        }
         // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
         const sandbox = await this.getOrCreateSandbox(undefined);
         const result = await sandbox.callFunction(

@@ -286,6 +286,7 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
     BrowsingContext.CreateSchema,
     BrowsingContext.GetTreeSchema,
     BrowsingContext.HandleUserPromptSchema,
+    BrowsingContext.LocateNodesSchema,
     BrowsingContext.NavigateSchema,
     BrowsingContext.PrintSchema,
     BrowsingContext.ReloadSchema,
@@ -312,6 +313,7 @@ export const BrowsingContextResultSchema = z.lazy(() =>
     BrowsingContext.CaptureScreenshotResultSchema,
     BrowsingContext.CreateResultSchema,
     BrowsingContext.GetTreeResultSchema,
+    BrowsingContext.LocateNodesResultSchema,
     BrowsingContext.NavigateResultSchema,
     BrowsingContext.PrintResultSchema,
   ])
@@ -333,6 +335,42 @@ export namespace BrowsingContext {
       parent: z
         .union([BrowsingContext.BrowsingContextSchema, z.null()])
         .optional(),
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const LocatorSchema = z.lazy(() =>
+    z.union([
+      BrowsingContext.CssLocatorSchema,
+      BrowsingContext.InnerTextLocatorSchema,
+      BrowsingContext.XPathLocatorSchema,
+    ])
+  );
+}
+export namespace BrowsingContext {
+  export const CssLocatorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('css'),
+      value: z.string(),
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const InnerTextLocatorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('innerText'),
+      value: z.string(),
+      ignoreCase: z.boolean().optional(),
+      matchType: z.enum(['full', 'partial']).optional(),
+      maxDepth: JsUintSchema.optional(),
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const XPathLocatorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('xpath'),
+      value: z.string(),
     })
   );
 }
@@ -408,7 +446,6 @@ export namespace BrowsingContext {
     z.object({
       type: z.literal('element'),
       element: Script.SharedReferenceSchema,
-      scrollIntoView: z.boolean().optional(),
     })
   );
 }
@@ -510,6 +547,34 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       accept: z.boolean().optional(),
       userText: z.string().optional(),
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const LocateNodesParametersSchema = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+      locator: BrowsingContext.LocatorSchema,
+      maxNodeCount: JsUintSchema.gte(1).optional(),
+      ownership: Script.ResultOwnershipSchema.optional(),
+      sandbox: z.string().optional(),
+      serializationOptions: Script.SerializationOptionsSchema.optional(),
+      startNodes: z.array(Script.SharedReferenceSchema).optional(),
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const LocateNodesSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('browsingContext.locateNodes'),
+      params: BrowsingContext.LocateNodesParametersSchema,
+    })
+  );
+}
+export namespace BrowsingContext {
+  export const LocateNodesResultSchema = z.lazy(() =>
+    z.object({
+      nodes: z.array(Script.NodeRemoteValueSchema),
     })
   );
 }

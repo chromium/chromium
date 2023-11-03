@@ -212,6 +212,7 @@ export type BrowsingContextCommand =
   | BrowsingContext.Create
   | BrowsingContext.GetTree
   | BrowsingContext.HandleUserPrompt
+  | BrowsingContext.LocateNodes
   | BrowsingContext.Navigate
   | BrowsingContext.Print
   | BrowsingContext.Reload
@@ -232,6 +233,7 @@ export type BrowsingContextResult =
   | BrowsingContext.CaptureScreenshotResult
   | BrowsingContext.CreateResult
   | BrowsingContext.GetTreeResult
+  | BrowsingContext.LocateNodesResult
   | BrowsingContext.NavigateResult
   | BrowsingContext.PrintResult;
 export namespace BrowsingContext {
@@ -246,6 +248,33 @@ export namespace BrowsingContext {
     url: string;
     children: BrowsingContext.InfoList | null;
     parent?: BrowsingContext.BrowsingContext | null;
+  };
+}
+export namespace BrowsingContext {
+  export type Locator =
+    | BrowsingContext.CssLocator
+    | BrowsingContext.InnerTextLocator
+    | BrowsingContext.XPathLocator;
+}
+export namespace BrowsingContext {
+  export type CssLocator = {
+    type: 'css';
+    value: string;
+  };
+}
+export namespace BrowsingContext {
+  export type InnerTextLocator = {
+    type: 'innerText';
+    value: string;
+    ignoreCase?: boolean;
+    matchType?: 'full' | 'partial';
+    maxDepth?: JsUint;
+  };
+}
+export namespace BrowsingContext {
+  export type XPathLocator = {
+    type: 'xpath';
+    value: string;
   };
 }
 export namespace BrowsingContext {
@@ -312,7 +341,6 @@ export namespace BrowsingContext {
   export type ElementClipRectangle = {
     type: 'element';
     element: Script.SharedReference;
-    scrollIntoView?: boolean;
   };
 }
 export namespace BrowsingContext {
@@ -399,6 +427,31 @@ export namespace BrowsingContext {
     context: BrowsingContext.BrowsingContext;
     accept?: boolean;
     userText?: string;
+  };
+}
+export namespace BrowsingContext {
+  export type LocateNodesParameters = {
+    context: BrowsingContext.BrowsingContext;
+    locator: BrowsingContext.Locator;
+    /**
+     * Must be greater than or equal to `1`.
+     */
+    maxNodeCount?: JsUint;
+    ownership?: Script.ResultOwnership;
+    sandbox?: string;
+    serializationOptions?: Script.SerializationOptions;
+    startNodes?: [...Script.SharedReference[]];
+  };
+}
+export namespace BrowsingContext {
+  export type LocateNodes = {
+    method: 'browsingContext.locateNodes';
+    params: BrowsingContext.LocateNodesParameters;
+  };
+}
+export namespace BrowsingContext {
+  export type LocateNodesResult = {
+    nodes: [...Script.NodeRemoteValue[]];
   };
 }
 export namespace BrowsingContext {

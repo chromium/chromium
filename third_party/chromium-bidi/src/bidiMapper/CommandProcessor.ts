@@ -21,6 +21,7 @@ import {
   Exception,
   UnknownCommandException,
   UnknownErrorException,
+  UnsupportedOperationException,
   type ChromiumBidi,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
@@ -158,6 +159,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'browsingContext.handleUserPrompt':
         return await this.#browsingContextProcessor.handleUserPrompt(
           this.#parser.parseHandleUserPromptParams(command.params)
+        );
+      case 'browsingContext.locateNodes':
+        throw new UnsupportedOperationException(
+          `Command '${command.method}' not yet implemented.`
         );
       case 'browsingContext.navigate':
         return await this.#browsingContextProcessor.navigate(
