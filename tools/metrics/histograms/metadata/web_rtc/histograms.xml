@@ -2074,6 +2074,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.CaptureToSendTimeMs" units="ms"
+    expires_after="2024-05-07">
+  <owner>handellm@google.com</owner>
+  <summary>
+    The time from when video frames are captured until first packets are put on
+    the wire.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.CpuLimitedResolutionInPercent" units="%"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
