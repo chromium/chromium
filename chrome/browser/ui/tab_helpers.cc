@@ -355,7 +355,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     }
   }
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }
   chrome::ChainedBackNavigationTracker::CreateForWebContents(web_contents);

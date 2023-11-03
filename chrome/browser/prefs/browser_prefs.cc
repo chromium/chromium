@@ -99,6 +99,7 @@
 #include "chrome/common/secure_origin_allowlist.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/commerce/core/pref_names.h"
@@ -1384,6 +1385,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   accessibility::AccessibilityPrefsController::RegisterLocalStatePrefs(
       registry);
 #endif
+  breadcrumbs::RegisterPrefs(registry);
   browser_shutdown::RegisterPrefs(registry);
   BrowserProcessImpl::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);

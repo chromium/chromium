@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
@@ -50,7 +51,7 @@
 #import "ios/web/common/features.h"
 
 void AttachBrowserAgents(Browser* browser) {
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
 

@@ -162,7 +162,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
                                    GetSharedURLLoaderFactory());
   }
 
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::MaybeEnableBasedOnChannel(GetLocalState(), ::GetChannel())) {
     // Start crash reporter listening for breadcrumb events. Collected
     // breadcrumbs will be attached to crash reports.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();

@@ -1253,7 +1253,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   base::FilePath user_data_dir;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(result);
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::MaybeEnableBasedOnChannel(local_state_.get(),
+                                             chrome::GetChannel())) {
     // Start crash reporter listening for breadcrumb events. Collected
     // breadcrumbs will be attached to crash reports.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();

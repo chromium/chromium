@@ -493,7 +493,7 @@ Browser::Browser(const CreateParams& params)
       user_title_(params.user_title),
       signin_view_controller_(this),
       breadcrumb_manager_browser_agent_(
-          breadcrumbs::IsEnabled()
+          breadcrumbs::IsEnabled(g_browser_process->local_state())
               ? std::make_unique<BreadcrumbManagerBrowserAgent>(this)
               : nullptr)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
