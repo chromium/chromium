@@ -261,6 +261,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -5043,6 +5044,18 @@ void ChromeContentBrowserClient::RemovePresentationObserver(
     media_router::WebContentsPresentationManager::Get(web_contents)
         ->RemoveObserver(observer);
   }
+}
+
+bool ChromeContentBrowserClient::AddPrivacySandboxAttestationsObserver(
+    content::PrivacySandboxAttestationsObserver* observer) {
+  return privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->AddObserver(observer);
+}
+
+void ChromeContentBrowserClient::RemovePrivacySandboxAttestationsObserver(
+    content::PrivacySandboxAttestationsObserver* observer) {
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()->RemoveObserver(
+      observer);
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
