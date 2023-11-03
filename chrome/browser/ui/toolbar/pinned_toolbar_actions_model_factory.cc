@@ -43,5 +43,5 @@ bool PinnedToolbarActionsModelFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 bool PinnedToolbarActionsModelFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+  return false;
 }
