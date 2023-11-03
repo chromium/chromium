@@ -710,8 +710,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   } else if (extension.location() ==
              mojom::ManifestLocation::kExternalRegistry) {
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_3RD_PARTY;
-  } else if (extension.is_shared_module())
+  } else if (extension.is_shared_module()) {
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_SHARED_MODULE;
+  }
   if (location_text != -1) {
     info->location_text = l10n_util::GetStringUTF8(location_text);
   }

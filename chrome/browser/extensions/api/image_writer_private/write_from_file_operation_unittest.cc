@@ -51,10 +51,9 @@ TEST_F(ImageWriterFromFileTest, InvalidFile) {
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId, _, _)).Times(0);
   EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
   EXPECT_CALL(manager_,
-              OnError(kDummyExtensionId,
-                      image_writer_api::STAGE_UNKNOWN,
-                      0,
-                      error::kImageInvalid)).Times(1);
+              OnError(kDummyExtensionId, image_writer_api::Stage::kUnknown, 0,
+                      error::kImageInvalid))
+      .Times(1);
 
   op->PostTask(base::BindOnce(&Operation::Start, op));
   content::RunAllTasksUntilIdle();
@@ -73,28 +72,25 @@ TEST_F(ImageWriterFromFileTest, WriteFromFileEndToEnd) {
       test_utils_.GetDevicePath().AsUTF8Unsafe(),
       base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
   EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, _))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
       .Times(AnyNumber());
   EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, 0))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, 0))
       .Times(AtLeast(1));
-  EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kWrite, 100))
       .Times(AtLeast(1));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS doesn't verify.
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, _))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
       .Times(AnyNumber());
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, 0))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, 0))
       .Times(AtLeast(1));
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, 100))
       .Times(AtLeast(1));
 #endif
 

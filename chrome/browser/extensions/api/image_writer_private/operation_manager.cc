@@ -43,20 +43,20 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 crosapi::mojom::Stage ToMojo(image_writer_api::Stage stage) {
   switch (stage) {
-    case image_writer_api::Stage::STAGE_CONFIRMATION:
+    case image_writer_api::Stage::kConfirmation:
       return crosapi::mojom::Stage::kConfirmation;
-    case image_writer_api::Stage::STAGE_DOWNLOAD:
+    case image_writer_api::Stage::kDownload:
       return crosapi::mojom::Stage::kDownload;
-    case image_writer_api::Stage::STAGE_VERIFYDOWNLOAD:
+    case image_writer_api::Stage::kVerifyDownload:
       return crosapi::mojom::Stage::kVerifyDownload;
-    case image_writer_api::Stage::STAGE_UNZIP:
+    case image_writer_api::Stage::kUnzip:
       return crosapi::mojom::Stage::kUnzip;
-    case image_writer_api::Stage::STAGE_WRITE:
+    case image_writer_api::Stage::kWrite:
       return crosapi::mojom::Stage::kWrite;
-    case image_writer_api::Stage::STAGE_VERIFYWRITE:
+    case image_writer_api::Stage::kVerifyWrite:
       return crosapi::mojom::Stage::kVerifyWrite;
-    case image_writer_api::Stage::STAGE_UNKNOWN:
-    case image_writer_api::Stage::STAGE_NONE:
+    case image_writer_api::Stage::kUnknown:
+    case image_writer_api::Stage::kNone:
       return crosapi::mojom::Stage::kUnknown;
   }
 }

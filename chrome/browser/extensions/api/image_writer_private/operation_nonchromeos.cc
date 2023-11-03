@@ -23,7 +23,7 @@ void Operation::Write(base::OnceClosure continuation) {
     return;
   }
 
-  SetStage(image_writer_api::STAGE_WRITE);
+  SetStage(image_writer_api::Stage::kWrite);
   StartUtilityClient();
 
   int64_t file_size;
@@ -46,7 +46,7 @@ void Operation::VerifyWrite(base::OnceClosure continuation) {
     return;
   }
 
-  SetStage(image_writer_api::STAGE_VERIFYWRITE);
+  SetStage(image_writer_api::Stage::kVerifyWrite);
   StartUtilityClient();
 
   int64_t file_size;
