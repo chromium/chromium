@@ -176,7 +176,7 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
   }
 
   if (!features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get() &&
-      profile_->IsOffTheRecord()) {
+      (profile_->IsOffTheRecord() || profile_->IsGuestSession())) {
     return false;
   }
 

@@ -13,6 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
@@ -133,6 +135,14 @@ TEST_P(EligibilityServiceOTRProfileTest, Creation) {
           Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true));
   EXPECT_EQ(eligibility_service != nullptr, enable_otr_profiles);
+
+// Android does not have guest profiles.
+#if !BUILDFLAG(IS_ANDROID)
+  auto guest_profile = TestingProfile::Builder().SetGuestSession().Build();
+  eligibility_service =
+      EligibilityServiceFactory::GetForProfile(guest_profile.get());
+  EXPECT_EQ(eligibility_service != nullptr, enable_otr_profiles);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
