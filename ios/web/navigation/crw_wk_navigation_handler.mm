@@ -1703,7 +1703,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           SecTrustCopyCertificateChain(trust));
       SecCertificateRef secCertificate =
           base::apple::CFCastStrict<SecCertificateRef>(
-              CFArrayGetValueAtIndex(certificateChain, 0));
+              CFArrayGetValueAtIndex(certificateChain.get(), 0));
       leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
           base::apple::ScopedCFTypeRef<SecCertificateRef>(
               secCertificate, base::scoped_policy::RETAIN),

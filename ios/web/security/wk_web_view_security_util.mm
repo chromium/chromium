@@ -81,12 +81,12 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
     for (CFIndex i = 1; i < cert_count; i++) {
       SecCertificateRef secCertificate =
           base::apple::CFCastStrict<SecCertificateRef>(
-              CFArrayGetValueAtIndex(certificateChain, i));
+              CFArrayGetValueAtIndex(certificateChain.get(), i));
       intermediates.emplace_back(secCertificate, base::scoped_policy::RETAIN);
     }
     SecCertificateRef secCertificate =
         base::apple::CFCastStrict<SecCertificateRef>(
-            CFArrayGetValueAtIndex(certificateChain, 0));
+            CFArrayGetValueAtIndex(certificateChain.get(), 0));
     return net::x509_util::CreateX509CertificateFromSecCertificate(
         base::apple::ScopedCFTypeRef<SecCertificateRef>(
             secCertificate, base::scoped_policy::RETAIN),
@@ -123,7 +123,7 @@ base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
   base::apple::ScopedCFTypeRef<SecPolicyRef> policy(
       SecPolicyCreateSSL(TRUE, static_cast<CFStringRef>(host)));
   SecTrustRef ref_result = nullptr;
-  if (SecTrustCreateWithCertificates((__bridge CFArrayRef)certs, policy,
+  if (SecTrustCreateWithCertificates((__bridge CFArrayRef)certs, policy.get(),
                                      &ref_result) == errSecSuccess) {
     scoped_result.reset(ref_result);
   }
@@ -133,7 +133,7 @@ base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
 void EnsureFutureTrustEvaluationSucceeds(SecTrustRef trust) {
   base::apple::ScopedCFTypeRef<CFDataRef> exceptions(
       SecTrustCopyExceptions(trust));
-  SecTrustSetExceptions(trust, exceptions);
+  SecTrustSetExceptions(trust, exceptions.get());
 }
 
 BOOL IsWKWebViewSSLCertError(NSError* error) {

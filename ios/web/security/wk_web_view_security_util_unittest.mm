@@ -57,8 +57,8 @@ NSDictionary* MakeTestSSLCertErrorUserInfo() {
 base::apple::ScopedCFTypeRef<SecTrustRef> CreateTestTrust(NSArray* cert_chain) {
   base::apple::ScopedCFTypeRef<SecPolicyRef> policy(SecPolicyCreateBasicX509());
   SecTrustRef trust = nullptr;
-  SecTrustCreateWithCertificates(base::apple::NSToCFPtrCast(cert_chain), policy,
-                                 &trust);
+  SecTrustCreateWithCertificates(base::apple::NSToCFPtrCast(cert_chain),
+                                 policy.get(), &trust);
   return base::apple::ScopedCFTypeRef<SecTrustRef>(trust);
 }
 
@@ -92,13 +92,13 @@ TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
       CreateTestTrust(MakeTestCertChain(kTestSubject));
 
   CFErrorRef error;
-  BOOL trusted = SecTrustEvaluateWithError(trust, &error);
+  BOOL trusted = SecTrustEvaluateWithError(trust.get(), &error);
   EXPECT_TRUE(!trusted && error);
 
   // Make sure that trust becomes valid after
   // `EnsureFutureTrustEvaluationSucceeds` call.
-  EnsureFutureTrustEvaluationSucceeds(trust);
-  trusted = SecTrustEvaluateWithError(trust, &error);
+  EnsureFutureTrustEvaluationSucceeds(trust.get());
+  trusted = SecTrustEvaluateWithError(trust.get(), &error);
   EXPECT_TRUE(trusted && !error);
 }
 
@@ -106,7 +106,7 @@ TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
 TEST_F(WKWebViewSecurityUtilTest, CreationCertFromTrust) {
   base::apple::ScopedCFTypeRef<SecTrustRef> trust =
       CreateTestTrust(MakeTestCertChain(kTestSubject));
-  scoped_refptr<net::X509Certificate> cert = CreateCertFromTrust(trust);
+  scoped_refptr<net::X509Certificate> cert = CreateCertFromTrust(trust.get());
   ASSERT_TRUE(cert);
   EXPECT_TRUE(cert->subject().GetDisplayName() == kTestSubject);
 }
@@ -126,7 +126,7 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
 
   // Verify chain.
   EXPECT_EQ(static_cast<CFIndex>(chain.count),
-            SecTrustGetCertificateCount(server_trust));
+            SecTrustGetCertificateCount(server_trust.get()));
   [chain enumerateObjectsUsingBlock:^(id expected_cert, NSUInteger i, BOOL*) {
     // TODO(crbug.com/1418068): Remove after minimum version required is >=
     // iOS 15.
@@ -134,8 +134,9 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
     if (@available(iOS 15.0, *)) {
       base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
           SecTrustCopyCertificateChain(server_trust.get()));
-      secCertificate = base::apple::CFCastStrict<SecCertificateRef>(
-          CFArrayGetValueAtIndex(certificateChain, static_cast<CFIndex>(i)));
+      secCertificate =
+          base::apple::CFCastStrict<SecCertificateRef>(CFArrayGetValueAtIndex(
+              certificateChain.get(), static_cast<CFIndex>(i)));
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     else {
@@ -152,8 +153,8 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   base::apple::ScopedCFTypeRef<CFArrayRef> policies;
   EXPECT_EQ(errSecSuccess, SecTrustCopyPolicies(server_trust.get(),
                                                 policies.InitializeInto()));
-  EXPECT_EQ(1, CFArrayGetCount(policies));
-  SecPolicyRef policy = (SecPolicyRef)CFArrayGetValueAtIndex(policies, 0);
+  EXPECT_EQ(1, CFArrayGetCount(policies.get()));
+  SecPolicyRef policy = (SecPolicyRef)CFArrayGetValueAtIndex(policies.get(), 0);
   base::apple::ScopedCFTypeRef<CFDictionaryRef> properties(
       SecPolicyCopyProperties(policy));
   NSString* name = static_cast<NSString*>(
