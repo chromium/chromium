@@ -5845,7 +5845,7 @@
   {
     "name": "omnibox-modernize-visual-update",
     "owners": [ "gangwu@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
@@ -6594,17 +6594,17 @@
   {
     "name": "query-tiles",
     "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "query-tiles-country-code",
     "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "query-tiles-disable-country-override",
     "owners": [ "qinmin@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "query-tiles-enable-query-editing",
@@ -6619,7 +6619,7 @@
   {
     "name": "query-tiles-instant-fetch",
     "owners": [ "xingliu@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "query-tiles-ntp",
