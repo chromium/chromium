@@ -66,8 +66,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Add read anything.
   if (features::IsReadAnythingEnabled()) {
-    ReadAnythingCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
+    ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
   }
 
   // Create Search Companion coordinator.
@@ -104,10 +103,11 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
 SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
     views::View* content_view) {
-  if (!content_view->GetProperty(kSidePanelContentProxyKey))
+  if (!content_view->GetProperty(kSidePanelContentProxyKey)) {
     content_view->SetProperty(
         kSidePanelContentProxyKey,
         std::make_unique<SidePanelContentProxy>(true).release());
+  }
   return content_view->GetProperty(kSidePanelContentProxyKey);
 }
 
@@ -129,8 +129,9 @@ void SidePanelUtil::RecordSidePanelOpen(
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
 
-  if (trigger.has_value())
+  if (trigger.has_value()) {
     base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
+  }
 }
 
 void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
