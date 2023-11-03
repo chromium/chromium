@@ -1605,9 +1605,6 @@ extern const char kWindowsScrollingPersonalityDescription[];
 extern const char kPermissionChipName[];
 extern const char kPermissionChipDescription[];
 
-extern const char kChipLocationBarIconOverrideName[];
-extern const char kChipLocationBarIconOverrideDescription[];
-
 extern const char kImprovedSemanticsActivityIndicatorsName[];
 extern const char kImprovedSemanticsActivityIndicatorsDescription[];
 

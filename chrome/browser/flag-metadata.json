@@ -1106,14 +1106,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "chip-location-bar-icon-override",
-    "owners": [
-      "fjacky@chromium.org",
-      "elklm@chromium.org"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "chrome-cart-dom-based-heuristics",
     "owners": [ "yuezhanggg@chromium.org", "wychen@chromium.org"],
     "expiry_milestone": 122

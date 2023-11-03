@@ -2763,13 +2763,6 @@ const char kPermissionChipDescription[] =
     "Enables an experimental permission prompt that uses a chip in the location"
     " bar.";
 
-const char kChipLocationBarIconOverrideName[] =
-    "Chip Location Bar Icon Override Experiment.";
-const char kChipLocationBarIconOverrideDescription[] =
-    "Enables an experimental location bar icon override while a chip is shown "
-    "in the location bar. Takes effect when #permission-chip or "
-    "#confirmation-chip are active.";
-
 const char kImprovedSemanticsActivityIndicatorsName[] =
     "Improved semantics activity indicators";
 const char kImprovedSemanticsActivityIndicatorsDescription[] =

@@ -56,8 +56,6 @@
 
 namespace {
 
-enum ChipFeatureConfig { LOCATION_BAR_ICON_OVERRIDE };
-
 constexpr char kAddNotificationsEventListener[] = R"(
     new Promise(async resolve => {
       const PermissionStatus =
@@ -277,25 +275,12 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     return ChildFrameAt(parent_rfh, 0);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
-class LocationBarIconOverrideTest
-    : public PermissionChipInteractiveTest,
-      public ::testing::WithParamInterface<ChipFeatureConfig> {
+class LocationBarIconOverrideTest : public PermissionChipInteractiveTest {
  public:
-  LocationBarIconOverrideTest() {
-    std::vector<base::test::FeatureRef> disabled_features = {};
-
-    switch (GetParam()) {
-      case LOCATION_BAR_ICON_OVERRIDE:
-        scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kChipLocationBarIconOverride},
-            disabled_features);
-        break;
-    }
-  }
+  LocationBarIconOverrideTest() = default;
 
   bool IsLocationIconVisible() {
     return BrowserView::GetBrowserViewForBrowser(browser())
@@ -303,16 +288,9 @@ class LocationBarIconOverrideTest
         ->location_icon_view()
         ->GetVisible();
   }
-
-  bool IsTestWithOverridenLocationBarIcon() {
-    return base::FeatureList::IsEnabled(
-        permissions::features::kChipLocationBarIconOverride);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
+IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
                        OverrideLocationBarIconDuringChipOnlyForOverrideFlags) {
   // Initially the location bar icon should be visible for any feature flag
   // configuration
@@ -320,13 +298,8 @@ IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
-  // After a request, a chip is shown, which should override the lock icon for
-  // feature flags featuring this.
-  if (IsTestWithOverridenLocationBarIcon()) {
-    EXPECT_FALSE(IsLocationIconVisible());
-  } else {
-    EXPECT_TRUE(IsLocationIconVisible());
-  }
+  // After a request, a chip is shown, which should override the lock icon.
+  EXPECT_FALSE(IsLocationIconVisible());
 
   base::RunLoop().RunUntilIdle();
 
@@ -353,11 +326,7 @@ IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
 
-  if (IsTestWithOverridenLocationBarIcon()) {
     EXPECT_FALSE(IsLocationIconVisible());
-  } else {
-    EXPECT_TRUE(IsLocationIconVisible());
-  }
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
@@ -379,32 +348,13 @@ IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
   EXPECT_TRUE(IsLocationIconVisible());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LocationBarIconOverrideTest,
-                         ::testing::Values(LOCATION_BAR_ICON_OVERRIDE));
-
 class ConfirmationChipEnabledInteractiveTest
-    : public PermissionChipInteractiveTest,
-      public ::testing::WithParamInterface<ChipFeatureConfig> {
+    : public PermissionChipInteractiveTest {
  public:
-  ConfirmationChipEnabledInteractiveTest() {
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    switch (GetParam()) {
-      case LOCATION_BAR_ICON_OVERRIDE:
-        scoped_feature_list_.InitWithFeatures(
-            {permissions::features::kChipLocationBarIconOverride},
-            disabled_features);
-        break;
-      default:
-        NOTREACHED_NORETURN();
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ConfirmationChipEnabledInteractiveTest() = default;
 };
 
-IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
                        ShouldDisplayAllowAndDenyConfirmationCorrectly) {
   RequestPermission(permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
@@ -453,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
             OmniboxChipTheme::kLowVisibility);
 }
 
-IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
                        IncomingRequestShouldOverrideConfirmation) {
   RequestPermission(permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
@@ -477,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
                 IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
 }
 
-IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
+IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
                        ClickOnConfirmationChipShouldOpenPageInfoDialog) {
   RequestPermission(permissions::RequestType::kGeolocation);
   base::RunLoop().RunUntilIdle();
@@ -503,10 +453,6 @@ IN_PROC_BROWSER_TEST_P(ConfirmationChipEnabledInteractiveTest,
 
   ASSERT_FALSE(GetChip()->GetVisible());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ConfirmationChipEnabledInteractiveTest,
-                         ::testing::Values(LOCATION_BAR_ICON_OVERRIDE));
 
 class ConfirmationChipUmaInteractiveTest
     : public PermissionChipInteractiveTest {
@@ -660,7 +606,6 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveTest {
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   GURL url_;
 };
 

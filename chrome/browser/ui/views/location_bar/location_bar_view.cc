@@ -1489,11 +1489,7 @@ void LocationBarView::OnTouchUiChanged() {
 }
 
 bool LocationBarView::ShouldChipOverrideLocationIcon() {
-  bool has_visible_chip =
-      chip_controller_ && chip_controller_->chip()->GetVisible();
-  return has_visible_chip &&
-         base::FeatureList::IsEnabled(
-             permissions::features::kChipLocationBarIconOverride);
+  return chip_controller_ && chip_controller_->chip()->GetVisible();
 }
 
 bool LocationBarView::IsEditingOrEmpty() const {

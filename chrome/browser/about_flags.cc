@@ -8489,11 +8489,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kEnableMachineLearningModelLoaderWebPlatformApi)},
 
-    {"chip-location-bar-icon-override",
-     flag_descriptions::kChipLocationBarIconOverrideName,
-     flag_descriptions::kChipLocationBarIconOverrideDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(permissions::features::kChipLocationBarIconOverride)},
-
     {"one-time-permission", flag_descriptions::kOneTimePermissionName,
      flag_descriptions::kOneTimePermissionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
