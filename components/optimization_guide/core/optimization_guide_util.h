@@ -91,6 +91,11 @@ void PopulateAuthorizationRequestHeader(
     network::ResourceRequest* resource_request,
     std::string_view access_token);
 
+// Populates the api key header for the `resource_request` in the right
+// format with the `api_key`.
+void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
+                                 std::string_view api_key);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_
