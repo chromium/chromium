@@ -1883,6 +1883,13 @@ config("default_warnings") {
           # TODO(crbug.com/1495100): Evaluate and possibly enable.
           "-Wno-delayed-template-parsing-in-cxx20",
         ]
+
+        if (llvm_force_head_revision) {
+          cflags += [
+            # TODO(crbug.com/1499028): Evaluate and possibly enable.
+            "-Wno-include-angled-in-module-purview",
+          ]
+        }
       }
     }
 
