@@ -178,15 +178,17 @@ MessageType ConnectTetheringOperation::GetMessageTypeForConnection() {
 }
 
 void ConnectTetheringOperation::OnMessageSent(int sequence_number) {
-  if (sequence_number != connect_message_sequence_number_)
+  if (sequence_number != connect_message_sequence_number_) {
     return;
+  }
 
   NotifyConnectTetheringRequestSent();
 }
 
 void ConnectTetheringOperation::NotifyConnectTetheringRequestSent() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnConnectTetheringRequestSent(remote_device_);
+  }
 }
 
 void ConnectTetheringOperation::NotifyObserversOfSuccessfulResponse(
@@ -200,8 +202,9 @@ void ConnectTetheringOperation::NotifyObserversOfSuccessfulResponse(
 
 void ConnectTetheringOperation::NotifyObserversOfConnectionFailure(
     HostResponseErrorCode error_code) {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnConnectTetheringFailure(remote_device_, error_code);
+  }
 }
 
 uint32_t ConnectTetheringOperation::GetMessageTimeoutSeconds() {
@@ -236,6 +239,15 @@ ConnectTetheringOperation::ConnectTetheringResponseCodeToHostResponseErrorCode(
     case ConnectTetheringResponse_ResponseCode::
         ConnectTetheringResponse_ResponseCode_UNKNOWN_ERROR:
       return HostResponseErrorCode::UNKNOWN_ERROR;
+    case ConnectTetheringResponse_ResponseCode::
+        ConnectTetheringResponse_ResponseCode_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG:
+      return HostResponseErrorCode::INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG;
+    case ConnectTetheringResponse_ResponseCode::
+        ConnectTetheringResponse_ResponseCode_INVALID_NEW_SOFT_AP_CONFIG:
+      return HostResponseErrorCode::INVALID_NEW_SOFT_AP_CONFIG;
+    case ConnectTetheringResponse_ResponseCode::
+        ConnectTetheringResponse_ResponseCode_INVALID_WIFI_AP_CONFIG:
+      return HostResponseErrorCode::INVALID_WIFI_AP_CONFIG;
     default:
       break;
   }

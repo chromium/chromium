@@ -42235,6 +42235,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9"
       label="Successful request but no ConnectTetheringResponse message"/>
   <int value="10" label="Unrecognized response error"/>
+  <int value="11" label="Invalid active existing soft AP config"/>
+  <int value="12" label="Invalid new soft AP config"/>
+  <int value="13" label="Invalid Wifi AP config"/>
 </enum>
 
 <enum name="InstantTethering_ConnectionToHostResult_Failure_ClientConnection">
