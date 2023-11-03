@@ -223,16 +223,35 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         if (blockingEnabled) {
             mThirdPartyCookiesTitle.setTitle(
                     getContext().getString(R.string.page_info_cookies_site_not_working_title));
-            mThirdPartyCookiesSummary.setSummary(getContext().getString(
-                    willCreatePermanentException()
-                            ? R.string.page_info_cookies_site_not_working_description_permanent
-                            : R.string.page_info_cookies_site_not_working_description_temporary));
+            if (willCreatePermanentException()) {
+                mThirdPartyCookiesSummary.setSummary(
+                        getContext()
+                                .getString(
+                                        R.string
+                                                .page_info_cookies_site_not_working_description_permanent));
+            } else {
+                mThirdPartyCookiesSummary.setSummary(
+                        getContext()
+                                .getString(
+                                        mTrackingProtectionUI
+                                                ? R.string
+                                                        .page_info_cookies_site_not_working_description_tracking_protection
+                                                : R.string
+                                                        .page_info_cookies_site_not_working_description_temporary));
+            }
         } else if (permanentException) {
             mThirdPartyCookiesTitle.setTitle(
                     getContext().getString(R.string.page_info_cookies_permanent_allowed_title));
-            mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
-                    getContext().getString(R.string.page_info_cookies_send_feedback_description),
-                    new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+            mThirdPartyCookiesSummary.setSummary(
+                    SpanApplier.applySpans(
+                            getContext()
+                                    .getString(
+                                            mTrackingProtectionUI
+                                                    ? R.string
+                                                            .page_info_cookies_tracking_protection_description
+                                                    : R.string
+                                                            .page_info_cookies_send_feedback_description),
+                            new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
             int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
             mThirdPartyCookiesTitle.setTitle(days == 0
@@ -241,9 +260,16 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             : getContext().getResources().getQuantityString(
                                     R.plurals.page_info_cookies_blocking_restart_title, days,
                                     days));
-            mThirdPartyCookiesSummary.setSummary(SpanApplier.applySpans(
-                    getContext().getString(R.string.page_info_cookies_send_feedback_description),
-                    new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+            mThirdPartyCookiesSummary.setSummary(
+                    SpanApplier.applySpans(
+                            getContext()
+                                    .getString(
+                                            mTrackingProtectionUI
+                                                    ? R.string
+                                                            .page_info_cookies_tracking_protection_description
+                                                    : R.string
+                                                            .page_info_cookies_send_feedback_description),
+                            new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         }
 
         updateCookieSwitch();
