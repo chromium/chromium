@@ -213,7 +213,8 @@ void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
 
   UserInitiatedConnectResult connect_result =
       network_connection_error
-          ? NetworkConnectionErrorToConnectResult(*network_connection_error)
+          ? NetworkConnectionErrorToConnectResult(*network_connection_error,
+                                                  network_state->GetError())
           : UserInitiatedConnectResult::kSuccess;
 
   for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {

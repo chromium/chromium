@@ -99572,6 +99572,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="56" label="Eap Remote Tls Failed"/>
   <int value="57" label="WEP networks are not supported"/>
   <int value="58" label="Disable Hotspot Failed"/>
+  <int value="59" label="Invalid APN"/>
+  <int value="60" label="Sim Carrier Locked"/>
 </enum>
 
 <enum name="ShoppingDataProviderFallback">
@@ -110418,6 +110420,34 @@ Full version information for the fingerprint enum values:
   <int value="25" label="Cellular Device Busy"/>
   <int value="26" label="Connect Timeout"/>
   <int value="27" label="Connectable Cellular Timeout"/>
+  <int value="28" label="Aaa Failed"/>
+  <int value="29" label="Bad WEP Key"/>
+  <int value="30" label="DNS Lookup Failed"/>
+  <int value="31" label="Dhcp Failed"/>
+  <int value="32" label="HTTP Get Failed"/>
+  <int value="33" label="Internal"/>
+  <int value="34" label="Invalid Failure"/>
+  <int value="35" label="Ipsec Cert Auth Failed"/>
+  <int value="36" label="Ipsec Psk Auth Failed"/>
+  <int value="37" label="Need Evdo"/>
+  <int value="38" label="Need Home Network"/>
+  <int value="39" label="No Failure"/>
+  <int value="40" label="Not Associated"/>
+  <int value="41" label="Not Authenticated"/>
+  <int value="42" label="Otasp Failed"/>
+  <int value="43" label="Out Of Range"/>
+  <int value="44" label="Pin Missing"/>
+  <int value="45" label="Ppp Auth Failed"/>
+  <int value="46" label="Not Registered"/>
+  <int value="47" label="Too Many STAs"/>
+  <int value="48" label="Disconnect"/>
+  <int value="49" label="Unknown Failure"/>
+  <int value="50" label="Invalid APN"/>
+  <int value="51" label="Sim Carrier Locked"/>
+  <int value="52" label="Eap Authentication Failed"/>
+  <int value="53" label="Eap Local Tls Failed"/>
+  <int value="54" label="Eap Remote Tls Failed"/>
+  <int value="55" label="WEP networks are not supported"/>
 </enum>
 
 <enum name="UserInteractionType">
