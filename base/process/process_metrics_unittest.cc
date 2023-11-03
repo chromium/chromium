@@ -68,6 +68,19 @@ TimeDelta TestCumulativeCPU(ProcessMetrics* metrics, TimeDelta prev_cpu_usage) {
   return current_cpu_usage;
 }
 
+TimeDelta TestPreciseCumulativeCPU(ProcessMetrics* metrics,
+                                   TimeDelta prev_cpu_usage) {
+#if BUILDFLAG(IS_WIN)
+  const TimeDelta current_cpu_usage = metrics->GetPreciseCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+  return current_cpu_usage;
+#else
+  // Do nothing. Not supported on this platform.
+  return base::TimeDelta();
+#endif
+}
+
 #endif  // ENABLE_CPU_TESTS
 
 std::unique_ptr<ProcessMetrics> CreateProcessMetricsForTest(
@@ -373,6 +386,9 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   std::unique_ptr<ProcessMetrics> metrics(CreateProcessMetricsForTest(handle));
 
   EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+#endif
 
   Thread thread1("thread1");
   Thread thread2("thread2");
@@ -395,15 +411,23 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   thread3.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec3));
 
   TimeDelta prev_cpu_usage = TestCumulativeCPU(metrics.get(), TimeDelta());
+  TimeDelta prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), TimeDelta());
 
   thread1.Stop();
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread2.Stop();
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread3.Stop();
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 }
 #endif  // ENABLE_CPU_TESTS
 
