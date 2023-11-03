@@ -20,6 +20,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -184,8 +185,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private computeSubmitBtnText_() {
-    return this.results_ && this.results_.length > 0 ? 'Search Again' :
-                                                       'Search';
+    return this.results_ && this.results_.length > 0 ?
+        loadTimeData.getString('wallpaperSearchSubmitAgainBtn') :
+        loadTimeData.getString('wallpaperSearchSubmitBtn');
   }
 
   /**

@@ -7840,6 +7840,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION" desc="The description of the generic error displayed when wallpaper search fails.">
         Please try again later.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HEADER" translateable="false" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
+        Wallpaper Search
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" translateable="false" desc="Header for the wallpaper search section for showing past themes." >
+        Your recent themes
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT" translateable="false" desc="Button text for submitting the form to get wallpaper search results when the user has already done it before." >
+        Search Again
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" translateable="false" desc="Button text for submitting the form to get wallpaper search results." >
+        Search
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">

@@ -118,6 +118,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"genericErrorDescription",
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION},
       {"genericErrorTitle", IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE},
+      {"wallpaperSearchHeader", IDS_NTP_WALLPAPER_SEARCH_HEADER},
+      {"wallpaperSearchHistoryHeader", IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER},
+      {"wallpaperSearchSubmitBtn", IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT},
+      {"wallpaperSearchSubmitAgainBtn",
+       IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

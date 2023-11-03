@@ -3,6 +3,13 @@
     margin: 0 0 8px;
   }
 
+  .sp-cards-separator {
+    border: none;
+    height: 2px;
+    margin: 0;
+    width: 100%;
+  }
+
   .content {
     margin: 16px 16px 8px;
     position: relative;
@@ -187,7 +194,7 @@
   <sp-heading id="heading" on-back-button-click="onBackClick_"
       back-button-aria-label="$i18n{backButton}"
       back-button-title="$i18n{backButton}">
-    <h2 slot="heading">Wallpaper Search</h2>
+    <h2 slot="heading">$i18n{wallpaperSearchHeader}</h2>
   </sp-heading>
   <div class="content" id="error" hidden$="[[!errorState_]]">
     <div>[[errorState_.title]]</div>
@@ -285,4 +292,10 @@
       </template>
     </cr-grid>
   </div>
+</div>
+<hr class="sp-cards-separator">
+<div class="sp-card">
+  <sp-heading hide-back-button>
+    <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
+  </sp-heading>
 </div>
