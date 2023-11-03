@@ -62,6 +62,7 @@
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
+#include "third_party/webrtc/rtc_base/voucher.h"
 
 namespace {
 
@@ -269,6 +270,12 @@ struct CrossThreadCopier<webrtc::VideoEncoder::RateControlParameters>
 };
 
 template <>
+struct CrossThreadCopier<webrtc::Voucher::Ptr>
+    : public CrossThreadCopierPassThrough<webrtc::Voucher::Ptr> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>>
     : public CrossThreadCopierPassThrough<
@@ -466,17 +473,20 @@ struct FrameInfo {
   FrameInfo(const base::TimeDelta& media_timestamp,
             int32_t rtp_timestamp,
             int64_t capture_time_ms,
-            const ActiveSpatialLayers& active_spatial_layers)
+            const ActiveSpatialLayers& active_spatial_layers,
+            webrtc::Voucher::Ptr voucher)
       : media_timestamp_(media_timestamp),
         rtp_timestamp_(rtp_timestamp),
         capture_time_ms_(capture_time_ms),
-        active_spatial_layers_(active_spatial_layers) {}
+        active_spatial_layers_(active_spatial_layers),
+        voucher_(std::move(voucher)) {}
 
   const base::TimeDelta media_timestamp_;
   const int32_t rtp_timestamp_;
   const int64_t capture_time_ms_;
   const ActiveSpatialLayers active_spatial_layers_;
   size_t produced_frames_ = 0;
+  webrtc::Voucher::Ptr voucher_;
 };
 
 webrtc::VideoCodecType ProfileToWebRtcVideoCodecType(
@@ -603,7 +613,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // Enqueue a frame from WebRTC for encoding. This function is called
   // asynchronously from webrtc encoder thread. When the error is caused, it is
   // reported by NotifyErrorStatus().
-  void Enqueue(FrameChunk frame_chunk);
+  void Enqueue(FrameChunk frame_chunk, webrtc::Voucher::Ptr voucher);
 
   // Request encoding parameter change for the underlying encoder.
   void RequestEncodingParametersChange(
@@ -632,11 +642,12 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   };
 
   // Perform encoding on an input frame from the input queue.
-  void EncodeOneFrame(FrameChunk frame_chunk);
+  void EncodeOneFrame(FrameChunk frame_chunk, webrtc::Voucher::Ptr voucher);
 
   // Perform encoding on an input frame from the input queue using VEA native
   // input mode.  The input frame must be backed with GpuMemoryBuffer buffers.
-  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk);
+  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk,
+                                     webrtc::Voucher::Ptr voucher);
 
   // Creates a GpuMemoryBuffer frame filled with black pixels. Returns true if
   // the frame is successfully created; false otherwise.
@@ -880,7 +891,8 @@ void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
           preferred_pixel_formats_.begin(), preferred_pixel_formats_.end()));
 }
 
-void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
+void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
+                                    webrtc::Voucher::Ptr voucher) {
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::Enqueue", "timestamp",
                frame_chunk.timestamp_us);
   DVLOG(3) << __func__;
@@ -893,7 +905,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
 
   if (use_native_input_) {
     DCHECK(pending_frames_.empty());
-    EncodeOneFrameWithNativeInput(std::move(frame_chunk));
+    EncodeOneFrameWithNativeInput(std::move(frame_chunk), std::move(voucher));
     return;
   }
 
@@ -903,7 +915,13 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
   while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
     auto chunk = std::move(pending_frames_.front());
     pending_frames_.pop_front();
-    EncodeOneFrame(std::move(chunk));
+    // Use the voucher for the `frame_chunk` that was submitted into this
+    // method.
+    webrtc::Voucher::Ptr voucher_ptr;
+    if (pending_frames_.empty()) {
+      voucher_ptr = std::move(voucher);
+    }
+    EncodeOneFrame(std::move(chunk), std::move(voucher_ptr));
   }
 }
 
@@ -1104,6 +1122,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   absl::optional<uint32_t> rtp_timestamp;
   absl::optional<int64_t> capture_timestamp_ms;
   absl::optional<ActiveSpatialLayers> expected_active_spatial_layers;
+  absl::optional<webrtc::Voucher::ScopedSetter> voucher_setter;
   if (!failed_timestamp_match_) {
     // Pop timestamps until we have a match.
     while (!submitted_frames_.empty()) {
@@ -1133,6 +1152,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                 {media::EncoderStatus::Codes::kEncoderFailedEncode,
                  "missing resolution"});
             return;
+          }
+          if (front_frame.voucher_) {
+            voucher_setter.emplace(std::move(front_frame.voucher_));
           }
           submitted_frames_.pop_front();
         }
@@ -1392,7 +1414,8 @@ RTCVideoEncoder::Impl::~Impl() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
+void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk,
+                                           webrtc::Voucher::Ptr voucher) {
   DVLOG(3) << "Impl::EncodeOneFrame()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!input_buffers_free_.empty());
@@ -1544,9 +1567,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, timestamp,
                            &FrameInfo::media_timestamp_));
-    submitted_frames_.emplace_back(timestamp, frame_chunk.timestamp,
-                                   frame_chunk.render_time_ms,
-                                   GetActiveSpatialLayers());
+    submitted_frames_.emplace_back(
+        timestamp, frame_chunk.timestamp, frame_chunk.render_time_ms,
+        GetActiveSpatialLayers(), std::move(voucher));
   }
 
   // Call UseOutputBitstreamBuffer() for pending output buffers.
@@ -1560,7 +1583,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
-    FrameChunk frame_chunk) {
+    FrameChunk frame_chunk,
+    webrtc::Voucher::Ptr voucher) {
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_buffers_.empty() && input_buffers_free_.empty());
@@ -1603,9 +1627,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, frame->timestamp(),
                            &FrameInfo::media_timestamp_));
-    submitted_frames_.emplace_back(frame->timestamp(), frame_chunk.timestamp,
-                                   frame_chunk.render_time_ms,
-                                   GetActiveSpatialLayers());
+    submitted_frames_.emplace_back(
+        frame->timestamp(), frame_chunk.timestamp, frame_chunk.render_time_ms,
+        GetActiveSpatialLayers(), std::move(voucher));
   }
 
   // Call UseOutputBitstreamBuffer() for pending output buffers.
@@ -1662,7 +1686,7 @@ void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
   while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
     auto chunk = std::move(pending_frames_.front());
     pending_frames_.pop_front();
-    EncodeOneFrame(std::move(chunk));
+    EncodeOneFrame(std::move(chunk), webrtc::Voucher::Current());
   }
 }
 
@@ -1959,7 +1983,8 @@ int32_t RTCVideoEncoder::Encode(
   PostCrossThreadTask(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
-                          FrameChunk(input_image, want_key_frame)));
+                          FrameChunk(input_image, want_key_frame),
+                          webrtc::Voucher::Current()));
   return WEBRTC_VIDEO_CODEC_OK;
 }
 
