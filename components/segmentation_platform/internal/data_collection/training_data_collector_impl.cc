@@ -83,6 +83,13 @@ bool IsPeriodic(const proto::SegmentInfo& info) {
   return type == proto::TrainingOutputs::TriggerConfig::PERIODIC;
 }
 
+bool NeedsExactPredictionTime(const proto::SegmentInfo& segment_info) {
+  return segment_info.model_metadata()
+      .training_outputs()
+      .trigger_config()
+      .use_exact_prediction_time();
+}
+
 constexpr base::FeatureParam<int> TimeDelaySamplingRate{
     &features::kSegmentationPlatformTimeDelaySampling,
     /*name=*/"SamplingRate", /*default_value=*/20};
@@ -170,10 +177,7 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
 
     // Do not upload periodic metrics for exact prediction time config, the
     // trigger is fired by the selector or pref writer when result is changed.
-    if (!segment_info.model_metadata()
-             .training_outputs()
-             .trigger_config()
-             .use_exact_prediction_time()) {
+    if (!NeedsExactPredictionTime(segment_info)) {
       all_segments_for_training_.insert(
           std::make_pair(segment.first, segment_info.model_source()));
       // Add periodic models to continuous collection segments.
@@ -431,11 +435,19 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
     return;
   }
 
-  RecordTrainingDataCollectionEvent(
-      segment_info.segment_id(),
-      param.has_value()
-          ? stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess
-          : stats::TrainingDataCollectionEvent::kContinousCollectionSuccess);
+  auto collection_event =
+      stats::TrainingDataCollectionEvent::kImmediateCollectionSuccess;
+  if (!param.has_value()) {
+    collection_event =
+        stats::TrainingDataCollectionEvent::kContinousCollectionSuccess;
+    if (NeedsExactPredictionTime(segment_info)) {
+      collection_event = collection_event = stats::TrainingDataCollectionEvent::
+          kContinousExactPredictionTimeCollectionSuccess;
+    }
+  }
+  RecordTrainingDataCollectionEvent(segment_info.segment_id(),
+                                    collection_event);
+
   if (!param.has_value()) {
     LocalStateHelper::GetInstance().SetPrefTime(
         kSegmentationLastCollectionTimePref, clock_->Now());
@@ -493,7 +505,8 @@ TrainingRequestId TrainingDataCollectorImpl::OnDecisionTime(
     proto::SegmentId segment_id,
     scoped_refptr<InputContext> input_context,
     DecisionType type,
-    absl::optional<ModelProvider::Request> inputs) {
+    absl::optional<ModelProvider::Request> inputs,
+    bool decision_result_update_trigger) {
   if (all_segments_for_training_.count(segment_id) == 0) {
     return TrainingRequestId();
   }
@@ -509,6 +522,15 @@ TrainingRequestId TrainingDataCollectorImpl::OnDecisionTime(
         segment_id, stats::TrainingDataCollectionEvent::kNoSegmentInfo);
     return request_id;
   }
+
+  // Don't collect training data for periodic collection for exact prediction
+  // time if exact prediction time is not set.
+  if (type == proto::TrainingOutputs::TriggerConfig::PERIODIC &&
+      decision_result_update_trigger &&
+      !NeedsExactPredictionTime(*segment_info)) {
+    return request_id;
+  }
+
   OnGetSegmentInfoAtDecisionTime(segment_id, request_id, type, input_context,
                                  *segment_info, std::move(inputs));
   return request_id;
@@ -536,11 +558,18 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
     return;
   }
 
-  RecordTrainingDataCollectionEvent(
-      segment_info.segment_id(),
-      IsPeriodic(segment_info)
-          ? stats::TrainingDataCollectionEvent::kContinousCollectionStart
-          : stats::TrainingDataCollectionEvent::kImmediateCollectionStart);
+  auto collection_event =
+      stats::TrainingDataCollectionEvent::kImmediateCollectionStart;
+  if (IsPeriodic(segment_info)) {
+    collection_event =
+        stats::TrainingDataCollectionEvent::kContinousCollectionStart;
+    if (NeedsExactPredictionTime(segment_info)) {
+      collection_event = collection_event = stats::TrainingDataCollectionEvent::
+          kContinousExactPredictionTimeCollectionStart;
+    }
+  }
+  RecordTrainingDataCollectionEvent(segment_info.segment_id(),
+                                    collection_event);
 
   if (inputs) {
     OnGetTrainingTensorsAtDecisionTime(request_id, training_request,
@@ -834,9 +863,6 @@ bool TrainingDataCollectorImpl::FillTrainingData(
           .InMicroseconds());
   training_data.set_request_id(request_id.GetUnsafeValue());
 
-  const auto& training_config =
-      segment_info.model_metadata().training_outputs().trigger_config();
-
   // Only periodic segments need storage to disk and can be multi-session.
   // If the exact prediction time is not used, we could recompute inputs at
   // observation time so we don't need to store to disk.
@@ -846,7 +872,7 @@ bool TrainingDataCollectorImpl::FillTrainingData(
   // observation and the training data will live in database forever. So, it is
   // safe to verify the delay before storing to disk.
   bool store_to_disk = IsPeriodic(segment_info) &&
-                       training_config.use_exact_prediction_time() &&
+                       NeedsExactPredictionTime(segment_info) &&
                        training_request.observation_delayed_task.has_value();
 
   return store_to_disk;

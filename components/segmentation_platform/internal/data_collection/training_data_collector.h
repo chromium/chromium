@@ -79,12 +79,15 @@ class TrainingDataCollector {
 
   // Called to collect and store training input data. The data will only be
   // uploaded once |OnObservationTrigger| is triggered. |TrainingRequestId| can
-  // be used to trigger observation for a specific set of training data.
+  // be used to trigger observation for a specific set of training data. If
+  // `decision_result_update_trigger` is true, then collect data only when
+  // exact_prediction_time is set for the config.
   virtual TrainingRequestId OnDecisionTime(
       proto::SegmentId id,
       scoped_refptr<InputContext> input_context,
       DecisionType type,
-      absl::optional<ModelProvider::Request> inputs) = 0;
+      absl::optional<ModelProvider::Request> inputs,
+      bool decision_result_update_trigger = false) = 0;
 
   // Called by Segmentation Platform when manually triggering data collection on
   // the client.

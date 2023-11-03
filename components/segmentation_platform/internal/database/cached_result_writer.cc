@@ -20,18 +20,19 @@ CachedResultWriter::CachedResultWriter(ClientResultPrefs* prefs,
 
 CachedResultWriter::~CachedResultWriter() = default;
 
-void CachedResultWriter::UpdatePrefsIfExpired(
+bool CachedResultWriter::UpdatePrefsIfExpired(
     const Config* config,
     const proto::ClientResult& client_result,
     const PlatformOptions& platform_options) {
   if (!IsPrefUpdateRequiredForClient(config, client_result, platform_options)) {
-    return;
+    return false;
   }
   VLOG(1) << "CachedResultWriter updating prefs with new result: "
           << segmentation_platform::PredictionResultToDebugString(
                  client_result.client_result())
           << " for segmentation key: " << config->segmentation_key;
   UpdateNewClientResultToPrefs(config, client_result);
+  return true;
 }
 
 void CachedResultWriter::MarkResultAsUsed(const Config* config) {

@@ -359,7 +359,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
   for (const auto& segment : config_->segments) {
     training_data_collector_->OnDecisionTime(
         segment.first, nullptr, proto::TrainingOutputs::TriggerConfig::PERIODIC,
-        absl::nullopt);
+        absl::nullopt, /*decision_result_update_trigger=*/true);
   }
 }
 

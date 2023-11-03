@@ -34,8 +34,9 @@ class CachedResultWriter {
   CachedResultWriter& operator=(CachedResultWriter&) = delete;
 
   // Updates the prefs only if the previous result in the pref is expired or
-  // unavailable or `force_refresh_results` is set as true.
-  void UpdatePrefsIfExpired(const Config* config,
+  // unavailable or `force_refresh_results` is set as true. Returns true if
+  // prefs was updated.
+  bool UpdatePrefsIfExpired(const Config* config,
                             const proto::ClientResult& client_result,
                             const PlatformOptions& platform_options);
 

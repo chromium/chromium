@@ -73147,6 +73147,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="19" label="Training data missing"/>
   <int value="20" label="Decision type mismatch failure"/>
   <int value="21" label="Delay trigger sampled"/>
+  <int value="22" label="Continuous exact prediction time collection start"/>
+  <int value="23" label="Continuous exact prediction time collection success"/>
 </enum>
 
 <enum name="SegmentationPlatformValidationResult">

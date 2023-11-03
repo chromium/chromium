@@ -67,7 +67,7 @@ def FindTestSuites(cwd: str) -> List[str]:
 def CreateLauncherFilterFileContent(test_suites: List[str]) -> str:
     # Uses the test suite names to create the string that can be stored as the
     # test launcher filter file.
-    file_lines = [test_suite + '.*' for test_suite in test_suites]
+    file_lines = ['*' + test_suite + '.*' for test_suite in test_suites]
     sorted_lines = sorted(file_lines)
     return '\n'.join(sorted_lines) + '\n'
 

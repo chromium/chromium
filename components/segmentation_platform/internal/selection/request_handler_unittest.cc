@@ -46,12 +46,12 @@ class MockTrainingDataCollector : public TrainingDataCollector {
   MOCK_METHOD0(OnModelMetadataUpdated, void());
   MOCK_METHOD0(OnServiceInitialized, void());
   MOCK_METHOD0(ReportCollectedContinuousTrainingData, void());
-  MOCK_METHOD4(
-      OnDecisionTime,
-      TrainingRequestId(proto::SegmentId id,
-                        scoped_refptr<InputContext> input_context,
-                        DecisionType type,
-                        absl::optional<ModelProvider::Request> inputs));
+  MOCK_METHOD5(OnDecisionTime,
+               TrainingRequestId(proto::SegmentId id,
+                                 scoped_refptr<InputContext> input_context,
+                                 DecisionType type,
+                                 absl::optional<ModelProvider::Request> inputs,
+                                 bool decision_result_update_trigger));
   MOCK_METHOD4(CollectTrainingData,
                void(SegmentId segment_id,
                     TrainingRequestId request_id,
@@ -127,9 +127,9 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
 
   EXPECT_CALL(
       *training_data_collector_,
-      OnDecisionTime(kSegmentId, _,
-                     proto::TrainingOutputs::TriggerConfig::ONDEMAND,
-                     absl::make_optional(ModelProvider::Request{1, 2, 3})))
+      OnDecisionTime(
+          kSegmentId, _, proto::TrainingOutputs::TriggerConfig::ONDEMAND,
+          absl::make_optional(ModelProvider::Request{1, 2, 3}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
       .WillOnce(Invoke(
@@ -159,10 +159,11 @@ TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
   PredictionOptions options;
   options.on_demand_execution = true;
 
-  EXPECT_CALL(*training_data_collector_,
-              OnDecisionTime(kSegmentId, _,
-                             proto::TrainingOutputs::TriggerConfig::ONDEMAND,
-                             absl::make_optional(ModelProvider::Request{1})))
+  EXPECT_CALL(
+      *training_data_collector_,
+      OnDecisionTime(kSegmentId, _,
+                     proto::TrainingOutputs::TriggerConfig::ONDEMAND,
+                     absl::make_optional(ModelProvider::Request{1}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
       .WillOnce(Invoke(

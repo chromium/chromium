@@ -60,7 +60,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       proto::SegmentId id,
       scoped_refptr<InputContext> input_context,
       DecisionType type,
-      absl::optional<ModelProvider::Request> inputs) override;
+      absl::optional<ModelProvider::Request> inputs,
+      bool decision_result_update_trigger = false) override;
   void CollectTrainingData(SegmentId segment_id,
                            TrainingRequestId request_id,
                            const TrainingLabels& param,

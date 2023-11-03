@@ -690,6 +690,12 @@ std::string TrainingDataCollectionEventToErrorMsg(
       return "On Decision Time Type Mismatch";
     case TrainingDataCollectionEvent::kDelayTriggerSampled:
       return "Delay Trigger Sampled";
+    case TrainingDataCollectionEvent::
+        kContinousExactPredictionTimeCollectionStart:
+      return "Continuous Exact Prediction Time Collection Start";
+    case TrainingDataCollectionEvent::
+        kContinousExactPredictionTimeCollectionSuccess:
+      return "Continuous Exact Prediction Time Collection Success";
     default:
       return "";
   }

@@ -635,6 +635,23 @@ TEST_P(TrainingDataCollectorImplTest,
        SegmentationUkmHelper::FloatToInt64(3.f)});
 }
 
+TEST_P(TrainingDataCollectorImplTest, ContinuousWithExactPredictionNotSet) {
+  ModelSource model_source = GetModelSource(GetParam());
+  auto* segment_info = CreateSegmentInfo(kTestOptimizationTarget0,
+                                         kPeriodicDecisionType, model_source);
+
+  AddTimeTrigger(segment_info, base::Days(7));
+  const base::TimeDelta kNextUserSession = base::Days(10);
+
+  Init();
+  collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
+                              kPeriodicDecisionType, absl::nullopt,
+                              /*decision_result_update_trigger=*/true);
+  task_environment()->RunUntilIdle();
+  clock()->Advance(kNextUserSession);
+  ExpectUkmCount(0);
+}
+
 TEST_P(TrainingDataCollectorImplTest, ContinuousWithExactPrediction) {
   ModelSource model_source = GetModelSource(GetParam());
   auto* segment_info = CreateSegmentInfo(kTestOptimizationTarget0,
@@ -652,7 +669,8 @@ TEST_P(TrainingDataCollectorImplTest, ContinuousWithExactPrediction) {
 
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kPeriodicDecisionType, absl::nullopt);
+                              kPeriodicDecisionType, absl::nullopt,
+                              /*decision_result_update_trigger=*/true);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
   WaitForContinuousCollection();
@@ -681,7 +699,8 @@ TEST_P(TrainingDataCollectorImplTest, ContinuousWithFlexibleObservation) {
 
   Init();
   collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
-                              kPeriodicDecisionType, absl::nullopt);
+                              kPeriodicDecisionType, absl::nullopt,
+                              /*decision_result_update_trigger=*/true);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
   WaitForContinuousCollection();

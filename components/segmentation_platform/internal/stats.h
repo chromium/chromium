@@ -306,7 +306,9 @@ enum class TrainingDataCollectionEvent {
   kTrainingDataMissing = 19,
   kOnDecisionTimeTypeMistmatch = 20,
   kDelayTriggerSampled = 21,
-  kMaxValue = kDelayTriggerSampled,
+  kContinousExactPredictionTimeCollectionStart = 22,
+  kContinousExactPredictionTimeCollectionSuccess = 23,
+  kMaxValue = kContinousExactPredictionTimeCollectionSuccess
 };
 
 std::string TrainingDataCollectionEventToErrorMsg(
