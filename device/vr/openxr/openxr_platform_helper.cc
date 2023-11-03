@@ -53,17 +53,20 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance) {
 
 void OpenXrPlatformHelper::CreateInstanceWithCreateInfo(
     absl::optional<OpenXrCreateInfo> create_info,
-    CreateInstanceCallback callback) {
+    CreateInstanceCallback instance_ready_callback,
+    PlatormInitiatedShutdownCallback shutdown_callback) {
   DVLOG(1) << __func__;
   CHECK(initialized_);
 
   if (create_info.has_value()) {
-    GetPlatformCreateInfo(
-        create_info.value(),
-        base::BindOnce(&OpenXrPlatformHelper::OnPlatformCreateInfoResult,
-                       base::Unretained(this), std::move(callback)));
+    auto create_info_result_callback = base::BindOnce(
+        &OpenXrPlatformHelper::OnPlatformCreateInfoResult,
+        base::Unretained(this), std::move(instance_ready_callback));
+    GetPlatformCreateInfo(create_info.value(),
+                          std::move(create_info_result_callback),
+                          std::move(shutdown_callback));
   } else {
-    OnPlatformCreateInfoResult(std::move(callback), nullptr);
+    OnPlatformCreateInfoResult(std::move(instance_ready_callback), nullptr);
   }
 }
 

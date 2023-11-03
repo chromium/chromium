@@ -104,9 +104,7 @@ OpenXrDevice::~OpenXrDevice() {
   // Wait for the render loop to stop before completing destruction. This will
   // ensure that the render loop doesn't get shutdown while it is processing
   // any requests.
-  if (render_loop_ && render_loop_->IsRunning()) {
-    render_loop_->Stop();
-  }
+  render_loop_.reset();
 
   if (instance_ != XR_NULL_HANDLE) {
     platform_helper_->DestroyInstance(instance_);
@@ -125,14 +123,6 @@ OpenXrDevice::BindCompositorHost() {
   return compositor_host_receiver_.BindNewPipeAndPassRemote();
 }
 
-void OpenXrDevice::EnsureRenderLoop() {
-  if (!render_loop_) {
-    render_loop_ = std::make_unique<OpenXrRenderLoop>(
-        context_provider_factory_async_, instance_, *extension_helper_,
-        platform_helper_);
-  }
-}
-
 void OpenXrDevice::RequestSession(
     mojom::XRRuntimeSessionOptionsPtr options,
     mojom::XRRuntime::RequestSessionCallback callback) {
@@ -147,7 +137,10 @@ void OpenXrDevice::RequestSession(
   platform_helper_->CreateInstanceWithCreateInfo(
       create_info,
       base::BindOnce(&OpenXrDevice::OnCreateInstanceResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(options)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(options)),
+      base::BindOnce(&OpenXrDevice::ForceEndSession,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ExitXrPresentReason::kXrPlatformHelperShutdown));
 }
 
 void OpenXrDevice::OnCreateInstanceResult(
@@ -176,19 +169,11 @@ void OpenXrDevice::OnCreateInstanceResult(
     return;
   }
 
-  EnsureRenderLoop();
-
-  if (!render_loop_->IsRunning()) {
+  if (!render_loop_) {
+    render_loop_ = std::make_unique<OpenXrRenderLoop>(
+        context_provider_factory_async_, instance_, *extension_helper_,
+        platform_helper_);
     render_loop_->Start();
-
-    if (!render_loop_->IsRunning()) {
-      DVLOG(1) << __func__ << " Could not start RenderLoop";
-      // Reject session request, and call ForceEndSession to ensure that we
-      // clean up any objects that were already created.
-      ForceEndSession(ExitXrPresentReason::kOpenXrStartFailed);
-      std::move(request_session_callback_).Run(nullptr);
-      return;
-    }
 
     if (overlay_receiver_) {
       render_loop_->task_runner()->PostTask(
@@ -242,12 +227,11 @@ void OpenXrDevice::OnRequestSessionResult(
 
 void OpenXrDevice::ForceEndSession(ExitXrPresentReason reason) {
   // This method is called when the rendering process exit presents.
-  if (render_loop_ && render_loop_->IsRunning()) {
+  if (render_loop_) {
     render_loop_->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&XRCompositorCommon::ExitPresent,
                        base::Unretained(render_loop_.get()), reason));
-    render_loop_->Stop();
     render_loop_.reset();
   }
 
@@ -278,7 +262,7 @@ void OpenXrDevice::SetFrameDataRestricted(bool restricted) {
 void OpenXrDevice::CreateImmersiveOverlay(
     mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver) {
   // This should only be triggered if we have a session
-  if (render_loop_ && render_loop_->IsRunning()) {
+  if (render_loop_) {
     render_loop_->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&XRCompositorCommon::RequestOverlay,
                                   base::Unretained(render_loop_.get()),

@@ -52,8 +52,6 @@ class DEVICE_VR_EXPORT OpenXrDevice
   void CreateImmersiveOverlay(
       mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver) override;
 
-  void EnsureRenderLoop();
-
   void OnCreateInstanceResult(mojom::XRRuntimeSessionOptionsPtr options,
                               XrResult result,
                               XrInstance instance);

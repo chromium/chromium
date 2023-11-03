@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -27,7 +26,12 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/threading/thread.h"
 #include "device/vr/windows/d3d11_texture_helper.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/java_handler_thread.h"
 #endif
 
 namespace gpu::gles2 {
@@ -46,6 +50,7 @@ enum class ExitXrPresentReason : int32_t {
   kGetFrameAfterSessionEnded = 6,
   kSubmitFrameFailed = 7,
   kBrowserShutdown = 8,
+  kXrPlatformHelperShutdown = 9,
 };
 
 class XRDeviceAbstraction {
@@ -72,7 +77,24 @@ class XRDeviceAbstraction {
   virtual std::vector<mojom::XRViewPtr> GetDefaultViews() const = 0;
 };
 
-class XRCompositorCommon : public base::Thread,
+#if BUILDFLAG(IS_ANDROID)
+class XRThread : public base::android::JavaHandlerThread {
+ public:
+  explicit XRThread(const char* name)
+      : base::android::JavaHandlerThread(name) {}
+  ~XRThread() override = default;
+};
+#elif BUILDFLAG(IS_WIN)
+class XRThread : public base::Thread {
+ public:
+  explicit XRThread(const char* name) : base::Thread(name) {}
+  ~XRThread() override = default;
+};
+#else
+#error "Trying to build OpenXR for an unsupported platform"
+#endif
+
+class XRCompositorCommon : public XRThread,
                            public XRDeviceAbstraction,
                            public mojom::XRPresentationProvider,
                            public mojom::XRFrameDataProvider,
