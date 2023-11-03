@@ -101,7 +101,12 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
   if (!action_item_->GetAccessibleName().empty()) {
     SetAccessibleName(action_item_->GetAccessibleName());
   }
-  SetImageModel(views::Button::STATE_NORMAL, action_item_->GetImage());
+  // If possible use the vector icon so that it updates as the theme updates.
+  if (action_item_->GetImage().IsVectorIcon()) {
+    SetVectorIcon(*action_item_->GetImage().GetVectorIcon().vector_icon());
+  } else {
+    SetImageModel(views::Button::STATE_NORMAL, action_item_->GetImage());
+  }
   SetEnabled(action_item_->GetEnabled());
   SetVisible(action_item_->GetVisible());
 }
