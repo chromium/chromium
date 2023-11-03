@@ -268,8 +268,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void DidDestroyChannel(int client_id) override;
   void DidDestroyAllChannels() override;
   void DidDestroyOffscreenContext(const GURL& active_url) override;
-  void DidLoseContext(bool offscreen,
-                      gpu::error::ContextLostReason reason,
+  void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
   void GetDawnInfo(bool collect_metrics, GetDawnInfoCallback callback) override;
 

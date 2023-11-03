@@ -1051,10 +1051,9 @@ void GpuServiceImpl::DidDestroyOffscreenContext(const GURL& active_url) {
   gpu_host_->DidDestroyOffscreenContext(active_url);
 }
 
-void GpuServiceImpl::DidLoseContext(bool offscreen,
-                                    gpu::error::ContextLostReason reason,
+void GpuServiceImpl::DidLoseContext(gpu::error::ContextLostReason reason,
                                     const GURL& active_url) {
-  gpu_host_->DidLoseContext(offscreen, reason, active_url);
+  gpu_host_->DidLoseContext(reason, active_url);
 }
 
 void GpuServiceImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,

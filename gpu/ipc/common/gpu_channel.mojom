@@ -67,7 +67,7 @@ struct ContextCreationAttribs {
 };
 
 struct CreateCommandBufferParams {
-  SurfaceHandle surface_handle;
+  [EnableIf=is_android] SurfaceHandle surface_handle;
   int32 share_group_id;
   int32 stream_id;
   SchedulingPriority stream_priority;

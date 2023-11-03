@@ -43,8 +43,7 @@ class GpuChannelManagerDelegate {
   virtual void DidDestroyOffscreenContext(const GURL& active_url) = 0;
 
   // Tells the delegate that a context was lost.
-  virtual void DidLoseContext(bool offscreen,
-                              error::ContextLostReason reason,
+  virtual void DidLoseContext(error::ContextLostReason reason,
                               const GURL& active_url) = 0;
 
   // Tells the delegate to cache the given blob information in persistent

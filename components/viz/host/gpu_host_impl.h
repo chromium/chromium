@@ -257,8 +257,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void DidDestroyOffscreenContext(const GURL& url) override;
   void DidDestroyChannel(int32_t client_id) override;
   void DidDestroyAllChannels() override;
-  void DidLoseContext(bool offscreen,
-                      gpu::error::ContextLostReason reason,
+  void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
   void DisableGpuCompositing() override;
   void DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) override;

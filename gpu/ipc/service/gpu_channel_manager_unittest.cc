@@ -80,10 +80,7 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
 
     int32_t kRouteId =
         static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
-    const SurfaceHandle kFakeSurfaceHandle = 1;
-    SurfaceHandle surface_handle = kFakeSurfaceHandle;
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->surface_handle = surface_handle;
     init_params->share_group_id = MSG_ROUTING_NONE;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;

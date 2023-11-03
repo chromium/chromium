@@ -87,12 +87,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     return ContextResult::kFatalFailure;
   }
 
-  if (surface_handle_ != kNullSurfaceHandle) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "WebGPUInterface clients must render offscreen.";
-    return ContextResult::kFatalFailure;
-  }
-
   if (init_params.attribs.context_type != CONTEXT_TYPE_WEBGPU) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
                   "used with WebGPUDecoder";
