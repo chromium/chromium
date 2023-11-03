@@ -325,6 +325,14 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
     }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenIdpErrorResponse;
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingIdTokenCrossSiteIdpErrorResponse: {
+      return FederatedAuthRequestIssueReasonEnum::
+          IdTokenCrossSiteIdpErrorResponse;
+    }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidContentType;
     }

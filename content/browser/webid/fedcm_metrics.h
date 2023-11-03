@@ -64,8 +64,10 @@ enum class FedCmRequestIdTokenStatus {
   kAccountsInvalidContentType,
   kIdTokenInvalidContentType,
   kSilentMediationFailure,
+  kIdTokenIdpErrorResponse,
+  kIdTokenCrossSiteIdpErrorResponse,
 
-  kMaxValue = kSilentMediationFailure
+  kMaxValue = kIdTokenCrossSiteIdpErrorResponse
 };
 
 // This enum describes whether user sign-in states between IDP and browser

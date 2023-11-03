@@ -35106,6 +35106,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="36" label="ConfigInvalidContentType"/>
   <int value="37" label="AccountsInvalidContentType"/>
   <int value="38" label="IdTokenInvalidContentType"/>
+  <int value="39" label="SilentMediationFailure"/>
+  <int value="40" label="IdTokenIdpErrorResponse"/>
+  <int value="41" label="IdTokenCrossSiteIdpErrorResponse"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
