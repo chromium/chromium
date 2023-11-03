@@ -803,15 +803,6 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   return;
 }
 
-void BackgroundImageGeometry::SetGeometryForSVGMask(
-    const gfx::RectF& mask_area,
-    const PhysicalOffset& box_offset) {
-  unsnapped_dest_rect_ = PhysicalRect::EnclosingRect(mask_area);
-  unsnapped_dest_rect_.Move(box_offset);
-  snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(unsnapped_dest_rect_));
-  tile_size_ = unsnapped_dest_rect_.size;
-}
-
 void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
                                         const FillLayer& fill_layer,
                                         const PhysicalRect& paint_rect) {

@@ -376,21 +376,16 @@ void SVGMaskGeometry::Calculate(const FillLayer& layer) {
 }
 
 void PaintSVGMask(LayoutSVGResourceMasker* masker,
-                  const LayoutObject& layout_object,
+                  const gfx::RectF& reference_box,
+                  float zoom,
                   GraphicsContext& context,
                   SkBlendMode composite_op,
                   bool apply_mask_type) {
-  const ComputedStyle& style = layout_object.StyleRef();
-  const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
-      layout_object, GeometryBox::kFillBox,
-      SVGResources::ForeignObjectQuirk::kDisabled);
-  const AffineTransform content_transformation = MaskToContentTransform(
-      *masker, reference_box,
-      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1);
+  const AffineTransform content_transformation =
+      MaskToContentTransform(*masker, reference_box, zoom);
   SubtreeContentTransformScope content_transform_scope(content_transformation);
   PaintRecord record = masker->CreatePaintRecord();
 
-  context.Save();
   bool has_layer = false;
   if (apply_mask_type &&
       masker->StyleRef().MaskType() == EMaskType::kLuminance) {
@@ -405,7 +400,6 @@ void PaintSVGMask(LayoutSVGResourceMasker* masker,
   if (has_layer) {
     context.EndLayer();
   }
-  context.Restore();
 }
 
 struct FillInfo {
@@ -454,29 +448,24 @@ void PaintMaskLayer(const FillLayer& layer,
     composite_op = SkBlendMode::kSrcOver;
   }
 
+  GraphicsContextStateSaver saver(context, false);
+
   // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
   // this is a layer for a mask), then repeat, position, clip, origin and size
   // should have no effect.
   if (const auto* svg_reference =
           DynamicTo<StyleSVGMaskReferenceImage>(*style_image)) {
-    LayoutSVGResourceMasker* masker = ResolveElementReference(
-        svg_reference->GetSVGResource(),
-        svg_reference->GetSVGResourceClient(info.object));
-    if (!masker) {
-      return;
-    }
+    const ComputedStyle& style = info.object.StyleRef();
     const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
         info.object, GeometryBox::kFillBox,
         SVGResources::ForeignObjectQuirk::kDisabled);
-    context.Save();
-    context.Clip(masker->ResourceBoundingBox(
-        reference_box, info.object.IsSVGForeignObject()
-                           ? info.object.StyleRef().EffectiveZoom()
-                           : 1));
-    const bool apply_mask_type =
-        layer.MaskMode() == EFillMaskMode::kMatchSource;
-    PaintSVGMask(masker, info.object, context, composite_op, apply_mask_type);
-    context.Restore();
+    const float zoom =
+        info.object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
+
+    saver.Save();
+    SVGMaskPainter::PaintSVGMaskLayer(
+        context, *svg_reference, info.object, reference_box, zoom, composite_op,
+        layer.MaskMode() == EFillMaskMode::kMatchSource);
     return;
   }
   geometry.Calculate(layer);
@@ -495,7 +484,6 @@ void PaintMaskLayer(const FillLayer& layer,
   ScopedImageRenderingSettings image_rendering_settings_context(
       context, info.interpolation_quality, info.dynamic_range_limit);
 
-  GraphicsContextStateSaver saver(context, false);
   if (auto clip_rect = geometry.ClipRect()) {
     saver.Save();
     context.Clip(*clip_rect);
@@ -597,51 +585,40 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
 
-  PaintSVGMask(masker, layout_object, context, SkBlendMode::kSrcOver,
+  const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
+      layout_object, GeometryBox::kFillBox,
+      SVGResources::ForeignObjectQuirk::kDisabled);
+  const float zoom =
+      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
+
+  context.Save();
+  PaintSVGMask(masker, reference_box, zoom, context, SkBlendMode::kSrcOver,
                /*apply_mask_type=*/true);
+  context.Restore();
 }
 
-PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
-                                          SVGResourceClient* client,
-                                          const gfx::RectF& reference_box,
-                                          float zoom) {
-  auto* masker = ResolveElementReference(mask_resource, client);
+void SVGMaskPainter::PaintSVGMaskLayer(
+    GraphicsContext& context,
+    const StyleSVGMaskReferenceImage& svg_reference,
+    const ImageResourceObserver& observer,
+    const gfx::RectF& reference_box,
+    const float zoom,
+    const SkBlendMode composite_op,
+    const bool apply_mask_type) {
+  LayoutSVGResourceMasker* masker =
+      ResolveElementReference(svg_reference.GetSVGResource(),
+                              svg_reference.GetSVGResourceClient(observer));
   if (!masker) {
-    return PaintRecord();
+    return;
   }
-
-  const AffineTransform content_transformation =
-      MaskToContentTransform(*masker, reference_box, zoom);
-  SubtreeContentTransformScope content_transform_scope(content_transformation);
-  PaintRecord record = masker->CreatePaintRecord();
-  if (record.empty()) {
-    return record;
-  }
-  gfx::RectF bounds = masker->ResourceBoundingBox(reference_box, zoom);
-  AffineTransform origin =
-      AffineTransform::Translation(-bounds.x(), -bounds.y());
-
-  PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording();
-  canvas->concat(AffineTransformToSkM44(origin * content_transformation));
-  canvas->drawPicture(std::move(record));
-  return recorder.finishRecordingAsPicture();
+  context.Clip(masker->ResourceBoundingBox(reference_box, zoom));
+  PaintSVGMask(masker, reference_box, zoom, context, composite_op,
+               apply_mask_type);
 }
 
 bool SVGMaskPainter::MaskIsValid(SVGResource* mask_resource,
                                  SVGResourceClient* client) {
   return ResolveElementReference(mask_resource, client);
-}
-
-gfx::RectF SVGMaskPainter::ResourceBounds(SVGResource* mask_resource,
-                                          SVGResourceClient* client,
-                                          const gfx::RectF& reference_box,
-                                          float zoom) {
-  auto* masker = ResolveElementReference(mask_resource, client);
-  if (!masker) {
-    return gfx::RectF();
-  }
-  return masker->ResourceBoundingBox(reference_box, zoom);
 }
 
 gfx::RectF SVGMaskPainter::ResourceBoundsForSVGChild(
@@ -660,22 +637,17 @@ gfx::RectF SVGMaskPainter::ResourceBoundsForSVGChild(
     if (!svg_mask_reference) {
       continue;
     }
+    LayoutSVGResourceMasker* masker = ResolveElementReference(
+        svg_mask_reference->GetSVGResource(),
+        svg_mask_reference->GetSVGResourceClient(object));
+    if (!masker) {
+      continue;
+    }
     const gfx::RectF svg_mask_bounds =
-        ResourceBounds(svg_mask_reference->GetSVGResource(),
-                       svg_mask_reference->GetSVGResourceClient(object),
-                       reference_box, reference_box_zoom);
+        masker->ResourceBoundingBox(reference_box, reference_box_zoom);
     bounds.Union(svg_mask_bounds);
   }
   return gfx::UnionRects(bounds, object.VisualRectInLocalSVGCoordinates());
-}
-
-EMaskType SVGMaskPainter::MaskType(SVGResource* mask_resource,
-                                   SVGResourceClient* client) {
-  auto* masker = ResolveElementReference(mask_resource, client);
-  if (!masker) {
-    return EMaskType::kAlpha;
-  }
-  return masker->StyleRef().MaskType();
 }
 
 }  // namespace blink

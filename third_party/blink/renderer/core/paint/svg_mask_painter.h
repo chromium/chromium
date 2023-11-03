@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_MASK_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_MASK_PAINTER_H_
 
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace gfx {
@@ -16,11 +16,11 @@ namespace blink {
 
 class DisplayItemClient;
 class GraphicsContext;
+class ImageResourceObserver;
 class LayoutObject;
 class SVGResource;
 class SVGResourceClient;
-
-enum class EMaskType : uint8_t;
+class StyleSVGMaskReferenceImage;
 
 class SVGMaskPainter {
   STATIC_ONLY(SVGMaskPainter);
@@ -29,18 +29,15 @@ class SVGMaskPainter {
   static void Paint(GraphicsContext& context,
                     const LayoutObject& layout_object,
                     const DisplayItemClient& display_item_client);
-  static PaintRecord PaintResource(SVGResource* mask_resource,
-                                   SVGResourceClient* client,
-                                   const gfx::RectF& reference_box,
-                                   float zoom);
-  static gfx::RectF ResourceBounds(SVGResource* mask_resource,
-                                   SVGResourceClient* client,
-                                   const gfx::RectF& reference_box,
-                                   float zoom);
+  static void PaintSVGMaskLayer(GraphicsContext&,
+                                const StyleSVGMaskReferenceImage&,
+                                const ImageResourceObserver&,
+                                const gfx::RectF& reference_box,
+                                const float zoom,
+                                const SkBlendMode composite_op,
+                                const bool apply_mask_type);
   static gfx::RectF ResourceBoundsForSVGChild(
       const LayoutObject& layout_object);
-  static EMaskType MaskType(SVGResource* mask_resource,
-                            SVGResourceClient* client);
   static bool MaskIsValid(SVGResource* mask_resource,
                           SVGResourceClient* client);
 };

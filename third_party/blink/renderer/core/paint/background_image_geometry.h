@@ -56,11 +56,6 @@ class BackgroundImageGeometry {
                  const FillLayer&,
                  const PhysicalRect& paint_rect);
 
-  // Replacement for `Calculate()` when a layer is referencing an SVG <mask>
-  // element.
-  void SetGeometryForSVGMask(const gfx::RectF& mask_area,
-                             const PhysicalOffset& box_offset);
-
   // Destination rects define the area into which the image will paint.
   // For cases where no explicit background size is requested, the destination
   // also defines the subset of the image to be drawn. Both border-snapped
