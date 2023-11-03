@@ -14,9 +14,6 @@
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
-// Limit on the size of encoded frames, to ensure they're not silently dropped
-// later by the RTPSender. See https://crbug.com/1248479.
-const int kMaxAudioFramePayloadByteLength = 1000;
 
 // Killswitch base feature
 BASE_FEATURE(kRTCEncodedAudioFrameLimitSize,
@@ -59,7 +56,7 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
   }
 
   if (base::FeatureList::IsEnabled(kRTCEncodedAudioFrameLimitSize) &&
-      encoded_frame->data()->ByteLength() > kMaxAudioFramePayloadByteLength) {
+      encoded_frame->IsDataTooLarge()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Frame too large");
     return ScriptPromise();
