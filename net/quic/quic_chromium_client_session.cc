@@ -875,6 +875,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     bool migrate_idle_session,
     bool allow_port_migration,
     base::TimeDelta idle_migration_period,
+    int multi_port_probing_interval,
     base::TimeDelta max_time_on_non_default_network,
     int max_migrations_to_non_default_network_on_write_error,
     int max_migrations_to_non_default_network_on_path_degrading,
@@ -953,6 +954,10 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       address.GetFamily() == ADDRESS_FAMILY_IPV6) {
     connection->SetMaxPacketLength(connection->max_packet_length() -
                                    kAdditionalOverheadForIPv6);
+  }
+  if (multi_port_probing_interval > 0) {
+    connection->SetMultiPortProbingInterval(
+        quic::QuicTime::Delta::FromSeconds(multi_port_probing_interval));
   }
   connect_timing_.domain_lookup_start = dns_resolution_start_time;
   connect_timing_.domain_lookup_end = dns_resolution_end_time;

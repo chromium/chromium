@@ -249,7 +249,8 @@ class QuicProxyClientSocketTest
         quic::QuicTime::Delta::FromMilliseconds(
             kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
         /*migrate_idle_session=*/true, /*allow_port_migration=*/false,
-        kDefaultIdleSessionMigrationPeriod, kMaxTimeOnNonDefaultNetwork,
+        kDefaultIdleSessionMigrationPeriod, /*multi_port_probing_interval=*/0,
+        kMaxTimeOnNonDefaultNetwork,
         kMaxMigrationsToNonDefaultNetworkOnWriteError,
         kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
         kQuicYieldAfterPacketsRead,
@@ -257,8 +258,7 @@ class QuicProxyClientSocketTest
             kQuicYieldAfterDurationMilliseconds),
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
-        dns_start, dns_end,
-        base::DefaultTickClock::GetInstance(),
+        dns_start, dns_end, base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
         NetLog::Get());

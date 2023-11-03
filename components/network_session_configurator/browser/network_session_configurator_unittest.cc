@@ -91,6 +91,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_TRUE(quic_params_.retransmittable_on_wire_timeout.is_zero());
   EXPECT_FALSE(quic_params_.disable_tls_zero_rtt);
   EXPECT_TRUE(quic_params_.allow_port_migration);
+  EXPECT_EQ(0, quic_params_.multi_port_probing_interval);
 
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
@@ -515,6 +516,18 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_FALSE(quic_params_.allow_port_migration);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       ConfigureMultiPortProbingIntervalFromFieldTrialParams) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["multi_port_probing_interval"] = "10";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_EQ(10, quic_params_.multi_port_probing_interval);
 }
 
 TEST_F(NetworkSessionConfiguratorTest,

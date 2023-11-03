@@ -571,6 +571,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool migrate_idle_session,
       bool allow_port_migration,
       base::TimeDelta idle_migration_period,
+      int multi_port_probing_interval,
       base::TimeDelta max_time_on_non_default_network,
       int max_migrations_to_non_default_network_on_write_error,
       int max_migrations_to_non_default_network_on_path_degrading,

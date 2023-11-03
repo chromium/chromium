@@ -162,6 +162,10 @@ struct NET_EXPORT QuicParams {
   // A session can be migrated if its idle time is within this period.
   base::TimeDelta idle_session_migration_period =
       kDefaultIdleSessionMigrationPeriod;
+  // Probing frequency for the multi-port alt path, represented in the number of
+  // seconds. When this param is 0, quiche will ignore it and use its own
+  // default.
+  int multi_port_probing_interval = 0;
   // Maximum time the session could be on the non-default network before
   // migrates back to default network. Defaults to
   // kMaxTimeOnNonDefaultNetwork.

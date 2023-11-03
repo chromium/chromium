@@ -321,6 +321,16 @@ bool ShouldQuicAllowPortMigration(
       GetVariationParam(quic_trial_params, "allow_port_migration"), "false");
 }
 
+int GetMultiPortProbingInterval(const VariationParameters& quic_trial_params) {
+  int value;
+  if (base::StringToInt(
+          GetVariationParam(quic_trial_params, "multi_port_probing_interval"),
+          &value)) {
+    return value;
+  }
+  return 0;
+}
+
 bool ShouldQuicRetryOnAlternateNetworkBeforeHandshake(
     const VariationParameters& quic_trial_params) {
   return base::EqualsCaseInsensitiveASCII(
@@ -628,6 +638,11 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     if (idle_session_migration_period_seconds > 0) {
       quic_params->idle_session_migration_period =
           base::Seconds(idle_session_migration_period_seconds);
+    }
+    int multi_port_probing_interval =
+        GetMultiPortProbingInterval(quic_trial_params);
+    if (multi_port_probing_interval > 0) {
+      quic_params->multi_port_probing_interval = multi_port_probing_interval;
     }
     int max_time_on_non_default_network_seconds =
         GetQuicMaxTimeOnNonDefaultNetworkSeconds(quic_trial_params);
