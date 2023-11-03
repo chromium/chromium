@@ -490,9 +490,7 @@ VAStatus FakeEndPicture(VADriverContextP ctx, VAContextID context) {
 
   fdrv->GetContext(context).EndPicture();
 
-  // TODO(bchoobineh): Replace with |VA_STATUS_SUCCESS| when decoded
-  // frame is written properly to the surfaces.
-  return VA_STATUS_ERROR_ATTR_NOT_SUPPORTED;
+  return VA_STATUS_SUCCESS;
 }
 
 VAStatus FakeSyncSurface(VADriverContextP ctx, VASurfaceID render_target) {

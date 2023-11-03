@@ -462,7 +462,10 @@ if (use_v4l2_codec || use_vaapi) {
 
     # vaapi_dmabuf_video_frame_mapper
     if (use_vaapi) {
-      deps += [ "//media/gpu/vaapi" ]
+      deps += [
+        "//media/gpu/vaapi",
+        "//media/gpu/vaapi:common",
+      ]
     }
   }
 

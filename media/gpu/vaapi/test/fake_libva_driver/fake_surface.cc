@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -18,25 +19,41 @@ namespace media::internal {
 
 FakeSurface::FakeSurface(FakeSurface::IdType id,
                          unsigned int format,
+                         uint32_t va_fourcc,
                          unsigned int width,
                          unsigned int height,
                          std::vector<VASurfaceAttrib> attrib_list,
-                         ScopedBOMappingFactory& scoped_bo_mapping_factory)
+                         ScopedBOMapping mapped_bo)
     : id_(id),
       format_(format),
+      va_fourcc_(va_fourcc),
       width_(width),
       height_(height),
-      attrib_list_(std::move(attrib_list)) {
+      attrib_list_(std::move(attrib_list)),
+      mapped_bo_(std::move(mapped_bo)) {}
+
+FakeSurface::~FakeSurface() = default;
+
+std::unique_ptr<FakeSurface> FakeSurface::Create(
+    IdType id,
+    unsigned int format,
+    unsigned int width,
+    unsigned int height,
+    std::vector<VASurfaceAttrib> attrib_list,
+    ScopedBOMappingFactory& scoped_bo_mapping_factory) {
   // There are no specified attributes to this surface
-  if (attrib_list_.empty()) {
+  if (attrib_list.empty()) {
     NOTIMPLEMENTED();
-    return;
+    return base::WrapUnique(new FakeSurface(id, format, /*va_fourcc=*/0u, width,
+                                            height, std::move(attrib_list),
+                                            /*mapped_bo=*/{}));
   }
+
 #if defined(MINIGBM)
   // Verify attributes and extract surface descriptor.
   std::unordered_set<VASurfaceAttribType> attribs;
   VADRMPRIMESurfaceDescriptor* surf_desc = nullptr;
-  for (auto attrib : attrib_list_) {
+  for (auto attrib : attrib_list) {
     CHECK(attrib.type == VASurfaceAttribExternalBufferDescriptor ||
           attrib.type == VASurfaceAttribMemoryType);
     CHECK(attribs.find(attrib.type) == attribs.end());
@@ -56,14 +73,13 @@ FakeSurface::FakeSurface(FakeSurface::IdType id,
 
   struct gbm_import_fd_modifier_data fd_data {};
 
-  CHECK_GT(width_, 0u);
-  CHECK_GT(height_, 0u);
-  CHECK_EQ(base::strict_cast<unsigned int>(surf_desc->width), width_);
-  CHECK_EQ(base::strict_cast<unsigned int>(surf_desc->height), height_);
+  CHECK_GT(width, 0u);
+  CHECK_GT(height, 0u);
+  CHECK_EQ(base::strict_cast<unsigned int>(surf_desc->width), width);
+  CHECK_EQ(base::strict_cast<unsigned int>(surf_desc->height), height);
 
   fd_data.width = surf_desc->width;
   fd_data.height = surf_desc->height;
-
   CHECK(surf_desc->fourcc == VA_FOURCC_NV12 ||
         surf_desc->fourcc == VA_FOURCC_P010);
   const unsigned int expected_rt_format = surf_desc->fourcc == VA_FOURCC_NV12
@@ -76,7 +92,7 @@ FakeSurface::FakeSurface(FakeSurface::IdType id,
   fd_data.format =
       surf_desc->fourcc == VA_FOURCC_NV12 ? GBM_FORMAT_NV12 : GBM_FORMAT_P010;
 
-  CHECK_EQ(format_, expected_rt_format);
+  CHECK_EQ(format, expected_rt_format);
   CHECK_GT(surf_desc->num_objects, 0u);
   CHECK_LE(surf_desc->num_objects,
            base::checked_cast<uint32_t>(std::size(surf_desc->objects)));
@@ -86,9 +102,6 @@ FakeSurface::FakeSurface(FakeSurface::IdType id,
   for (uint32_t i = 1u; i < surf_desc->num_objects; i++) {
     CHECK_EQ(surf_desc->objects[i].drm_format_modifier, fd_data.modifier);
   }
-
-  CHECK_LE(surf_desc->num_objects,
-           base::checked_cast<uint32_t>(std::size(surf_desc->objects)));
 
   // In general, the planes may be distributed across multiple layers, but let's
   // only handle the situation in which all the planes are in one layer.
@@ -106,14 +119,18 @@ FakeSurface::FakeSurface(FakeSurface::IdType id,
         base::checked_cast<int>(surf_desc->layers[0].offset[plane]);
   }
 
-  mapped_bo_ = scoped_bo_mapping_factory.Create(fd_data);
-  CHECK(!!mapped_bo_);
+  ScopedBOMapping mapped_bo = scoped_bo_mapping_factory.Create(fd_data);
+  CHECK(!!mapped_bo);
+  return base::WrapUnique(new FakeSurface(id, format, surf_desc->fourcc, width,
+                                          height, std::move(attrib_list),
+                                          std::move(mapped_bo)));
 #else
   NOTIMPLEMENTED();
+  return base::WrapUnique(new FakeSurface(id, format, /*va_fourcc=*/0u, width,
+                                          height, std::move(attrib_list),
+                                          /*mapped_bo=*/{}));
 #endif
 }
-
-FakeSurface::~FakeSurface() = default;
 
 FakeSurface::IdType FakeSurface::GetID() const {
   return id_;
@@ -121,6 +138,10 @@ FakeSurface::IdType FakeSurface::GetID() const {
 
 unsigned int FakeSurface::GetFormat() const {
   return format_;
+}
+
+uint32_t FakeSurface::GetVAFourCC() const {
+  return va_fourcc_;
 }
 
 unsigned int FakeSurface::GetWidth() const {

@@ -7,9 +7,11 @@
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_image.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 namespace media::internal {
 
@@ -66,7 +68,40 @@ void VpxDecoderDelegate::Run() {
 
   vpx_codec_iter_t iter = nullptr;
   const vpx_image_t* vpx_image = vpx_codec_get_frame(vpx_codec_.get(), &iter);
-  CHECK(vpx_image);
+
+  // The user of libva should ensure that at most one frame is available for
+  // output for each vaBeginPicture()/vaRenderPicture()/vaEndPicture() cycle.
+  CHECK(!iter);
+  encoded_data_buffer_ = nullptr;
+
+  // No show reference only frame.
+  if (!vpx_image) {
+    return;
+  }
+
+  // We currently only support reading from I420 and into NV12.
+  CHECK_EQ(vpx_image->fmt, VPX_IMG_FMT_I420);
+  CHECK_EQ(render_target_->GetVAFourCC(),
+           static_cast<uint32_t>(VA_FOURCC_NV12));
+
+  const ScopedBOMapping& bo_mapping = render_target_->GetMappedBO();
+  CHECK(bo_mapping.IsValid());
+  const ScopedBOMapping::ScopedAccess mapped_bo = bo_mapping.BeginAccess();
+
+  const int convert_result = libyuv::I420ToNV12(
+      /*src_y=*/vpx_image->planes[VPX_PLANE_Y],
+      /*src_stride_y=*/vpx_image->stride[VPX_PLANE_Y],
+      /*src_u=*/vpx_image->planes[VPX_PLANE_U],
+      /*src_stride_u=*/vpx_image->stride[VPX_PLANE_U],
+      /*src_v=*/vpx_image->planes[VPX_PLANE_V],
+      /*src_stride_v=*/vpx_image->stride[VPX_PLANE_V],
+      /*dst_y=*/mapped_bo.GetData(0),
+      /*dst_stride_y=*/base::checked_cast<int>(mapped_bo.GetStride(0)),
+      /*dst_uv=*/mapped_bo.GetData(1),
+      /*dst_stride_uv=*/base::checked_cast<int>(mapped_bo.GetStride(1)),
+      /*width=*/base::checked_cast<int>(vpx_image->d_w),
+      /*height=*/base::checked_cast<int>(vpx_image->d_h));
+  CHECK_EQ(convert_result, 0);
 }
 
 }  // namespace media::internal

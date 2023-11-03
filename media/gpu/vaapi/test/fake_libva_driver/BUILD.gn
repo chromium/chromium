@@ -39,6 +39,7 @@ source_set("fake_libva_driver_internals") {
     "//base",
     "//build/config/linux/libdrm",
     "//third_party/libvpx",
+    "//third_party/libyuv",
   ]
   public_deps = [ "//third_party/minigbm" ]
 }
