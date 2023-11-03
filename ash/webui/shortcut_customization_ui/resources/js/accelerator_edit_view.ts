@@ -100,6 +100,14 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         reflectToAttribute: true,
       },
 
+      // If search is not included in a key-combination, hasWarning is set to
+      // true. The visual style will be distinct from other error cases.
+      hasWarning: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       // Keeps track if there was ever an error when interacting with this
       // accelerator.
       recordedError: {
@@ -123,6 +131,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   isEditView: boolean;
   viewState: number;
   hasError: boolean;
+  hasWarning: boolean;
   recordedError: boolean;
   action: number;
   source: AcceleratorSource;
@@ -168,6 +177,8 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         this.statusMessage = this.i18n('editViewStatusMessage');
       }
     }
+    this.hasWarning =
+        this.statusMessage === this.i18n('warningSearchNotIncluded');
   }
 
   protected onEditButtonClicked(): void {
