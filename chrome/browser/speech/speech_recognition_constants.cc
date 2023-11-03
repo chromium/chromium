@@ -12,10 +12,10 @@ SpeechRecognitionTypeToApiType(SpeechRecognitionType type) {
   switch (type) {
     case SpeechRecognitionType::kNetwork:
       return extensions::api::speech_recognition_private::
-          SpeechRecognitionType::SPEECH_RECOGNITION_TYPE_NETWORK;
+          SpeechRecognitionType::kNetwork;
     case SpeechRecognitionType::kOnDevice:
       return extensions::api::speech_recognition_private::
-          SpeechRecognitionType::SPEECH_RECOGNITION_TYPE_ONDEVICE;
+          SpeechRecognitionType::kOnDevice;
   }
 
   NOTREACHED();
