@@ -71,7 +71,8 @@ EpochTopics CreateTestEpochTopics(
     const std::vector<std::pair<Topic, std::set<HashedDomain>>>& topics,
     base::Time calculation_time,
     size_t padded_top_topics_start_index = 5,
-    int64_t model_version = kModelVersion) {
+    int64_t model_version = kModelVersion,
+    int config_version = kConfigVersion) {
   DCHECK_EQ(topics.size(), 5u);
 
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -81,7 +82,7 @@ EpochTopics CreateTestEpochTopics(
   }
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     padded_top_topics_start_index, kConfigVersion,
+                     padded_top_topics_start_index, config_version,
                      kTaxonomyVersion, model_version, calculation_time,
                      /*from_manually_triggered_calculation=*/false);
 }
@@ -1136,6 +1137,106 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
     EXPECT_EQ(result[0]->model_version, "5000000000");
     EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
   }
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       HandleTopicsWebApi_EpochConfigVersionDifferentFromCurrent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  // Advance to the time after the epoch switch time.
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
+
+  // Switch to use a non-default prioritized_topics_list, so that the current
+  // configuration version is different from that derived at the epoch topics
+  // calculation time.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"time_period_per_epoch",
+          base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
+         {"max_epoch_introduction_delay",
+          base::StrCat(
+              {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
+               "s"})},
+         {"prioritized_topics_list", "1,57"}}}},
+      /*disabled_features=*/{});
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0]->topic, 2);
+  EXPECT_EQ(result[0]->config_version, "chrome.1");
+  EXPECT_EQ(result[0]->taxonomy_version, "1");
+  EXPECT_EQ(result[0]->model_version, "5000000000");
+  EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       HandleTopicsWebApi_TwoEpochsWithDifferentConfigVersions) {
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
+                             {Topic(7), {GetHashedDomain("bar.com")}},
+                             {Topic(8), {GetHashedDomain("bar.com")}},
+                             {Topic(9), {GetHashedDomain("bar.com")}},
+                             {Topic(10), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
+                            kTime1,
+                            /*padded_top_topics_start_index=*/5, kModelVersion,
+                            /*config_version=*/2));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish all calculations.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + kEpoch);
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 2u);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  // Advance to the time after the epoch switch time.
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+
+  EXPECT_EQ(result.size(), 2u);
+  EXPECT_EQ(result[0]->config_version, "chrome.1");
+  EXPECT_EQ(result[0]->topic, 7);
+  EXPECT_EQ(result[1]->config_version, "chrome.2");
+  EXPECT_EQ(result[1]->topic, 2);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
