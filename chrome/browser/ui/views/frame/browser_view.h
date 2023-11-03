@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/buildflags.h"
@@ -1307,6 +1308,8 @@ class BrowserView : public BrowserWindow,
       DevToolsDockedPlacement::kNone;
 
   PrefChangeRegistrar registrar_;
+
+  ui::OmniboxPopupCloser omnibox_popup_closer_{this};
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };
