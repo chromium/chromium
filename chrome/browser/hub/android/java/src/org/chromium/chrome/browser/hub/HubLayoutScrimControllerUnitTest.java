@@ -84,7 +84,9 @@ public class HubLayoutScrimControllerUnitTest {
 
                             mScrimController =
                                     new HubLayoutScrimController(
-                                            mScrimCoordinator, mAnchorView, () -> mIsIncognito);
+                                            mScrimCoordinator,
+                                            () -> mAnchorView,
+                                            () -> mIsIncognito);
                         });
     }
 

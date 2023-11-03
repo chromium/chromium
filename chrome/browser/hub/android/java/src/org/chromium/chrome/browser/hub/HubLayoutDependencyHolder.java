@@ -30,7 +30,8 @@ public class HubLayoutDependencyHolder {
      * @param hubRootViewGroupSupplier The supplier of the root view to attach the {@link Hub} to.
      * @param scrimCoordinator The browser scrim coordinator used for displaying scrims when
      *     transitioning to or from the {@link HubLayout} where applicable.
-     * @param scrimAnchorView The anchor view to attach {@link HubLayout} scrims to.
+     * @param scrimAnchorViewSupplier The supplier of the anchor view to attach {@link HubLayout}
+     *     scrims to. This should not return null after the HubLayout is initialized.
      * @param isIncognitoSupplier Whether the UI is currently in incognito mode. Used only for the
      *     {@link HubLayout} scrims.
      */
@@ -38,13 +39,13 @@ public class HubLayoutDependencyHolder {
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
             @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull View scrimAnchorView,
+            @NonNull Supplier<View> scrimAnchorViewSupplier,
             @NonNull Supplier<Boolean> isIncognitoSupplier) {
         this(
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
                 new HubLayoutScrimController(
-                        scrimCoordinator, scrimAnchorView, isIncognitoSupplier));
+                        scrimCoordinator, scrimAnchorViewSupplier, isIncognitoSupplier));
     }
 
     /**

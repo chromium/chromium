@@ -21,33 +21,36 @@ public class HubLayoutScrimController implements ScrimController {
     private static final int SCRIM_FADE_DURATION_MS = 350;
 
     private final ScrimCoordinator mScrimCoordinator;
-    private final View mAnchorView;
+    private final Supplier<View> mAnchorViewSupplier;
     private final Supplier<Boolean> mIsIncognitoSupplier;
 
     /**
      * @param scrimCoordinator The {@link ScrimCoordinator} to use.
-     * @param anchorView The {@link View} to anchor the scrim to.
+     * @param anchorViewSupplier The supplier for a {@link View} to anchor the scrim to. This must
+     *     not return null if a scrim is going to be shown.
      * @param isIncognitoSupplier For checking if the current UI is incognito.
      */
     public HubLayoutScrimController(
             @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull View anchorView,
+            @NonNull Supplier<View> anchorViewSupplier,
             @NonNull Supplier<Boolean> isIncognitoSupplier) {
         mScrimCoordinator = scrimCoordinator;
-        mAnchorView = anchorView;
+        mAnchorViewSupplier = anchorViewSupplier;
         mIsIncognitoSupplier = isIncognitoSupplier;
     }
 
     @Override
     public void startShowingScrim() {
+        View anchorView = mAnchorViewSupplier.get();
+        assert anchorView != null;
         @ColorInt
         int scrimColor =
                 ChromeColors.getPrimaryBackgroundColor(
-                        mAnchorView.getContext(), mIsIncognitoSupplier.get());
+                        anchorView.getContext(), mIsIncognitoSupplier.get());
 
         PropertyModel.Builder scrimPropertiesBuilder =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.ANCHOR_VIEW, mAnchorView)
+                        .with(ScrimProperties.ANCHOR_VIEW, anchorView)
                         .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                         .with(ScrimProperties.BACKGROUND_COLOR, scrimColor);
