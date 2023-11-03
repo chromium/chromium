@@ -331,11 +331,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeFirstPartySetsPref();
 
-  // Checks to see if initialization of the user's anti-abuse content setting is
-  // required, and if so, sets the default value based on the user's current
-  // cookie settings.
-  void MaybeInitializeAntiAbuseContentSetting();
-
   // Updates the preferences which store the current Topics consent information.
   void RecordUpdatedTopicsConsent(
       privacy_sandbox::TopicsConsentUpdateSource source,

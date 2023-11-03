@@ -67,8 +67,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
   registry->RegisterStringPref(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxAntiAbuseInitialized,
-                                false);
 
   // Register prefs for tracking protection.
   tracking_protection::RegisterProfilePrefs(registry);

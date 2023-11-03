@@ -202,12 +202,8 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::AUTOPLAY));
-    // TODO(http://b/306414714): Clean up this expectation
     EXPECT_EQ(
-        base::FeatureList::IsEnabled(
-            content_settings::features::kTrackingProtection3pcd)
-            ? CONTENT_SETTING_BLOCK
-            : CONTENT_SETTING_ALLOW,
+        CONTENT_SETTING_ALLOW,
         map->GetContentSetting(url, url, ContentSettingsType::ANTI_ABUSE));
   }
 
