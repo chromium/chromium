@@ -20,11 +20,13 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
@@ -155,6 +157,79 @@ using chrome_test_util::SecondarySignInButton;
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
                                         consent:signin::ConsentLevel::kSignin];
+}
+
+// Tests that the account model is not shown on sign-out.
+- (void)testAccountModelNotShownOnSignout {
+  // Sign-in with sync with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+
+  // Add bookmarks to account model.
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify account section shows for a signed-in account.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Sign-out.
+  [SigninEarlGrey signOut];
+
+  // Verify that the acocunt model is not shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify the sign in promo is shown.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+}
+
+// Tests that only the account model is not shown on sign-out.
+- (void)testOnlyAccountModelNotShownOnSignout {
+  // Sign-in with sync with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+
+  // Add bookmarks to local and account models.
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify both local and account sections show for a signed-in account.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Sign-out.
+  [SigninEarlGrey signOut];
+
+  // Verify the local model still shows but without any titles.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE))]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the acocunt model is not shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE))]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
