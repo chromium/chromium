@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_extent_3d_dict.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 
@@ -94,28 +95,26 @@ bool GPUSupportedLimits::Populate(WGPURequiredLimits* out,
   // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
   // passes all of the limits. It could be O(n) with a mapping of
   // String -> WGPULimits::*member.
-  for (const auto& key_value_pair : in) {
-#define X(name)                                                           \
-  if (key_value_pair.first == #name) {                                    \
-    using T = decltype(WGPULimits::name);                                 \
-    constexpr T maxValue = std::numeric_limits<T>::max();                 \
-    constexpr T undefinedValue = UndefinedLimitValue<T>();                \
-    static_assert(undefinedValue == maxValue, "");                        \
-    if (key_value_pair.second == maxValue) {                              \
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError, \
-                                       "The limit \"" #name               \
-                                       "\" exceeds the maximum value " +  \
-                                           String::Number(maxValue - 1)); \
-      return false;                                                       \
-    }                                                                     \
-    out->limits.name = static_cast<T>(key_value_pair.second);             \
-    continue;                                                             \
+  for (const auto& [limitName, limitRawValue] : in) {
+#define X(name)                                                               \
+  if (limitName == #name) {                                                   \
+    using T = decltype(WGPULimits::name);                                     \
+    base::CheckedNumeric<T> value{limitRawValue};                             \
+    if (!value.IsValid() || value.ValueOrDie() == UndefinedLimitValue<T>()) { \
+      resolver->RejectWithDOMException(                                       \
+          DOMExceptionCode::kOperationError,                                  \
+          "Required " #name " limit (" + String::Number(limitRawValue) +      \
+              ") exceeds the maximum representable value for its type.");     \
+      return false;                                                           \
+    }                                                                         \
+    out->limits.name = value.ValueOrDie();                                    \
+    continue;                                                                 \
   }
     SUPPORTED_LIMITS(X)
 #undef X
     resolver->RejectWithDOMException(
         DOMExceptionCode::kOperationError,
-        "The limit \"" + key_value_pair.first + "\" is not recognized.");
+        "The limit \"" + limitName + "\" is not recognized.");
     return false;
   }
   return true;
