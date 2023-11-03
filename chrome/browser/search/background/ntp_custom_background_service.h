@@ -71,10 +71,8 @@ class NtpCustomBackgroundService : public KeyedService,
   // Virtual for testing.
   virtual void SelectLocalBackgroundImage(const base::FilePath& path);
 
-  // Invoked by Wallpaper Search to set background image with already decoded
-  // data.
-  virtual void SelectLocalBackgroundImage(const base::Token& id,
-                                          const SkBitmap& bitmap);
+  // Set bool pref for local background and set id.
+  virtual void SetBackgroundToLocalResourceWithId(const base::Token& id);
 
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
@@ -112,7 +110,7 @@ class NtpCustomBackgroundService : public KeyedService,
   // TODO(crbug/1383250): Make private when color extraction is refactored
   // outside of this service.
   // Calculates the most frequent color of the local image and stores it.
-  void UpdateCustomLocalBackgroundColorAsync(const gfx::Image& image);
+  virtual void UpdateCustomLocalBackgroundColorAsync(const gfx::Image& image);
 
   // Requests an asynchronous fetch of a custom background image's URL headers.
   // Virtual for testing.
@@ -121,9 +119,6 @@ class NtpCustomBackgroundService : public KeyedService,
  private:
   // Set bool pref for local background and clear id.
   void SetBackgroundToLocalResource();
-
-  // Set bool pref for local background and set id.
-  void SetBackgroundToLocalResourceWithId(const base::Token& id);
 
   void ForceRefreshBackground();
   // Returns false if the custom background pref cannot be parsed, otherwise
@@ -150,11 +145,6 @@ class NtpCustomBackgroundService : public KeyedService,
   void OnCustomBackgroundURLHeadersReceived(
       const GURL& verified_custom_background_url,
       int headers_response_code);
-
-  // Set background pref info to say that the current background is a local
-  // resource, set the id, and start color extraction of the associated bitmap.
-  void SetBackgroundToLocalResourceAndExtractColor(const base::Token& id,
-                                                   const SkBitmap& bitmap);
 
   const raw_ptr<Profile> profile_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;

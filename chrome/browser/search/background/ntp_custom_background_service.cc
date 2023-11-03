@@ -41,7 +41,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -119,10 +118,6 @@ void CopyFileToProfilePath(const base::FilePath& from_path,
   base::CopyFile(from_path,
                  profile_path.AppendASCII(
                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
-}
-
-void WriteFileToPath(const std::string& data, const base::FilePath& path) {
-  base::WriteFile(path, base::as_bytes(base::make_span(data)));
 }
 
 std::string ReadFileToString(const base::FilePath& path) {
@@ -375,41 +370,6 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
         base::BindOnce(&ReadFileToString, path),
         base::BindOnce(&NtpCustomBackgroundService::ProcessLocalImageData,
                        weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-void NtpCustomBackgroundService::SetBackgroundToLocalResourceAndExtractColor(
-    const base::Token& id,
-    const SkBitmap& bitmap) {
-  NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(id);
-  NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync(
-      gfx::Image::CreateFrom1xBitmap(bitmap));
-}
-
-void NtpCustomBackgroundService::SelectLocalBackgroundImage(
-    const base::Token& id,
-    const SkBitmap& bitmap) {
-  if (IsCustomBackgroundDisabledByPolicy()) {
-    return;
-  }
-
-  previous_background_info_.reset();
-  previous_local_background_ = true;
-
-  std::vector<unsigned char> encoded;
-  const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-      bitmap, /*discard_transparency=*/false, &encoded);
-  if (success) {
-    base::ThreadPool::PostTaskAndReply(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(
-            &WriteFileToPath, std::string(encoded.begin(), encoded.end()),
-            profile_->GetPath().AppendASCII(
-                id.ToString() +
-                chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
-        base::BindOnce(&NtpCustomBackgroundService::
-                           SetBackgroundToLocalResourceAndExtractColor,
-                       weak_ptr_factory_.GetWeakPtr(), id, bitmap));
   }
 }
 

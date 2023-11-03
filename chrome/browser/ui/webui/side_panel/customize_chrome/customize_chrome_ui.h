@@ -35,6 +35,7 @@ class Profile;
 class HelpBubbleHandler;
 class CustomizeColorSchemeModeHandler;
 class ThemeColorPickerHandler;
+class WallpaperSearchBackgroundManager;
 class WallpaperSearchHandler;
 
 namespace ui {
@@ -159,6 +160,8 @@ class CustomizeChromeUI
   std::unique_ptr<ThemeColorPickerHandler> theme_color_picker_handler_;
   mojo::Receiver<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
       theme_color_picker_handler_factory_receiver_{this};
+  std::unique_ptr<WallpaperSearchBackgroundManager>
+      wallpaper_search_background_manager_;
   std::unique_ptr<WallpaperSearchHandler> wallpaper_search_handler_;
 
   base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};

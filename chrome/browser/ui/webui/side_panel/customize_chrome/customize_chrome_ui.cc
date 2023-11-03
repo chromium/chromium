@@ -13,6 +13,7 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
@@ -56,7 +57,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       web_contents_(web_ui->GetWebContents()),
       module_id_names_(ntp::MakeModuleIdNames(
           NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))),
-      page_factory_receiver_(this) {
+      page_factory_receiver_(this),
+      wallpaper_search_background_manager_(
+          std::make_unique<WallpaperSearchBackgroundManager>(profile_)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
 
@@ -237,7 +240,8 @@ void CustomizeChromeUI::BindInterface(
         side_panel::customize_chrome::mojom::WallpaperSearchHandler>
         pending_receiver) {
   wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
-      std::move(pending_receiver), profile_, image_decoder_.get());
+      std::move(pending_receiver), profile_, image_decoder_.get(),
+      wallpaper_search_background_manager_.get());
 }
 
 void CustomizeChromeUI::CreatePageHandler(

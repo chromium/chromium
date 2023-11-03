@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
+class WallpaperSearchBackgroundManager;
 
 namespace data_decoder {
 class DataDecoder;
@@ -37,7 +38,8 @@ class WallpaperSearchHandler
           side_panel::customize_chrome::mojom::WallpaperSearchHandler>
           pending_handler,
       Profile* profile,
-      image_fetcher::ImageDecoder* image_decoder);
+      image_fetcher::ImageDecoder* image_decoder,
+      WallpaperSearchBackgroundManager* wallpaper_search_background_manager);
 
   WallpaperSearchHandler(const WallpaperSearchHandler&) = delete;
   WallpaperSearchHandler& operator=(const WallpaperSearchHandler&) = delete;
@@ -73,6 +75,8 @@ class WallpaperSearchHandler
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
   const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
+  const raw_ref<WallpaperSearchBackgroundManager>
+      wallpaper_search_background_manager_;
   base::flat_map<base::Token, SkBitmap> wallpaper_search_results_;
 
   mojo::Receiver<side_panel::customize_chrome::mojom::WallpaperSearchHandler>

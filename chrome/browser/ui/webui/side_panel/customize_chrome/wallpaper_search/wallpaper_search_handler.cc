@@ -15,8 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
-#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -70,10 +69,13 @@ WallpaperSearchHandler::WallpaperSearchHandler(
         side_panel::customize_chrome::mojom::WallpaperSearchHandler>
         pending_handler,
     Profile* profile,
-    image_fetcher::ImageDecoder* image_decoder)
+    image_fetcher::ImageDecoder* image_decoder,
+    WallpaperSearchBackgroundManager* wallpaper_search_background_manager)
     : profile_(profile),
       data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
       image_decoder_(*image_decoder),
+      wallpaper_search_background_manager_(
+          *wallpaper_search_background_manager),
       receiver_(this, std::move(pending_handler)) {}
 
 WallpaperSearchHandler::~WallpaperSearchHandler() {}
@@ -183,10 +185,7 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id) {
   CHECK(base::Contains(wallpaper_search_results_, result_id));
-  auto* ntp_custom_background_service =
-      NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
-  CHECK(ntp_custom_background_service);
-  ntp_custom_background_service->SelectLocalBackgroundImage(
+  wallpaper_search_background_manager_->SelectLocalBackgroundImage(
       result_id, wallpaper_search_results_[result_id]);
 }
 

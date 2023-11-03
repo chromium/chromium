@@ -1052,37 +1052,12 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalImageURLsDoNotGetVerified) {
   EXPECT_EQ(true, custom_background->is_uploaded_image);
 }
 
-class NtpCustomBackgroundServiceWithWallpaperSearchTest
-    : public NtpCustomBackgroundServiceTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch},
-        /*disabled_features=*/{});
-    NtpCustomBackgroundServiceTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(NtpCustomBackgroundServiceWithWallpaperSearchTest,
-       SetLocalImageWithSkBitmap) {
-  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(1);
-  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
-
-  SkColor color = SK_ColorBLUE;
-  EXPECT_CALL(mock_theme_service(), SetUserColorAndBrowserColorVariant)
-      .WillOnce(SaveArg<0>(&color));
-
+TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile().GetTestingPrefService();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(32, 32);
-  bitmap.eraseColor(SK_ColorRED);
 
   base::Token token = base::Token::CreateRandom();
-  custom_background_service_->SelectLocalBackgroundImage(token, bitmap);
+  custom_background_service_->SetBackgroundToLocalResourceWithId(token);
   task_environment_.RunUntilIdle();
 
   // Check that local background image was set.
@@ -1098,7 +1073,4 @@ TEST_F(NtpCustomBackgroundServiceWithWallpaperSearchTest,
             token.ToString());
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
-
-  // Check that the color is correct.
-  EXPECT_EQ(SK_ColorRED, color);
 }

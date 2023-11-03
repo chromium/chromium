@@ -20,8 +20,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
-#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
@@ -52,13 +51,13 @@ using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
-class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
+class MockWallpaperSearchBackgroundManager
+    : public WallpaperSearchBackgroundManager {
  public:
-  explicit MockNtpCustomBackgroundService(Profile* profile)
-      : NtpCustomBackgroundService(profile) {}
-  MOCK_METHOD(void,
-              SelectLocalBackgroundImage,
-              (const base::Token&, const SkBitmap&));
+  explicit MockWallpaperSearchBackgroundManager(Profile* profile)
+      : WallpaperSearchBackgroundManager(profile) {}
+  MOCK_METHOD2(SelectLocalBackgroundImage,
+               void(const base::Token&, const SkBitmap&));
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -70,14 +69,6 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<
             testing::NiceMock<MockOptimizationGuideKeyedService>>(context);
-      }));
-  profile_builder.AddTestingFactory(
-      NtpCustomBackgroundServiceFactory::GetInstance(),
-      base::BindRepeating([](content::BrowserContext* context)
-                              -> std::unique_ptr<KeyedService> {
-        return std::make_unique<
-            testing::NiceMock<MockNtpCustomBackgroundService>>(
-            Profile::FromBrowserContext(context));
       }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
@@ -96,15 +87,14 @@ class WallpaperSearchHandlerTest : public testing::Test {
             static_cast<MockOptimizationGuideKeyedService*>(
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
                     profile_.get()))),
-        mock_ntp_custom_background_service_(
-            static_cast<MockNtpCustomBackgroundService*>(
-                NtpCustomBackgroundServiceFactory::GetForProfile(
-                    profile_.get()))),
+        mock_wallpaper_search_background_manager_(
+            MockWallpaperSearchBackgroundManager(profile_.get())),
         handler_(
             mojo::PendingReceiver<
                 side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
             profile_.get(),
-            &mock_image_decoder_) {}
+            &mock_image_decoder_,
+            &mock_wallpaper_search_background_manager_) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -142,8 +132,9 @@ class WallpaperSearchHandlerTest : public testing::Test {
   MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
     return *mock_optimization_guide_keyed_service_;
   }
-  MockNtpCustomBackgroundService& mock_ntp_custom_background_service() {
-    return *mock_ntp_custom_background_service_;
+  MockWallpaperSearchBackgroundManager&
+  mock_wallpaper_search_background_manager() {
+    return mock_wallpaper_search_background_manager_;
   }
   image_fetcher::MockImageDecoder& mock_image_decoder() {
     return mock_image_decoder_;
@@ -158,8 +149,9 @@ class WallpaperSearchHandlerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
-  raw_ptr<MockNtpCustomBackgroundService> mock_ntp_custom_background_service_;
   image_fetcher::MockImageDecoder mock_image_decoder_;
+  MockWallpaperSearchBackgroundManager
+      mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   WallpaperSearchHandler handler_;
 };
@@ -686,7 +678,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // Set background to bitmap2.
   SkBitmap bitmap;
   base::Token token;
-  EXPECT_CALL(mock_ntp_custom_background_service(),
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SelectLocalBackgroundImage(An<const base::Token&>(),
                                          An<const SkBitmap&>()))
       .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap)));
