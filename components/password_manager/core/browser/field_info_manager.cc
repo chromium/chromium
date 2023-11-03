@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/field_info_manager.h"
 
 #include "base/i18n/case_conversion.h"
-#include "components/password_manager/core/browser/psl_matching_helper.h"
+#include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 
 using autofill::FieldRendererId;
 using autofill::FormSignature;

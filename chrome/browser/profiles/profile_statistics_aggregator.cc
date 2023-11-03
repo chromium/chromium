@@ -23,7 +23,6 @@
 #include "components/browsing_data/core/counters/bookmark_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
 #include "components/browsing_data/core/pref_names.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_MAC)

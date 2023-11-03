@@ -7,16 +7,21 @@
 
 #include <memory>
 
-#include "components/password_manager/core/browser/login_database.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 
 namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
+class PrefService;
+
 namespace password_manager {
 
 class CredentialsCleanerRunner;
+class LoginDatabase;
+class PasswordStoreInterface;
 
 // Creates a LoginDatabase. Looks in |db_directory| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
@@ -39,8 +44,8 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
 // HSTS query is not supported. |network_context_getter| is always null for iOS
 // and it can also be null for some unittests.
 void RemoveUselessCredentials(
-    password_manager::CredentialsCleanerRunner* cleaning_tasks_runner,
-    scoped_refptr<password_manager::PasswordStoreInterface> store,
+    CredentialsCleanerRunner* cleaning_tasks_runner,
+    scoped_refptr<PasswordStoreInterface> store,
     PrefService* prefs,
     base::TimeDelta delay,
     base::RepeatingCallback<network::mojom::NetworkContext*()>

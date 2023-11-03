@@ -28,7 +28,6 @@
 
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
-using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::SyncState;
 

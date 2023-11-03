@@ -14,7 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"

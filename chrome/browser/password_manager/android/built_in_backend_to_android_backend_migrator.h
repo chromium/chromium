@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BUILT_IN_BACKEND_TO_ANDROID_BACKEND_MIGRATOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
+
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 
 class PrefService;
 
