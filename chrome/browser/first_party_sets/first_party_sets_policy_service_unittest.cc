@@ -590,6 +590,39 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
   env().RunUntilIdle();
 }
 
+TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
+       OnFirstPartySetsEnabledChanged_OTRProfile) {
+  testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(0);
+  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
+  mojo::Receiver<network::mojom::FirstPartySetsAccessDelegate>
+      mock_delegate_receiver{&mock_delegate};
+  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
+      mock_delegate_remote;
+
+  mock_delegate_receiver.Bind(
+      mock_delegate_remote.BindNewPipeAndPassReceiver());
+
+  FirstPartySetsPolicyService* otr_service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+          profile()->GetOffTheRecordProfile(
+              Profile::OTRProfileID::CreateUniqueForTesting(),
+              /*create_if_needed=*/true));
+  otr_service->ResetForTesting();
+
+  otr_service->InitForTesting();
+  otr_service->AddRemoteAccessDelegate(std::move(mock_delegate_remote));
+
+  ASSERT_FALSE(otr_service->is_enabled());
+  env().RunUntilIdle();
+
+  otr_service->OnFirstPartySetsEnabledChanged(true);
+  EXPECT_FALSE(otr_service->is_enabled());
+
+  env().RunUntilIdle();
+}
+
 TEST_F(FirstPartySetsPolicyServiceTest, NotifiesReadyWithConfigAndCacheFilter) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
