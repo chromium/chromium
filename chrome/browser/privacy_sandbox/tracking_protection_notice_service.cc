@@ -173,6 +173,52 @@ bool Are3PCookiesBlocked(Profile* profile) {
          content_settings::CookieControlsMode::kBlockThirdParty;
 }
 
+void CreateHistogramSentimentSurveyRunHatsLogic(
+    TrackingProtectionOnboarding::SentimentSurveyGroupMetrics group) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey."
+      "HatsGroupRegisteredAndEligible",
+      group);
+}
+
+void SentimentSurveySuccessCallback() {
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.WasSurveyed", true);
+}
+
+void SentimentSurveyFailureCallback() {
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.WasSurveyed", false);
+}
+
+void EmitRunHatsLogicHistogram(SentimentSurveyGroup group) {
+  switch (group) {
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kNotSet:
+      return;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlImmediate:
+      CreateHistogramSentimentSurveyRunHatsLogic(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kControlImmediate);
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed:
+      CreateHistogramSentimentSurveyRunHatsLogic(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kControlDelayed);
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::
+        kTreatmentImmediate:
+      CreateHistogramSentimentSurveyRunHatsLogic(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kTreatmentImmediate);
+      break;
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kTreatmentDelayed:
+      CreateHistogramSentimentSurveyRunHatsLogic(
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+              kTreatmentDelayed);
+      break;
+  }
+}
+
 }  // namespace
 
 TrackingProtectionNoticeService::TrackingProtectionNoticeService(
@@ -575,12 +621,15 @@ void TrackingProtectionNoticeService::RunHatsLogic() {
     return;
   }
 
+  EmitRunHatsLogicHistogram(group);
+
   if (!ProbabilityCheck(group)) {
     return;
   }
 
   hats_service->LaunchSurvey(
-      GetTrigger(group), base::DoNothing(), base::DoNothing(),
+      GetTrigger(group), base::BindOnce(SentimentSurveyFailureCallback),
+      base::BindOnce(SentimentSurveySuccessCallback),
       {
           {"Onboarding Settings Clicked",
            static_cast<

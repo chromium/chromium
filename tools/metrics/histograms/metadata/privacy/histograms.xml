@@ -1116,6 +1116,34 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.TrackingProtection.SentimentSurvey.HatsGroupRegisteredAndEligible"
+    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the group that the profile is part of in RunHatsLogic function
+    before the ProbabilityCheck.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.TrackingProtection.SentimentSurvey.Registered"
+    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the group that the profile is registered to for the sentiment
+    survey. This occurs once per profile.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.TrackingProtection.SentimentSurvey.WasSurveyed"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Records whether that the profile responded to the survey.</summary>
+</histogram>
+
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
     expires_after="2024-04-28">
   <owner>linnan@chromium.org</owner>

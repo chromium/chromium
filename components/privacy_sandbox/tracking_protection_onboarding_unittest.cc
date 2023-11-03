@@ -545,7 +545,10 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboardingAckAction::kClosed)));
 
 class TrackingProtectionSentimentTracking
-    : public TrackingProtectionOnboardingTest {};
+    : public TrackingProtectionOnboardingTest {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
 
 TEST_F(TrackingProtectionSentimentTracking, RegistersProfileCorrectly) {
   // Group unset initially.
@@ -571,6 +574,11 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersProfileCorrectly) {
 
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kControlImmediate);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlImmediate,
+      1);
 }
 
 TEST_F(TrackingProtectionSentimentTracking,
@@ -586,6 +594,11 @@ TEST_F(TrackingProtectionSentimentTracking,
   // Registered group not yet returned
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kNotSet);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlDelayed,
+      1);
 
   // Registered group returned once the profile is eligible for the survey:
   // After the survey start time, but before the survey end time.
@@ -640,6 +653,12 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAfterAck) {
   tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
       SentimentSurveyGroup::kTreatmentDelayed);
 
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kTreatmentDelayed,
+      1);
+
   // Verification: Registration no longer required.
   EXPECT_FALSE(
       tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
@@ -682,6 +701,11 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAndAcksLater) {
   task_env_.FastForwardBy(base::Minutes(3));
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kTreatmentImmediate);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kTreatmentImmediate,
+      1);
 }
 
 class TrackingProtectionOffboardingTest
