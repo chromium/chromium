@@ -47,6 +47,8 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   // IdentityProviderMetadata so that the UI code can pass it along when an
   // Account is selected by the user.
   GURL config_url;
+  // Whether this IdP supports signing in to additional accounts.
+  bool supports_add_account{false};
 };
 
 struct CONTENT_EXPORT IdentityProviderData {
