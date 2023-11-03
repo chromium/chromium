@@ -187,6 +187,7 @@ mojom("mojom") {
 component("shared_mojom_traits") {
   output_name = "display_shared_mojom_traits"
   defines = [ "IS_DISPLAY_SHARED_MOJOM_TRAITS_IMPL" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [
     "display_mojom_traits.cc",
     "display_mojom_traits.h",
