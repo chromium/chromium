@@ -60,7 +60,7 @@ WorkerContext WorkerContext::FromWorkerNode(const WorkerNode* node) {
   CHECK(node);
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
   auto* node_impl = WorkerNodeImpl::FromNode(node);
-  return WorkerContext(node_impl->worker_token(), node_impl->GetWeakPtr());
+  return WorkerContext(node_impl->GetWorkerToken(), node_impl->GetWeakPtr());
 }
 
 // static

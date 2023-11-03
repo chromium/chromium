@@ -131,7 +131,7 @@ void FrameNodeImpl::OnWebMemoryMeasurementRequested(
 
 const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_token();
+  return frame_token_;
 }
 
 content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
@@ -273,11 +273,6 @@ ProcessNodeImpl* FrameNodeImpl::process_node() const {
 int FrameNodeImpl::render_frame_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_id_;
-}
-
-const blink::LocalFrameToken& FrameNodeImpl::frame_token() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_token_;
 }
 
 content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {

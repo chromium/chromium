@@ -532,7 +532,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetPageNode());
   EXPECT_EQ(static_cast<const ProcessNode*>(frame_node->process_node()),
             public_frame_node->GetProcessNode());
-  EXPECT_EQ(frame_node->frame_token(), public_frame_node->GetFrameToken());
   EXPECT_EQ(frame_node->browsing_instance_id(),
             public_frame_node->GetBrowsingInstanceId());
   EXPECT_EQ(frame_node->site_instance_id(),

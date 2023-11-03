@@ -54,7 +54,7 @@ const std::string& WorkerNodeImpl::GetBrowserContextID() const {
 
 const blink::WorkerToken& WorkerNodeImpl::GetWorkerToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_token();
+  return worker_token_;
 }
 
 resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
@@ -183,11 +183,6 @@ ProcessNodeImpl* WorkerNodeImpl::process_node() const {
 const GURL& WorkerNodeImpl::url() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_;
-}
-
-const blink::WorkerToken& WorkerNodeImpl::worker_token() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_token_;
 }
 
 const base::flat_set<FrameNodeImpl*>& WorkerNodeImpl::client_frames() const {

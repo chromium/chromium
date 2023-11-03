@@ -917,7 +917,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
         EXPECT_TRUE(worker_node->client_frames().empty());
 
         // Save the token for the FindWorkerNodeForToken() test.
-        token = worker_node->worker_token();
+        token = worker_node->GetWorkerToken();
       }));
 
   // Now simulate the navigation commit.

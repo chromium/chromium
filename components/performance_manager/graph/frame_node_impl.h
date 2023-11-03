@@ -109,7 +109,6 @@ class FrameNodeImpl
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
   int render_frame_id() const;
-  const blink::LocalFrameToken& frame_token() const;
   content::BrowsingInstanceId browsing_instance_id() const;
   content::SiteInstanceId site_instance_id() const;
   const RenderFrameHostProxy& render_frame_host_proxy() const;

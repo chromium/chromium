@@ -73,7 +73,6 @@ class WorkerNodeImpl
   const std::string& browser_context_id() const;
   WorkerType worker_type() const;
   ProcessNodeImpl* process_node() const;
-  const blink::WorkerToken& worker_token() const;
 
   // Getters for non-const properties. These are not thread safe.
   const GURL& url() const;

@@ -115,7 +115,7 @@ class FrameExecutionContext
   // ExecutionContextImpl:
   blink::ExecutionContextToken GetToken() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return blink::ExecutionContextToken(node_->frame_token());
+    return blink::ExecutionContextToken(node_->GetFrameToken());
   }
 
   const FrameNode* GetFrameNode() const override {
@@ -143,7 +143,7 @@ class WorkerExecutionContext
   // ExecutionContextImpl:
   blink::ExecutionContextToken GetToken() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return ToExecutionContextToken(node_->worker_token());
+    return ToExecutionContextToken(node_->GetWorkerToken());
   }
 
   const WorkerNode* GetWorkerNode() const override {

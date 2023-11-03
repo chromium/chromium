@@ -48,7 +48,7 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
 
   base::Value::Dict ret;
   ret.Set("browser_context_id", impl->browser_context_id());
-  ret.Set("worker_token", impl->worker_token().ToString());
+  ret.Set("worker_token", impl->GetWorkerToken().ToString());
   ret.Set("url", impl->url().spec());
   ret.Set("worker_type", WorkerTypeToString(impl->worker_type()));
   ret.Set("priority", PriorityAndReasonToValue(impl->priority_and_reason()));
