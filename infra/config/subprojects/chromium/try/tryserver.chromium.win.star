@@ -44,6 +44,8 @@ try_.builder(
     mirrors = [
         "ci/win-asan",
     ],
+    cores = 16,
+    ssd = True,
     execution_timeout = 9 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -215,7 +217,9 @@ try_.builder(
         "ci/Win x64 Builder (dbg)",
         "ci/Win10 Tests x64 (dbg)",
     ],
+    cores = 16,
     os = os.WINDOWS_10,
+    ssd = True,
 )
 
 try_.builder(
