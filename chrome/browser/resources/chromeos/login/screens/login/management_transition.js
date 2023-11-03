@@ -49,6 +49,18 @@ const ARC_SUPERVISION_TRANSITION = {
 const ManagementTransitionScreenBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   arcTransition: ARC_SUPERVISION_TRANSITION,
+ *   managementEntity: string,
+ * }}
+ */
+let ManagementTransitionScreenData;
+
+/**
+ * @polymer
+ */
 class ManagementTransitionScreen extends ManagementTransitionScreenBase {
   static get is() {
     return 'management-transition-element';
@@ -62,6 +74,7 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
     return {
       /**
        * Property that determines transition direction.
+       * @type {ARC_SUPERVISION_TRANSITION}
        */
       arcTransition_: Number,
       /**
@@ -98,6 +111,9 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
     this.initializeLoginScreen('ManagementTransitionScreen');
   }
 
+  /**
+   * @param {ManagementTransitionScreenData} data
+   */
   onBeforeShow(data) {
     this.setArcTransition(data['arcTransition']);
     this.setManagementEntity(data['managementEntity']);
@@ -113,7 +129,8 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
 
   /**
    * Sets arc transition type.
-   * @param {number} arc_transition enum element indicating transition type
+   * @param {ARC_SUPERVISION_TRANSITION} arc_transition enum element indicating
+   *     transition type
    */
   setArcTransition(arc_transition) {
     switch (arc_transition) {
@@ -131,6 +148,9 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
     }
   }
 
+  /**
+   * @param {string} management_entity
+   */
   setManagementEntity(management_entity) {
     this.managementEntity_ = management_entity;
   }

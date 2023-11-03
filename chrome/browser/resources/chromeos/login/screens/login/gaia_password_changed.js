@@ -61,6 +61,15 @@ const GaiaPasswordChangedBase = mixinBehaviors(
 GaiaPasswordChangedBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   email: string,
+ *   showError: boolean,
+ * }}
+ */
+let GaiaPasswordChangedScreenData;
+
+/**
  * @polymer
  */
 class GaiaPasswordChanged extends GaiaPasswordChangedBase {
@@ -139,11 +148,14 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     return OOBE_UI_STATE.PASSWORD_CHANGED;
   }
 
-  // Invoked just before being shown. Contains all the data for the screen.
+  /**
+   * Invoked just before being shown. Contains all the data for the screen.
+   * @param {GaiaPasswordChangedScreenData} data
+   */
   onBeforeShow(data) {
     this.reset();
-    this.email = data && 'email' in data && data.email;
-    this.passwordInvalid_ = data && 'showError' in data && data.showError;
+    this.email = data.email;
+    this.passwordInvalid_ = data.showError;
     if (this.isCryptohomeRecoveryUIFlowEnabled_) {
       this.$.tryAgain.textKey = 'oldPasswordHint';
       this.$.proceedAnyway.textKey = 'continueAndDeleteDataButton';

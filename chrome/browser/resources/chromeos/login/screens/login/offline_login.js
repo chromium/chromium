@@ -57,6 +57,15 @@ const OfflineLoginBase = mixinBehaviors(
 OfflineLoginBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   enterpriseDomainManager: (string|undefined),
+ *   emailDomain: (string|undefined),
+ * }}
+ */
+let OfflineLoginScreenData;
+
+/**
  * @polymer
  */
 class OfflineLogin extends OfflineLoginBase {
@@ -181,8 +190,7 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   /**
-   *
-   * @param {Object} params
+   * @param {OfflineLoginScreenData} params
    */
   onBeforeShow(params) {
     this.reset();

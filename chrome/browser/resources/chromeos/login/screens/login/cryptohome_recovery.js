@@ -94,8 +94,10 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
     this.initializeLoginScreen('CryptohomeRecoveryScreen');
   }
 
-  // Invoked just before being shown. Contains all the data for the screen.
-  onBeforeShow(data) {
+  /**
+   * Invoked just before being shown.
+   */
+  onBeforeShow() {
     this.reset();
   }
 
