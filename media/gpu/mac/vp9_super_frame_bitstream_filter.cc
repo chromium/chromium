@@ -64,32 +64,6 @@ bool VP9SuperFrameBitstreamFilter::EnqueueBuffer(
   return BuildSuperFrame();
 }
 
-base::apple::ScopedCFTypeRef<CMBlockBufferRef>
-VP9SuperFrameBitstreamFilter::CreatePassthroughBuffer(
-    scoped_refptr<DecoderBuffer> buffer) {
-  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
-
-  // The created CMBlockBuffer owns a ref on DecoderBuffer to avoid a copy.
-  CMBlockBufferCustomBlockSource source = {0};
-  source.refCon = buffer.get();
-  source.FreeBlock = &ReleaseDecoderBuffer;
-
-  // Create a memory-backed CMBlockBuffer for the translated data.
-  OSStatus status = CMBlockBufferCreateWithMemoryBlock(
-      kCFAllocatorDefault,
-      static_cast<void*>(const_cast<uint8_t*>(buffer->data())),
-      buffer->data_size(), kCFAllocatorDefault, &source, 0, buffer->data_size(),
-      0, data.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status)
-        << "CMBlockBufferCreateWithMemoryBlock failed.";
-    data.reset();
-    return data;
-  }
-  buffer->AddRef();
-  return data;
-}
-
 void VP9SuperFrameBitstreamFilter::Flush() {
   partial_buffers_.clear();
   data_.reset();
@@ -116,8 +90,25 @@ bool VP9SuperFrameBitstreamFilter::ShouldShowFrame(Vp9RawBitsReader* reader) {
 
 bool VP9SuperFrameBitstreamFilter::PreparePassthroughBuffer(
     scoped_refptr<DecoderBuffer> buffer) {
-  data_ = CreatePassthroughBuffer(std::move(buffer));
-  return data_;
+  // The created CMBlockBuffer owns a ref on DecoderBuffer to avoid a copy.
+  CMBlockBufferCustomBlockSource source = {0};
+  source.refCon = buffer.get();
+  source.FreeBlock = &ReleaseDecoderBuffer;
+
+  // Create a memory-backed CMBlockBuffer for the translated data.
+  OSStatus status = CMBlockBufferCreateWithMemoryBlock(
+      kCFAllocatorDefault,
+      static_cast<void*>(const_cast<uint8_t*>(buffer->data())),
+      buffer->data_size(), kCFAllocatorDefault, &source, 0, buffer->data_size(),
+      0, data_.InitializeInto());
+  if (status != noErr) {
+    OSSTATUS_DLOG(ERROR, status)
+        << "CMBlockBufferCreateWithMemoryBlock failed.";
+    return false;
+  }
+
+  buffer->AddRef();
+  return true;
 }
 
 bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {

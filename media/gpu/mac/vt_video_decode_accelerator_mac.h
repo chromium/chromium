@@ -48,7 +48,6 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace media {
-class AV1ConfigChangeDetector;
 class VP9ConfigChangeDetector;
 class VP9SuperFrameBitstreamFilter;
 
@@ -194,7 +193,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
   // |frame| is owned by |pending_frames_|.
   void DecodeTaskH264(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
-  void DecodeTaskAv1(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
   void DecodeTaskVp9(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   void DecodeTaskHEVC(scoped_refptr<DecoderBuffer> buffer, Frame* frame);
@@ -257,10 +255,8 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // require reordering (VP9 only at the moment).
   std::deque<std::unique_ptr<Frame>> output_queue_;
 
-  std::unique_ptr<VP9ConfigChangeDetector> vp9_cc_detector_;
+  std::unique_ptr<VP9ConfigChangeDetector> cc_detector_;
   std::unique_ptr<VP9SuperFrameBitstreamFilter> vp9_bsf_;
-
-  std::unique_ptr<AV1ConfigChangeDetector> av1_cc_detector_;
 
   // Size of assigned picture buffers.
   gfx::Size picture_size_;
@@ -344,8 +340,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // currently only HEVC is supported, VideoToolbox doesn't
   // support VP9 with alpha for now.
   bool has_alpha_ = false;
-
-  uint8_t bit_depth_ = 0;
 
   // Used to accumulate the output picture count as a workaround to solve
   // the VT CRA/RASL bug
