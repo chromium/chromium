@@ -116,6 +116,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     _name = name;
     _URL = URL;
     _folderName = folderName;
+    _canBeDismissed = YES;
   }
   return self;
 }
@@ -343,6 +344,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   [self updateSaveButtonState];
   if (self.displayingValidURL != [self inputURLIsValid]) {
     self.displayingValidURL = [self inputURLIsValid];
+    self.canBeDismissed = self.displayingValidURL;
     UITableViewHeaderFooterView* footer = [self.tableView
         footerViewForSection:[self.tableViewModel sectionForSectionIdentifier:
                                                       SectionIdentifierInfo]];

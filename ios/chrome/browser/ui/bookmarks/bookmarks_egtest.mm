@@ -1189,6 +1189,81 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 }
 
+// Verifies that swiping down the bookmark editor dismisses the view only if the
+// displayed URL is valid.
+- (void)testSwipeDownBookmarkEditor {
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
+  std::string expectedURLContent = bookmarkedURL.GetContent();
+  NSString* bookmarkTitle = @"my bookmark";
+
+  [ChromeEarlGrey loadURL:bookmarkedURL];
+  [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
+      assertWithMatcher:grey_notNil()];
+
+  // Add the bookmark from the UI.
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:bookmarkTitle];
+
+  // Verify the bookmark is set.
+  [BookmarkEarlGrey
+      verifyBookmarksWithTitle:bookmarkTitle
+                 expectedCount:1
+                     inStorage:bookmarks::StorageType::kLocalOrSyncable];
+
+  // Open the BookmarkEditor.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuEditBookmark),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Open the BookmarkEditor.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuEditBookmark),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
+
+  // Remove displayed URL
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"URL Field")]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(@"URL Field_textField"),
+                                   grey_kindOfClassName(@"UITextField"),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_replaceText(@"")];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView is still presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      assertWithMatcher:grey_notNil()];
+}
+
 // TODO(crbug.com/695749): Add egtests for:
 // 1. Spinner background.
 // 2. Reorder bookmarks. (make sure it won't clear the row selection on table)
