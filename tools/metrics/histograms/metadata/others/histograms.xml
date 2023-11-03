@@ -7096,6 +7096,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSX.ConfirmToQuit" enum="ConfirmToQuit" expires_after="M125">
+  <owner>mark@chromium.org</owner>
+  <summary>Usage statistics for the confirm to quit feature.</summary>
+</histogram>
+
 <histogram name="OSX.ExceptionHandlerEvents" enum="OSXExceptionHandlerEvents"
     expires_after="M85">
   <owner>mark@chromium.org</owner>
@@ -7138,6 +7143,13 @@ chromium-metrics-reviews@google.com.
   <summary>
     This event is recorded each time a Handoff is received by Chrome on OSX. The
     enumeration indicates the source of the Handoff.
+  </summary>
+</histogram>
+
+<histogram name="OSX.NSException" enum="OSXNSException" expires_after="M125">
+  <owner>mark@chromium.org</owner>
+  <summary>
+    MacOS X NSExceptions seen, common exceptions binned, others in overflow.
   </summary>
 </histogram>
 

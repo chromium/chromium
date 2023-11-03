@@ -13535,6 +13535,13 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Partial success (resolution downgraded)"/>
 </enum>
 
+<enum name="ConfirmToQuit">
+  <int value="0" label="NoConfirm"/>
+  <int value="1" label="HoldForDuration"/>
+  <int value="2" label="DoubleTap"/>
+  <int value="3" label="TapThenHold"/>
+</enum>
+
 <enum name="ConnectionDiagnosticsIssue">
   <int value="0" label="IP collision detected."/>
   <int value="1" label="Routing problem detected."/>
@@ -63735,6 +63742,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="Unknown Origin"/>
   <int value="1" label="Chrome on iOS"/>
   <int value="2" label="Chrome on Mac"/>
+</enum>
+
+<enum name="OSXNSException">
+  <int value="0" label="NSGenericException"/>
+  <int value="1" label="NSRangeException"/>
+  <int value="2" label="NSInvalidArgumentException"/>
+  <int value="3" label="NSMallocException"/>
+  <int value="4" label="NSInternalInconsistencyException"/>
 </enum>
 
 <enum name="OSXScreensHaveSeparateSpaces">
