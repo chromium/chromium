@@ -1716,6 +1716,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   content::MediaCaptureDevices::GetInstance()->RemoveAllVideoCaptureObservers();
 
+  audio_survey_handler_.reset();
+  // The `CrasAudioHandler` needs to outlive the `audio_survey_handler_.`
   // Shutdown after PostMainMessageLoopRun() which should destroy all observers.
   CrasAudioHandler::Shutdown();
 
