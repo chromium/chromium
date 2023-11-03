@@ -116,7 +116,6 @@ static_js_files = [
   "file_manager/foreground/js/toolbar_controller.js",
 
   # Metadata:
-  "file_manager/foreground/js/metadata/byte_reader.js",
   "file_manager/foreground/js/metadata/content_metadata_provider.js",
   "file_manager/foreground/js/metadata/dlp_metadata_provider.js",
   "file_manager/foreground/js/metadata/exif_parser.js",
@@ -324,8 +323,9 @@ ts_files = [
   "file_manager/definitions/file_manager_private.ts",
 
   # Metadata:
-  "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
+  "file_manager/foreground/js/metadata/byte_reader.ts",
   "file_manager/foreground/js/metadata/exif_constants.ts",
+  "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_item.ts",
   "file_manager/foreground/js/metadata/metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_request.ts",

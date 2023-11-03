@@ -7,7 +7,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert
 import {ExifEntry} from '../../../externs/exif_entry.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
-import {ByteReader} from './byte_reader.js';
+import {ByteOrder, ByteReader} from './byte_reader.js';
 import {ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
 
@@ -40,11 +40,11 @@ class ByteWriter {
 
   /**
    * Set the byte ordering for future writes.
-   * @param {ByteWriter.ByteOrder} order ByteOrder to use
-   *     {ByteWriter.LITTLE_ENDIAN} or {ByteWriter.BIG_ENDIAN}.
+   * @param {ByteOrder} order ByteOrder to use
+   *     {ByteOrder.LITTLE_ENDIAN} or {ByteOrder.BIG_ENDIAN}.
    */
   setByteOrder(order) {
-    this.littleEndian_ = (order === ByteWriter.ByteOrder.LITTLE_ENDIAN);
+    this.littleEndian_ = (order === ByteOrder.LITTLE_ENDIAN);
   }
 
   /**
@@ -183,17 +183,6 @@ class ByteWriter {
     }
   }
 }
-
-/**
- * Byte order.
- * @enum {number}
- */
-ByteWriter.ByteOrder = {
-  // Little endian byte order.
-  LITTLE_ENDIAN: 0,
-  // Big endian byte order.
-  BIG_ENDIAN: 1,
-};
 
 /**
  * Creates a directory with specified tag. This method only supports string

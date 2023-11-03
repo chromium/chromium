@@ -4,7 +4,7 @@
 
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
-import {ByteReader} from './byte_reader.js';
+import {ByteReader, SeekOrigin} from './byte_reader.js';
 import {MetadataParser} from './metadata_parser.js';
 
 /** @final */
@@ -84,7 +84,7 @@ export class MpegParser extends MetadataParser {
     function parseMvhd(br, atom) {
       const version = br.readScalar(4, false, atom.end);
       const offset = (version == 0) ? 8 : 16;
-      br.seek(offset, ByteReader.SEEK_CUR);
+      br.seek(offset, SeekOrigin.SEEK_CUR);
       const timescale = br.readScalar(4, false, atom.end);
       const duration = br.readScalar(4, false, atom.end);
       // @ts-ignore: error TS2339: Property 'duration' does not exist on type
@@ -94,7 +94,7 @@ export class MpegParser extends MetadataParser {
 
     // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseHdlr(br, atom) {
-      br.seek(8, ByteReader.SEEK_CUR);
+      br.seek(8, SeekOrigin.SEEK_CUR);
       findParentAtom(atom, 'trak').trackType = br.readString(4, atom.end);
     }
 
@@ -102,7 +102,7 @@ export class MpegParser extends MetadataParser {
     function parseStsd(br, atom) {
       const track = findParentAtom(atom, 'trak');
       if (track && track.trackType == 'vide') {
-        br.seek(40, ByteReader.SEEK_CUR);
+        br.seek(40, SeekOrigin.SEEK_CUR);
         // @ts-ignore: error TS2339: Property 'width' does not exist on type
         // 'Object'.
         metadata.width = br.readScalar(2, false, atom.end);
@@ -114,7 +114,7 @@ export class MpegParser extends MetadataParser {
 
     // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseDataString(name, br, atom) {
-      br.seek(8, ByteReader.SEEK_CUR);
+      br.seek(8, SeekOrigin.SEEK_CUR);
       // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
       // expression of type 'any' can't be used to index type 'Object'.
       metadata[name] = br.readString(atom.end - br.tell(), atom.end);
@@ -122,7 +122,7 @@ export class MpegParser extends MetadataParser {
 
     // @ts-ignore: error TS7006: Parameter 'atom' implicitly has an 'any' type.
     function parseCovr(br, atom) {
-      br.seek(8, ByteReader.SEEK_CUR);
+      br.seek(8, SeekOrigin.SEEK_CUR);
       // @ts-ignore: error TS2339: Property 'thumbnailURL' does not exist on
       // type 'Object'.
       metadata.thumbnailURL = br.readImage(atom.end - br.tell(), atom.end);
@@ -343,7 +343,7 @@ export class MpegParser extends MetadataParser {
         // The previous read returned everything we asked for, including
         // the next atom header at the end of the buffer.
         // Parse this header and schedule the next read.
-        br.seek(-MpegParser.HEADER_SIZE, ByteReader.SEEK_END);
+        br.seek(-MpegParser.HEADER_SIZE, SeekOrigin.SEEK_END);
         let nextSize = MpegParser.readAtomSize(br);
         const nextName = MpegParser.readAtomName(br);
 

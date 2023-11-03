@@ -5,7 +5,7 @@
 import {ExifEntry} from '../../../externs/exif_entry.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
-import {ByteReader} from './byte_reader.js';
+import {ByteOrder, ByteReader, SeekOrigin} from './byte_reader.js';
 import {ExifAlign, ExifMark, ExifTag} from './exif_constants.js';
 import {ImageParser} from './metadata_parser.js';
 
@@ -119,7 +119,7 @@ export class ExifParser extends ImageParser {
           this.parseExifSection(metadata, buf, br);
         } else if (ExifParser.isSOF_(mark)) {
           // The most reliable size information is encoded in the SOF section.
-          br.seek(1, ByteReader.SEEK_CUR);  // Skip the precision byte.
+          br.seek(1, SeekOrigin.SEEK_CUR);  // Skip the precision byte.
           const height = br.readScalar(2);
           const width = br.readScalar(2);
           ExifParser.setImageSize(metadata, width, height);
@@ -127,7 +127,7 @@ export class ExifParser extends ImageParser {
           return;
         }
 
-        br.seek(nextSectionStart, ByteReader.SEEK_BEG);
+        br.seek(nextSectionStart, SeekOrigin.SEEK_BEG);
       }
     } catch (e) {
       // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
@@ -173,7 +173,7 @@ export class ExifParser extends ImageParser {
 
     const order = br.readScalar(2);
     if (order === ExifAlign.LITTLE) {
-      br.setByteOrder(ByteReader.LITTLE_ENDIAN);
+      br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
     } else if (order !== ExifAlign.BIG) {
       this.log('Invalid alignment value: ' + order.toString(16));
       return;
@@ -375,6 +375,13 @@ export class ExifParser extends ImageParser {
      */
     function unsafeRead(size, opt_readFunction, opt_signed) {
       const readFunction = opt_readFunction || (size => {
+                             // Every time this function is called with `size` =
+                             // 8, `opt_readFunction` is also passed, so
+                             // readScalar is only ever called with `size` = 1,2
+                             // or 4.
+                             // @ts-ignore: error TS2345: Argument of type
+                             // 'number' is not assignable to parameter of type
+                             // '2 | 1 | 4'
                              return br.readScalar(size, opt_signed);
                            });
 
@@ -408,7 +415,7 @@ export class ExifParser extends ImageParser {
       } else if (totalSize < 4) {
         // Otherwise, if the value wasn't exactly 4 bytes, skip over the
         // unread data.
-        br.seek(4 - totalSize, ByteReader.SEEK_CUR);
+        br.seek(4 - totalSize, SeekOrigin.SEEK_CUR);
       }
     }
 
