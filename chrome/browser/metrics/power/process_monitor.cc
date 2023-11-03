@@ -58,7 +58,11 @@ std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
 ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
   ProcessMonitor::Metrics metrics;
 
+#if BUILDFLAG(IS_WIN)
+  metrics.cpu_usage = process_metrics.GetPreciseCPUUsage();
+#else
   metrics.cpu_usage = process_metrics.GetPlatformIndependentCPUUsage();
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
@@ -90,9 +94,16 @@ ProcessMonitor::Metrics GetLastIntervalMetrics(
     base::ProcessMetrics& process_metrics,
     base::TimeDelta cumulative_cpu_usage) {
   ProcessMonitor::Metrics metrics;
+
+#if BUILDFLAG(IS_WIN)
+  metrics.cpu_usage = process_metrics.GetPreciseCPUUsage(cumulative_cpu_usage);
+#else
   metrics.cpu_usage =
       process_metrics.GetPlatformIndependentCPUUsage(cumulative_cpu_usage);
+#endif
+
   // TODO: Add other values in ProcessMonitor::Metrics.
+
   return metrics;
 }
 

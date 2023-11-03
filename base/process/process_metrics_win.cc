@@ -120,28 +120,6 @@ struct SYSTEM_PERFORMANCE_INFORMATION {
   ULONG SystemCalls;
 };
 
-TimeDelta GetImpreciseCumulativeCPUUsage(const win::ScopedHandle& process) {
-  FILETIME creation_time;
-  FILETIME exit_time;
-  FILETIME kernel_time;
-  FILETIME user_time;
-
-  if (!process.is_valid()) {
-    return TimeDelta();
-  }
-
-  if (!GetProcessTimes(process.get(), &creation_time, &exit_time, &kernel_time,
-                       &user_time)) {
-    // This should never fail because we duplicate the handle to guarantee it
-    // will remain valid.
-    DCHECK(false);
-    return TimeDelta();
-  }
-
-  return TimeDelta::FromFileTime(kernel_time) +
-         TimeDelta::FromFileTime(user_time);
-}
-
 }  // namespace
 
 size_t GetMaxFds() {
@@ -162,10 +140,31 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+  FILETIME creation_time;
+  FILETIME exit_time;
+  FILETIME kernel_time;
+  FILETIME user_time;
+
+  if (!process_.is_valid())
+    return TimeDelta();
+
+  if (!GetProcessTimes(process_.get(), &creation_time, &exit_time, &kernel_time,
+                       &user_time)) {
+    // This should never fail because we duplicate the handle to guarantee it
+    // will remain valid.
+    DCHECK(false);
+    return TimeDelta();
+  }
+
+  return TimeDelta::FromFileTime(kernel_time) +
+         TimeDelta::FromFileTime(user_time);
+}
+
+TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
 #if defined(ARCH_CPU_ARM64)
   // Precise CPU usage is not available on Arm CPUs because they don't support
   // constant rate TSC.
-  return GetImpreciseCumulativeCPUUsage(process_);
+  return GetCumulativeCPUUsage();
 #else   // !defined(ARCH_CPU_ARM64)
   if (!time_internal::HasConstantRateTSC())
     return GetCumulativeCPUUsage();
@@ -173,10 +172,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
   if (tsc_ticks_per_second == 0) {
     // TSC is only initialized once TSCTicksPerSecond() is called twice 50 ms
-    // apart on the same thread to get a baseline. In unit tests, it is frequent
-    // for the initialization not to be complete. In production, it can also
-    // theoretically happen.
-    return GetImpreciseCumulativeCPUUsage(process_);
+    // apart on the same thread to get a baseline. This often doesn't happen in
+    // unit tests, and theoretically may happen in production if
+    // GetPreciseCumulativeCPUUsage() is called before any uses of ThreadTicks.
+    return GetCumulativeCPUUsage();
   }
 
   ULONG64 process_cycle_time = 0;
