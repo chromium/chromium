@@ -736,4 +736,84 @@ TEST_F(CloudOpenMetricsTest,
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
+// Tests that the companion metrics are set correctly when UploadResult is
+// logged as kUploadNotStartedReauthenticationRequired and they are logged
+// consistently.
+TEST_F(
+    CloudOpenMetricsTest,
+    MetricsConsistentWhenUploadResultIsUploadNotStartedReauthenticationRequired) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogSourceVolume(
+        OfficeFilesSourceVolume::kDownloadsDirectory);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kMove);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToUpload);
+    cloud_open_metrics.LogUploadResult(
+        OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired);
+  }
+
+  histogram_.ExpectUniqueSample(kOneDriveCopyErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+
+  histogram_.ExpectUniqueSample(kOneDriveOpenSourceVolumeMetricStateMetric,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+
+  ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
+// Tests that the companion metrics are set correctly when UploadResult is
+// logged as kUploadNotStartedReauthenticationRequired and they are logged
+// inconsistently.
+TEST_F(
+    CloudOpenMetricsTest,
+    MetricsInconsistentWhenUploadResultIsUploadNotStartedReauthenticationRequired) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogSourceVolume(
+        OfficeFilesSourceVolume::kDownloadsDirectory);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kMove);
+    cloud_open_metrics.LogUploadResult(
+        OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToUpload);
+
+    // These are incorrect - no copy or move error expected.
+    cloud_open_metrics.LogMoveError(
+        base::File::Error::FILE_ERROR_ACCESS_DENIED);
+    cloud_open_metrics.LogCopyError(
+        base::File::Error::FILE_ERROR_ACCESS_DENIED);
+  }
+
+  histogram_.ExpectUniqueSample(kOneDriveCopyErrorMetricStateMetricName,
+                                MetricState::kIncorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricStateMetricName,
+                                MetricState::kIncorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+
+  histogram_.ExpectUniqueSample(kOneDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+
+  histogram_.ExpectUniqueSample(kOneDriveOpenSourceVolumeMetricStateMetric,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyLogged, 1);
+
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+
+  ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
 }  // namespace ash::cloud_upload
