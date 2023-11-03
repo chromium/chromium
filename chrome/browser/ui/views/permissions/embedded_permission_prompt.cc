@@ -23,6 +23,7 @@
 #endif
 
 namespace {
+
 EmbeddedPermissionPrompt::Variant HigherPriorityVariant(
     EmbeddedPermissionPrompt::Variant a,
     EmbeddedPermissionPrompt::Variant b) {
@@ -36,6 +37,42 @@ bool IsPermissionSetByAdministator(ContentSetting setting,
           (info.source == content_settings::SETTING_SOURCE_POLICY ||
            info.source == content_settings::SETTING_SOURCE_SUPERVISED));
 }
+
+#if BUILDFLAG(IS_MAC)
+void OpenCameraSystemSettingsOnMacOS() {
+  if (system_media_permissions::CheckSystemVideoCapturePermission() ==
+      system_media_permissions::SystemPermission::kDenied) {
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity_Camera);
+  }
+}
+
+void OpenMicSystemSettingsOnMacOS() {
+  if (system_media_permissions::CheckSystemAudioCapturePermission() ==
+      system_media_permissions::SystemPermission::kDenied) {
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity_Microphone);
+  }
+}
+
+bool ShouldShowSystemSettingsViewOnMacOS(ContentSettingsType type) {
+  return (type == ContentSettingsType::MEDIASTREAM_MIC &&
+          system_media_permissions::CheckSystemAudioCapturePermission() ==
+              system_media_permissions::SystemPermission::kDenied) ||
+         (type == ContentSettingsType::MEDIASTREAM_CAMERA &&
+          system_media_permissions::CheckSystemVideoCapturePermission() ==
+              system_media_permissions::SystemPermission::kDenied);
+}
+
+bool ShouldShowOSPromptViewOnMacOS(ContentSettingsType type) {
+  return (type == ContentSettingsType::MEDIASTREAM_MIC &&
+          system_media_permissions::CheckSystemAudioCapturePermission() ==
+              system_media_permissions::SystemPermission::kNotDetermined) ||
+         (type == ContentSettingsType::MEDIASTREAM_CAMERA &&
+          system_media_permissions::CheckSystemVideoCapturePermission() ==
+              system_media_permissions::SystemPermission::kNotDetermined);
+}
+#endif
 
 }  // namespace
 
@@ -61,7 +98,23 @@ EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
 EmbeddedPermissionPrompt::Variant
 EmbeddedPermissionPrompt::DeterminePromptVariant(
     ContentSetting setting,
-    const content_settings::SettingInfo& info) {
+    const content_settings::SettingInfo& info,
+    ContentSettingsType type) {
+  // First determine if we can directly show one of the OS views, if the
+  // permission was granted (previously or by Administrator).
+  if (setting == CONTENT_SETTING_ALLOW) {
+    // TODO(crbug.com/1462930): Handle going to Windows settings.
+#if BUILDFLAG(IS_MAC)
+    if (ShouldShowSystemSettingsViewOnMacOS(type)) {
+      return Variant::kOsSystemSettings;
+    }
+
+    if (ShouldShowOSPromptViewOnMacOS(type)) {
+      return Variant::kOsPrompt;
+    }
+#endif
+  }
+
   if (IsPermissionSetByAdministator(setting, info)) {
     return setting == CONTENT_SETTING_ALLOW ? Variant::kAdministratorGranted
                                             : Variant::kAdministratorDenied;
@@ -97,7 +150,8 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     ContentSetting setting =
         map->GetContentSetting(delegate()->GetRequestingOrigin(),
                                delegate()->GetEmbeddingOrigin(), type, &info);
-    Variant current_request_variant = DeterminePromptVariant(setting, info);
+    Variant current_request_variant =
+        DeterminePromptVariant(setting, info, type);
     embedded_prompt_variant_ = HigherPriorityVariant(embedded_prompt_variant_,
                                                      current_request_variant);
   }
@@ -195,4 +249,21 @@ void EmbeddedPermissionPrompt::Acknowledge() {
 void EmbeddedPermissionPrompt::StopAllowing() {
   // TODO(crbug.com/1462930): Implement.
   NOTREACHED();
+}
+
+void EmbeddedPermissionPrompt::ShowSystemSettings() {
+  const auto& requests = delegate()->Requests();
+  CHECK_GT(requests.size(), 0U);
+
+// TODO(crbug.com/1462930) Chrome always shows the first permission in a group,
+// as it is not possible to open multiple System Setting pages. Figure out a
+// better way to handle this scenario.
+#if BUILDFLAG(IS_MAC)
+  if (requests[0]->request_type() == permissions::RequestType::kCameraStream) {
+    OpenCameraSystemSettingsOnMacOS();
+  } else if (requests[0]->request_type() ==
+             permissions::RequestType::kMicStream) {
+    OpenMicSystemSettingsOnMacOS();
+  }
+#endif
 }

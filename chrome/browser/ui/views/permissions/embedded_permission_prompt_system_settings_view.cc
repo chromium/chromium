@@ -32,10 +32,14 @@ std::u16string EmbeddedPermissionPromptSystemSettingsView::GetWindowTitle()
 
 void EmbeddedPermissionPromptSystemSettingsView::RunButtonCallback(
     int button_id) {
+  if (!delegate()) {
+    return;
+  }
+
   ButtonType button = GetButtonType(button_id);
   DCHECK_EQ(button, ButtonType::kSystemSettings);
 
-  // TODO: Implement method callback into Embedded Permission Prompt.
+  delegate()->ShowSystemSettings();
 }
 
 std::vector<

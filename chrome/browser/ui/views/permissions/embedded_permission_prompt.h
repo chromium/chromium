@@ -70,13 +70,15 @@ class EmbeddedPermissionPrompt
   void Dismiss() override;
   void Acknowledge() override;
   void StopAllowing() override;
+  void ShowSystemSettings() override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
 
  private:
   static Variant DeterminePromptVariant(
       ContentSetting setting,
-      const content_settings::SettingInfo& info);
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type);
 
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
   raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
