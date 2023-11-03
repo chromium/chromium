@@ -368,6 +368,14 @@ message AutofillUploadContents {
       // Votes with high confidence (i.e. recorded if Save/Update prompt was
       // accepted after username edits) for forgot password form classifier.
       STRONG_FORGOT_PASSWORD = 4;
+      // If positive (`autofill_type` is `SINGLE_USERNAME`), votes signal that
+      // user was prompted with a Save/Update bubble with a username value found
+      // inside the password form and edited it to one of the values that was
+      // found outside of the password form. If negative (`autofill_type` is
+      // `NOT_USERNAME`), user was prompted with a username value outside the
+      // password form and edited it to one of the values that is found inside
+      // the password form.
+      IN_FORM_OVERRULE = 5;
     }
 
     // The type of the username first flow vote signal, set iff |autofill_type|

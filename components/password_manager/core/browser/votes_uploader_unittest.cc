@@ -691,7 +691,8 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
       /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -731,7 +732,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       MakeSimpleSingleUsernamePredictions(),
       /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/u"saved_value");
+      /*saved_username=*/u"saved_value", /*all_alternative_usernames=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -782,7 +783,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
       PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -836,7 +838,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/suggested_value);
+      /*saved_username=*/suggested_value, /*all_alternative_usernames=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -889,7 +891,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
@@ -939,7 +942,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
       PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
-  votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -991,7 +995,8 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
       PasswordFormHadMatchingUsername(false)));
   std::u16string other_value = u"other_value";
   votes_uploader.set_suggested_username(other_value);
-  votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
 
   // Expect no upload on username form, as th signal is not informative to us.
   EXPECT_CALL(mock_autofill_download_manager_,
@@ -1025,7 +1030,8 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
   VotesUploader votes_uploader(&client_, false);
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData());
   votes_uploader.set_suggested_username(u"");
-  votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
 
   votes_uploader.MaybeSendSingleUsernameVotes();
 
@@ -1113,7 +1119,8 @@ TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
       PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
 
   // Upload on the username form.
   ServerFieldTypeSet expected_types = {

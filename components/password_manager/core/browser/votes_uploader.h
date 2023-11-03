@@ -78,6 +78,10 @@ struct SingleUsernameVoteData {
   // `VotesUploader` is used for UMA metrics. The variable can be removed once
   // the metrics are not needed anymore.
   PasswordFormHadMatchingUsername password_form_had_matching_username;
+
+  // If set to true, sends `SingleUsernameVoteType::IN_FORM_OVERRULE` vote. Read
+  // more about this vote type in proto file.
+  bool is_form_overrule;
 };
 
 // This class manages vote uploads for password forms.
@@ -188,7 +192,11 @@ class VotesUploader {
   // Calculate whether the username value was edited in a prompt based on
   // suggested and saved username values and whether it confirms or
   // contradicts the data about potential single username.
-  void CalculateUsernamePromptEditState(const std::u16string& saved_username);
+  // `all_alternative_usernames` stores text fields inside the password form
+  // that might be a username.
+  void CalculateUsernamePromptEditState(
+      const std::u16string& saved_username,
+      const AlternativeElementVector& all_alternative_usernames);
 
   // Cache the vote data for a form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the
@@ -302,6 +310,19 @@ class VotesUploader {
   void SetSingleUsernameVoteOnPasswordForm(
       const SingleUsernameVoteData& vote_data,
       autofill::FormStructure& form_structure);
+
+  // Returns whether `IN_FORM_OVERRULE` vote should be sent. `IN_FORM_OVERRULE`
+  // signal can be either positive or negative. If positive (`autofill_type` is
+  // `SINGLE_USERNAME`), votes signal that user was prompted with a Save/Update
+  // bubble with a username value found inside the password form and edited it
+  // to one of the values that was found outside of the password form. If
+  // negative (`autofill_type` is `NOT_USERNAME`), user was prompted with a
+  // username value outside the password form and edited it to one of the values
+  // that is found inside the password form.
+  bool CalculateInFormOverrule(
+      const std::u16string& saved_username,
+      const std::u16string& potential_username,
+      const AlternativeElementVector& all_alternative_usernames);
 
   // Calculates whether the |saved_username| (the value actually saved in the
   // Password Manager) confirms or contradicts |potential_username| (Password
