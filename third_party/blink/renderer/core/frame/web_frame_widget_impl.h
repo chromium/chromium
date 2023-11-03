@@ -686,6 +686,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // coordinate space.
   Vector<gfx::Rect> CalculateVisibleLineBoundsOnScreen();
 
+  // Returns true if this widget corresponds to a frame which is being replaced.
+  // The compositor for the widget has been detached and passed to the new
+  // widget.
+  bool WillBeDestroyed() const;
+
  protected:
   // WidgetBaseClient overrides:
   void WillBeginMainFrame() override;

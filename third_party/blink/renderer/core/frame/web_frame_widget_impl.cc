@@ -4884,4 +4884,8 @@ void WebFrameWidgetImpl::NotifyZoomLevelChanged(LocalFrame* root) {
   }
 }
 
+bool WebFrameWidgetImpl::WillBeDestroyed() const {
+  return widget_base_->WillBeDestroyed();
+}
+
 }  // namespace blink

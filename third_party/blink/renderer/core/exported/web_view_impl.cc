@@ -3782,14 +3782,16 @@ void WebViewImpl::DidChangeRootLayer(bool root_layer_exists) {
   if (root_layer_exists) {
     if (!device_emulation_transform_.IsIdentity())
       UpdateDeviceEmulationTransform();
-  } else {
-    // When the document in an already-attached main frame is being replaced by
-    // a navigation then DidChangeRootLayer(false) will be called. Since we are
-    // navigating, defer BeginMainFrames until the new document is ready for
-    // them.
+  } else if (!MainFrameImpl()->FrameWidgetImpl()->WillBeDestroyed()) {
+    // When the document in an already-attached main frame is being replaced
+    // by a navigation then DidChangeRootLayer(false) will be called. Since we
+    // are navigating, defer BeginMainFrames until the new document is ready
+    // for them.
     //
-    // TODO(crbug.com/936696): This should not be needed once we always swap
-    // frames when swapping documents.
+    // If WillBeDestroyed() is true, it means we're swapping the frame as well
+    // as the document for this navigation. BeginMainFrames are instead
+    // deferred for a newly attached frame via DidAttachLocalMainFrame(). See
+    // crbug.com/936696.
     scoped_defer_main_frame_update_ =
         MainFrameImpl()->FrameWidgetImpl()->DeferMainFrameUpdate();
   }
