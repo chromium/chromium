@@ -269,6 +269,48 @@ TEST_F(CloudOpenMetricsTest,
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
+// Tests that the OpenErrors and UploadResult companion metrics are set
+// correctly when TaskResult is logged as kFailedToUpload and they are logged
+// consistently.
+TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsFailedToUpload) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToUpload);
+    cloud_open_metrics.LogUploadResult(
+        OfficeFilesUploadResult::kCloudAccessDenied);
+  }
+
+  histogram_.ExpectUniqueSample(kOneDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+}
+
+// Tests that the OpenErrors and UploadResult companion metrics are set
+// correctly when TaskResult is logged as kFailedToUpload and they are logged
+// inconsistently.
+TEST_F(CloudOpenMetricsTest,
+       MetricsInconsistentWhenTaskResultIsFailedToUpload) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToUpload);
+
+    // These are incorrect - no OpenError expected, UploadResult should be an
+    // error.
+    cloud_open_metrics.LogOneDriveOpenError(
+        OfficeOneDriveOpenErrors::kInvalidFileSystemURL);
+    cloud_open_metrics.LogUploadResult(OfficeFilesUploadResult::kSuccess);
+  }
+
+  histogram_.ExpectUniqueSample(kOneDriveErrorMetricStateMetricName,
+                                MetricState::kIncorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kWrongValueLogged, 1);
+  ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
 // Tests that the SourceVolume companion metric is set correctly when TaskResult
 // is logged as kFailedToOpen and it is logged consistently.
 TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsFailedToOpen) {
