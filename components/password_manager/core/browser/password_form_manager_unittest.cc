@@ -2905,6 +2905,120 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
   form_manager_->Save();
 }
 
+// Tests scenario when the save/update prompt suggests some value typed in the
+// password form and the user edits username prompt to the value of one of the
+// text fields found outside of the password form. Positive in form overrule
+// single username vote must be sent.
+TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
+                            features::kUsernameFirstFlowWithIntermediateValues,
+                            features::
+                                kUsernameFirstFlowWithIntermediateValuesVoting,
+                            features::kUsernameFirstFlowStoreSeveralValues},
+      /*disabled_features=*/{});
+
+  CreateFormManager(submitted_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate user input in a single text field in a single username form.
+  constexpr char16_t kPossibleUsername[] = u"possible_username";
+  PossibleUsernameData possible_username_data(
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId,
+      kPossibleUsername, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kSingleUsernameFormSignature, kSingleUsernameFieldRendererId,
+      kSingleUsernameFieldSignature, /*has_single_username_prediction=*/false);
+
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
+
+  // Simulate submitting a password form.
+  submitted_form_.fields[kPasswordFieldIndex].value = u"strongpassword";
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               &possible_usernames));
+  form_manager_->SaveSuggestedUsernameValueToVotesUploader();
+
+  // Simulate the user modifying the username in the prompt.
+  form_manager_->OnUpdateUsernameFromPrompt(kPossibleUsername);
+
+  // Check that uploads for both single username and sign-up form happen.
+  testing::InSequence in_sequence;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Expect a positive `IN_FORM_OVERRULE` vote on the username form.
+  ExpectSingleUsernameUpload(kSingleUsernameFormSignature,
+                             AutofillUploadContents::Field::IN_FORM_OVERRULE,
+                             autofill::SINGLE_USERNAME);
+#endif
+
+  // Expect upload for the password form. This upload is unrelated to UFF: it
+  // is a result of saving a new password on the password form.
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form_)),
+                         _, _, _, _, _, _));
+
+  form_manager_->Save();
+}
+
+// Tests scenario when the save/update prompt suggests some value typed in the
+// password form and the user saves credentials without modifying them. This
+// test checks that Username First Flow votes are not sent, since there is no
+// signal that this is a Username First Flow.
+TEST_P(PasswordFormManagerTest,
+       UsernameFirstFlowDoNotSendVotesOnNotUsernameFirstFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
+                            features::kUsernameFirstFlowWithIntermediateValues,
+                            features::
+                                kUsernameFirstFlowWithIntermediateValuesVoting,
+                            features::kUsernameFirstFlowStoreSeveralValues},
+      /*disabled_features=*/{});
+
+  CreateFormManager(submitted_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate user input in a single text field outside of the password form.
+  constexpr char16_t kNotUsername[] = u"not_a_username";
+  PossibleUsernameData possible_username_data(
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId, kNotUsername,
+      base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kSingleUsernameFormSignature, kSingleUsernameFieldRendererId,
+      kSingleUsernameFieldSignature, /*has_single_username_prediction=*/false);
+
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
+
+  // Simulate submitting a password form.
+  submitted_form_.fields[kPasswordFieldIndex].value = u"strongpassword";
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               &possible_usernames));
+  form_manager_->SaveSuggestedUsernameValueToVotesUploader();
+
+  // Expect no upload on single text field.
+  EXPECT_CALL(mock_autofill_download_manager_,
+              StartUploadRequest(SignatureIs(kSingleUsernameFormSignature), _,
+                                 _, _, _, _, _))
+      .Times(0);
+
+  // Expect upload for the password form. This upload is unrelated to UFF: it
+  // is a result of saving a new password on the password form.
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form_)),
+                         _, _, _, _, _, _));
+
+  form_manager_->Save();
+}
+
 // Tests that if prefilled username inside the password form has a matching
 // value with a field found outside of the password form the vote will be sent
 // correctly. In this test case, there is an intermediary field between them.

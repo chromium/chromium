@@ -655,19 +655,33 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
 // TODO(crbug/1475295): Verify if the votes are produced as expected on Android
 // and enable UFF voting.
 #if !BUILDFLAG(IS_ANDROID)
-  for (size_t i = 0; i < single_username_votes_data_.size(); ++i) {
-    const SingleUsernameVoteData& vote_data = single_username_votes_data_[i];
-    if (MaybeSendSingleUsernameVote(
-            vote_data, vote_data.form_predictions,
-            i == 0 ? IsMostRecentSingleUsernameCandidate::kMostRecentCandidate
-                   : IsMostRecentSingleUsernameCandidate::
-                         kHasIntermediateValuesInBetween,
-            /*is_forgot_password_vote=*/false)) {
-      base::UmaHistogramBoolean(
-          "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
-          vote_data.password_form_had_matching_username.value());
-      // TODO(crbug/1470586): Implement UMA metric logging the index in LRU
-      // cache if `IN_FORM_OVERRULE` is sent.
+  bool should_send_votes =
+      (should_send_username_first_flow_votes_ ||
+       base::ranges::any_of(single_username_votes_data_,
+                            [](const SingleUsernameVoteData& vote_data) {
+                              return vote_data.is_form_overrule;
+                            }));
+  // Send single username votes in two cases:
+  // (1) `should_send_username_first_flow_votes_` is true, meaning Username
+  // First Flow was observed.
+  // (2) There is an `IN_FORM_OVERRULE` vote. This means that the flow was not
+  // initially predicted as a Username First Flow, but user's action signal
+  // that it is Username First Flow.
+  if (should_send_votes) {
+    for (size_t i = 0; i < single_username_votes_data_.size(); ++i) {
+      const SingleUsernameVoteData& vote_data = single_username_votes_data_[i];
+      if (MaybeSendSingleUsernameVote(
+              vote_data, vote_data.form_predictions,
+              i == 0 ? IsMostRecentSingleUsernameCandidate::kMostRecentCandidate
+                     : IsMostRecentSingleUsernameCandidate::
+                           kHasIntermediateValuesInBetween,
+              /*is_forgot_password_vote=*/false)) {
+        base::UmaHistogramBoolean(
+            "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
+            vote_data.password_form_had_matching_username.value());
+        // TODO(crbug/1470586): Implement UMA metric logging the index in LRU
+        // cache if `IN_FORM_OVERRULE` is sent.
+      }
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
