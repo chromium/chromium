@@ -291,10 +291,6 @@
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "chrome/browser/ui/webui/lens/lens_ui.h"
-#endif
-
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 #endif  // BUILDFLAG(PLATFORM_CFM)
@@ -877,12 +873,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIPrivacySandboxDialogHost)
     return &NewWebUI<PrivacySandboxDialogUI>;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  if (url.host_piece() == chrome::kChromeUILensHost) {
-    return &NewWebUI<LensUI>;
-  }
-#endif
 
   return nullptr;
 }

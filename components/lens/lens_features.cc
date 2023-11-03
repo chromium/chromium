@@ -38,10 +38,6 @@ BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
              "EnableImageSearchSidePanelFor3PDse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensRegionSearchStaticPage,
-             "LensRegionSearchStaticPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensImageFormatOptimizations,
              "LensImageFormatOptimizations",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -185,10 +181,6 @@ bool IsLensFullscreenSearchEnabled() {
 
 bool IsLensSidePanelEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone);
-}
-
-bool IsLensRegionSearchStaticPageEnabled() {
-  return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
 }
 
 int GetEncodingQualityJpeg() {

@@ -44,10 +44,6 @@ BASE_DECLARE_FEATURE(kEnableImageTranslate);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
 
-// Enables launching the region search experience in a new tab with WebUI.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
-
 // Enables using more optimized image formats for Lens requests.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
