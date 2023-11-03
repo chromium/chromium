@@ -78,7 +78,8 @@ class TouchToFillPasswordGenerationCoordinator {
 
     private final WebContents mWebContents;
     private final PrefService mPrefService;
-    private final TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
+    private TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
+    private View mTouchToFillPasswordGenerationContent;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Delegate mTouchToFillPasswordGenerationDelegate;
     private final BottomSheetController mBottomSheetController;
@@ -93,26 +94,12 @@ class TouchToFillPasswordGenerationCoordinator {
                 }
             };
 
-    public TouchToFillPasswordGenerationCoordinator(
-            BottomSheetController bottomSheetController,
-            Context context,
-            WebContents webContents,
-            PrefService prefService,
-            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            Delegate touchToFillPasswordGenerationDelegate) {
-        this(
-                webContents,
-                prefService,
-                bottomSheetController,
-                createView(context),
-                keyboardVisibilityDelegate,
-                touchToFillPasswordGenerationDelegate);
-    }
-
-    private static TouchToFillPasswordGenerationView createView(Context context) {
-        return new TouchToFillPasswordGenerationView(context,
-                LayoutInflater.from(context).inflate(
-                        R.layout.touch_to_fill_password_generation, null));
+    private TouchToFillPasswordGenerationView createView(Context context) {
+        mTouchToFillPasswordGenerationContent =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.touch_to_fill_password_generation, null);
+        return new TouchToFillPasswordGenerationView(
+                context, mTouchToFillPasswordGenerationContent);
     }
 
     @VisibleForTesting
@@ -120,7 +107,6 @@ class TouchToFillPasswordGenerationCoordinator {
             WebContents webContents,
             PrefService prefService,
             BottomSheetController bottomSheetController,
-            TouchToFillPasswordGenerationView touchToFillPasswordGenerationView,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Delegate touchToFillPasswordGenerationDelegate) {
         mWebContents = webContents;
@@ -128,11 +114,11 @@ class TouchToFillPasswordGenerationCoordinator {
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mTouchToFillPasswordGenerationDelegate = touchToFillPasswordGenerationDelegate;
         mBottomSheetController = bottomSheetController;
-        mTouchToFillPasswordGenerationView = touchToFillPasswordGenerationView;
     }
 
     /** Displays the bottom sheet. */
-    boolean show(String generatedPassword, String account) {
+    boolean show(String generatedPassword, String account, Context context) {
+        mTouchToFillPasswordGenerationView = createView(context);
         PropertyModel model =
                 new PropertyModel.Builder(TouchToFillPasswordGenerationProperties.ALL_KEYS)
                         .with(ACCOUNT_EMAIL, account)
@@ -229,6 +215,10 @@ class TouchToFillPasswordGenerationCoordinator {
                         + reason
                         + "to InteractionResult.";
         return InteractionResult.DISMISSED_SHEET;
+    }
+
+    View getContentViewForTesting() {
+        return mTouchToFillPasswordGenerationContent;
     }
 
     /**

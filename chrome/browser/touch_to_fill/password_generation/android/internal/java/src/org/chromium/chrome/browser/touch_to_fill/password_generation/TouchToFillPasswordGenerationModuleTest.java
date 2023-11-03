@@ -20,9 +20,9 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.REJECTED_GENERATED_PASSWORD;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.USED_GENERATED_PASSWORD;
 
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -81,6 +81,7 @@ public class TouchToFillPasswordGenerationModuleTest {
     private static final String sTestEmailAddress = "test@email.com";
     private static final String sGeneratedPassword = "Strong generated password";
     private ViewGroup mContent;
+    private TestActivity mActivity;
 
     @Before
     public void setUp() {
@@ -91,24 +92,16 @@ public class TouchToFillPasswordGenerationModuleTest {
                 .onActivity(
                         activity -> {
                             setUpBottomSheetController();
-                            mContent =
-                                    (ViewGroup)
-                                            LayoutInflater.from(activity)
-                                                    .inflate(
-                                                            R.layout
-                                                                    .touch_to_fill_password_generation,
-                                                            null);
-                            TouchToFillPasswordGenerationView touchToFillPasswordGenerationView =
-                                    new TouchToFillPasswordGenerationView(activity, mContent);
-                            activity.setContentView(mContent);
                             mCoordinator =
                                     new TouchToFillPasswordGenerationCoordinator(
                                             mWebContents,
                                             mPrefService,
                                             mBottomSheetController,
-                                            touchToFillPasswordGenerationView,
                                             mKeyboardVisibilityDelegate,
                                             mDelegate);
+                            mActivity = activity;
+                            mContent = new FrameLayout(mActivity);
+                            mActivity.setContentView(mContent);
                         });
     }
 
@@ -117,9 +110,14 @@ public class TouchToFillPasswordGenerationModuleTest {
         doNothing().when(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
     }
 
+    private void show() {
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress, mActivity);
+        mContent.addView(mCoordinator.getContentViewForTesting());
+    }
+
     @Test
     public void showsAndHidesBottomSheet() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
 
@@ -130,7 +128,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testBottomSheetForceHide() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
         mCoordinator.hideFromNative();
@@ -140,7 +138,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testGeneratedPasswordAcceptedCalled() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
@@ -149,7 +147,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testBottomSheetIsHiddenAfterAcceptingPassword() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
@@ -159,7 +157,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testGenerationBottomSheetDismissCountMustResetAfterAcceptance() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
@@ -168,7 +166,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testGeneratedPasswordRejectedCalled() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
@@ -177,7 +175,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testGenerationBottomSheetDismissCountMustIncrementAfterRejection() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
@@ -188,8 +186,7 @@ public class TouchToFillPasswordGenerationModuleTest {
     public void testKeyboardIsDisplayedWhenPasswordRejected() {
         ViewAndroidDelegate viewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mContent);
         when(mWebContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
-
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
@@ -201,13 +198,13 @@ public class TouchToFillPasswordGenerationModuleTest {
         ViewAndroidDelegate viewAndroidDelegate = ViewAndroidDelegate.createBasicDelegate(mContent);
         when(mWebContents.getViewAndroidDelegate()).thenReturn(viewAndroidDelegate);
 
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mContent);
     }
 
     @Test
     public void testBottomSheetIsHiddenAfterRejectingPassword() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
@@ -217,7 +214,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void testGenerationBottomSheetDismissCountMustNotChangeWhenDismissedFromNative() {
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         mCoordinator.hideFromNative();
         verify(mPrefService, never())
@@ -229,7 +226,7 @@ public class TouchToFillPasswordGenerationModuleTest {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         INTERACTION_RESULT_HISTOGRAM, USED_GENERATED_PASSWORD);
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
@@ -242,7 +239,7 @@ public class TouchToFillPasswordGenerationModuleTest {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         INTERACTION_RESULT_HISTOGRAM, REJECTED_GENERATED_PASSWORD);
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
@@ -255,7 +252,7 @@ public class TouchToFillPasswordGenerationModuleTest {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         INTERACTION_RESULT_HISTOGRAM, DISMISSED_FROM_NATIVE);
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         mCoordinator.hideFromNative();
 
@@ -267,7 +264,7 @@ public class TouchToFillPasswordGenerationModuleTest {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         INTERACTION_RESULT_HISTOGRAM, DISMISSED_SHEET);
-        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+        show();
 
         ArgumentCaptor<BottomSheetObserver> observer =
                 ArgumentCaptor.forClass(BottomSheetObserver.class);
