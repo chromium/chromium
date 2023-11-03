@@ -34,14 +34,17 @@ TranslateUIDelegate::TranslateUIDelegate(
     : translate_driver_(
           translate_manager->translate_client()->GetTranslateDriver()),
       translate_manager_(translate_manager),
-      translate_ui_languages_manager_(
-          std::make_unique<TranslateUILanguagesManager>(translate_manager,
-                                                        source_language,
-                                                        target_language)),
       prefs_(translate_manager_->translate_client()->GetTranslatePrefs()) {
   DCHECK(translate_driver_);
   DCHECK(translate_manager_);
-  DCHECK(translate_ui_languages_manager_);
+
+  std::vector<std::string> language_codes;
+  TranslateDownloadManager::GetSupportedLanguages(
+      prefs_->IsTranslateAllowedByPolicy(), &language_codes);
+
+  translate_ui_languages_manager_ =
+      std::make_unique<TranslateUILanguagesManager>(
+          translate_manager, language_codes, source_language, target_language);
 
   if (base::FeatureList::IsEnabled(
           language::kContentLanguagesInLanguagePicker)) {

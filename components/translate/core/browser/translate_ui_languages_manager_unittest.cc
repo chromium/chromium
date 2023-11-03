@@ -53,8 +53,10 @@ class TranslateUILanguagesManagerTest : public ::testing::Test {
                                                   language_model_.get());
     manager_->GetLanguageState()->set_translation_declined(false);
 
+    std::vector<std::string> languages = {"ar", "de", "es", "fr"};
+
     languages_manager_ = std::make_unique<TranslateUILanguagesManager>(
-        manager_->GetWeakPtr(), "ar", "fr");
+        manager_->GetWeakPtr(), languages, "ar", "fr");
   }
 
   // Do not reorder. These are ordered for dependency on creation/destruction.

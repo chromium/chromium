@@ -32,6 +32,7 @@ namespace translate {
 
 TranslateUILanguagesManager::TranslateUILanguagesManager(
     const base::WeakPtr<TranslateManager>& translate_manager,
+    const std::vector<std::string>& language_codes,
     const std::string& source_language,
     const std::string& target_language)
     : translate_manager_(translate_manager),
@@ -42,9 +43,6 @@ TranslateUILanguagesManager::TranslateUILanguagesManager(
   std::string locale =
       TranslateDownloadManager::GetInstance()->application_locale();
 
-  std::vector<std::string> language_codes;
-  TranslateDownloadManager::GetSupportedLanguages(
-      prefs_->IsTranslateAllowedByPolicy(), &language_codes);
   // Reserve additional space for unknown language option.
   std::vector<std::string>::size_type languages_size = language_codes.size();
   languages_size += 1;
@@ -52,7 +50,7 @@ TranslateUILanguagesManager::TranslateUILanguagesManager(
 
   // Preparing for the alphabetical order in the locale.
   std::unique_ptr<icu::Collator> collator = CreateCollator(locale);
-  for (std::string& language_code : language_codes) {
+  for (const std::string& language_code : language_codes) {
     std::u16string language_name =
         l10n_util::GetDisplayNameForLocale(language_code, locale, true);
     languages_.emplace_back(std::move(language_code), std::move(language_name));
