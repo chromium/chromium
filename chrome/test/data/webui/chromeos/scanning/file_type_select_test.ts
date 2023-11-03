@@ -11,7 +11,7 @@ import {FileTypeSelectElement} from 'chrome://scanning/file_type_select.js';
 import {FileType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {changeSelect} from './scanning_app_test_utils.js';
+import {changeSelectedValue} from './scanning_app_test_utils.js';
 
 suite('fileTypeSelectTest', function() {
   let fileTypeSelect: FileTypeSelectElement|null = null;
@@ -55,8 +55,7 @@ suite('fileTypeSelectTest', function() {
     assertEquals(FileType.kPdf.toString(), select.value);
 
     // Selecting a different option should update the selected value.
-    await changeSelect(
-        select, FileType.kJpg.toString(), /* selectedIndex */ null);
+    await changeSelectedValue(select, FileType.kJpg.toString());
 
     assertEquals(FileType.kJpg.toString(), fileTypeSelect.selectedFileType);
   });

@@ -13,7 +13,7 @@ import {ColorMode} from 'chrome://scanning/scanning.mojom-webui.js';
 import {getColorModeString} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
+import {assertOrderedAlphabetically, changeSelectedIndex} from './scanning_app_test_utils.js';
 
 suite('colorModeSelectTest', function() {
   let colorModeSelect: ColorModeSelectElement|null = null;
@@ -100,7 +100,7 @@ suite('colorModeSelectTest', function() {
     colorModeSelect.options =
         [ColorMode.kGrayscale, ColorMode.kBlackAndWhite, ColorMode.kColor];
     flush();
-    await changeSelect(select, /* value */ null, /* selectedIndex */ 0);
+    await changeSelectedIndex(select, /*index=*/ 0);
     assertEquals(
         ColorMode.kBlackAndWhite.toString(), colorModeSelect.selectedOption);
     assertEquals(

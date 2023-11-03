@@ -30,7 +30,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTru
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
+import {changeSelectedIndex, changeSelectedValue, createScanner, createScannerSource} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 const MY_FILES_PATH = '/home/chronos/user/MyFiles';
@@ -1312,7 +1312,7 @@ suite('scanningAppTest', function() {
     await getScannerCapabilities();
 
     assertEquals(2, sourceSelect!.length);
-    await changeSelect(sourceSelect!, /* value=*/ null, /* selectedIndex=*/ 0);
+    await changeSelectedIndex(sourceSelect!, /*index=*/ 0);
 
     colorModeSelect = getSettingSelect('#colorModeSelect');
     pageSizeSelect = getSettingSelect('#pageSizeSelect');
@@ -1339,7 +1339,7 @@ suite('scanningAppTest', function() {
     assertEquals(
         secondResolutions[1]!.toString() + ' dpi',
         resolutionSelect!.options[1]!.textContent!.trim());
-    await changeSelect(sourceSelect!, /* value=*/ null, /* selectedIndex=*/ 1);
+    await changeSelectedIndex(sourceSelect!, /*index=*/ 1);
 
     assertEquals(1, colorModeSelect!.length);
     assertEquals(
@@ -1664,13 +1664,10 @@ suite('scanningAppTest', function() {
     assert(scanningApp);
     await getScannerCapabilities();
 
-    await changeSelect(
-        getSettingSelect('#fileTypeSelect'), FileType.kJpg.toString(),
-        /* selectedIndex */ null);
+    await changeSelectedValue(
+        getSettingSelect('#fileTypeSelect'), FileType.kJpg.toString());
 
-    await changeSelect(
-        getSettingSelect('#resolutionSelect'), '75',
-        /* selectedIndex */ null);
+    await changeSelectedValue(getSettingSelect('#resolutionSelect'), '75');
 
     strictQuery('#scanButton', scanningApp.shadowRoot, HTMLElement).click();
     const numScanSettingChanges =
@@ -1685,23 +1682,16 @@ suite('scanningAppTest', function() {
     assert(scanningApp);
     await getScannerCapabilities();
 
-    await changeSelect(
+    await changeSelectedValue(
         getSettingSelect('#colorModeSelect'),
-        ColorMode.kBlackAndWhite.toString(),
-        /* selectedIndex */ null);
+        ColorMode.kBlackAndWhite.toString());
 
-    await changeSelect(
-        getSettingSelect('#scannerSelect'),
-        /* value */ null,
-        /* selectedIndex */ 1);
+    await changeSelectedIndex(getSettingSelect('#scannerSelect'), /*index=*/ 1);
 
-    await changeSelect(
-        getSettingSelect('#fileTypeSelect'), FileType.kJpg.toString(),
-        /* selectedIndex */ null);
+    await changeSelectedValue(
+        getSettingSelect('#fileTypeSelect'), FileType.kJpg.toString());
 
-    await changeSelect(
-        getSettingSelect('#resolutionSelect'), '150',
-        /* selectedIndex */ null);
+    await changeSelectedValue(getSettingSelect('#resolutionSelect'), '150');
 
     strictQuery('#scanButton', scanningApp.shadowRoot, HTMLElement).click();
     const numScanSettingChanges =
@@ -1999,24 +1989,23 @@ suite('scanningAppTest', function() {
     await getScannerCapabilities();
 
     // Set dropdowns to match `scannerSettings` properties.
-    await changeSelect(
-        getSettingSelect('#scannerSelect'), tokenToString(secondScannerId),
-        /*selectedIndex=*/ null);
-    await changeSelect(
-        getSettingSelect('#sourceSelect'), scannerSetting.sourceName.toString(),
-        /*selectedIndex=*/ null);
-    await changeSelect(
-        getSettingSelect('#fileTypeSelect'), scannerSetting.fileType.toString(),
-        /*selectedIndex=*/ null);
-    await changeSelect(
+    await changeSelectedValue(
+        getSettingSelect('#scannerSelect'), tokenToString(secondScannerId));
+    await changeSelectedValue(
+        getSettingSelect('#sourceSelect'),
+        scannerSetting.sourceName.toString());
+    await changeSelectedValue(
+        getSettingSelect('#fileTypeSelect'),
+        scannerSetting.fileType.toString());
+    await changeSelectedValue(
         getSettingSelect('#colorModeSelect'),
-        scannerSetting.colorMode.toString(), /*selectedIndex=*/ null);
-    await changeSelect(
-        getSettingSelect('#pageSizeSelect'), scannerSetting.pageSize.toString(),
-        /*selectedIndex=*/ null);
-    await changeSelect(
+        scannerSetting.colorMode.toString());
+    await changeSelectedValue(
+        getSettingSelect('#pageSizeSelect'),
+        scannerSetting.pageSize.toString());
+    await changeSelectedValue(
         getSettingSelect('#resolutionSelect'),
-        scannerSetting.resolutionDpi.toString(), /*selectedIndex=*/ null);
+        scannerSetting.resolutionDpi.toString());
 
     assertEquals(
         scannerSetting.sourceName.toString(), scanningApp.selectedSource);
@@ -2237,11 +2226,9 @@ suite('scanningAppTest', function() {
     await initializeScanningApp(expectedScanners, capabilities);
     assert(scanningApp);
     await getScannerCapabilities();
-    await changeSelect(
-        getSettingSelect('#sourceSelect'), PLATEN, /*selectedIndex=*/ null);
-    await changeSelect(
-        getSettingSelect('#fileTypeSelect'), FileType.kPdf.toString(),
-        /*selectedIndex=*/ null);
+    await changeSelectedValue(getSettingSelect('#sourceSelect'), PLATEN);
+    await changeSelectedValue(
+        getSettingSelect('#fileTypeSelect'), FileType.kPdf.toString());
     await ensureMultiPageScanCheckboxChecked(/*checked=*/ true);
 
     const scanButton =
@@ -2266,11 +2253,9 @@ suite('scanningAppTest', function() {
     await initializeScanningApp(expectedScanners, capabilities);
     assert(scanningApp);
     await getScannerCapabilities();
-    await changeSelect(
-        getSettingSelect('#sourceSelect'), PLATEN, /*selectedIndex=*/ null);
-    await changeSelect(
-        getSettingSelect('#fileTypeSelect'), FileType.kPdf.toString(),
-        /*selectedIndex=*/ null);
+    await changeSelectedValue(getSettingSelect('#sourceSelect'), PLATEN);
+    await changeSelectedValue(
+        getSettingSelect('#fileTypeSelect'), FileType.kPdf.toString());
     await ensureMultiPageScanCheckboxChecked(/*checked=*/ true);
 
     const scanButton =
@@ -2301,28 +2286,19 @@ suite('scanningAppTest', function() {
         strictQuery('#pageSizeSelect', scanningApp.shadowRoot, HTMLElement);
     assert(pageSize);
     const pageSizeSelect = pageSize.shadowRoot!.querySelector('select')!;
-    changeSelect(
-        pageSizeSelect, PageSize.kIsoA4.toString(),
-        /* selectedIndex */ null);
+    changeSelectedValue(pageSizeSelect, PageSize.kIsoA4.toString());
     assertEquals(PageSize.kIsoA4.toString(), pageSizeSelect.value);
-    changeSelect(
-        pageSizeSelect, PageSize.kMax.toString(),
-        /* selectedIndex */ null);
+    changeSelectedValue(pageSizeSelect, PageSize.kMax.toString());
     assertEquals(PageSize.kMax.toString(), pageSizeSelect.value);
 
     scanningApp.selectedSource = ADF_DUPLEX;
     await waitAfterNextRender(scanningApp);
 
-    changeSelect(
-        pageSizeSelect, PageSize.kIsoA4.toString(), /* selectedIndex */ null);
+    changeSelectedValue(pageSizeSelect, PageSize.kIsoA4.toString());
     assertEquals(PageSize.kIsoA4.toString(), pageSizeSelect.value);
-    changeSelect(
-        pageSizeSelect, PageSize.kNaLetter.toString(),
-        /* selectedIndex */ null);
+    changeSelectedValue(pageSizeSelect, PageSize.kNaLetter.toString());
     assertEquals(PageSize.kNaLetter.toString(), pageSizeSelect.value);
-    changeSelect(
-        pageSizeSelect, PageSize.kMax.toString(),
-        /* selectedIndex */ null);
+    changeSelectedValue(pageSizeSelect, PageSize.kMax.toString());
     assertEquals(PageSize.kMax.toString(), pageSizeSelect.value);
   });
 

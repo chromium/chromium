@@ -11,7 +11,7 @@ import {ScanToSelectElement} from 'chrome://scanning/scan_to_select.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {changeSelect} from './scanning_app_test_utils.js';
+import {changeSelectedIndex} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 suite('scanToSelectTest', function() {
@@ -76,7 +76,7 @@ suite('scanToSelectTest', function() {
     scanningBrowserProxy.setSelectedPath(
         {baseName: myDownloads, filePath: myDownloadsPath});
     const select = getSelect();
-    await changeSelect(select, /* value */ null, /* selectedIndex */ 1);
+    await changeSelectedIndex(select, /*index=*/ 1);
     assertEquals(myDownloads, scanToSelect.selectedFolder);
     assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
     assertEquals(
@@ -85,7 +85,7 @@ suite('scanToSelectTest', function() {
 
     scanningBrowserProxy.setSelectedPath(
         {baseName: googleDrive, filePath: googleDrivePath});
-    await changeSelect(select, /* value */ null, /* selectedIndex */ 1);
+    await changeSelectedIndex(select, /*index=*/ 1);
     assertEquals(googleDrive, scanToSelect.selectedFolder);
     assertEquals(googleDrivePath, scanToSelect.selectedFilePath);
     assertEquals(
@@ -104,7 +104,7 @@ suite('scanToSelectTest', function() {
     scanningBrowserProxy.setSelectedPath(
         {baseName: myDownloads, filePath: myDownloadsPath});
     const select = getSelect();
-    await changeSelect(select, /* value */ null, /* selectedIndex */ 1);
+    await changeSelectedIndex(select, /*index=*/ 1);
     assertEquals(myDownloads, scanToSelect.selectedFolder);
     assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
     assertEquals(
@@ -113,7 +113,7 @@ suite('scanToSelectTest', function() {
 
     // Simulate canceling the select dialog
     scanningBrowserProxy.setSelectedPath({baseName: '', filePath: ''});
-    await changeSelect(select, /* value */ null, /* selectedIndex */ 1);
+    await changeSelectedIndex(select, /*index=*/ 1);
     assertEquals(myDownloads, scanToSelect.selectedFolder);
     assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
     assertEquals(

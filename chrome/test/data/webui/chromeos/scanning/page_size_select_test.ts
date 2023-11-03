@@ -13,7 +13,7 @@ import {PageSize} from 'chrome://scanning/scanning.mojom-webui.js';
 import {getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
+import {assertOrderedAlphabetically, changeSelectedIndex, changeSelectedValue} from './scanning_app_test_utils.js';
 
 
 suite('pageSizeSelectTest', function() {
@@ -68,8 +68,7 @@ suite('pageSizeSelectTest', function() {
     assertEquals(firstPageSize.toString(), select.value);
 
     // Selecting a different option should update the selected value.
-    await changeSelect(
-        select, secondPageSize.toString(), /* selectedIndex */ null);
+    await changeSelectedValue(select, secondPageSize.toString());
     assertEquals(secondPageSize.toString(), pageSizeSelect.selectedOption);
   });
 
@@ -117,7 +116,7 @@ suite('pageSizeSelectTest', function() {
     pageSizeSelect.options =
         [PageSize.kNaLetter, PageSize.kMax, PageSize.kIsoA4];
     flush();
-    await changeSelect(select, /* value */ null, /* selectedIndex */ 0);
+    await changeSelectedIndex(select, /*index=*/ 0);
     assertEquals(PageSize.kIsoA4.toString(), pageSizeSelect.selectedOption);
     assertEquals(
         PageSize.kIsoA4.toString(), getOption(select.selectedIndex).value);

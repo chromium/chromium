@@ -43,16 +43,17 @@ function strToMojoString16(str: string): String16 {
   return {data: arr};
 }
 
-export function changeSelect(
-    select: HTMLSelectElement, value: string|null,
-    selectedIndex: number|null): Promise<void> {
-  if (value) {
-    select.value = value;
-  } else if (selectedIndex !== null) {
-    select.selectedIndex = selectedIndex;
-  } else {
-    return Promise.reject();
-  }
+export function changeSelectedValue(
+    select: HTMLSelectElement, value: string): Promise<void> {
+  select.value = value;
+
+  select.dispatchEvent(new CustomEvent('change'));
+  return flushTasks();
+}
+
+export function changeSelectedIndex(
+    select: HTMLSelectElement, index: number): Promise<void> {
+  select.selectedIndex = index;
 
   select.dispatchEvent(new CustomEvent('change'));
   return flushTasks();
