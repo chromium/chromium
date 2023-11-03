@@ -79,7 +79,13 @@ scoped_refptr<const CalculationValue> CalculationValue::Blend(
                                       to_pixels_and_percent.pixels, progress);
     const float percent = blink::Blend(from_pixels_and_percent.percent,
                                        to_pixels_and_percent.percent, progress);
-    return Create(PixelsAndPercent(pixels, percent), range);
+    bool has_explicit_pixels = from_pixels_and_percent.has_explicit_pixels |
+                               to_pixels_and_percent.has_explicit_pixels;
+    bool has_explicit_percent = from_pixels_and_percent.has_explicit_percent |
+                                to_pixels_and_percent.has_explicit_percent;
+    return Create(PixelsAndPercent(pixels, percent, has_explicit_pixels,
+                                   has_explicit_percent),
+                  range);
   }
 
   auto blended_from = CalculationExpressionOperationNode::CreateSimplified(
@@ -102,12 +108,13 @@ scoped_refptr<const CalculationValue> CalculationValue::Blend(
 scoped_refptr<const CalculationValue>
 CalculationValue::SubtractFromOneHundredPercent() const {
   if (!IsExpression()) {
-    PixelsAndPercent result(-Pixels(), 100 - Percent());
+    PixelsAndPercent result(-Pixels(), 100 - Percent(), HasExplicitPixels(),
+                            /*has_explicit_percent=*/true);
     return Create(result, Length::ValueRange::kAll);
   }
   auto hundred_percent =
       base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-          PixelsAndPercent(0, 100));
+          PixelsAndPercent(0, 100, false, true));
   auto result_expression = CalculationExpressionOperationNode::CreateSimplified(
       CalculationExpressionOperationNode::Children(
           {std::move(hundred_percent), GetOrCreateExpression()}),
@@ -128,7 +135,8 @@ scoped_refptr<const CalculationValue> CalculationValue::Add(
 scoped_refptr<const CalculationValue> CalculationValue::Zoom(
     double factor) const {
   if (!IsExpression()) {
-    PixelsAndPercent result(Pixels() * factor, Percent());
+    PixelsAndPercent result(Pixels() * factor, Percent(), HasExplicitPixels(),
+                            HasExplicitPercent());
     return Create(result, GetValueRange());
   }
   return CreateSimplified(data_.expression->Zoom(factor), GetValueRange());

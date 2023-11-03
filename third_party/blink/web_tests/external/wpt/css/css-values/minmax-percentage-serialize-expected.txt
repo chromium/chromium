@@ -22,8 +22,7 @@ This is a testharness.js-based test.
   assert_equals: 'max(3%, 2%, 1%)' should round-trip exactly in computed values. expected "max(3%, 2%, 1%)" but got "3%"
 [PASS] 'max(3%, 2%, 1%)' as a used value should serialize as '3px'.
 [PASS] 'min(1%, 2%, 3%) 0px' as a specified value should serialize as 'min(1%, 2%, 3%) 0px'.
-[FAIL] 'min(1%, 2%, 3%) 0px' as a computed value should serialize as 'min(1%, 2%, 3%) 0px'.
-  assert_equals: 'min(1%, 2%, 3%) 0px' should round-trip exactly in computed values. expected "min(1%, 2%, 3%) 0px" but got "min(1% + 0px, 2% + 0px, 3% + 0px) 0px"
+[PASS] 'min(1%, 2%, 3%) 0px' as a computed value should serialize as 'min(1%, 2%, 3%) 0px'.
 [FAIL] 'calc(min(1%, 2%) + max(3%, 4%) + 10%)' as a specified value should serialize as 'calc(10% + min(1%, 2%) + max(3%, 4%))'.
   assert_equals: 'calc(min(1%, 2%) + max(3%, 4%) + 10%)' and 'calc(10% + min(1%, 2%) + max(3%, 4%))' should serialize the same in specified values. expected "calc(10% + min(1%, 2%) + max(3%, 4%))" but got "calc(15%)"
 [FAIL] 'calc(min(1%, 2%) + max(3%, 4%) + 10%)' as a computed value should serialize as 'calc(10% + min(1%, 2%) + max(3%, 4%))'.

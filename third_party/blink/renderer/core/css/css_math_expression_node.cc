@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -203,7 +204,9 @@ namespace {
 
 const PixelsAndPercent CreateClampedSamePixelsAndPercent(float value) {
   return PixelsAndPercent(CSSValueClampingUtils::ClampLength(value),
-                          CSSValueClampingUtils::ClampLength(value));
+                          CSSValueClampingUtils::ClampLength(value),
+                          /*has_explicit_pixels=*/true,
+                          /*has_explicit_percent=*/true);
 }
 
 bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
@@ -645,25 +648,27 @@ String CSSMathExpressionNumericLiteral::CustomCSSText() const {
 absl::optional<PixelsAndPercent>
 CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
     const CSSLengthResolver& length_resolver) const {
-  PixelsAndPercent value(0, 0);
   switch (category_) {
     case kCalcLength:
-      value.pixels = value_->ComputeLengthPx(length_resolver);
-      break;
+      return PixelsAndPercent(value_->ComputeLengthPx(length_resolver), 0.0f,
+                              /*has_explicit_pixels=*/true,
+                              /*has_explicit_percent=*/false);
     case kCalcPercent:
       DCHECK(value_->IsPercentage());
-      value.percent = value_->GetDoubleValueWithoutClamping();
-      break;
+      return PixelsAndPercent(0.0f, value_->GetDoubleValueWithoutClamping(),
+                              /*has_explicit_pixels=*/false,
+                              /*has_explicit_percent=*/true);
     case kCalcNumber:
       // TODO(alancutter): Stop treating numbers like pixels unconditionally
       // in calcs to be able to accomodate border-image-width
       // https://drafts.csswg.org/css-backgrounds-3/#the-border-image-width
-      value.pixels = value_->GetFloatValue() * length_resolver.Zoom();
-      break;
+      return PixelsAndPercent(value_->GetFloatValue() * length_resolver.Zoom(),
+                              0.0f, /*has_explicit_pixels=*/true,
+                              /*has_explicit_percent=*/false);
     default:
       NOTREACHED();
+      return {};
   }
-  return value;
 }
 
 scoped_refptr<const CalculationExpressionNode>
@@ -1415,11 +1420,9 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
         return absl::nullopt;
       }
       if (operator_ == CSSMathOperator::kAdd) {
-        result->pixels += other_side->pixels;
-        result->percent += other_side->percent;
+        result.value() += other_side.value();
       } else {
-        result->pixels -= other_side->pixels;
-        result->percent -= other_side->percent;
+        result.value() -= other_side.value();
       }
       break;
     }
@@ -1438,8 +1441,7 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
       if (operator_ == CSSMathOperator::kDivide) {
         number = 1.0 / number;
       }
-      result->pixels *= number;
-      result->percent *= number;
+      result.value() *= number;
       break;
     }
     case CSSMathOperator::kMin:
@@ -2760,6 +2762,16 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
 CSSMathExpressionNode* CSSMathExpressionNode::Create(PixelsAndPercent value) {
   double percent = value.percent;
   double pixels = value.pixels;
+  if (!value.has_explicit_pixels) {
+    CHECK(!pixels);
+    return CSSMathExpressionNumericLiteral::Create(
+        percent, CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  if (!value.has_explicit_percent) {
+    CHECK(!percent);
+    return CSSMathExpressionNumericLiteral::Create(
+        pixels, CSSPrimitiveValue::UnitType::kPixels);
+  }
   CSSMathOperator op = CSSMathOperator::kAdd;
   if (pixels < 0) {
     pixels = -pixels;

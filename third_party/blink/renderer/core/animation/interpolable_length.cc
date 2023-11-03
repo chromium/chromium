@@ -254,7 +254,10 @@ Length InterpolableLength::CreateLength(
       pixels = CSSPrimitiveValue::ClampToCSSLengthRange(pixels);
     }
     return Length(CalculationValue::Create(
-        PixelsAndPercent(pixels, ClampTo<float>(percentage)), range));
+        PixelsAndPercent(pixels, ClampTo<float>(percentage),
+                         /*has_explicit_pixels=*/true,
+                         /*has_explicit_percent=*/true),
+        range));
   }
   if (has_percentage)
     return Length::Percent(ClampToRange(percentage, range));

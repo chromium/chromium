@@ -962,7 +962,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
                                  *style, nullptr /* layout_object */,
                                  false /* allow_visited_style */);
   ASSERT_TRUE(computed_value);
-  ASSERT_EQ("calc(0\% + 10px)", computed_value->CssText());
+  ASSERT_EQ("calc(10px)", computed_value->CssText());
 }
 
 TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {

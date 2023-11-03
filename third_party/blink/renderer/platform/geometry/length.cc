@@ -130,14 +130,15 @@ Length Length::BlendSameTypes(const Length& from,
 PixelsAndPercent Length::GetPixelsAndPercent() const {
   switch (GetType()) {
     case kFixed:
-      return PixelsAndPercent(Value(), 0);
+      return PixelsAndPercent(Value());
     case kPercent:
-      return PixelsAndPercent(0, Value());
+      return PixelsAndPercent(0.0f, Value(), /*has_explicit_pixels=*/false,
+                              /*has_explicit_percent=*/true);
     case kCalculated:
       return GetCalculationValue().GetPixelsAndPercent();
     default:
       NOTREACHED();
-      return PixelsAndPercent(0, 0);
+      return PixelsAndPercent(0.0f, 0.0f, false, false);
   }
 }
 

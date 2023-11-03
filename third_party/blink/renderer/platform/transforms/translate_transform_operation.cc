@@ -31,8 +31,7 @@ Length AddLengths(const Length& lhs, const Length& rhs) {
   PixelsAndPercent lhs_pap = lhs.GetPixelsAndPercent();
   PixelsAndPercent rhs_pap = rhs.GetPixelsAndPercent();
 
-  PixelsAndPercent result = PixelsAndPercent(lhs_pap.pixels + rhs_pap.pixels,
-                                             lhs_pap.percent + rhs_pap.percent);
+  PixelsAndPercent result = lhs_pap + rhs_pap;
   if (result.percent == 0)
     return Length(result.pixels, Length::kFixed);
   if (result.pixels == 0)
