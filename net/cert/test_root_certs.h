@@ -54,7 +54,7 @@ class NET_EXPORT TestRootCerts {
   bool IsKnownRoot(base::span<const uint8_t> der_cert) const;
 
 #if BUILDFLAG(IS_IOS)
-  CFArrayRef temporary_roots() const { return temporary_roots_; }
+  CFArrayRef temporary_roots() const { return temporary_roots_.get(); }
 
   // Modifies the root certificates of |trust_ref| to include the
   // certificates stored in |temporary_roots_|. If IsEmpty() is true, this

@@ -20,18 +20,19 @@ bool TestRootCerts::AddImpl(X509Certificate* certificate) {
     return false;
   }
 
-  if (CFArrayContainsValue(temporary_roots_,
-                           CFRangeMake(0, CFArrayGetCount(temporary_roots_)),
-                           os_cert.get())) {
+  if (CFArrayContainsValue(
+          temporary_roots_.get(),
+          CFRangeMake(0, CFArrayGetCount(temporary_roots_.get())),
+          os_cert.get())) {
     return true;
   }
-  CFArrayAppendValue(temporary_roots_, os_cert.get());
+  CFArrayAppendValue(temporary_roots_.get(), os_cert.get());
 
   return true;
 }
 
 void TestRootCerts::ClearImpl() {
-  CFArrayRemoveAllValues(temporary_roots_);
+  CFArrayRemoveAllValues(temporary_roots_.get());
 }
 
 OSStatus TestRootCerts::FixupSecTrustRef(SecTrustRef trust_ref) const {
@@ -39,7 +40,8 @@ OSStatus TestRootCerts::FixupSecTrustRef(SecTrustRef trust_ref) const {
     return noErr;
   }
 
-  OSStatus status = SecTrustSetAnchorCertificates(trust_ref, temporary_roots_);
+  OSStatus status =
+      SecTrustSetAnchorCertificates(trust_ref, temporary_roots_.get());
   if (status) {
     return status;
   }
