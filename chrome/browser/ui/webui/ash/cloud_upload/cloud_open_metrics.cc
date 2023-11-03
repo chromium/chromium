@@ -172,39 +172,6 @@ void CloudOpenMetrics::CheckForInconsistencies(
               break;
           }
         }
-      } else if (task_result.value == OfficeTaskResult::kFailedToUpload) {
-        ExpectNotLogged(drive_open_error);
-        ExpectNotLogged(one_drive_open_error);
-        switch (upload_result.value) {
-          case OfficeFilesUploadResult::kOtherError:
-          case OfficeFilesUploadResult::kFileSystemNotFound:
-          case OfficeFilesUploadResult::kMoveOperationCancelled:
-          case OfficeFilesUploadResult::kMoveOperationError:
-          case OfficeFilesUploadResult::kMoveOperationNeedPassword:
-          case OfficeFilesUploadResult::kCopyOperationCancelled:
-          case OfficeFilesUploadResult::kCopyOperationError:
-          case OfficeFilesUploadResult::kCopyOperationNeedPassword:
-          case OfficeFilesUploadResult::kPinningFailedDiskFull:
-          case OfficeFilesUploadResult::kCloudAccessDenied:
-          case OfficeFilesUploadResult::kCloudMetadataError:
-          case OfficeFilesUploadResult::kCloudQuotaFull:
-          case OfficeFilesUploadResult::kCloudError:
-          case OfficeFilesUploadResult::kNoConnection:
-          case OfficeFilesUploadResult::kDestinationUrlError:
-          case OfficeFilesUploadResult::kInvalidURL:
-          case OfficeFilesUploadResult::kCloudReauthRequired:
-          case OfficeFilesUploadResult::kInvalidAlternateUrl:
-          case OfficeFilesUploadResult::kUnexpectedAlternateUrlHost:
-          case OfficeFilesUploadResult::kSyncError:
-          case OfficeFilesUploadResult::kSyncCancelledAndDeleted:
-          case OfficeFilesUploadResult::kSyncCancelledAndTrashed:
-          case OfficeFilesUploadResult::
-              kUploadNotStartedReauthenticationRequired:
-            break;
-          case OfficeFilesUploadResult::kSuccess:
-            SetWrongValueLogged(upload_result);
-            break;
-        }
       } else if (task_result.value == OfficeTaskResult::kFailedToOpen) {
         if (google_drive) {
           ExpectLogged(drive_open_error);
