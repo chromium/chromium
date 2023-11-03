@@ -56,6 +56,9 @@ class MEDIA_EXPORT MediaCodecUtil {
   static bool IsHEVCDecoderAvailable();
 #endif
 
+  // Indicates if the AAC encoder is available on this device.
+  static bool IsAACEncoderAvailable();
+
   // Indicates if SurfaceView and MediaCodec work well together on this device.
   static bool IsSurfaceViewOutputSupported();
 

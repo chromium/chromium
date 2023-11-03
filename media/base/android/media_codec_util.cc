@@ -240,6 +240,13 @@ bool MediaCodecUtil::IsHEVCDecoderAvailable() {
 #endif
 
 // static
+bool MediaCodecUtil::IsAACEncoderAvailable() {
+  // We only support AAC encoding on android Q+, due to our use of the NDK.
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_Q;
+}
+
+// static
 bool MediaCodecUtil::IsSurfaceViewOutputSupported() {
   // Disable SurfaceView output for the Samsung Galaxy S3; it does not work
   // well enough for even 360p24 H264 playback.  http://crbug.com/602870.
