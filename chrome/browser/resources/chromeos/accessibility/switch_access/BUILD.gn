@@ -80,7 +80,6 @@ run_jsbundler("switch_access_copied_files") {
     "settings_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
-    "switch_access_loader.js",
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
@@ -201,6 +200,7 @@ js_library("auto_scan_manager") {
 }
 
 js_library("switch_access_loader") {
+  sources = [ "../switch_access_loader.js" ]
   deps = [
     ":commands",
     ":navigator",
