@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
@@ -499,6 +500,14 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     model->SetIconSize(kContentSettingIconSize);
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), this, this, font_list);
+
+    // The ContentSettingImageView loses 4px of margin in Chrome Refresh that we
+    // don't want to lose in the document picture-in-picture toolbar.
+    if (features::IsChromeRefresh2023()) {
+      image_view->SetProperty(views::kMarginsKey,
+                              gfx::Insets::TLBR(0, 0, 0, 4));
+    }
+
     content_setting_views_.push_back(
         button_container_view_->AddChildView(std::move(image_view)));
   }
