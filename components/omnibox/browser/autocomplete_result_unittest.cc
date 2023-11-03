@@ -3062,6 +3062,12 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
   const std::set<OmniboxActionId> all_actions_to_test{ACTION_IN_SUGGEST,
                                                       HISTORY_CLUSTERS, PEDAL};
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kActionsInSuggest,
+      {{OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name,
+        "false"}});
+
   struct FilterOmniboxActionsTestData {
     std::string test_name;
     std::vector<std::vector<OmniboxActionId>> input_matches_and_actions;

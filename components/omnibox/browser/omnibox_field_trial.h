@@ -747,7 +747,7 @@ constexpr base::FeatureParam<bool> kQueryTilesShowAboveTrends(
 constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
     &omnibox::kActionsInSuggest,
     "PromoteEntitySuggestion",
-    false);
+    !!BUILDFLAG(IS_ANDROID));
 
 // Specifies which actions in suggest will be offered to users.
 constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option
