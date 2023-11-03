@@ -333,13 +333,23 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
 }
 
 struct ActivationOperatorDesc {
-  absl::variant<DML_ACTIVATION_RELU_OPERATOR_DESC,
+  absl::variant<DML_ACTIVATION_ELU_OPERATOR_DESC,
+                DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
+                DML_ACTIVATION_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
                 DML_ACTIVATION_TANH_OPERATOR_DESC>
       desc;
 
   DML_OPERATOR_DESC GetActivationDmlDesc() const {
-    if (absl::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(desc)) {
+    if (absl::holds_alternative<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)) {
+      return {DML_OPERATOR_ACTIVATION_ELU,
+              &absl::get<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_LEAKY_RELU,
+              &absl::get<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(
+                   desc)) {
       return {DML_OPERATOR_ACTIVATION_RELU,
               &absl::get<DML_ACTIVATION_RELU_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(
@@ -363,6 +373,13 @@ base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
 CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
   CHECK(activation);
   switch (activation->which()) {
+    case mojom::Activation::Tag::kElu:
+      return ActivationOperatorDesc{.desc = DML_ACTIVATION_ELU_OPERATOR_DESC{
+                                        .Alpha = activation->get_elu()->alpha}};
+    case mojom::Activation::Tag::kLeakyRelu:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
+              .Alpha = activation->get_leaky_relu()->alpha}};
     case mojom::Activation::Tag::kRelu:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_RELU_OPERATOR_DESC{}};
@@ -1088,6 +1105,40 @@ void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElu(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::EluPtr& elu,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, elu->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = elu->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_ACTIVATION_ELU_OPERATOR_DESC elu_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Alpha = elu->alpha};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* elu_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_ELU, &elu_desc, inputs);
+  if (!elu_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create elu operator."));
+  }
+
+  const NodeOutput* node_output =
+      graph_builder.CreateNodeOutput(elu_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 // Creates a DirectML operator for the WebNN general matrix multiplication
 // (GEMM) of the expression alpha * A * B + beta * C.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
@@ -1161,6 +1212,41 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
       gemm_node, std::move(output_tensor_desc), 0);
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::LeakyReluPtr& leaky_relu,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, leaky_relu->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = leaky_relu->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC leaky_relu_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Alpha = leaky_relu->alpha};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* leaky_relu_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_LEAKY_RELU, &leaky_relu_desc, inputs);
+  if (!leaky_relu_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create leakyRelu operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      leaky_relu_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
 }
@@ -1679,10 +1765,22 @@ void GraphImpl::CreateAndBuild(
             graph_builder, id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kElu: {
+        create_operator_result =
+            CreateOperatorNodeForElu(id_to_operand_map, operation->get_elu(),
+                                     graph_builder, id_to_node_output_map);
+        break;
+      }
       case mojom::Operation::Tag::kGemm: {
         create_operator_result =
             CreateOperatorNodeForGemm(id_to_operand_map, operation->get_gemm(),
                                       graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kLeakyRelu: {
+        create_operator_result = CreateOperatorNodeForLeakyRelu(
+            id_to_operand_map, operation->get_leaky_relu(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kPad: {

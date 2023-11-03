@@ -401,6 +401,53 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
+  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with elu
+  // activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1},
+                   .values = {1}},
+        .attributes = {.bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {-5}},
+                       .activation = mojom::Activation::Tag::kElu,
+                       .elu_alpha = 0.8},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = {-0.7946096424007316, -0.7853474888890126,
+                              -0.7601703453057089, -0.6917317734107099,
+                              -0.5056964470628461, 0, 1, 2, 3}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, float 32 data type, bias and fusing with
+  // leakyRelu activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 4, 4},
+                  .values = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                             15}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {-60}},
+                       .activation = mojom::Activation::Tag::kLeakyRelu,
+                       .leaky_relu_alpha = 0.02},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {-0.3, -0.12, 21, 30}}}
+        .Test();
+  }
   // Test conv2d with NHWC layout, float 32 data type, fusing with bias and relu
   // activation.
   {
@@ -1308,6 +1355,8 @@ template <typename T>
 struct UnaryOperatorTester {
   mojom::Operation::Tag tag;
   OperandInfo<T> input;
+  absl::optional<float> elu_alpha;
+  absl::optional<float> leaky_relu_alpha;
   OperandInfo<float> output;
   void Test() {
     // Build the graph with mojo type.
@@ -1317,6 +1366,16 @@ struct UnaryOperatorTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
     switch (tag) {
+      case mojom::Operation::Tag::kElu:
+        CHECK(elu_alpha);
+        builder.BuildElu(input_operand_id, output_operand_id,
+                         elu_alpha.value());
+        break;
+      case mojom::Operation::Tag::kLeakyRelu:
+        CHECK(leaky_relu_alpha);
+        builder.BuildLeakyRelu(input_operand_id, output_operand_id,
+                               leaky_relu_alpha.value());
+        break;
       case mojom::Operation::Tag::kRelu:
         builder.BuildRelu(input_operand_id, output_operand_id);
         break;
@@ -1622,6 +1681,92 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorRelu) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 1, 1},
                    .values = {0, 2}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator elu.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElu) {
+  {
+    // Test elu with a 3d input and alpha = 1.0.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kElu,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2, 3},
+                  .values = {0.4301911, 0.54719144, -1.1637765, 0.18390046,
+                             0.58390397, 0.1735679, 0.539724, -0.953514,
+                             -0.59202826, -0.17344485, 0.14395015,
+                             -0.37920907}},
+        .elu_alpha = 1.0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {0.4301911, 0.54719144, -0.6876954670284463,
+                              0.18390046, 0.58390397, 0.1735679, 0.539724,
+                              -0.6146155995193658, -0.44679589568801814,
+                              -0.15923648200867868, 0.14395015,
+                              -0.3155974903251695}}}
+        .Test();
+  }
+  {
+    // Test elu with a 3d input and alpha = 0.8.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kElu,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2, 3},
+                  .values = {0.4301911, 0.54719144, -1.1637765, 0.18390046,
+                             0.58390397, 0.1735679, 0.539724, -0.953514,
+                             -0.59202826, -0.17344485, 0.14395015,
+                             -0.37920907}},
+        .elu_alpha = 0.8,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {0.4301911, 0.54719144, -0.550156373622757,
+                              0.18390046, 0.58390397, 0.1735679, 0.539724,
+                              -0.4916924796154927, -0.35743671655041453,
+                              -0.12738918560694296, 0.14395015,
+                              -0.2524779922601356}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator leakyRelu.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorLeakyRelu) {
+  {
+    // Test leakyRelu with a 3d input and alpha = 0.01.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kLeakyRelu,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2, 3},
+                  .values = {0.4301911, 0.54719144, -1.1637765, 0.18390046,
+                             0.58390397, 0.1735679, 0.539724, -0.953514,
+                             -0.59202826, -0.17344485, 0.14395015,
+                             -0.37920907}},
+        .leaky_relu_alpha = 0.01,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {0.4301911, 0.54719144, -0.011637765, 0.18390046,
+                              0.58390397, 0.1735679, 0.539724, -0.00953514,
+                              -0.0059202826, -0.0017344485000000001, 0.14395015,
+                              -0.0037920907}}}
+        .Test();
+  }
+  {
+    // Test leakyRelu with a 3d input and alpha = 0.05.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kLeakyRelu,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2, 3},
+                  .values = {0.4301911, 0.54719144, -1.1637765, 0.18390046,
+                             0.58390397, 0.1735679, 0.539724, -0.953514,
+                             -0.59202826, -0.17344485, 0.14395015,
+                             -0.37920907}},
+        .leaky_relu_alpha = 0.05,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 3},
+                   .values = {0.4301911, 0.54719144, -0.058188825, 0.18390046,
+                              0.58390397, 0.1735679, 0.539724, -0.0476757,
+                              -0.029601413, -0.008672242500000002, 0.14395015,
+                              -0.018960453500000002}}}
         .Test();
   }
 }
