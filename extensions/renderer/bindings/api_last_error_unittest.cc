@@ -35,8 +35,9 @@ std::string GetLastErrorMessage(v8::Local<v8::Object> parent,
   return V8ToString(message, context);
 }
 
-using ParentList =
-    std::vector<std::pair<v8::Local<v8::Context>, v8::Local<v8::Object>>>;
+using ContextParentPair =
+    std::pair<v8::Local<v8::Context>, v8::Local<v8::Object>>;
+using ParentList = v8::MemorySpan<ContextParentPair>;
 v8::Local<v8::Object> GetParent(const ParentList& parents,
                                 v8::Local<v8::Context> context,
                                 v8::Local<v8::Object>* secondary_parent) {
@@ -59,8 +60,8 @@ TEST_F(APILastErrorTest, TestLastError) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> parent_object = v8::Object::New(isolate());
 
-  ParentList parents = {{context, parent_object}};
-  APILastError last_error(base::BindRepeating(&GetParent, parents),
+  auto parents = v8::to_array<ContextParentPair>({{context, parent_object}});
+  APILastError last_error(base::BindRepeating(&GetParent, ParentList(parents)),
                           base::DoNothing());
 
   EXPECT_FALSE(last_error.HasError(context));
@@ -101,10 +102,9 @@ TEST_F(APILastErrorTest, ReportIfUnchecked) {
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 
-  ParentList parents = {{context, parent_object}};
-  APILastError last_error(base::BindRepeating(&GetParent, parents),
+  auto parents = v8::to_array<ContextParentPair>({{context, parent_object}});
+  APILastError last_error(base::BindRepeating(&GetParent, ParentList(parents)),
                           base::BindRepeating(log_error, &console_error));
-
   {
     v8::TryCatch try_catch(isolate());
     last_error.SetError(context, "foo");
@@ -179,8 +179,8 @@ TEST_F(APILastErrorTest, ReportUncheckedError) {
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 
-  ParentList parents = {{context, parent_object}};
-  APILastError last_error(base::BindRepeating(&GetParent, parents),
+  auto parents = v8::to_array<ContextParentPair>({{context, parent_object}});
+  APILastError last_error(base::BindRepeating(&GetParent, ParentList(parents)),
                           base::BindRepeating(log_error, &console_error));
 
   // lastError should start unset.
@@ -215,8 +215,8 @@ TEST_F(APILastErrorTest, NonLastErrorObject) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> parent_object = v8::Object::New(isolate());
 
-  ParentList parents = {{context, parent_object}};
-  APILastError last_error(base::BindRepeating(&GetParent, parents),
+  auto parents = v8::to_array<ContextParentPair>({{context, parent_object}});
+  APILastError last_error(base::BindRepeating(&GetParent, ParentList(parents)),
                           base::DoNothing());
 
   auto checked_set = [context](v8::Local<v8::Object> object,
@@ -259,8 +259,9 @@ TEST_F(APILastErrorTest, MultipleContexts) {
 
   v8::Local<v8::Object> parent_a = v8::Object::New(isolate());
   v8::Local<v8::Object> parent_b = v8::Object::New(isolate());
-  ParentList parents = {{context_a, parent_a}, {context_b, parent_b}};
-  APILastError last_error(base::BindRepeating(&GetParent, parents),
+  auto parents = v8::to_array<ContextParentPair>(
+      {{context_a, parent_a}, {context_b, parent_b}});
+  APILastError last_error(base::BindRepeating(&GetParent, ParentList(parents)),
                           base::DoNothing());
 
   last_error.SetError(context_a, "Last error a");
