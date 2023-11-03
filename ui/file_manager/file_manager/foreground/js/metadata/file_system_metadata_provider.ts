@@ -4,6 +4,10 @@
 
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
+import type {MetadataRequest} from './metadata_request.js';
+
+export const FILE_SYSTEM_METADATA_PROPERTY_NAMES =
+    ['modificationTime', 'size', 'present', 'availableOffline'];
 
 /**
  * Metadata provider for FileEntry#getMetadata.
@@ -11,20 +15,15 @@ import {MetadataProvider} from './metadata_provider.js';
  */
 export class FileSystemMetadataProvider extends MetadataProvider {
   constructor() {
-    super(FileSystemMetadataProvider.PROPERTY_NAMES);
+    super(FILE_SYSTEM_METADATA_PROPERTY_NAMES);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'requests' implicitly has an 'any'
-  // type.
-  get(requests) {
+  override get(requests: MetadataRequest[]): Promise<MetadataItem[]> {
     if (!requests.length) {
       return Promise.resolve([]);
     }
-    // @ts-ignore: error TS7006: Parameter 'request' implicitly has an 'any'
-    // type.
     return Promise.all(requests.map(request => {
-      return new Promise((fulfill, reject) => {
+      return new Promise<Metadata>((fulfill, reject) => {
                request.entry.getMetadata(fulfill, reject);
              })
           .then(
@@ -47,7 +46,3 @@ export class FileSystemMetadataProvider extends MetadataProvider {
     }));
   }
 }
-
-/** @const @type {!Array<string>} */
-FileSystemMetadataProvider.PROPERTY_NAMES =
-    ['modificationTime', 'size', 'present', 'availableOffline'];

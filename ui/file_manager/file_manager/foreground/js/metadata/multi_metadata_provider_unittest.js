@@ -69,8 +69,9 @@ export function testMultiMetadataProviderBasic(callback) {
       /** @type {!FileSystemMetadataProvider} */ ({
         get: function(requests) {
           assertEquals(1, requests.length);
-          assertEquals('filesystem://A', requests[0].entry.toURL());
-          assertArrayEquals(['size', 'modificationTime'], requests[0].names);
+          const request0 = /** @type {!MetadataRequest} */ (requests[0]);
+          assertEquals('filesystem://A', request0.entry.toURL());
+          assertArrayEquals(['size', 'modificationTime'], request0.names);
           return Promise.resolve(
               [{modificationTime: new Date(2015, 0, 1), size: 1024}]);
         },

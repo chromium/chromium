@@ -11,7 +11,7 @@ import {VolumeManager} from '../../../externs/volume_manager.js';
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
-import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
+import {FILE_SYSTEM_METADATA_PROPERTY_NAMES, FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
@@ -28,7 +28,7 @@ export class MultiMetadataProvider extends MetadataProvider {
   constructor(
       fileSystemMetadataProvider, externalMetadataProvider,
       contentMetadataProvider, dlpMetadataProvider, volumeManager) {
-    super(FileSystemMetadataProvider.PROPERTY_NAMES
+    super(FILE_SYSTEM_METADATA_PROPERTY_NAMES
               .concat(ExternalMetadataProvider.PROPERTY_NAMES)
               .concat(ContentMetadataProvider.PROPERTY_NAMES)
               .concat(DlpMetadataProvider.PROPERTY_NAMES));
@@ -80,23 +80,14 @@ export class MultiMetadataProvider extends MetadataProvider {
       const contentPropertyNames = [];
       const fallbackContentPropertyNames = [];
       const dlpPropertyNames = [];
-      for (let i = 0; i < request.names.length; i++) {
-        const name = request.names[i];
+      for (const name of request.names) {
         const isFileSystemProperty =
-            // @ts-ignore: error TS2345: Argument of type 'string | undefined'
-            // is not assignable to parameter of type 'string'.
-            FileSystemMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
+            FILE_SYSTEM_METADATA_PROPERTY_NAMES.indexOf(name) !== -1;
         const isExternalProperty =
-            // @ts-ignore: error TS2345: Argument of type 'string | undefined'
-            // is not assignable to parameter of type 'string'.
             ExternalMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
         const isContentProperty =
-            // @ts-ignore: error TS2345: Argument of type 'string | undefined'
-            // is not assignable to parameter of type 'string'.
             ContentMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
         const isDlpProperty =
-            // @ts-ignore: error TS2345: Argument of type 'string | undefined'
-            // is not assignable to parameter of type 'string'.
             DlpMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
         assert(
             isFileSystemProperty || isExternalProperty || isContentProperty ||

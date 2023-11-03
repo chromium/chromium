@@ -122,7 +122,6 @@ static_js_files = [
   "file_manager/foreground/js/metadata/exif_constants.js",
   "file_manager/foreground/js/metadata/exif_parser.js",
   "file_manager/foreground/js/metadata/external_metadata_provider.js",
-  "file_manager/foreground/js/metadata/file_system_metadata_provider.js",
   "file_manager/foreground/js/metadata/function_parallel.js",
   "file_manager/foreground/js/metadata/function_sequence.js",
   "file_manager/foreground/js/metadata/id3_parser.js",
@@ -325,6 +324,7 @@ ts_files = [
   "file_manager/definitions/file_manager_private.ts",
 
   # Metadata:
+  "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_item.ts",
   "file_manager/foreground/js/metadata/metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_request.ts",
@@ -450,6 +450,9 @@ ts_test_files = [
   "file_manager/foreground/js/ui/banners/warning_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/educational_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.ts",
+
+  # Metadata:
+  "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -530,7 +533,6 @@ unittest_files = [
   "file_manager/foreground/js/metadata/metadata_model_unittest.js",
   "file_manager/foreground/js/metadata/content_metadata_provider_unittest.js",
   "file_manager/foreground/js/metadata/external_metadata_provider_unittest.js",
-  "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
