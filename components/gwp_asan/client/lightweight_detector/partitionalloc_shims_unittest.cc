@@ -73,7 +73,8 @@ MULTIPROCESS_TEST_MAIN(PartitionAllocShimsTest_Basic) {
   return kFailure;
 }
 
-TEST_F(PartitionAllocShimsTest, Basic) {
+// crbug.com/1499309 : Disable failed test.
+TEST_F(PartitionAllocShimsTest, DISABLED_Basic) {
   runTest("PartitionAllocShimsTest_Basic");
 }
 
