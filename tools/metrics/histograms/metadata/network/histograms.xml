@@ -711,6 +711,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Ash.{NetworkType}.ConnectionResult.All"
+    enum="ShillConnectResult" expires_after="2024-03-03">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the result of all Network connection attempts. A success is emitted
+    when a network of type {NetworkType} becomes connected from a non-connected
+    state. When a network of type {NetworkType} goes from a connecting state to
+    a disconnected state without a user initiated disconnect, a shill failure
+    reason is emitted.
+  </summary>
+  <token key="NetworkType" variants="AshNetworkType"/>
+</histogram>
+
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.NonUserInitiated"
     enum="ShillConnectResult" expires_after="2024-03-17">
   <owner>jiajunz@chromium.org</owner>
@@ -731,26 +745,6 @@ chromium-metrics-reviews@google.com.
     Tracks the result of a user initiated connection attempt. Logged when a
     network of type {NetworkType} connection succeeds or fails.
   </summary>
-  <token key="NetworkType" variants="AshNetworkType"/>
-</histogram>
-
-<histogram name="Network.Ash.{NetworkType}.ConnectionResult.{Filtering}"
-    enum="ShillConnectResult" expires_after="2024-03-03">
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <summary>
-    Tracks the result of all Network connection attempts, it also tracks tracks
-    non repeated connection errors. A success is emitted when a network of type
-    {NetworkType} becomes connected from a non-connected state. When a network
-    of type {NetworkType} goes from a connecting state to a disconnected state
-    without a user initiated disconnect, a shill failure reason is emitted.
-    {Filtering} is not emitted if the network has if the current error is the
-    same as the previous error.
-  </summary>
-  <token key="Filtering">
-    <variant name="All"/>
-    <variant name="Filtered"/>
-  </token>
   <token key="NetworkType" variants="AshNetworkType"/>
 </histogram>
 
