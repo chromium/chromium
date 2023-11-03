@@ -510,7 +510,8 @@ TEST_F(FontDescriptionTest, ToString) {
   description.SetSpecifiedSize(1.1f);
   description.SetComputedSize(2.2f);
   description.SetAdjustedSize(3.3f);
-  description.SetSizeAdjust(FontSizeAdjust(4.4f));
+  description.SetSizeAdjust(
+      FontSizeAdjust(4.4f, FontSizeAdjust::Metric::kCapHeight));
   description.SetLetterSpacing(5.5f);
   description.SetWordSpacing(6.6f);
 
@@ -523,8 +524,8 @@ TEST_F(FontDescriptionTest, ToString) {
   EXPECT_EQ(
       "family_list=[A, B], feature_settings=[cccc=76,dddd=94], "
       "variation_settings=[aaaa=42,bbbb=8118], locale=no, "
-      "specified_size=1.100000, "
-      "computed_size=2.200000, adjusted_size=3.300000, size_adjust=4.400000, "
+      "specified_size=1.100000, computed_size=2.200000, "
+      "adjusted_size=3.300000, size_adjust=cap-height 4.4, "
       "letter_spacing=5.500000, word_spacing=6.600000, "
       "font_selection_request=[weight=32.500000, width=33.500000, "
       "slope=31.500000], typesetting_features=[Kerning,Ligatures], "
