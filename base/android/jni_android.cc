@@ -11,8 +11,9 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
 #include "base/android_runtime_jni_headers/Throwable_jni.h"
-#include "base/base_jni/PiiElider_jni.h"
+#include "base/base_jni/JniAndroid_jni.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -21,11 +22,19 @@ namespace base {
 namespace android {
 namespace {
 
+// If disabled, we LOG(FATAL) immediately in native code when faced with an
+// uncaught Java exception (historical behavior). If enabled, we give the Java
+// uncaught exception handler a chance to handle the exception first, so that
+// the crash is (hopefully) seen as a Java crash, not a native crash.
+// TODO(https://crbug.com/1426888): remove this switch once we are confident the
+// new behavior is fine.
+BASE_FEATURE(kHandleExceptionsInJava,
+             "HandleJniExceptionsInJava",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 JavaVM* g_jvm = nullptr;
 jobject g_class_loader = nullptr;
 jmethodID g_class_loader_load_class_method_id = 0;
-
-bool g_fatal_exception_occurred = false;
 
 ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
                                             const char* class_name,
@@ -268,38 +277,90 @@ void CheckException(JNIEnv* env) {
   if (!HasException(env))
     return;
 
+  static thread_local bool g_reentering = false;
+  if (g_reentering) {
+    // We were handling an uncaught Java exception already, but one of the Java
+    // methods we called below threw another exception. (This is unlikely to
+    // happen as we are careful to never throw from these methods, but we can't
+    // rule it out entirely as the JVM itself may throw - think
+    // OutOfMemoryError, for example.)
+    //
+    // Note that just because we LOG(FATAL) here does not mean it's over -
+    // indeed LOG(FATAL) itself may attempt to call Java methods (e.g. through
+    // GetJavaStackTraceIfPresent()), and we can't let that happen because that
+    // could lead to infinite recursion. To prevent this, we deliberately
+    // refrain from calling `env->ExceptionClear()` in this case - this way, the
+    // JVM will instantly crash if called again from this thread. Such crashes
+    // are hard to troubleshoot though, so ideally attempts to call Java methods
+    // from LOG(FATAL) should guard against HasException() to provide a better
+    // message.
+    constexpr char kMessage[] =
+        "While handling an uncaught Java exception, another Java exception was "
+        "thrown (out of memory?).";
+    base::android::SetJavaException(kMessage);
+    LOG(FATAL) << kMessage;
+  }
+  g_reentering = true;
+
+  // Log a message to ensure there is something in the log even if the rest of
+  // this function goes horribly wrong, and also to provide a convenient marker
+  // in the log for where Java exception crash information starts.
+  LOG(ERROR) << "Crashing due to uncaught Java exception";
+
+  const bool handle_exception_in_java =
+      base::FeatureList::IsEnabled(kHandleExceptionsInJava);
+
+  if (!handle_exception_in_java) {
+    env->ExceptionDescribe();
+  }
+
   // We cannot use `ScopedJavaLocalRef` directly because that ends up calling
   // env->GetObjectRefType() when DCHECK is on, and that call is not allowed
   // with a pending exception according to the JNI spec.
   jthrowable raw_throwable = env->ExceptionOccurred();
-  if (raw_throwable) {
-    env->ExceptionDescribe();
-    env->ExceptionClear();
-    // The reference returned by `ExceptionOccurred()` is a local reference.
-    // `ExceptionClear()` merely removes the exception information from `env`;
-    // it doesn't delete the reference, which is why this call is valid.
-    auto throwable = ScopedJavaLocalRef<jthrowable>::Adopt(env, raw_throwable);
+  // Now that we saved the reference to the throwable, clear the exception.
+  //
+  // We need to do this as early as possible to remove the risk that code below
+  // might accidentally call back into Java, which is not allowed when `env`
+  // has an exception set, per the JNI spec. (For example, LOG(FATAL) doesn't
+  // work with a JNI exception set, because it calls
+  // GetJavaStackTraceIfPresent()).
+  env->ExceptionClear();
+  // The reference returned by `ExceptionOccurred()` is a local reference.
+  // `ExceptionClear()` merely removes the exception information from `env`;
+  // it doesn't delete the reference, which is why this call is valid.
+  auto throwable = ScopedJavaLocalRef<jthrowable>::Adopt(env, raw_throwable);
 
-    if (g_fatal_exception_occurred) {
-      // Another exception (probably OOM) occurred during GetJavaExceptionInfo.
-      base::android::SetJavaException(
-          "Java OOM'ed in exception handling, check logcat");
-    } else {
-      g_fatal_exception_occurred = true;
-      // RVO should avoid any extra copies of the exception string.
-      base::android::SetJavaException(
-          GetJavaExceptionInfo(env, throwable).c_str());
-    }
-  }
+  // TODO: arguably this is redundant with JavaExceptionReporter, which already
+  // installs a Java global uncaught exception handler that does the same thing.
+  // Maybe we should get rid of this so that fewer things can go wrong. One
+  // downside is that JavaExceptionReporter will not run if the app removed it
+  // as a global uncaught exception handler.
+  base::android::SetJavaException(GetJavaExceptionInfo(env, throwable).c_str());
 
-  // Now, feel good about it and die.
-  LOG(FATAL) << "Please include Java exception stack in crash report";
+  CHECK(handle_exception_in_java)
+      << "Uncaught Java exception in native code. Please include the Java "
+         "exception stack from the Android log in your crash report.";
+
+  // TODO: this terminates the process from the Java side, which means the crash
+  // is treated as a Java crash, as opposed to a native crash. This is what we
+  // want (the true root cause of the crash is a Java exception, after all), but
+  // that also means we don't get any information about the native side of the
+  // stack. We should try to mitigate that in some way.
+  Java_JniAndroid_handleException(env, throwable);
+
+  // Ideally handleException() should have terminated the process and we should
+  // not get here. In the unlikely case it didn't, we need to do that ourselves.
+  LOG(FATAL)
+      << "Uncaught Java exception in native code, and the Java uncaught "
+         "exception handler did not terminate the process. Please include the "
+         "Java exception stack from the Android log in your crash report.";
 }
 
 std::string GetJavaExceptionInfo(JNIEnv* env,
                                  const JavaRef<jthrowable>& throwable) {
   ScopedJavaLocalRef<jstring> sanitized_exception_string =
-      Java_PiiElider_getSanitizedStacktrace(env, throwable);
+      Java_JniAndroid_sanitizedStacktraceForUnhandledException(env, throwable);
 
   return ConvertJavaStringToUTF8(sanitized_exception_string);
 }
@@ -313,6 +374,15 @@ std::string GetJavaStackTraceIfPresent() {
     // JNI has not been initialized on this thread.
     return {};
   }
+
+  if (HasException(env)) {
+    // This can happen if CheckException() is being re-entered, decided to
+    // LOG(FATAL) immediately, and LOG(FATAL) itself is calling us. In that case
+    // it is imperative that we don't try to call Java again.
+    return "Unable to retrieve Java caller stack trace as the exception "
+           "handler is being re-entered";
+  }
+
   ScopedJavaLocalRef<jthrowable> throwable =
       JNI_Throwable::Java_Throwable_Constructor(env);
   std::string ret = GetJavaExceptionInfo(env, throwable);
