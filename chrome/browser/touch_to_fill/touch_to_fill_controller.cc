@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
@@ -24,6 +25,7 @@ namespace {
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using webauthn::WebAuthnCredManDelegate;
+using DisplayTarget = TouchToFillController::DisplayTarget;
 
 std::vector<UiCredential> SortCredentials(
     base::span<const UiCredential> credentials) {
@@ -40,7 +42,6 @@ std::vector<UiCredential> SortCredentials(
 
   return result;
 }
-
 }  // namespace
 
 TouchToFillController::TouchToFillController(
@@ -64,22 +65,16 @@ bool TouchToFillController::Show(
 
   ttf_delegate_->OnShow(credentials, passkey_credentials);
   GURL url = ttf_delegate_->GetFrameUrl();
-  int flags = TouchToFillView::kNone;
-  if (cred_man_delegate && cred_man_delegate->HasPasskeys() ==
-                               WebAuthnCredManDelegate::State::kHasPasskeys) {
-    cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
-        &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
-    flags |= TouchToFillView::kShouldShowCredManEntry;
-  }
-  if (credentials.empty() && passkey_credentials.empty()) {
-    // Ideally this should never happen. However, in case we do end up invoking
-    // Show() without credentials, we should not show Touch To Fill to the user
-    // and treat this case as dismissal, in order to restore the soft keyboard.
-    if (!!(flags & TouchToFillView::kShouldShowCredManEntry)) {
-      OnShowCredManSelected();
-      return true;
-    }
-    if (ttf_delegate_->ShouldShowNoPasskeysSheetIfRequired()) {
+
+  switch (GetResponsibleDisplayTarget(credentials, passkey_credentials)) {
+    case DisplayTarget::kNone:
+      // Ideally this should never happen. However, in case we do end up
+      // invoking Show() without credentials, we should not show Touch To Fill
+      // to the user and treat this case as dismissal, in order to restore the
+      // soft keyboard.
+      OnDismiss();
+      return false;
+    case DisplayTarget::kShowNoPasskeysSheet:
       if (!no_passkeys_bridge_) {
         no_passkeys_bridge_ = std::make_unique<NoPasskeysBottomSheetBridge>();
       }
@@ -89,29 +84,42 @@ bool TouchToFillController::Show(
           base::BindOnce(&TouchToFillController::OnHybridSignInSelected,
                          AsWeakPtr()));
       return true;
-    }
-    OnDismiss();
-    return false;
-  }
+    case DisplayTarget::kDeferToCredMan:
+      cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+          &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
+      OnShowCredManSelected();
+      return true;
+    case DisplayTarget::kShowTouchToFill:
+      if (!view_) {
+        view_ = TouchToFillViewFactory::Create(this);
+      }
 
-  if (!view_)
-    view_ = TouchToFillViewFactory::Create(this);
+      int flags = TouchToFillView::kNone;
 
-  if (ttf_delegate_->ShouldTriggerSubmission()) {
-    flags |= TouchToFillView::kTriggerSubmission;
-  }
-  if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent()) {
-    flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
-  }
-  if (ttf_delegate_->ShouldShowHybridOption()) {
-    flags |= TouchToFillView::kShouldShowHybridOption;
-  }
+      if (ttf_delegate_->ShouldTriggerSubmission()) {
+        flags |= TouchToFillView::kTriggerSubmission;
+      }
+      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent()) {
+        flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
+      }
+      if (ttf_delegate_->ShouldShowHybridOption()) {
+        flags |= TouchToFillView::kShouldShowHybridOption;
+      }
+      if (cred_man_delegate &&
+          cred_man_delegate->HasPasskeys() ==
+              WebAuthnCredManDelegate::State::kHasPasskeys) {
+        cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+            &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
+        flags |= TouchToFillView::kShouldShowCredManEntry;
+      }
 
-  return view_->Show(
-      url,
-      TouchToFillView::IsOriginSecure(
-          network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
-      SortCredentials(credentials), passkey_credentials, flags);
+      return view_->Show(url,
+                         TouchToFillView::IsOriginSecure(
+                             network::IsOriginPotentiallyTrustworthy(
+                                 url::Origin::Create(url))),
+                         SortCredentials(credentials), passkey_credentials,
+                         flags);
+  }
 }
 
 void TouchToFillController::OnCredentialSelected(
@@ -194,4 +202,23 @@ void TouchToFillController::ActionCompleted() {
     visibility_controller_->SetShown();
   }
   ttf_delegate_.reset();
+}
+
+DisplayTarget TouchToFillController::GetResponsibleDisplayTarget(
+    base::span<const password_manager::UiCredential> credentials,
+    base::span<password_manager::PasskeyCredential> passkey_credentials) const {
+  bool has_passkeys_in_cred_man =
+      cred_man_delegate_ && cred_man_delegate_->HasPasskeys() ==
+                                WebAuthnCredManDelegate::State::kHasPasskeys;
+  if (!credentials.empty() || !passkey_credentials.empty()) {
+    return DisplayTarget::kShowTouchToFill;
+  }
+
+  if (has_passkeys_in_cred_man) {
+    return DisplayTarget::kDeferToCredMan;
+  }
+  if (ttf_delegate_->ShouldShowNoPasskeysSheetIfRequired()) {
+    return DisplayTarget::kShowNoPasskeysSheet;
+  }
+  return DisplayTarget::kNone;
 }

@@ -843,8 +843,9 @@ TEST_F(TouchToFillControllerAutofillTest, ShowCredManEntryIfThereArePasskeys) {
   const UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   MockWebAuthnCredManDelegate cred_man_delegate;
-  ON_CALL(cred_man_delegate, HasPasskeys())
-      .WillByDefault(Return(WebAuthnCredManDelegate::State::kHasPasskeys));
+  EXPECT_CALL(cred_man_delegate, HasPasskeys())
+      .Times(2)
+      .WillRepeatedly(Return(WebAuthnCredManDelegate::State::kHasPasskeys));
   EXPECT_CALL(cred_man_delegate, SetRequestCompletionCallback(_));
   EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
                            ElementsAreArray(credentials),
@@ -881,7 +882,7 @@ TEST_F(TouchToFillControllerAutofillTest, NoCredManEntryIfNoPasskeys) {
   const UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   MockWebAuthnCredManDelegate cred_man_delegate;
-  EXPECT_CALL(cred_man_delegate, HasPasskeys());
+  EXPECT_CALL(cred_man_delegate, HasPasskeys()).Times(2);
   EXPECT_CALL(cred_man_delegate, SetRequestCompletionCallback(_)).Times(0);
   EXPECT_CALL(view(),
               Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),

@@ -31,6 +31,15 @@ class TouchToFillControllerDelegate;
 class TouchToFillController
     : public base::SupportsWeakPtr<TouchToFillController> {
  public:
+  // Convenience enum for selecting the correct UI that this controller can
+  // display.
+  enum DisplayTarget {
+    kNone,
+    kShowTouchToFill,
+    kDeferToCredMan,
+    kShowNoPasskeysSheet,
+  };
+
   explicit TouchToFillController(
       base::WeakPtr<
           password_manager::KeyboardReplacingSurfaceVisibilityController>
@@ -105,6 +114,12 @@ class TouchToFillController
   // Callback method for the delegate to signal that it has completed its
   // action and is no longer needed. This destroys the delegate.
   void ActionCompleted();
+
+  // Helper method to select the display target.
+  DisplayTarget GetResponsibleDisplayTarget(
+      base::span<const password_manager::UiCredential> credentials,
+      base::span<password_manager::PasskeyCredential> passkey_credentials)
+      const;
 
   // Delegate for interacting with the client that owns this controller.
   // It is provided when Show() is called, and reset when the view is
