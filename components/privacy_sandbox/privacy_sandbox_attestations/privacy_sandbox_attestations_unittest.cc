@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
@@ -17,12 +18,24 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace privacy_sandbox {
+
+namespace {
+
+class MockAttestationsObserver
+    : public content::PrivacySandboxAttestationsObserver {
+ public:
+  MOCK_METHOD(void, OnAttestationsLoaded, (), (override));
+};
+
+}  // namespace
 
 class PrivacySandboxAttestationsTestBase : public testing::Test {
  public:
@@ -373,6 +386,15 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   base::HistogramTester histogram_tester;
+
+  MockAttestationsObserver observer;
+  base::ScopedObservation<PrivacySandboxAttestations,
+                          content::PrivacySandboxAttestationsObserver>
+      observation(&observer);
+  observation.Observe(PrivacySandboxAttestations::GetInstance());
+
+  EXPECT_CALL(observer, OnAttestationsLoaded).Times(2);
+
   PrivacySandboxAttestationsProto proto;
   ASSERT_TRUE(proto.site_attestations_size() == 0);
 
@@ -438,6 +460,8 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
                 net::SchemefulSite(GURL(site)),
                 PrivacySandboxAttestationsGatedAPI::kProtectedAudience),
             Status::kAllowed);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,

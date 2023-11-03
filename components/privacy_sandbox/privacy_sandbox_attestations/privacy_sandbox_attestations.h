@@ -16,10 +16,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class PrivacySandboxAttestationsObserver;
+}  // namespace content
 
 namespace privacy_sandbox {
 
@@ -123,6 +128,11 @@ class PrivacySandboxAttestations {
   void SetLoadAttestationsParsingStartedCallbackForTesting(
       base::OnceClosure callback);
 
+  // Returns true if the attestations have ever been loaded or if attestations
+  // are not enforced.
+  bool AddObserver(content::PrivacySandboxAttestationsObserver* observer);
+  void RemoveObserver(content::PrivacySandboxAttestationsObserver* observer);
+
  private:
   friend class base::NoDestructor<PrivacySandboxAttestations>;
 
@@ -157,6 +167,16 @@ class PrivacySandboxAttestations {
   // we're in a test). If it returns false, do nothing.
   bool RunLoadAttestationsParsingStartedCallbackForTesting();
 
+  // Called when attestations loading finishes.
+  void OnAttestationsLoaded();
+
+  // Notify observers that attestations have been loaded.
+  void NotifyObserversOnAttestationsLoaded();
+
+  // Returns whether attestations have ever been loaded. Also returns true
+  // if all Privacy Sandbox APIs are considered attested for testing.
+  bool IsEverLoaded() const;
+
   // Task runner used to execute the file opening and parsing.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -184,6 +204,10 @@ class PrivacySandboxAttestations {
 
   // If true, all Privacy Sandbox APIs are considered attested for any site.
   bool is_all_apis_attested_for_testing_ = false;
+
+  scoped_refptr<
+      base::ObserverListThreadSafe<content::PrivacySandboxAttestationsObserver>>
+      observers_;
 };
 
 }  // namespace privacy_sandbox
