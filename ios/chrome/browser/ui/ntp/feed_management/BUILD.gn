@@ -105,18 +105,26 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "follow_management_mediator_unittest.mm" ]
+  sources = [
+    "follow_management_mediator_unittest.mm",
+    "follow_management_view_controller_unittest.mm",
+  ]
   deps = [
     ":follow_management",
     ":follow_management_ui",
+    "//base/test:test_support",
     "//components/favicon/core",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
