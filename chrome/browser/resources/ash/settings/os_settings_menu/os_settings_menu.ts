@@ -357,6 +357,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.APPS_SECTION_PATH}`,
           icon: 'os-settings:apps',
           label: this.i18n('appsPageTitle'),
+          sublabel: this.i18n('appsMenuItemDescription'),
         },
         {
           section: Section.kAccessibility,

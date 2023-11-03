@@ -265,6 +265,18 @@ suite('<os-settings-menu>', () => {
     });
   });
 
+  suite('Apps menu item', () => {
+    test('Description text', async () => {
+      await createMenu();
+
+      const appsMenuItem =
+          queryMenuItemByPath(`/${routesMojom.APPS_SECTION_PATH}`);
+      assertTrue(!!appsMenuItem);
+
+      assertEquals('Notifications, Google Play', appsMenuItem.sublabel);
+    });
+  });
+
   suite('Bluetooth menu item', () => {
     let bluetoothConfig: FakeBluetoothConfig;
     const bluetoothMouse = createDefaultBluetoothDevice(
