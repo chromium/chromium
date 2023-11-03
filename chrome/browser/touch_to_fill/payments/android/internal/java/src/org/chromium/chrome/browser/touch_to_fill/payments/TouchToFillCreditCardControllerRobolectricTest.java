@@ -65,8 +65,6 @@ import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.payments.InputProtector;
-import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -131,7 +129,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
 
     private TouchToFillCreditCardCoordinator mCoordinator;
     private PropertyModel mTouchToFillCreditCardModel;
-    private FakeClock mClock = new FakeClock();
     Context mContext;
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -154,13 +151,10 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         mCoordinator.initialize(
                 mContext, mBottomSheetController, mDelegateMock, mBottomSheetFocusHelper);
         mTouchToFillCreditCardModel = mCoordinator.getModelForTesting();
-        mCoordinator
-                .getMediatorForTesting()
-                .setInputProtectorForTesting(new InputProtector(mClock));
     }
 
     @Test
-    public void testAddsTheBottomSheetHelperToObserveTheSheet() {
+    public void testAddsTheBottomSheetHeperToObserveTheSheet() {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
 
         verify(mBottomSheetFocusHelper, times(1)).registerForOneTimeUse();
@@ -269,28 +263,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
 
     @Test
     @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
-    public void testNoCallbackForCreditCardOnSelectingItemBeforeInputTime() {
-        mCoordinator.showSheet(new CreditCard[] {VISA}, false);
-        assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
-
-        Optional<PropertyModel> cardModel =
-                getCardModelByAutofillName(mTouchToFillCreditCardModel.get(SHEET_ITEMS), VISA);
-        assertNotNull(cardModel.get().get(ON_CLICK_ACTION));
-
-        // Clicking after an interval less than the threshold should be a no-op.
-        mClock.advanceCurrentTimeMillis(
-                InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100);
-        cardModel.get().get(ON_CLICK_ACTION).run();
-        verify(mDelegateMock, times(0)).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
-
-        // Clicking after the threshold should work.
-        mClock.advanceCurrentTimeMillis(100);
-        cardModel.get().get(ON_CLICK_ACTION).run();
-        verify(mDelegateMock, times(1)).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
-    }
-
-    @Test
-    @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
     public void testCallsCallbackForCreditCardOnSelectingItem() {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
@@ -299,7 +271,7 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                 getCardModelByAutofillName(mTouchToFillCreditCardModel.get(SHEET_ITEMS), VISA);
         assertNotNull(cardModel.get().get(ON_CLICK_ACTION));
 
-        advanceClockAndClick(cardModel.get());
+        cardModel.get().get(ON_CLICK_ACTION).run();
         verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
         assertEquals(
                 1,
@@ -326,7 +298,7 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                         mTouchToFillCreditCardModel.get(SHEET_ITEMS), VIRTUAL_CARD);
         assertNotNull(cardModel.get().get(ON_CLICK_ACTION));
 
-        advanceClockAndClick(cardModel.get());
+        cardModel.get().get(ON_CLICK_ACTION).run();
         verify(mDelegateMock)
                 .suggestionSelected(VIRTUAL_CARD.getGUID(), VIRTUAL_CARD.getIsVirtual());
         assertEquals(
@@ -411,7 +383,7 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     public void testContinueButtonClick() {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
-        advanceClockAndClick(getModelsOfType(itemList, FILL_BUTTON).get(0));
+        getModelsOfType(itemList, FILL_BUTTON).get(0).get(ON_CLICK_ACTION).run();
         verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
     }
 
@@ -455,10 +427,5 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                                                 .equals(card.getCardNameForAutofillDisplay()))
                 .findFirst()
                 .map(item -> item.model);
-    }
-
-    private void advanceClockAndClick(PropertyModel cardModel) {
-        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
-        cardModel.get(ON_CLICK_ACTION).run();
     }
 }

@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardP
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.payments.InputProtector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,8 +82,6 @@ class TouchToFillCreditCardMediator {
     private List<CreditCard> mCards;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
-    private InputProtector mInputProtector = new InputProtector();
-
     void initialize(Context context, TouchToFillCreditCardComponent.Delegate delegate,
             PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
@@ -95,8 +92,6 @@ class TouchToFillCreditCardMediator {
     }
 
     void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
-        mInputProtector.markShowTime();
-
         assert cards != null;
         mCards = Arrays.asList(cards);
 
@@ -160,7 +155,6 @@ class TouchToFillCreditCardMediator {
     }
 
     public void onSelectedCreditCard(CreditCard card) {
-        if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.suggestionSelected(card.getGUID(), card.getIsVirtual());
         recordTouchToFillOutcomeHistogram(card.getIsVirtual()
                         ? TouchToFillCreditCardOutcome.VIRTUAL_CARD
@@ -242,9 +236,5 @@ class TouchToFillCreditCardMediator {
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
         RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM_FIXED, outcome,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
-    }
-
-    void setInputProtectorForTesting(InputProtector inputProtector) {
-        mInputProtector = inputProtector;
     }
 }
