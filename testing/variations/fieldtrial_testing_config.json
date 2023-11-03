@@ -4028,6 +4028,7 @@
                     "enable_features": [
                         "DelayFirstPeriodicPAPurgeOrReclaim",
                         "DelayFirstWorkerWake",
+                        "ExplicitHighResolutionTimerWin",
                         "InhibitLoadingStateUpdate",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
