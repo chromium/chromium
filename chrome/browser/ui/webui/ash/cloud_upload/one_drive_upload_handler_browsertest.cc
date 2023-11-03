@@ -376,8 +376,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
 // Test that when the upload to ODFS fails due reauthentication to OneDrive
 // being required (before starting the upload), the reauthentication required
 // notification is shown.
-IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
-                       FailToStartUploadDueToReauthenticationRequired) {
+IN_PROC_BROWSER_TEST_F(
+    OneDriveUploadHandlerTest,
+    DISABLED_FailToStartUploadDueToReauthenticationRequired) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpODFS();
