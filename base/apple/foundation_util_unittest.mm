@@ -34,11 +34,11 @@ TEST(FoundationUtilTest, CFCast) {
   ScopedCFTypeRef<CFTypeRef> test_data_mutable(CFDataCreateMutable(nullptr, 0));
   ScopedCFTypeRef<CFTypeRef> test_date(CFDateCreate(nullptr, 0));
   ScopedCFTypeRef<CFTypeRef> test_dict(CFDictionaryCreate(
-      nullptr, nullptr, nullptr, 0, &kCFCopyStringDictionaryKeyCallBacks,
+      nullptr, nullptr, nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
-  ScopedCFTypeRef<CFTypeRef> test_dict_mutable(CFDictionaryCreateMutable(
-      nullptr, 0, &kCFCopyStringDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
+  ScopedCFTypeRef<CFTypeRef> test_dict_mutable(
+      CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
   int int_val = 256;
   ScopedCFTypeRef<CFTypeRef> test_number(
       CFNumberCreate(nullptr, kCFNumberIntType, &int_val));
@@ -287,7 +287,7 @@ TEST(FoundationUtilTest, GetValueFromDictionary) {
   ScopedCFTypeRef<CFDictionaryRef> test_dict(CFDictionaryCreate(
       kCFAllocatorDefault, reinterpret_cast<const void**>(keys),
       reinterpret_cast<const void**>(values), std::size(values),
-      &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+      &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
   // GetValueFromDictionary<>(_, _) should produce the correct
   // expected output.
