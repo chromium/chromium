@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -41,10 +42,15 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     public class TabSuggestionMessageData implements MessageData {
         private final TabSuggestion mTabSuggestion;
         private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
+        private Profile mProfile;
+
         public TabSuggestionMessageData(
-                TabSuggestion tabSuggestion, Callback<TabSuggestionFeedback> feedbackCallback) {
+                TabSuggestion tabSuggestion,
+                Callback<TabSuggestionFeedback> feedbackCallback,
+                Profile profile) {
             mTabSuggestion = tabSuggestion;
             mTabSuggestionFeedback = feedbackCallback;
+            mProfile = profile;
         }
 
         /**
@@ -88,6 +94,15 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
                 }
             };
         }
+
+        /**
+         * @return The class associated with handling the multi favicon icon provider for the large
+         *     message card view. This includes building the background and fetching 3 favicons from
+         *     the suggested tab list.
+         */
+        public MultiFaviconIconProvider createMultiFaviconIconProvider(Context context) {
+            return new MultiFaviconIconProvider(context, mTabSuggestion, mProfile);
+        }
     }
 
     private final Context mContext;
@@ -95,7 +110,9 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     private final Supplier<TabSelectionEditorCoordinator.TabSelectionEditorController>
             mTabSelectionEditorControllerSupplier;
 
-    public TabSuggestionMessageService(Context context, TabModelSelector tabModelSelector,
+    public TabSuggestionMessageService(
+            Context context,
+            TabModelSelector tabModelSelector,
             Supplier<TabSelectionEditorCoordinator.TabSelectionEditorController>
                     tabSelectionEditorControllerSupplier) {
         super(MessageType.TAB_SUGGESTION);
@@ -223,7 +240,10 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
         sSuggestionAvailableForTesting = true;
         for (TabSuggestion tabSuggestion : tabSuggestions) {
             sendAvailabilityNotification(
-                    new TabSuggestionMessageData(tabSuggestion, tabSuggestionFeedback));
+                    new TabSuggestionMessageData(
+                            tabSuggestion,
+                            tabSuggestionFeedback,
+                            mTabModelSelector.getModel(false).getProfile()));
         }
     }
 

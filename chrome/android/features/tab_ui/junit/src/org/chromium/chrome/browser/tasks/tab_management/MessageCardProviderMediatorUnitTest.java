@@ -70,6 +70,7 @@ public class MessageCardProviderMediatorUnitTest {
     private void enqueueMessageItem(@MessageService.MessageType int type, int tabSuggestionAction) {
         switch (type) {
             case MessageService.MessageType.TAB_SUGGESTION:
+                when(mContext.getResources()).thenReturn(mResourcesMock);
                 when(mTabSuggestionMessageData.getSize()).thenReturn(SUGGESTED_TAB_COUNT);
                 when(mTabSuggestionMessageData.getActionType()).thenReturn(tabSuggestionAction);
                 when(mTabSuggestionMessageData.getDismissActionProvider())
@@ -307,11 +308,6 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Test
     public void buildModel_ForClosingTabSuggestion() {
-        String closingTabSuggestionMessage = "Closing Tab Suggestion";
-        doReturn(closingTabSuggestionMessage)
-                .when(mContext)
-                .getString(R.string.tab_suggestion_close_stale_message);
-
         enqueueMessageItem(
                 MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.CLOSE);
 
@@ -325,17 +321,35 @@ public class MessageCardProviderMediatorUnitTest {
                 MessageService.MessageType.TAB_SUGGESTION,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         Assert.assertEquals(
-                closingTabSuggestionMessage,
-                model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
+                mContext.getString(R.string.tab_cleanup_message_card_title),
+                model.get(MessageCardViewProperties.TITLE_TEXT));
+        Assert.assertEquals(
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.tab_cleanup_message_card_subtitle,
+                                SUGGESTED_TAB_COUNT,
+                                SUGGESTED_TAB_COUNT),
+                model.get(MessageCardViewProperties.DESCRIPTION_TEXT));
+        Assert.assertEquals(
+                mContext.getString(R.string.tab_cleanup_message_card_review_tabs_button),
+                model.get(MessageCardViewProperties.ACTION_TEXT));
+        Assert.assertEquals(
+                mContext.getString(R.string.tab_cleanup_message_card_close_tabs_button),
+                model.get(MessageCardViewProperties.SECONDARY_ACTION_TEXT));
+        Assert.assertEquals(
+                (int)
+                        mContext.getResources()
+                                .getDimension(R.dimen.tab_cleanup_promo_card_icon_width),
+                model.get(MessageCardViewProperties.ICON_WIDTH_IN_PIXELS));
+        Assert.assertEquals(
+                (int)
+                        mContext.getResources()
+                                .getDimension(R.dimen.tab_cleanup_promo_card_icon_height),
+                model.get(MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS));
     }
 
     @Test
     public void buildModel_ForGroupingTabSuggestion() {
-        String groupingTabSuggestionMessage = "Grouping Tab Suggestion";
-        doReturn(groupingTabSuggestionMessage)
-                .when(mContext)
-                .getString(R.string.tab_suggestion_group_tabs_message);
-
         enqueueMessageItem(
                 MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.GROUP);
 
@@ -348,9 +362,6 @@ public class MessageCardProviderMediatorUnitTest {
         Assert.assertEquals(
                 MessageService.MessageType.TAB_SUGGESTION,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
-        Assert.assertEquals(
-                groupingTabSuggestionMessage,
-                model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
     }
 
     @Test

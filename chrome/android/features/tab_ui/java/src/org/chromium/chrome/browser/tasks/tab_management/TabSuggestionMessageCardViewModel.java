@@ -14,8 +14,6 @@ import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestio
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Locale;
-
 /**
  * This is a util class for creating the property model of the TabSuggestionMessageCard.
  */
@@ -30,9 +28,13 @@ public class TabSuggestionMessageCardViewModel {
     public static PropertyModel create(Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             TabSuggestionMessageService.TabSuggestionMessageData data) {
-        String descriptionTextTemplate = getDescriptionTextTemplate(context, data.getActionType());
-        String descriptionText = String.format(Locale.getDefault(), "%d", data.getSize());
-        String actionText = context.getString(R.string.tab_suggestion_review_button);
+        // TODO(crbug.com/1487664): Add any missing accessibility or button descriptions.
+        String titleText = getTitleText(context, data.getActionType());
+        String descriptionText = getDescriptionText(context, data);
+        String actionText = getActionText(context, data.getActionType());
+        String secondaryActionText = getSecondaryActionText(context, data.getActionType());
+        int iconWidth = getIconWidth(context, data.getActionType());
+        int iconHeight = getIconHeight(context, data.getActionType());
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
@@ -41,11 +43,11 @@ public class TabSuggestionMessageCardViewModel {
                         MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.TAB_SUGGESTION)
                 .with(MessageCardViewProperties.MESSAGE_IDENTIFIER, data.getActionType())
+                .with(MessageCardViewProperties.ICON_WIDTH_IN_PIXELS, iconWidth)
+                .with(MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS, iconHeight)
                 .with(
                         MessageCardViewProperties.ICON_PROVIDER,
-                        (callback) -> {
-                            callback.onResult(null);
-                        })
+                        data.createMultiFaviconIconProvider(context))
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
                 .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
@@ -53,9 +55,10 @@ public class TabSuggestionMessageCardViewModel {
                 .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                         data.getReviewActionProvider())
-                .with(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, descriptionTextTemplate)
+                .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
+                .with(MessageCardViewProperties.SECONDARY_ACTION_TEXT, secondaryActionText)
                 .with(
                         MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
                         dismissButtonContextDescription)
@@ -70,16 +73,91 @@ public class TabSuggestionMessageCardViewModel {
                 .build();
     }
 
-    private static String getDescriptionTextTemplate(
+    private static String getTitleText(
             Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
         switch (suggestionActionType) {
             case TabSuggestion.TabSuggestionAction.GROUP:
-                return context.getString(R.string.tab_suggestion_group_tabs_message);
+                return "";
             case TabSuggestion.TabSuggestionAction.CLOSE:
-                return context.getString(R.string.tab_suggestion_close_stale_message);
+                return context.getString(R.string.tab_cleanup_message_card_title);
             default:
                 assert false : "Invalid TabSuggestionAction";
                 return "";
+        }
+    }
+
+    private static String getDescriptionText(
+            Context context, TabSuggestionMessageService.TabSuggestionMessageData data) {
+        int suggestionActionType = data.getActionType();
+
+        switch (suggestionActionType) {
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return "";
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return context.getResources()
+                        .getQuantityString(
+                                R.plurals.tab_cleanup_message_card_subtitle,
+                                data.getSize(),
+                                data.getSize());
+            default:
+                assert false : "Invalid TabSuggestionAction";
+                return "";
+        }
+    }
+
+    private static String getActionText(
+            Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
+        switch (suggestionActionType) {
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return "";
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return context.getString(R.string.tab_cleanup_message_card_review_tabs_button);
+            default:
+                assert false : "Invalid TabSuggestionAction";
+                return "";
+        }
+    }
+
+    private static String getSecondaryActionText(
+            Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
+        switch (suggestionActionType) {
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return "";
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return context.getString(R.string.tab_cleanup_message_card_close_tabs_button);
+            default:
+                assert false : "Invalid TabSuggestionAction";
+                return "";
+        }
+    }
+
+    private static int getIconWidth(
+            Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
+        switch (suggestionActionType) {
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return 0;
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return (int)
+                        context.getResources()
+                                .getDimension(R.dimen.tab_cleanup_promo_card_icon_width);
+            default:
+                assert false : "Invalid TabSuggestionAction";
+                return 0;
+        }
+    }
+
+    private static int getIconHeight(
+            Context context, @TabSuggestion.TabSuggestionAction int suggestionActionType) {
+        switch (suggestionActionType) {
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return 0;
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return (int)
+                        context.getResources()
+                                .getDimension(R.dimen.tab_cleanup_promo_card_icon_height);
+            default:
+                assert false : "Invalid TabSuggestionAction";
+                return 0;
         }
     }
 }

@@ -390,6 +390,23 @@
           <ph name="NUMBER_OF_TABS">%1$s<ex>2</ex></ph> tabs seem related. Group them?
       </message>
 
+      <!-- Tab Cleanup strings -->
+      <message name="IDS_TAB_CLEANUP_MESSAGE_CARD_TITLE" desc="Header for the Tab Cleanup message card where a user can review suggested tabs to close before closing or just close them outright.">
+          Want to close old tabs?
+      </message>
+      <message name="IDS_TAB_CLEANUP_MESSAGE_CARD_SUBTITLE" desc="Subtitle for the Tab Cleanup message card that indicates the number of suggested tabs a user can review to close before closing or just close them outright.">
+          {TABS_COUNT, plural,
+            =1 {You have <ph name="TABS_COUNT_ONE">%1$s<ex>1</ex></ph> tab you haven't used recently}
+            other {You have <ph name="TABS_COUNT_MANY">%1$s<ex>8</ex></ph> tabs you haven't used recently}
+          }
+      </message>
+      <message name="IDS_TAB_CLEANUP_MESSAGE_CARD_REVIEW_TABS_BUTTON" desc="Button text where a user can review suggested tabs to close before closing.">
+          Review tabs
+      </message>
+      <message name="IDS_TAB_CLEANUP_MESSAGE_CARD_CLOSE_TABS_BUTTON" desc="Button text where a user can close suggested tabs without reviewing them.">
+          Close without reviewing
+      </message>
+
       <!-- Accessibility strings for Tab Suggestion -->
       <message name="IDS_ACCESSIBILITY_TAB_SUGGESTION_REVIEW_BUTTON" desc="The accessibility text to read when the text button 'Review' is focused. The 'Review' button is shown next to the message 'X of your tabs haven't been used lately. Close them?', or 'X tabs seem related. Group them?'. User uses that text button to enter a selection mode where they can see the suggested tabs to close or to group, see the rest of their open tabs, and choose what tabs to close or to group.">
         Review the suggestions.

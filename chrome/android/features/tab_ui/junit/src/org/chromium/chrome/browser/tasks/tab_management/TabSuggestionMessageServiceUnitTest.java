@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.ACCEPTED;
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.DISMISSED;
@@ -292,6 +293,7 @@ public class TabSuggestionMessageServiceUnitTest {
         TabSuggestion tabSuggestion =
                 prepareTabSuggestion(
                         Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.CLOSE);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         mMessageService.onNewSuggestion(
                 Arrays.asList(tabSuggestion), mTabSuggestionFeedbackCallback);
         inOrder.verify(mMessageObserver).messageReady(anyInt(), any());
