@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,26 +68,27 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   const gfx::Size widget_size_px =
       platform_window()->GetBoundsInPixels().size();
 
-  const float corner_radius =
-      chromeos::GetFrameCornerRadius(browser_view_->GetNativeWindow());
+  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+  const chromeos::WindowStateType window_state =
+      browser_view_->GetNativeWindow()->GetProperty(
+          chromeos::kWindowStateTypeKey);
+
+  const gfx::RoundedCornersF window_radii =
+      chromeos::ShouldHaveRoundedWindow(window_state)
+          ? wayland_extension->GetWindowCornersRadii()
+          : gfx::RoundedCornersF();
 
   std::vector<gfx::Rect> opaque_region;
-  const bool should_have_rounded_corners = corner_radius > 0;
+  const bool should_have_rounded_corners = !window_radii.IsEmpty();
   if (showing_frame && should_have_rounded_corners) {
-    gfx::RoundedCornersF frame_radii{corner_radius, corner_radius, 0, 0};
-    if (chromeos::features::IsRoundedWindowsEnabled()) {
-      frame_radii.set_lower_left(corner_radius);
-      frame_radii.set_lower_right(corner_radius);
-    }
-
-    GetContentWindow()->layer()->SetRoundedCornerRadius(frame_radii);
+    GetContentWindow()->layer()->SetRoundedCornerRadius(window_radii);
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
 
     // The opaque region is a list of rectangles that contain only fully
     // opaque pixels of the window.  We need to convert the clipping
     // rounded-rect into this format.
     gfx::Rect local_bounds = view->GetLocalBounds();
-    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), frame_radii);
+    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), window_radii);
     gfx::RectF rect_f = rounded_corners_rect.rect();
     rect_f.Scale(scale);
 

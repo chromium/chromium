@@ -838,7 +838,13 @@ void WaylandToplevelWindow::SetTopInset(int height) {
     shell_toplevel_->SetTopInset(height);
   }
 }
-#endif
+
+gfx::RoundedCornersF WaylandToplevelWindow::GetWindowCornersRadii() {
+  auto* zaura_shell = connection()->zaura_shell();
+  return zaura_shell->GetWindowCornersRadii();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,

@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -25,7 +26,7 @@ namespace ui {
 namespace {
 
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 60;
+constexpr uint32_t kMaxVersion = 61;
 
 }  // namespace
 
@@ -79,7 +80,8 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
       .set_overview_mode = &OnSetOverviewMode,
       .unset_overview_mode = &OnUnsetOverviewMode,
       .compositor_version = &OnCompositorVersion,
-      .all_bug_fixes_sent = &OnAllBugFixesSent};
+      .all_bug_fixes_sent = &OnAllBugFixesSent,
+      .window_corners_radii = &OnSetWindowCornersRadii};
   zaura_shell_add_listener(obj_.get(), &kZAuraShellListener, this);
 
   if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
@@ -103,6 +105,10 @@ int WaylandZAuraShell::GetNumberOfDesks() {
 
 int WaylandZAuraShell::GetActiveDeskIndex() const {
   return active_desk_index_;
+}
+
+gfx::RoundedCornersF WaylandZAuraShell::GetWindowCornersRadii() const {
+  return window_corners_radii_;
 }
 
 // static
@@ -216,6 +222,19 @@ void WaylandZAuraShell::OnCompositorVersion(void* data,
 void WaylandZAuraShell::OnAllBugFixesSent(void* data,
                                           struct zaura_shell* zaura_shell) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandZAuraShell::OnSetWindowCornersRadii(void* data,
+                                                struct zaura_shell* zaura_shell,
+                                                uint32_t upper_left_radius,
+                                                uint32_t upper_right_radius,
+                                                uint32_t lower_right_radius,
+                                                uint32_t lower_left_radius) {
+  auto* self = static_cast<WaylandZAuraShell*>(data);
+  self->window_corners_radii_ =
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius);
 }
 
 }  // namespace ui

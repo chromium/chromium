@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -56,6 +57,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   int GetNumberOfDesks();
   int GetActiveDeskIndex() const;
   display::TabletState GetTabletState() const;
+  gfx::RoundedCornersF GetWindowCornersRadii() const;
 
  private:
   // zaura_shell_listener callbacks:
@@ -81,12 +83,19 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
                                   struct zaura_shell* zaura_shell,
                                   const char* version_label);
   static void OnAllBugFixesSent(void* data, struct zaura_shell* zaura_shell);
+  static void OnSetWindowCornersRadii(void* data,
+                                      struct zaura_shell* zaura_shell,
+                                      uint32_t upper_left_radius,
+                                      uint32_t upper_right_radius,
+                                      uint32_t lower_right_radius,
+                                      uint32_t lower_left_radius);
 
   wl::Object<zaura_shell> obj_;
   const raw_ptr<WaylandConnection> connection_;
   absl::optional<base::Version> server_version_;
   std::vector<std::string> desks_;
   int active_desk_index_ = 0;
+  gfx::RoundedCornersF window_corners_radii_;
 };
 
 }  // namespace ui
