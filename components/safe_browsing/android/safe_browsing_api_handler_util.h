@@ -52,12 +52,16 @@ enum class SafeBrowsingApiLookupResult {
   // The API throws an UnsupportedApiCallException.
   FAILURE_API_UNSUPPORTED = 3,
   // The API throws an ApiException with API_UNAVAILABLE status code.
-  FAILURE_API_NOT_AVAILABLE = 4
+  FAILURE_API_NOT_AVAILABLE = 4,
+  // The API handler is null. Should never happen in production.
+  FAILURE_HANDLER_NULL = 5
 };
 
 // Must match the definition in SafeBrowsing::ThreatType in SafeBrowsing API.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// Note: Please update the hard coded value in MockSafeBrowsingApiHandler if
+// values are changed.
 enum class SafeBrowsingJavaThreatType {
   NO_THREAT = 0,
   UNWANTED_SOFTWARE = 3,

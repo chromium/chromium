@@ -183,6 +183,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="API call timed out"/>
   <int value="3" label="API unsupported (GMSCore outdated)"/>
   <int value="4" label="API not available (API not supported on device)"/>
+  <int value="5"
+      label="API handler is null. Should never happen in production."/>
 </enum>
 
 <enum name="SafeBrowsingApiResponseStatus">

@@ -14602,6 +14602,21 @@
             ]
         }
     ],
+    "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingSevenZipEvaluationEnabled": [
         {
             "platforms": [

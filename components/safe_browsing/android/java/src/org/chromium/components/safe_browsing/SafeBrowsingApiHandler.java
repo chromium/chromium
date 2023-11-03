@@ -34,8 +34,14 @@ public interface SafeBrowsingApiHandler {
 
     // Possible values for lookupResult. Native side has the same definitions. See the native side
     // definition for detailed descriptions.
-    @IntDef({LookupResult.SUCCESS, LookupResult.FAILURE, LookupResult.FAILURE_API_CALL_TIMEOUT,
-            LookupResult.FAILURE_API_UNSUPPORTED, LookupResult.FAILURE_API_NOT_AVAILABLE})
+    @IntDef({
+        LookupResult.SUCCESS,
+        LookupResult.FAILURE,
+        LookupResult.FAILURE_API_CALL_TIMEOUT,
+        LookupResult.FAILURE_API_UNSUPPORTED,
+        LookupResult.FAILURE_API_NOT_AVAILABLE,
+        LookupResult.FAILURE_HANDLER_NULL
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LookupResult {
         int SUCCESS = 0;
@@ -43,6 +49,7 @@ public interface SafeBrowsingApiHandler {
         int FAILURE_API_CALL_TIMEOUT = 2;
         int FAILURE_API_UNSUPPORTED = 3;
         int FAILURE_API_NOT_AVAILABLE = 4;
+        int FAILURE_HANDLER_NULL = 5;
     }
 
     /**

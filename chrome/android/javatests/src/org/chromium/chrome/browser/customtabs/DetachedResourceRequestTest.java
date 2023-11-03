@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.MockSafetyNetApiHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -362,6 +363,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
+    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
     @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResource() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ false);
@@ -373,9 +375,31 @@ public class DetachedResourceRequestTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
+    @EnableFeatures({
+        ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY,
+        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK
+    })
     public void testSafeBrowsingMainResourceWithSplitCache() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
+        Assert.assertTrue(
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK));
+    }
+
+    /**
+     * Tests that non-cached detached resource requests that are forbidden by SafeBrowsing don't end
+     * up in the content area, for a main resource.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
+    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
+    public void testSafeBrowsingMainResourceWithSplitCache_newSafeBrowsingGmsApiDisabled()
+            throws Exception {
+        testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
+        Assert.assertFalse(
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK));
     }
 
     /**
@@ -396,6 +420,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
+    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
     @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResourceBeforeNative() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ false, /* splitCacheEnabled= */ false);
@@ -642,6 +667,7 @@ public class DetachedResourceRequestTest {
     private void testSafeBrowsingMainResource(boolean afterNative, boolean splitCacheEnabled)
             throws Exception {
         SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         CustomTabsSessionToken session = prepareSession();
 
         String cacheable = "/cachetime";
@@ -650,8 +676,14 @@ public class DetachedResourceRequestTest {
         Uri url = Uri.parse(mServer.getURL(cacheable));
 
         try {
-            MockSafetyNetApiHandler.addMockResponse(
-                    url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)) {
+                MockSafeBrowsingApiHandler.addMockResponse(
+                        url.toString(), MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
+            } else {
+                MockSafetyNetApiHandler.addMockResponse(
+                        url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
+            }
 
             Intent intent =
                     CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -681,6 +713,8 @@ public class DetachedResourceRequestTest {
             }
         } finally {
             MockSafetyNetApiHandler.clearMockResponses();
+            MockSafeBrowsingApiHandler.clearMockResponses();
+            SafeBrowsingApiBridge.clearHandlerForTesting();
         }
     }
 

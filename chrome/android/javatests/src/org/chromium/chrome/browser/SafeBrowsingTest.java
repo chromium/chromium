@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -30,7 +31,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
-/** Test integration with the SafetyNetApiHandler. */
+/** Test integration with the SafeBrowsingApiHandler. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_DELAYED_WARNINGS})
@@ -81,11 +82,14 @@ public final class SafeBrowsingTest {
     @Before
     public void setUp() {
         SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 
     @After
     public void tearDown() {
         MockSafetyNetApiHandler.clearMockResponses();
+        MockSafeBrowsingApiHandler.clearMockResponses();
+        SafeBrowsingApiBridge.clearHandlerForTesting();
     }
 
     @Test
@@ -103,7 +107,24 @@ public final class SafeBrowsingTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
     public void interstitialPage() throws Exception {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
+        String url = mTestServer.getURL("/chrome/test/data/android/about.html");
+        MockSafeBrowsingApiHandler.addMockResponse(
+                url, MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        loadUrlNonBlocking(url);
+        waitForInterstitial(true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
+    public void interstitialPage_newGmsApiDisabled() throws Exception {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());

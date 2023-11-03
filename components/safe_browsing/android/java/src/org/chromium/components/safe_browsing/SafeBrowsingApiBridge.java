@@ -265,7 +265,13 @@ public final class SafeBrowsingApiBridge {
     private static void startUriLookupBySafeBrowsingApi(
             long callbackId, String uri, int[] threatTypes, int protocol) {
         synchronized (sSafeBrowsingApiHandlerLock) {
-            assert sSafeBrowsingApiHandler != null;
+            if (sSafeBrowsingApiHandler == null) {
+                // sSafeBrowsingApiHandler can only be null in tests.
+                SafeBrowsingApiBridgeJni.get()
+                        .onUrlCheckDoneBySafeBrowsingApi(
+                                callbackId, LookupResult.FAILURE_HANDLER_NULL, 0, new int[0], 0, 0);
+                return;
+            }
             sSafeBrowsingApiHandler.startUriLookup(callbackId, uri, threatTypes, protocol);
         }
     }

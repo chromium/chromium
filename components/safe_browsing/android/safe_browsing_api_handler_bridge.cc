@@ -138,6 +138,7 @@ SafeBrowsingJavaValidationResult GetJavaValidationResult(
     case SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT:
     case SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED:
     case SafeBrowsingApiLookupResult::FAILURE_API_NOT_AVAILABLE:
+    case SafeBrowsingApiLookupResult::FAILURE_HANDLER_NULL:
       is_lookup_result_recognized = true;
       break;
   }
@@ -232,6 +233,7 @@ bool IsLookupSuccessful(SafeBrowsingApiLookupResult lookup_result,
     case SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT:
     case SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED:
     case SafeBrowsingApiLookupResult::FAILURE_API_NOT_AVAILABLE:
+    case SafeBrowsingApiLookupResult::FAILURE_HANDLER_NULL:
       break;
   }
   if (!is_lookup_result_success) {
@@ -262,6 +264,7 @@ bool IsSafeBrowsingNonRecoverable(SafeBrowsingApiLookupResult lookup_result) {
   switch (lookup_result) {
     case SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED:
     case SafeBrowsingApiLookupResult::FAILURE_API_NOT_AVAILABLE:
+    case SafeBrowsingApiLookupResult::FAILURE_HANDLER_NULL:
       return true;
     case SafeBrowsingApiLookupResult::SUCCESS:
     case SafeBrowsingApiLookupResult::FAILURE:
