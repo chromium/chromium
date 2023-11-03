@@ -45,6 +45,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/common/features/feature_channel.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -149,6 +150,11 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> server_;
+
+  // Various IsolatedWebAppBrowsing tests fail on official builds because
+  // stable channel doesn't enable a required feature.
+  // TODO(b/309153867): Remove this when underlying issue is figured out.
+  extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
