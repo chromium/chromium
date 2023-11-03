@@ -1279,7 +1279,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_bot_all_gtests',
+          'gtest_tests': 'webview_fyi_bot_all_gtests',
         }
       },
       'android-webview-13-x64-dbg-tests': {

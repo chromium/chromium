@@ -5285,6 +5285,19 @@
       },
     },
 
+    'webview_bot_instrumentation_test_apk_mutations_gtest': {
+      'webview_instrumentation_test_apk_mutations': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--use-apk-under-test-flags-file',
+          '--webview-mutations-enabled',
+        ],
+        'swarming': {
+          'shards': 12,
+        },
+      },
+    },
+
     'webview_bot_instrumentation_test_apk_no_field_trial_gtest': {
       'webview_instrumentation_test_apk_no_field_trial': {
         'test': 'webview_instrumentation_test_apk',
@@ -6531,6 +6544,17 @@
     'webview_bot_all_gtests': [
       'system_webview_shell_instrumentation_tests',
       'webview_bot_instrumentation_test_apk_gtest',
+      'webview_bot_instrumentation_test_apk_no_field_trial_gtest',
+      'webview_bot_unittests_gtest',
+      'webview_cts_tests_gtest',
+      'webview_cts_tests_gtest_no_field_trial',
+      'webview_ui_instrumentation_tests',
+      'webview_ui_instrumentation_tests_no_field_trial',
+    ],
+
+    'webview_fyi_bot_all_gtests': [
+      'system_webview_shell_instrumentation_tests',
+      'webview_bot_instrumentation_test_apk_mutations_gtest',
       'webview_bot_instrumentation_test_apk_no_field_trial_gtest',
       'webview_bot_unittests_gtest',
       'webview_cts_tests_gtest',

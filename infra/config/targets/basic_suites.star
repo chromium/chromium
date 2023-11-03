@@ -6255,6 +6255,22 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "webview_bot_instrumentation_test_apk_mutations_gtest",
+    tests = {
+        "webview_instrumentation_test_apk_mutations": targets.legacy_test_config(
+            test = "webview_instrumentation_test_apk",
+            args = [
+                "--use-apk-under-test-flags-file",
+                "--webview-mutations-enabled",
+            ],
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
     tests = {
         "webview_instrumentation_test_apk_no_field_trial": targets.legacy_test_config(

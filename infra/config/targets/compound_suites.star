@@ -1360,6 +1360,20 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "webview_fyi_bot_all_gtests",
+    basic_suites = [
+        "system_webview_shell_instrumentation_tests",
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
+        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
+        "webview_bot_unittests_gtest",
+        "webview_cts_tests_gtest",
+        "webview_cts_tests_gtest_no_field_trial",
+        "webview_ui_instrumentation_tests",
+        "webview_ui_instrumentation_tests_no_field_trial",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "webview_trichrome_64_cts_gtests",
     basic_suites = [
         "webview_trichrome_64_cts_tests",
