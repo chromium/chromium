@@ -429,9 +429,9 @@ inline constexpr char kSafeBrowsingHelpCenterUpdatedURL[] =
 inline constexpr char16_t kSafeBrowsingInChromeHelpCenterURL[] =
     u"https://support.google.com/chrome?p=safebrowsing_in_chrome";
 
-// The URL of Safe Browsing p-tour.
-inline constexpr char16_t kSafeBrowsingPTourURL[] =
-    u"https://support.google.com/chrome?p=safebrowsing_in_chrome";
+// The URL for Safe Browsing link in Safety Check page.
+inline constexpr char16_t kSafeBrowsingUseInChromeURL[] =
+    u"https://support.google.com/chrome/answer/9890866";
 
 // "Learn more" URL for safety tip bubble.
 inline constexpr char kSafetyTipHelpCenterURL[] =
