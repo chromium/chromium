@@ -283,6 +283,14 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
 
   void TerminateActiveSession() { delegate().TerminateSession(); }
 
+  void SimilateClientConnects(SupportHostObserver& observer) {
+    // The code expects the access code before a client can connect.
+    observer.OnHostStateReceivedAccessCode("code", base::Days(1));
+    observer.OnHostStateConnected(kTestUserName);
+    FlushObserverForTesting();
+    ASSERT_TRUE(delegate().HasActiveSession());
+  }
+
   void SimulateLoginScreenIsVisible() {
     // Notifies the observers that the login screen is visible and ensure the
     // `RemoteActivityNotificationController::Init()` is called.
@@ -650,8 +658,7 @@ TEST_F(CrdAdminSessionControllerTest,
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
   constexpr auto duration = base::Seconds(2);
 
-  observer.OnHostStateConnected(kTestUserName);
-  observer.OnHostStateStarting();
+  SimilateClientConnects(observer);
   task_environment()->FastForwardBy(duration);
   observer.OnHostStateDisconnected("the-disconnect-reason");
 
@@ -859,8 +866,7 @@ TEST_F(
   parameters.curtain_local_user_session = true;
 
   SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
-  observer.OnHostStateConnected(kTestUserName);
-  FlushObserverForTesting();
+  SimilateClientConnects(observer);
 
   SimulateLoginScreenIsVisible();
 
@@ -917,6 +923,40 @@ TEST_F(CrdAdminSessionControllerTest,
 
     ResetObserver();
   }
+}
+
+TEST_F(CrdAdminSessionControllerTest, ShouldBlockLateIncomingConnections) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitControllerWithNoReconnectableSession();
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateReceivedAccessCode("code", base::Days(1));
+
+  task_environment()->FastForwardBy(base::Seconds(15 * 60 + 1));
+
+  observer.OnHostStateConnected("remote-user");
+  FlushObserverForTesting();
+
+  ASSERT_FALSE(delegate().HasActiveSession());
+}
+
+TEST_F(CrdAdminSessionControllerTest, ShouldAcceptFactIncomingConnections) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitControllerWithNoReconnectableSession();
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateReceivedAccessCode("code", base::Days(1));
+
+  task_environment()->FastForwardBy(base::Seconds(15 * 60 - 1));
+
+  observer.OnHostStateConnected("remote-user");
+  FlushObserverForTesting();
+
+  ASSERT_TRUE(delegate().HasActiveSession());
+
+  // Make sure we do not kill the session once the 15 minutes mark hit.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  ASSERT_TRUE(delegate().HasActiveSession());
 }
 
 INSTANTIATE_TEST_SUITE_P(CrdAdminSessionControllerTestWithBoolParams,

@@ -17,9 +17,11 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
@@ -45,6 +47,9 @@ using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 namespace {
+
+// Time after which an access code is guaranteed to have expired.
+constexpr base::TimeDelta kAccessCodeMaxTTL = base::Minutes(15);
 
 // Default implementation of the `RemotingService`, which will contact the real
 // remoting service.
@@ -161,6 +166,38 @@ class SessionDurationObserver : public CrdSessionObserver {
   absl::optional<base::Time> session_connected_time_;
 };
 
+// Rejects incoming sessions when there is more than 15 minutes between
+// generating and using the access code.
+// We should not need this since the server side already enforces a TTL of 5
+// minutes (at the time of writing), but we add this as a stopgap just in case a
+// malicious admin finds a way around the server side protection.
+class AccessCodeTtlChecker : public CrdSessionObserver {
+ public:
+  explicit AccessCodeTtlChecker(base::OnceClosure terminate_session_callback)
+      : terminate_session_(std::move(terminate_session_callback)) {}
+
+  AccessCodeTtlChecker(const AccessCodeTtlChecker&) = delete;
+  AccessCodeTtlChecker& operator=(const AccessCodeTtlChecker&) = delete;
+  ~AccessCodeTtlChecker() override = default;
+
+  // `CrdSessionObserver` implementation:
+  void OnHostStarted(const std::string&) override {
+    terminate_timer_.emplace();
+    terminate_timer_->Start(
+        FROM_HERE, kAccessCodeMaxTTL,
+        base::BindOnce([]() {
+          CRD_LOG(WARNING)
+              << "Terminating CRD Host since Access code outlived its TTL";
+        }).Then(std::move(terminate_session_)));
+  }
+
+  void OnClientConnected() override { terminate_timer_.reset(); }
+
+ private:
+  base::OnceClosure terminate_session_;
+  absl::optional<base::OneShotTimer> terminate_timer_;
+};
+
 remoting::mojom::SupportSessionParamsPtr GetSessionParameters(
     const SessionParameters& parameters) {
   auto result = remoting::mojom::SupportSessionParams::New();
@@ -204,6 +241,8 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
         std::move(success_callback), std::move(error_callback)));
     AddOwnedObserver(std::make_unique<SessionDurationObserver>(
         std::move(session_finished_callback)));
+    AddOwnedObserver(std::make_unique<AccessCodeTtlChecker>(base::BindOnce(
+        &CrdHostSession::TerminateSession, weak_factory_.GetWeakPtr())));
     AddObserver(this);
   }
   CrdHostSession(const CrdHostSession&) = delete;
@@ -270,6 +309,14 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
     }
 
     observer_proxy_.Bind(std::move(response->get_observer()));
+  }
+
+  void TerminateSession() {
+    // First inform our observers that the session is about to be aborted.
+    observer_proxy_.ReportHostStopped(ResultCode::FAILURE_CRD_HOST_ERROR,
+                                      "Terminate requested");
+    // Next force terminate the host (which is done by resetting the observer).
+    observer_proxy_.Unbind();
   }
 
   // `CrdSessionObserver` implementation:
@@ -352,6 +399,7 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
       std::move(error_callback), std::move(session_finished_callback));
 
   if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
+    CHECK(notification_controller_);
     active_session_->AddObserver(notification_controller_.get());
   }
 
