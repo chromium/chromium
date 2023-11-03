@@ -147,6 +147,7 @@ build_webui("build") {
     "js/wallpaper/wallpaper_actions.ts",
     "js/wallpaper/wallpaper_controller.ts",
     "js/wallpaper/wallpaper_interface_provider.ts",
+    "js/wallpaper/sea_pen/sea_pen_interface_provider.ts",
     "js/wallpaper/wallpaper_observer.ts",
     "js/wallpaper/wallpaper_reducers.ts",
     "js/wallpaper/wallpaper_state.ts",
@@ -167,6 +168,7 @@ build_webui("build") {
   ]
   mojo_files = [
     "$root_gen_dir/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/personalization_app/mojom/sea_pen.mojom-webui.ts",
     "$root_gen_dir/ash/style/mojom/color_scheme.mojom-webui.ts",
   ]
 

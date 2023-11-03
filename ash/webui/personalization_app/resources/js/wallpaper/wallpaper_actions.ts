@@ -8,8 +8,9 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {SeaPenThumbnail} from '../../sea_pen.mojom-webui.js';
 
-import {DisplayableImage, SeaPenWallpaper, WallpaperSearchThumbnail} from './constants.js';
+import {DisplayableImage, SeaPenWallpaper} from './constants.js';
 
 /**
  * @fileoverview Defines the actions to change wallpaper state.
@@ -67,7 +68,7 @@ export type WallpaperActions = AppendGooglePhotosAlbumAction|
     SetGooglePhotosEnabledAction|SetImagesForCollectionAction|
     SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
-    SetFullscreenEnabledAction|SetImageThumbnailsAction|
+    SetFullscreenEnabledAction|SetSeaPenThumbnailsAction|
     SetRecentWallpaperImagesAction;
 
 export interface AppendGooglePhotosAlbumAction extends Action {
@@ -572,19 +573,18 @@ export function setFullscreenEnabledAction(enabled: boolean):
 }
 
 
-export interface SetImageThumbnailsAction extends Action {
+export interface SetSeaPenThumbnailsAction extends Action {
   name: WallpaperActionName.SET_IMAGE_THUMBNAILS;
   query: string;
-  images: WallpaperSearchThumbnail[]|null;
+  images: SeaPenThumbnail[]|null;
 }
 
 
 /**
  * Sets the generated thumbnails for the given prompt text.
  */
-export function setImageThumbnailsAction(
-    query: string,
-    images: WallpaperSearchThumbnail[]|null): SetImageThumbnailsAction {
+export function setSeaPenThumbnailsAction(
+    query: string, images: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
   return {name: WallpaperActionName.SET_IMAGE_THUMBNAILS, query, images};
 }
 

@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
+#define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
+
+#include <string>
+
+#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+class Profile;
+
+namespace wallpaper_handlers {
+
+class MockSeaPenFetcher : public SeaPenFetcher {
+ public:
+  explicit MockSeaPenFetcher(Profile* profile);
+
+  MockSeaPenFetcher(const MockSeaPenFetcher&) = delete;
+  MockSeaPenFetcher& operator=(const MockSeaPenFetcher&) = delete;
+
+  ~MockSeaPenFetcher() override;
+
+  MOCK_METHOD(void,
+              Start,
+              (const std::string& query,
+               SeaPenFetcher::OnWallpaperSearchComplete callback),
+              (override));
+};
+
+}  // namespace wallpaper_handlers
+
+#endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_

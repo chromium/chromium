@@ -5,10 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_UTILS_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_UTILS_H_
 
-#include "ash/webui/personalization_app/personalization_app_ui.h"
+#include <memory>
+#include <string_view>
+
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "url/gurl.h"
+
+namespace content {
+class WebUI;
+}  // namespace content
 
 namespace ash::personalization_app {
 
@@ -32,6 +40,13 @@ AccountId GetAccountId(const Profile* profile);
 // Controls whether the profile can see and open personalization app. Most
 // profiles can, but kiosk and guest cannot.
 bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
+
+// Return a base64 encoded data url version of `encoded_jpg_data`. The result
+// can be displayed directly in a ChromeOS WebUI via img src attribute.
+// `encoded_jpg_data` must not be overly large (e.g. bigger than 1k x 1k
+// resolution jpg depending on quality) if the result is sent over mojom, or the
+// message may be dropped due to size restrictions.
+GURL GetJpegDataUrl(std::string_view encoded_jpg_data);
 
 }  // namespace ash::personalization_app
 

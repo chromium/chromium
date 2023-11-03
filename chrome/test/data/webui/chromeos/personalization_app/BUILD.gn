@@ -46,6 +46,7 @@ build_webui_tests("build_webui_tests") {
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",
+    "test_sea_pen_interface_provider.ts",
     "test_theme_interface_provider.ts",
     "test_user_interface_provider.ts",
     "test_wallpaper_interface_provider.ts",

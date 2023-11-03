@@ -12,12 +12,14 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES} from '../../../sea_pen.mojom-webui.js';
 import {PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {QUERY} from '../utils.js';
-import {searchImageThumbnails} from '../wallpaper_controller.js';
+import {searchWallpaperThumbnails} from '../wallpaper_controller.js';
 
 import {getTemplate} from './sea_pen_input_query_element.html.js';
+import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 
 export class SeaPenInputQueryElement extends WithPersonalizationStore {
   static get is() {
@@ -35,6 +37,10 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
 
       thumbnailsLoading_: Boolean,
 
+      maxTextLength_: {
+        type: Number,
+        value: Math.floor(MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES / 3),
+      },
     };
   }
 
@@ -54,7 +60,8 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
 
   private onClickInputQuerySearchButton_() {
     assert(this.textValue_, 'input query should not be empty.');
-    searchImageThumbnails(this.textValue_, this.getStore());
+    searchWallpaperThumbnails(
+        this.textValue_, getSeaPenProvider(), this.getStore());
     PersonalizationRouterElement.instance().selectSeaPenTemplate(QUERY);
   }
 }

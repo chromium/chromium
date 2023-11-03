@@ -11,17 +11,17 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenImagesElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
-  let wallpaperProvider: TestWallpaperProvider;
+  let seaPenProvider: TestSeaPenProvider;
   let seaPenImagesElement: SeaPenImagesElement|null;
 
   setup(() => {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
-    wallpaperProvider = mocks.wallpaperProvider;
+    seaPenProvider = mocks.seaPenProvider;
   });
 
   teardown(async () => {
@@ -51,7 +51,7 @@ suite('SeaPenImagesElementTest', function() {
   test('displays loading thumbnail placeholders', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailsLoading = true;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        wallpaperProvider.seaPenImageThumbnails;
+        seaPenProvider.images;
 
     // Initialize |seaPenImagesElement|.
     seaPenImagesElement = initElement(SeaPenImagesElement);
@@ -67,7 +67,7 @@ suite('SeaPenImagesElementTest', function() {
   test('displays image thumbnails', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailsLoading = false;
     personalizationStore.data.wallpaper.seaPen.thumbnails =
-        wallpaperProvider.seaPenImageThumbnails;
+        seaPenProvider.images;
 
     // Initialize |seaPenImagesElement|.
     seaPenImagesElement = initElement(SeaPenImagesElement);

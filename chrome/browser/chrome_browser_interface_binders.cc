@@ -284,6 +284,7 @@
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/print_management/print_management_ui.h"
@@ -1593,6 +1594,10 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::personalization_app::mojom::KeyboardBacklightProvider,
+      ash::personalization_app::PersonalizationAppUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      ash::personalization_app::mojom::SeaPenProvider,
       ash::personalization_app::PersonalizationAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

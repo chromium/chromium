@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -30,6 +30,7 @@ namespace ash::personalization_app {
 class PersonalizationAppUI;
 class PersonalizationAppAmbientProvider;
 class PersonalizationAppKeyboardBacklightProvider;
+class PersonalizationAppSeaPenProvider;
 class PersonalizationAppThemeProvider;
 class PersonalizationAppWallpaperProvider;
 class PersonalizationAppUserProvider;
@@ -52,6 +53,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
       std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
       std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
           keyboard_backlight_provider,
+      std::unique_ptr<PersonalizationAppSeaPenProvider> sea_pen_provider,
       std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
       std::unique_ptr<PersonalizationAppUserProvider> user_provider,
       std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider);
@@ -68,6 +70,10 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<
           personalization_app::mojom::KeyboardBacklightProvider> receiver);
+
+  void BindInterface(
+      mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
+          receiver);
 
   void BindInterface(
       mojo::PendingReceiver<personalization_app::mojom::ThemeProvider>
@@ -96,6 +102,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
       keyboard_backlight_provider_;
+  std::unique_ptr<PersonalizationAppSeaPenProvider> sea_pen_provider_;
   std::unique_ptr<PersonalizationAppThemeProvider> theme_provider_;
   std::unique_ptr<PersonalizationAppUserProvider> user_provider_;
   std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider_;

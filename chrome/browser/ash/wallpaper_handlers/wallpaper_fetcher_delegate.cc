@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -108,6 +109,12 @@ void WallpaperFetcherDelegateImpl::FetchGooglePhotosAccessToken(
         std::move(callback).Run(access_token_info.token);
       },
       std::move(fetcher), std::move(callback)));
+}
+
+std::unique_ptr<SeaPenFetcher>
+WallpaperFetcherDelegateImpl::CreateSeaPenFetcher(Profile* profile) const {
+  // Use `WrapUnique` to access the protected constructor.
+  return absl::WrapUnique(new SeaPenFetcher(profile));
 }
 
 }  // namespace wallpaper_handlers

@@ -7,8 +7,10 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
+#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
@@ -94,6 +96,20 @@ class MockPersonalizationAppKeyboardBacklightProvider
               (ShouldShowNudgeCallback callback),
               (override));
   MOCK_METHOD(void, HandleNudgeShown, (), (override));
+};
+
+class MockPersonalizationAppSeaPenProvider
+    : public PersonalizationAppSeaPenProvider {
+ public:
+  MOCK_METHOD(void,
+              BindInterface,
+              (mojo::PendingReceiver<
+                  ::ash::personalization_app::mojom::SeaPenProvider> receiver),
+              (override));
+  MOCK_METHOD(void,
+              SearchWallpaper,
+              (const std::string& text, SearchWallpaperCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppThemeProvider
@@ -300,6 +316,8 @@ TestPersonalizationAppMojomBannedWebUIProvider::NewWebUI(content::WebUI* web_ui,
       testing::StrictMock<MockPersonalizationAppAmbientProvider>>();
   auto keyboard_backlight_provider = std::make_unique<
       testing::StrictMock<MockPersonalizationAppKeyboardBacklightProvider>>();
+  auto sea_pen_provider = std::make_unique<
+      testing::StrictMock<MockPersonalizationAppSeaPenProvider>>();
   auto theme_provider = std::make_unique<
       testing::StrictMock<MockPersonalizationAppThemeProvider>>();
   auto wallpaper_provider = std::make_unique<
@@ -308,8 +326,9 @@ TestPersonalizationAppMojomBannedWebUIProvider::NewWebUI(content::WebUI* web_ui,
       testing::StrictMock<MockPersonalizationAppUserProvider>>();
   return std::make_unique<PersonalizationAppUI>(
       web_ui, std::move(ambient_provider),
-      std::move(keyboard_backlight_provider), std::move(theme_provider),
-      std::move(user_provider), std::move(wallpaper_provider));
+      std::move(keyboard_backlight_provider), std::move(sea_pen_provider),
+      std::move(theme_provider), std::move(user_provider),
+      std::move(wallpaper_provider));
 }
 
 PersonalizationAppMojomBannedMochaTestBase::

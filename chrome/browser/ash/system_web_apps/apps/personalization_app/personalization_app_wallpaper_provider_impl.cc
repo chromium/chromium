@@ -5,12 +5,10 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 
 #include <stdint.h>
-#include <algorithm>
 #include <cstdint>
-#include <iterator>
 #include <memory>
-#include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -28,16 +26,12 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
-#include "base/base64.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
@@ -57,11 +51,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -93,19 +85,14 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
                                   : base::UnguessableToken::Create().ToString();
 }
 
-std::string GetJpegDataUrl(const unsigned char* data, size_t size) {
-  std::string output = "data:image/jpeg;base64,";
-  base::Base64EncodeAppend(base::make_span(data, size), &output);
-  return output;
-}
-
-std::string GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
+GURL GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
   std::vector<unsigned char> output;
   if (!gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &output)) {
     LOG(ERROR) << "Unable to encode bitmap";
-    return std::string();
+    return GURL();
   }
-  return GetJpegDataUrl(output.data(), output.size());
+  return GetJpegDataUrl(
+      {reinterpret_cast<char*>(output.data()), output.size()});
 }
 
 }  // namespace
@@ -931,7 +918,7 @@ void PersonalizationAppWallpaperProviderImpl::OnGetLocalImageThumbnail(
     std::move(callback).Run(GURL());
     return;
   }
-  std::move(callback).Run(GURL(GetBitmapJpegDataUrl(*bitmap)));
+  std::move(callback).Run(GetBitmapJpegDataUrl(*bitmap));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected(

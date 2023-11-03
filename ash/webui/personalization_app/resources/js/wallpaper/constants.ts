@@ -34,11 +34,6 @@ export interface ImageTile {
   hasPreviewImage?: boolean;
 }
 
-export interface WallpaperSearchThumbnail {
-  url: Url;
-  id: bigint;
-}
-
 // TODO(b/304576846): remove this interface after the real struct is created in
 // mojom.
 export interface SeaPenWallpaper {

@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.personalization_app.mojom;
+
+import "url/mojom/url.mojom";
+
+// Encapsulates metadata for a thumbnail image, which can be displayed as an
+// image tile in the SeaPen search result page.
+struct SeaPenThumbnail {
+    // Data url to display the image.
+    url.mojom.Url image;
+
+    // An id that uniquely identifies the image.
+    uint32 id;
+};
+
+// Maximum allowable search text length, in bytes.
+// When validating length in Javascript, be careful of the difference between
+// UTF-16 (Javascript) length and UTF-8 length.
+const uint32 kMaximumSearchWallpaperTextBytes = 3000;
+
+// Provides APIs to perform wallpaper searches. Uses APIs in
+// `manta.proto` to send search requests to a server.
+// Implemented in the browser process, and called by the ChromeOS
+// Personalization App (chrome://personalization) in a renderer process.
+interface SeaPenProvider {
+
+    // Given a user text input, return a set of matching images.
+    // `images` will be null in case of an unrecoverable error, such as network
+    // failure.
+    // `images` will be empty array when the request succeeded, but no matching
+    // images were returned.
+    // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
+    SearchWallpaper(string text) => (array<SeaPenThumbnail>? images);
+};

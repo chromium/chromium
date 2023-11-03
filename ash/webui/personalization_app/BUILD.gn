@@ -11,6 +11,7 @@ static_library("personalization_app") {
   sources = [
     "personalization_app_ambient_provider.h",
     "personalization_app_keyboard_backlight_provider.h",
+    "personalization_app_sea_pen_provider.h",
     "personalization_app_theme_provider.h",
     "personalization_app_ui.cc",
     "personalization_app_ui.h",

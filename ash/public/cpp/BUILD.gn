@@ -384,6 +384,7 @@ component("cpp") {
     "wallpaper/online_wallpaper_params.h",
     "wallpaper/online_wallpaper_variant.cc",
     "wallpaper/online_wallpaper_variant.h",
+    "wallpaper/sea_pen_image.h",
     "wallpaper/wallpaper_controller.cc",
     "wallpaper/wallpaper_controller.h",
     "wallpaper/wallpaper_controller_client.h",

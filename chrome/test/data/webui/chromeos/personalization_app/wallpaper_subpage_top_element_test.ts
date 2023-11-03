@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, Paths, PersonalizationRouterElement, WallpaperActionName, WallpaperSubpageTopElement} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, Paths, PersonalizationRouterElement, SeaPenState, WallpaperActionName, WallpaperSubpageTopElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -184,30 +184,31 @@ suite('WallpaperSubpageTopElementTest', function() {
     await personalizationStore.waitForAction(
         WallpaperActionName.SET_IMAGE_THUMBNAILS);
 
-    assertDeepEquals(
+    const expectedState: SeaPenState = {
+      query: 'this is a test query',
+      thumbnailsLoading: false,
+      thumbnails: [
         {
-          query: 'this is a test query',
-          thumbnailsLoading: false,
-          thumbnails: [
-            {
-              id: BigInt(1),
-              url: {url: 'chrome://personalization/images/feel_the_breeze.png'},
-            },
-            {
-              id: BigInt(2),
-              url: {url: 'chrome://personalization/images/float_on_by.png'},
-            },
-            {
-              id: BigInt(3),
-              url: {url: 'chrome://personalization/images/slideshow.png'},
-            },
-            {
-              id: BigInt(4),
-              url: {url: 'chrome://personalization/images/feel_the_breeze.png'},
-            },
-          ],
-          recentWallpapers: null,
+          id: 1,
+          image: {url: 'https://sea-pen-images.googleusercontent.com/1'},
         },
+        {
+          id: 2,
+          image: {url: 'https://sea-pen-images.googleusercontent.com/2'},
+        },
+        {
+          id: 3,
+          image: {url: 'https://sea-pen-images.googleusercontent.com/3'},
+        },
+        {
+          id: 4,
+          image: {url: 'https://sea-pen-images.googleusercontent.com/4'},
+        },
+      ],
+      recentWallpapers: null,
+    };
+    assertDeepEquals(
+        expectedState,
         personalizationStore.data.wallpaper.seaPen,
         'expected SeaPen state is set',
     );
