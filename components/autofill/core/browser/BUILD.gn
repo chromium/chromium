@@ -488,6 +488,7 @@ static_library("browser") {
     "ui/label_formatter.h",
     "ui/label_formatter_utils.cc",
     "ui/label_formatter_utils.h",
+    "ui/payments/autofill_error_dialog_controller.h",
     "ui/payments/bubble_show_options.cc",
     "ui/payments/bubble_show_options.h",
     "ui/payments/card_unmask_otp_input_dialog_controller.h",

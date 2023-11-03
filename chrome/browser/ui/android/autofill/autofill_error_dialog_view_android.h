@@ -10,8 +10,12 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace autofill {
 
@@ -31,7 +35,7 @@ class AutofillErrorDialogViewAndroid : public AutofillErrorDialogView {
   void OnDismissed(JNIEnv* env);
 
   // Show the dialog view.
-  void Show();
+  void Show(content::WebContents* web_contents);
 
  private:
   raw_ptr<AutofillErrorDialogController> controller_;

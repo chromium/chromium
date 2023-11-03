@@ -53,7 +53,6 @@ static_library("ui") {
     "autofill/chrome_autofill_client.h",
     "autofill/payments/autofill_dialog_models.cc",
     "autofill/payments/autofill_dialog_models.h",
-    "autofill/payments/autofill_error_dialog_controller.h",
     "autofill/payments/autofill_error_dialog_controller_impl.cc",
     "autofill/payments/autofill_error_dialog_controller_impl.h",
     "autofill/payments/autofill_error_dialog_view.h",

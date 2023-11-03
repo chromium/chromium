@@ -1,12 +1,11 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_H_
-#include <string>
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_H_
 
-#include "content/public/browser/web_contents.h"
+#include <string>
 
 namespace autofill {
 
@@ -28,7 +27,6 @@ class AutofillErrorDialogController {
   virtual const std::u16string GetDescription() = 0;
   // Text for the positive button which cancels the dialog.
   virtual const std::u16string GetButtonLabel() = 0;
-  virtual content::WebContents* GetWebContents() = 0;
 
  protected:
   virtual ~AutofillErrorDialogController() = default;
@@ -36,4 +34,4 @@ class AutofillErrorDialogController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTROLLER_H_
