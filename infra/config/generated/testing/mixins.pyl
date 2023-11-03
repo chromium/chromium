@@ -649,6 +649,11 @@
       },
     },
   },
+  'linux_vulkan': {
+    'linux_args': [
+      '--extra-browser-args=--enable-features=Vulkan',
+    ],
+  },
   'lollipop-x86-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/generic_android22.textpb',
@@ -1169,9 +1174,6 @@
       '--extra-browser-args=--force_high_performance_gpu',
       '--use-webgpu-power-preference=default-high-performance',
       '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-    ],
-    'linux_args': [
-      '--extra-browser-args=--enable-features=Vulkan',
     ],
   },
   'webview_cts_archive': {

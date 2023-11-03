@@ -2934,6 +2934,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             args = [
                 "--use-webgpu-adapter=swiftshader",
@@ -2948,6 +2949,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             args = [
                 "--use-webgpu-adapter=swiftshader",
@@ -3049,6 +3051,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             swarming = targets.swarming(
                 shards = 14,
@@ -3062,6 +3065,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             args = [
                 "--enable-dawn-backend-validation",
@@ -3084,6 +3088,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             swarming = targets.swarming(
                 shards = 8,
@@ -3100,6 +3105,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             args = [
                 "--use-dxc",
@@ -3114,6 +3120,7 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
                 "webgpu_telemetry_cts",
+                "linux_vulkan",
             ],
             args = [
                 "--enable-dawn-backend-validation",

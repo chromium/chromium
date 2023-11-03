@@ -1225,7 +1225,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu --enable-features=Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -1774,7 +1774,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu --enable-features=Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -2321,7 +2321,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu --enable-features=Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
@@ -2870,7 +2870,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu --enable-features=Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-webgpu-developer-features --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"

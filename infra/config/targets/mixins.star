@@ -828,6 +828,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "linux_vulkan",
+    linux_args = [
+        "--extra-browser-args=--enable-features=Vulkan",
+    ],
+)
+
+targets.mixin(
     name = "lollipop-x86-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android22.textpb",
@@ -1480,9 +1487,6 @@ targets.mixin(
         "--extra-browser-args=--force_high_performance_gpu",
         "--use-webgpu-power-preference=default-high-performance",
         "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
-    ],
-    linux_args = [
-        "--extra-browser-args=--enable-features=Vulkan",
     ],
 )
 

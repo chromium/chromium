@@ -2486,6 +2486,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'args': [
           '--use-webgpu-adapter=swiftshader',
@@ -2500,6 +2501,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'args': [
           '--use-webgpu-adapter=swiftshader',
@@ -2587,6 +2589,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'swarming': {
           'shards': 14,
@@ -2600,6 +2603,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'args': [
           '--enable-dawn-backend-validation',
@@ -2619,6 +2623,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'swarming': {
           'shards': 8,
@@ -2632,6 +2637,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'args': [
           '--use-dxc',
@@ -2646,6 +2652,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
+          'linux_vulkan',
         ],
         'args': [
           '--enable-dawn-backend-validation',
