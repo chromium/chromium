@@ -37,13 +37,13 @@
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/net_errors.h"
 #include "net/cert/nss_cert_database_chromeos.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -216,7 +216,7 @@ class ClientCertResolverTest : public testing::Test,
             "subject_printable_string_containing_utf8_client_cert.pem"),
         &file_data));
 
-    net::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
+    bssl::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
     ASSERT_TRUE(pem_tokenizer.GetNext());
     std::string cert_der(pem_tokenizer.data());
     ASSERT_FALSE(pem_tokenizer.GetNext());

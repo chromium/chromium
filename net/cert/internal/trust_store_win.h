@@ -10,15 +10,16 @@
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/net_export.h"
-#include "net/cert/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
-// TrustStoreWin is an implementation of TrustStore which uses the Windows cert
-// systems to find user-added trust anchors for path building. It ignores the
-// Windows builtin trust anchors. This TrustStore is thread-safe (we think).
+// TrustStoreWin is an implementation of bssl::TrustStore which uses the Windows
+// cert systems to find user-added trust anchors for path building. It ignores
+// the Windows builtin trust anchors. This bssl::TrustStore is thread-safe (we
+// think).
 // TODO(https://crbug.com/1239270): confirm this is thread safe.
-class NET_EXPORT TrustStoreWin : public TrustStore {
+class NET_EXPORT TrustStoreWin : public bssl::TrustStore {
  public:
   struct NET_EXPORT_PRIVATE CertStores {
     ~CertStores();
@@ -73,10 +74,10 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
   // CertStores when making trust decisions.
   void InitializeStores();
 
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override;
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override;
 
-  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
 
  private:
   // Inner Impl class for use in initializing stores.

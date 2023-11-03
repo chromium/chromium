@@ -32,6 +32,7 @@ include_rules = [
   "+net",
   "+services/preferences/public/cpp",
   "+testing",
+  "+third_party/boringssl/src/pki",
   "+third_party/cros_system_api",
   "+third_party/re2",
   "+url",

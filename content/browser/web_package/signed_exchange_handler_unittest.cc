@@ -253,8 +253,8 @@ class SignedExchangeHandlerTest
   net::CertVerifyResult CreateCertVerifyResult() {
     net::CertVerifyResult result;
     result.cert_status = net::OK;
-    result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-    result.ocsp_result.revocation_status = net::OCSPRevocationStatus::GOOD;
+    result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+    result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
     return result;
   }
 
@@ -370,9 +370,9 @@ class SignedExchangeHandlerTest
       absl::optional<SignedExchangeSignatureVerifier::Result> signature_result,
       absl::optional<int32_t> cert_result,
       absl::optional<net::ct::CTPolicyCompliance> ct_result,
-      absl::optional<net::OCSPVerifyResult::ResponseStatus>
+      absl::optional<bssl::OCSPVerifyResult::ResponseStatus>
           ocsp_response_status,
-      absl::optional<net::OCSPRevocationStatus> ocsp_revocation_status) {
+      absl::optional<bssl::OCSPRevocationStatus> ocsp_revocation_status) {
     // CertVerificationResult histogram records negated net::Error code.
     if (cert_result.has_value())
       *cert_result = -*cert_result;
@@ -499,7 +499,7 @@ TEST_P(SignedExchangeHandlerTest, Simple) {
       IsCTSupported() ? net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS
                       : net::ct::CTPolicyCompliance::
                             CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
-      net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
+      bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD);
 }
 
 TEST_P(SignedExchangeHandlerTest, MimeType) {
@@ -736,7 +736,7 @@ TEST_P(SignedExchangeHandlerTest, OCSPNotChecked) {
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
   net::CertVerifyResult cert_result = CreateCertVerifyResult();
-  cert_result.ocsp_result.response_status = net::OCSPVerifyResult::NOT_CHECKED;
+  cert_result.ocsp_result.response_status = bssl::OCSPVerifyResult::NOT_CHECKED;
   SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
   SetSourceStreamContents("test.example.org_test.sxg");
 
@@ -756,7 +756,7 @@ TEST_P(SignedExchangeHandlerTest, OCSPNotProvided) {
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
   net::CertVerifyResult cert_result = CreateCertVerifyResult();
-  cert_result.ocsp_result.response_status = net::OCSPVerifyResult::MISSING;
+  cert_result.ocsp_result.response_status = bssl::OCSPVerifyResult::MISSING;
   SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
   SetSourceStreamContents("test.example.org_test.sxg");
 
@@ -776,7 +776,8 @@ TEST_P(SignedExchangeHandlerTest, OCSPInvalid) {
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
   net::CertVerifyResult cert_result = CreateCertVerifyResult();
-  cert_result.ocsp_result.response_status = net::OCSPVerifyResult::INVALID_DATE;
+  cert_result.ocsp_result.response_status =
+      bssl::OCSPVerifyResult::INVALID_DATE;
   SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
   SetSourceStreamContents("test.example.org_test.sxg");
 
@@ -796,9 +797,9 @@ TEST_P(SignedExchangeHandlerTest, OCSPRevoked) {
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
   net::CertVerifyResult cert_result = CreateCertVerifyResult();
-  cert_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
+  cert_result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
   cert_result.ocsp_result.revocation_status =
-      net::OCSPRevocationStatus::REVOKED;
+      bssl::OCSPRevocationStatus::REVOKED;
   SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
   SetSourceStreamContents("test.example.org_test.sxg");
 
@@ -825,8 +826,8 @@ TEST_P(SignedExchangeHandlerTest, CertVerifierParams) {
   net::CertVerifyResult fake_result;
   fake_result.verified_cert = original_cert;
   fake_result.cert_status = net::OK;
-  fake_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-  fake_result.ocsp_result.revocation_status = net::OCSPRevocationStatus::GOOD;
+  fake_result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+  fake_result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
 
   std::unique_ptr<GMockCertVerifier> gmock_cert_verifier =
       std::make_unique<GMockCertVerifier>();
@@ -973,7 +974,7 @@ TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
       net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
+      bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD);
 
   std::string payload;
   int rv = ReadPayloadStream(&payload);
@@ -1017,7 +1018,7 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
       net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
+      bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD);
 
   std::string payload;
   int rv = ReadPayloadStream(&payload);

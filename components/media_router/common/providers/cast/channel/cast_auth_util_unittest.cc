@@ -16,9 +16,9 @@
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 #include "third_party/openscreen/src/cast/common/certificate/proto/test_suite.pb.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -343,8 +343,8 @@ AuthResult TestVerifyRevocation(
     const std::string& crl_bundle,
     const base::Time& verification_time,
     bool crl_required,
-    net::TrustStore* cast_trust_store,
-    net::TrustStore* crl_trust_store) {
+    bssl::TrustStore* cast_trust_store,
+    bssl::TrustStore* crl_trust_store) {
   AuthResponse response;
 
   if (certificate_chain.size() > 0) {
@@ -369,11 +369,11 @@ AuthResult TestVerifyRevocation(
 
 // Runs a single test case.
 bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
-  std::unique_ptr<net::TrustStoreInMemory> cast_trust_store =
+  std::unique_ptr<bssl::TrustStoreInMemory> cast_trust_store =
       test_case.use_test_trust_anchors()
           ? cast_certificate::testing::LoadTestCert("cast_test_root_ca.pem")
           : nullptr;
-  std::unique_ptr<net::TrustStoreInMemory> crl_trust_store =
+  std::unique_ptr<bssl::TrustStoreInMemory> crl_trust_store =
       test_case.use_test_trust_anchors()
           ? cast_certificate::testing::LoadTestCert("cast_crl_test_root_ca.pem")
           : nullptr;

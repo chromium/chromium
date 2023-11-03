@@ -6,9 +6,9 @@
 
 #include "build/build_config.h"
 #include "net/base/hash_value.h"
-#include "net/der/input.h"
 #include "net/test/cert_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/input.h"
 
 namespace net {
 
@@ -34,38 +34,38 @@ TEST(EVRootCAMetadataTest, Basic) {
   EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
 
   // Contains an expected policy.
-  EXPECT_TRUE(ev_metadata->IsEVPolicyOID(der::Input(kCabEvPolicy)));
+  EXPECT_TRUE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kCabEvPolicy)));
 
   // Does not contain an unregistered policy.
-  EXPECT_FALSE(ev_metadata->IsEVPolicyOID(der::Input(kFakePolicy)));
+  EXPECT_FALSE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
 
   // The policy is correct for the right root.
   EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
-                                          der::Input(kCabEvPolicy)));
+                                          bssl::der::Input(kCabEvPolicy)));
 
   // The policy does not match if the root does not match.
-  EXPECT_FALSE(
-      ev_metadata->HasEVPolicyOID(kFakeFingerprint, der::Input(kCabEvPolicy)));
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kFakeFingerprint,
+                                           bssl::der::Input(kCabEvPolicy)));
 
   // The expected root only has the expected policies; it should fail to match
   // the root against unknown policies.
   EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
-                                           der::Input(kFakePolicy)));
+                                           bssl::der::Input(kFakePolicy)));
 
   // Test a completely bogus OID.
   const uint8_t bad_oid[] = {0};
-  EXPECT_FALSE(
-      ev_metadata->HasEVPolicyOID(kStarfieldFingerprint, der::Input(bad_oid)));
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kStarfieldFingerprint,
+                                           bssl::der::Input(bad_oid)));
 }
 
 TEST(EVRootCAMetadataTest, AddRemove) {
   EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
 
   // An unregistered/junk policy should not work.
-  EXPECT_FALSE(ev_metadata->IsEVPolicyOID(der::Input(kFakePolicy)));
+  EXPECT_FALSE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
 
-  EXPECT_FALSE(
-      ev_metadata->HasEVPolicyOID(kFakeFingerprint, der::Input(kFakePolicy)));
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kFakeFingerprint,
+                                           bssl::der::Input(kFakePolicy)));
 
   {
     // However, this unregistered/junk policy can be temporarily registered
@@ -73,17 +73,17 @@ TEST(EVRootCAMetadataTest, AddRemove) {
     ScopedTestEVPolicy test_ev_policy(ev_metadata, kFakeFingerprint,
                                       kFakePolicyStr);
 
-    EXPECT_TRUE(ev_metadata->IsEVPolicyOID(der::Input(kFakePolicy)));
+    EXPECT_TRUE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
 
-    EXPECT_TRUE(
-        ev_metadata->HasEVPolicyOID(kFakeFingerprint, der::Input(kFakePolicy)));
+    EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kFakeFingerprint,
+                                            bssl::der::Input(kFakePolicy)));
   }
 
   // It should go out of scope when the ScopedTestEVPolicy goes out of scope.
-  EXPECT_FALSE(ev_metadata->IsEVPolicyOID(der::Input(kFakePolicy)));
+  EXPECT_FALSE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
 
-  EXPECT_FALSE(
-      ev_metadata->HasEVPolicyOID(kFakeFingerprint, der::Input(kFakePolicy)));
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kFakeFingerprint,
+                                           bssl::der::Input(kFakePolicy)));
 }
 
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)

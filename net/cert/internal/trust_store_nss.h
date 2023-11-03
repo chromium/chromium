@@ -10,15 +10,15 @@
 
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
-#include "net/cert/pki/trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
-// TrustStoreNSS is an implementation of TrustStore which uses NSS to find trust
-// anchors for path building. This TrustStore is thread-safe.
-class NET_EXPORT TrustStoreNSS : public TrustStore {
+// TrustStoreNSS is an implementation of bssl::TrustStore which uses NSS to find
+// trust anchors for path building. This bssl::TrustStore is thread-safe.
+class NET_EXPORT TrustStoreNSS : public bssl::TrustStore {
  public:
   struct UseTrustFromAllUserSlots : absl::monostate {};
   using UserSlotTrustSetting =
@@ -39,28 +39,29 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
 
   ~TrustStoreNSS() override;
 
-  // CertIssuerSource implementation:
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override;
+  // bssl::CertIssuerSource implementation:
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override;
 
-  // TrustStore implementation:
-  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
+  // bssl::TrustStore implementation:
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
 
   struct ListCertsResult {
-    ListCertsResult(ScopedCERTCertificate cert, CertificateTrust trust);
+    ListCertsResult(ScopedCERTCertificate cert, bssl::CertificateTrust trust);
     ~ListCertsResult();
     ListCertsResult(ListCertsResult&& other);
     ListCertsResult& operator=(ListCertsResult&& other);
 
     ScopedCERTCertificate cert;
-    CertificateTrust trust;
+    bssl::CertificateTrust trust;
   };
   std::vector<ListCertsResult> ListCertsIgnoringNSSRoots();
 
  private:
-  CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
+  bssl::CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
 
-  CertificateTrust GetTrustIgnoringSystemTrust(CERTCertificate* nss_cert) const;
+  bssl::CertificateTrust GetTrustIgnoringSystemTrust(
+      CERTCertificate* nss_cert) const;
 
   // |user_slot_trust_setting_| specifies which slots certificates must be
   // stored on to be allowed to be trusted. The possible values are:

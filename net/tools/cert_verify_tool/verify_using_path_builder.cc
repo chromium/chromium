@@ -14,23 +14,23 @@
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/internal/cert_issuer_source_aia.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/pki/cert_issuer_source_static.h"
-#include "net/cert/pki/parse_name.h"
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/path_builder.h"
-#include "net/cert/pki/simple_path_builder_delegate.h"
-#include "net/cert/pki/trust_store_collection.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
+#include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
+#include "third_party/boringssl/src/pki/trust_store_collection.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 namespace {
 
-bool AddPemEncodedCert(const net::ParsedCertificate* cert,
+bool AddPemEncodedCert(const bssl::ParsedCertificate* cert,
                        std::vector<std::string>* pem_encoded_chain) {
   std::string der_cert(cert->der_cert().AsStringView());
   std::string pem;
@@ -42,9 +42,9 @@ bool AddPemEncodedCert(const net::ParsedCertificate* cert,
   return true;
 }
 
-// Dumps a chain of ParsedCertificate objects to a PEM file.
+// Dumps a chain of bssl::ParsedCertificate objects to a PEM file.
 bool DumpParsedCertificateChain(const base::FilePath& file_path,
-                                const net::CertPathBuilderResultPath& path) {
+                                const bssl::CertPathBuilderResultPath& path) {
   std::vector<std::string> pem_encoded_chain;
   for (const auto& cert : path.certs) {
     if (!AddPemEncodedCert(cert.get(), &pem_encoded_chain))
@@ -55,28 +55,30 @@ bool DumpParsedCertificateChain(const base::FilePath& file_path,
 }
 
 // Returns a hex-encoded sha256 of the DER-encoding of |cert|.
-std::string FingerPrintParsedCertificate(const net::ParsedCertificate* cert) {
+std::string FingerPrintParsedCertificate(const bssl::ParsedCertificate* cert) {
   std::string hash = crypto::SHA256HashString(cert->der_cert().AsStringView());
   return base::HexEncode(hash.data(), hash.size());
 }
 
-std::string SubjectToString(const net::RDNSequence& parsed_subject) {
+std::string SubjectToString(const bssl::RDNSequence& parsed_subject) {
   std::string subject_str;
-  if (!net::ConvertToRFC2253(parsed_subject, &subject_str))
+  if (!bssl::ConvertToRFC2253(parsed_subject, &subject_str)) {
     return std::string();
+  }
   return subject_str;
 }
 
 // Returns a textual representation of the Subject of |cert|.
-std::string SubjectFromParsedCertificate(const net::ParsedCertificate* cert) {
-  net::RDNSequence parsed_subject;
-  if (!net::ParseName(cert->tbs().subject_tlv, &parsed_subject))
+std::string SubjectFromParsedCertificate(const bssl::ParsedCertificate* cert) {
+  bssl::RDNSequence parsed_subject;
+  if (!bssl::ParseName(cert->tbs().subject_tlv, &parsed_subject)) {
     return std::string();
+  }
   return SubjectToString(parsed_subject);
 }
 
 // Dumps a ResultPath to std::cout.
-void PrintResultPath(const net::CertPathBuilderResultPath* result_path,
+void PrintResultPath(const bssl::CertPathBuilderResultPath* result_path,
                      size_t index,
                      bool is_best) {
   std::cout << "path " << index << " "
@@ -113,14 +115,14 @@ void PrintResultPath(const net::CertPathBuilderResultPath* result_path,
   }
 }
 
-std::shared_ptr<const net::ParsedCertificate> ParseCertificate(
+std::shared_ptr<const bssl::ParsedCertificate> ParseCertificate(
     const CertInput& input) {
-  net::CertErrors errors;
-  std::shared_ptr<const net::ParsedCertificate> cert =
-      net::ParsedCertificate::Create(
+  bssl::CertErrors errors;
+  std::shared_ptr<const bssl::ParsedCertificate> cert =
+      bssl::ParsedCertificate::Create(
           net::x509_util::CreateCryptoBuffer(input.der_cert), {}, &errors);
   if (!cert) {
-    PrintCertError("ERROR: ParsedCertificate failed:", input);
+    PrintCertError("ERROR: ParseCertificate failed:", input);
     std::cout << errors.ToDebugString() << "\n";
   }
 
@@ -132,7 +134,7 @@ std::shared_ptr<const net::ParsedCertificate> ParseCertificate(
 
 }  // namespace
 
-// Verifies |target_der_cert| using CertPathBuilder.
+// Verifies |target_der_cert| using bssl::CertPathBuilder.
 bool VerifyUsingPathBuilder(
     const CertInput& target_der_cert,
     const std::vector<CertInput>& intermediate_der_certs,
@@ -141,45 +143,46 @@ bool VerifyUsingPathBuilder(
     const base::FilePath& dump_prefix_path,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     net::SystemTrustStore* system_trust_store) {
-  net::der::GeneralizedTime time;
+  bssl::der::GeneralizedTime time;
   if (!net::EncodeTimeAsGeneralizedTime(at_time, &time)) {
     return false;
   }
 
-  net::TrustStoreInMemory additional_roots;
+  bssl::TrustStoreInMemory additional_roots;
   for (const auto& cert_input_with_trust : der_certs_with_trust_settings) {
-    std::shared_ptr<const net::ParsedCertificate> cert =
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
         ParseCertificate(cert_input_with_trust.cert_input);
     if (cert) {
       additional_roots.AddCertificate(std::move(cert),
                                       cert_input_with_trust.trust);
     }
   }
-  net::TrustStoreCollection trust_store;
+  bssl::TrustStoreCollection trust_store;
   trust_store.AddTrustStore(&additional_roots);
   trust_store.AddTrustStore(system_trust_store->GetTrustStore());
 
-  net::CertIssuerSourceStatic intermediate_cert_issuer_source;
+  bssl::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (const auto& der_cert : intermediate_der_certs) {
-    std::shared_ptr<const net::ParsedCertificate> cert =
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
         ParseCertificate(der_cert);
     if (cert)
       intermediate_cert_issuer_source.AddCert(cert);
   }
 
-  std::shared_ptr<const net::ParsedCertificate> target_cert =
+  std::shared_ptr<const bssl::ParsedCertificate> target_cert =
       ParseCertificate(target_der_cert);
   if (!target_cert)
     return false;
 
   // Verify the chain.
-  net::SimplePathBuilderDelegate delegate(
-      2048, net::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
-  net::CertPathBuilder path_builder(
-      target_cert, &trust_store, &delegate, time, net::KeyPurpose::SERVER_AUTH,
-      net::InitialExplicitPolicy::kFalse, {net::der::Input(net::kAnyPolicyOid)},
-      net::InitialPolicyMappingInhibit::kFalse,
-      net::InitialAnyPolicyInhibit::kFalse);
+  bssl::SimplePathBuilderDelegate delegate(
+      2048, bssl::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
+  bssl::CertPathBuilder path_builder(target_cert, &trust_store, &delegate, time,
+                                     bssl::KeyPurpose::SERVER_AUTH,
+                                     bssl::InitialExplicitPolicy::kFalse,
+                                     {bssl::der::Input(bssl::kAnyPolicyOid)},
+                                     bssl::InitialPolicyMappingInhibit::kFalse,
+                                     bssl::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
 
   std::unique_ptr<net::CertIssuerSourceAia> aia_cert_issuer_source;
@@ -193,7 +196,7 @@ bool VerifyUsingPathBuilder(
   path_builder.SetExploreAllPaths(true);
 
   // Run the path builder.
-  net::CertPathBuilder::Result result = path_builder.Run();
+  bssl::CertPathBuilder::Result result = path_builder.Run();
 
   // TODO(crbug.com/634443): Display any errors/warnings associated with path
   //                         building that were not part of a particular

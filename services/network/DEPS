@@ -24,6 +24,7 @@ include_rules = [
   "+services/proxy_resolver_win/public/mojom",
   "+services/service_manager/public",
   "+third_party/boringssl/src/include",
+  "+third_party/boringssl/src/pki",
   "+url",
 ]
 

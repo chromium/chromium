@@ -10680,7 +10680,7 @@ TEST_F(HTTPSOCSPTest, Valid) {
 
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10699,7 +10699,7 @@ TEST_F(HTTPSOCSPTest, Revoked) {
 
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10739,10 +10739,10 @@ TEST_F(HTTPSOCSPTest, IntermediateValid) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10762,12 +10762,12 @@ TEST_F(HTTPSOCSPTest, IntermediateResponseOldButStillValid) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   // Use an OCSP response for the intermediate that would be too old for a leaf
   // cert, but is still valid for an intermediate.
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}});
 
   CertStatus cert_status;
@@ -10791,10 +10791,10 @@ TEST_F(HTTPSOCSPTest, IntermediateResponseTooOldKnownRoot) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
   cert_config.dns_names = {"example.com"};
 
@@ -10822,10 +10822,10 @@ TEST_F(HTTPSOCSPTest, IntermediateResponseTooOld) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
 
   CertStatus cert_status;
@@ -10847,10 +10847,10 @@ TEST_F(HTTPSOCSPTest, IntermediateRevoked) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10874,7 +10874,7 @@ TEST_F(HTTPSOCSPTest, ValidStapled) {
       EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
 
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10898,7 +10898,7 @@ TEST_F(HTTPSOCSPTest, RevokedStapled) {
       EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
 
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10919,7 +10919,7 @@ TEST_F(HTTPSOCSPTest, OldStapledAndInvalidAIA) {
 
   // Stapled response indicates good, but is too old.
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}});
 
   // AIA OCSP url is included, but does not return a successful ocsp response.
@@ -10944,12 +10944,12 @@ TEST_F(HTTPSOCSPTest, OldStapledButValidAIA) {
 
   // Stapled response indicates good, but response is too old.
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}});
 
   // AIA OCSP url is included, and returns a successful ocsp response.
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -10961,202 +10961,208 @@ TEST_F(HTTPSOCSPTest, OldStapledButValidAIA) {
 
 static const struct OCSPVerifyTestData {
   EmbeddedTestServer::OCSPConfig ocsp_config;
-  OCSPVerifyResult::ResponseStatus expected_response_status;
+  bssl::OCSPVerifyResult::ResponseStatus expected_response_status;
   // |expected_cert_status| is only used if |expected_response_status| is
   // PROVIDED.
-  OCSPRevocationStatus expected_cert_status;
+  bssl::OCSPRevocationStatus expected_cert_status;
 } kOCSPVerifyData[] = {
     // 0
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD},
 
     // 1
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 2
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 3
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 4
     {EmbeddedTestServer::OCSPConfig(
          EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater),
-     OCSPVerifyResult::ERROR_RESPONSE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::ERROR_RESPONSE,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 5
     {EmbeddedTestServer::OCSPConfig(
          EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponse),
-     OCSPVerifyResult::PARSE_RESPONSE_ERROR, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::PARSE_RESPONSE_ERROR,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 6
     {EmbeddedTestServer::OCSPConfig(
          EmbeddedTestServer::OCSPConfig::ResponseType::kInvalidResponseData),
-     OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR,
-     OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 7
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::REVOKED,
+         {{bssl::OCSPRevocationStatus::REVOKED,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 8
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::UNKNOWN,
+         {{bssl::OCSPRevocationStatus::UNKNOWN,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 9
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::UNKNOWN,
+         {{bssl::OCSPRevocationStatus::UNKNOWN,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 10
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::UNKNOWN,
+         {{bssl::OCSPRevocationStatus::UNKNOWN,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 11
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kBeforeCert),
-     OCSPVerifyResult::BAD_PRODUCED_AT, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::BAD_PRODUCED_AT,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 12
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kAfterCert),
-     OCSPVerifyResult::BAD_PRODUCED_AT, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::BAD_PRODUCED_AT,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 13
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD},
 
     // 14
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD},
 
     // 15
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::GOOD},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD},
 
     // 16
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 17
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::UNKNOWN,
+         {{bssl::OCSPRevocationStatus::UNKNOWN,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
-          {OCSPRevocationStatus::REVOKED,
+          {bssl::OCSPRevocationStatus::REVOKED,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::REVOKED},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::REVOKED},
 
     // 18
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::UNKNOWN,
+         {{bssl::OCSPRevocationStatus::UNKNOWN,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 19
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::UNKNOWN,
+         {{bssl::OCSPRevocationStatus::UNKNOWN,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid},
-          {OCSPRevocationStatus::REVOKED,
+          {bssl::OCSPRevocationStatus::REVOKED,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong},
-          {OCSPRevocationStatus::GOOD,
+          {bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 20
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Serial::kMismatch}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::NO_MATCHING_RESPONSE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::NO_MATCHING_RESPONSE,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 21
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::GOOD,
+         {{bssl::OCSPRevocationStatus::GOOD,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kEarly,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Serial::kMismatch}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::NO_MATCHING_RESPONSE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::NO_MATCHING_RESPONSE,
+     bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 22
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::REVOKED,
+         {{bssl::OCSPRevocationStatus::REVOKED,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::PROVIDED, OCSPRevocationStatus::REVOKED},
+     bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::REVOKED},
 
     // 23
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::REVOKED,
+         {{bssl::OCSPRevocationStatus::REVOKED,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 
     // 24
     {EmbeddedTestServer::OCSPConfig(
-         {{OCSPRevocationStatus::REVOKED,
+         {{bssl::OCSPRevocationStatus::REVOKED,
            EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}},
          EmbeddedTestServer::OCSPConfig::Produced::kValid),
-     OCSPVerifyResult::INVALID_DATE, OCSPRevocationStatus::UNKNOWN},
+     bssl::OCSPVerifyResult::INVALID_DATE, bssl::OCSPRevocationStatus::UNKNOWN},
 };
 
 class HTTPSOCSPVerifyTest
@@ -11190,7 +11196,7 @@ TEST_P(HTTPSOCSPVerifyTest, VerifyResult) {
   EXPECT_EQ(test.expected_response_status,
             ssl_info.ocsp_result.response_status);
 
-  if (test.expected_response_status == OCSPVerifyResult::PROVIDED) {
+  if (test.expected_response_status == bssl::OCSPVerifyResult::PROVIDED) {
     EXPECT_EQ(test.expected_cert_status,
               ssl_info.ocsp_result.revocation_status);
   }
@@ -11255,7 +11261,7 @@ TEST_F(HTTPSHardFailTest, Valid) {
 
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -11279,7 +11285,7 @@ TEST_F(HTTPSHardFailTest, Revoked) {
 
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -11329,12 +11335,12 @@ TEST_F(HTTPSHardFailTest, IntermediateResponseOldButStillValid) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   // Use an OCSP response for the intermediate that would be too old for a leaf
   // cert, but is still valid for an intermediate.
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLong}});
 
   CertStatus cert_status;
@@ -11359,12 +11365,12 @@ TEST_F(HTTPSHardFailTest, IntermediateResponseTooOld) {
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.intermediate = EmbeddedTestServer::IntermediateType::kInHandshake;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   // Use an OCSP response for the intermediate that is too old according to
   // BRs, but is fine for a locally trusted root.
   cert_config.intermediate_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kLonger}});
 
   CertStatus cert_status;
@@ -11394,7 +11400,7 @@ TEST_F(HTTPSHardFailTest, ValidStapled) {
       EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
 
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -11424,7 +11430,7 @@ TEST_F(HTTPSHardFailTest, RevokedStapled) {
       EmbeddedTestServer::OCSPConfig::ResponseType::kTryLater);
 
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -11451,7 +11457,7 @@ TEST_F(HTTPSHardFailTest, OldStapledAndInvalidAIA) {
 
   // Stapled response indicates good, but is too old.
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}});
 
   // AIA OCSP url is included, but does not return a successful ocsp response.
@@ -11483,12 +11489,12 @@ TEST_F(HTTPSHardFailTest, OldStapledButValidAIA) {
 
   // Stapled response indicates good, but response is too old.
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kOld}});
 
   // AIA OCSP url is included, and returns a successful ocsp response.
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   CertStatus cert_status;
@@ -11527,7 +11533,7 @@ TEST_F(HTTPSCRLSetTest, ExpiredCRLSetAndRevoked) {
 
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   UpdateCertVerifier(CRLSet::ExpiredCRLSetForTesting());
@@ -11550,7 +11556,7 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevoked) {
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   test_server.SetSSLConfig(cert_config);
   RegisterDefaultHandlers(&test_server);
@@ -11592,7 +11598,7 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
   test_server.SetSSLConfig(cert_config);
   RegisterDefaultHandlers(&test_server);

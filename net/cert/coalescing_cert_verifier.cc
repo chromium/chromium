@@ -16,13 +16,13 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace net {
 
@@ -77,10 +77,10 @@ base::Value::Dict CertVerifierParams(
            NetLogX509CertificateList(params.certificate().get()));
   if (!params.ocsp_response().empty()) {
     dict.Set("ocsp_response",
-             PEMEncode(params.ocsp_response(), "NETLOG OCSP RESPONSE"));
+             bssl::PEMEncode(params.ocsp_response(), "NETLOG OCSP RESPONSE"));
   }
   if (!params.sct_list().empty()) {
-    dict.Set("sct_list", PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
+    dict.Set("sct_list", bssl::PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
   }
   dict.Set("host", NetLogStringValue(params.hostname()));
   dict.Set("verifier_flags", params.flags());

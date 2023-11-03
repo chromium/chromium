@@ -222,9 +222,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 NET_EXPORT BASE_DECLARE_FEATURE(kChromeRootStoreUsed);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
-// When enabled, TrustStore implementations will use TRUSTED_LEAF,
+// When enabled, bssl::TrustStore implementations will use TRUSTED_LEAF,
 // TRUSTED_ANCHOR_OR_LEAF, and TRUSTED_ANCHOR as appropriate. When disabled,
-// TrustStore implementation will only use TRUSTED_ANCHOR.
+// bssl::TrustStore implementation will only use TRUSTED_ANCHOR.
 // TODO(https://crbug.com/1403034): remove this a few milestones after the
 // trusted leaf support has been launched on all relevant platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN)

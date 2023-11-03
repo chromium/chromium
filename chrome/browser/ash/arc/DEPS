@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/services/keymaster/public",
   "+chrome/services/keymint/public",
   "+services/tracing/public",
+  "+third_party/boringssl/src/pki",
 
   # Unsafe to use from //chrome. See //chrome/browser/DEPS.
   "-components/user_prefs/test/test_browser_context_with_prefs.h",

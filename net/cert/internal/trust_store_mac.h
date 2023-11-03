@@ -10,18 +10,18 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/gtest_prod_util.h"
 #include "net/base/net_export.h"
-#include "net/cert/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
-// TrustStoreMac is an implementation of TrustStore which uses macOS keychain
-// to find trust anchors for path building. Trust state is cached, so a single
-// TrustStoreMac instance should be created and used for all verifications of a
-// given policy.
-// TrustStoreMac objects are threadsafe and methods may be called from multiple
-// threads simultaneously. It is the owner's responsibility to ensure the
-// TrustStoreMac object outlives any threads accessing it.
-class NET_EXPORT TrustStoreMac : public TrustStore {
+// TrustStoreMac is an implementation of bssl::TrustStore which uses macOS
+// keychain to find trust anchors for path building. Trust state is cached, so a
+// single TrustStoreMac instance should be created and used for all
+// verifications of a given policy. TrustStoreMac objects are threadsafe and
+// methods may be called from multiple threads simultaneously. It is the owner's
+// responsibility to ensure the TrustStoreMac object outlives any threads
+// accessing it.
+class NET_EXPORT TrustStoreMac : public bssl::TrustStore {
  public:
   // NOTE: When updating this enum, also update ParamToTrustImplType in
   // system_trust_store.cc
@@ -49,10 +49,10 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // Initializes the trust cache, if it isn't already initialized.
   void InitializeTrustCache() const;
 
-  // TrustStore implementation:
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override;
-  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
+  // bssl::TrustStore implementation:
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override;
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
 
  private:
   class TrustImpl;
@@ -71,7 +71,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // comparing, roughly similar to RFC3280's normalization scheme. The
   // normalized form is used for any database lookups and comparisons.
   static base::apple::ScopedCFTypeRef<CFDataRef> GetMacNormalizedIssuer(
-      const ParsedCertificate* cert);
+      const bssl::ParsedCertificate* cert);
 
   std::unique_ptr<TrustImpl> trust_cache_;
 };

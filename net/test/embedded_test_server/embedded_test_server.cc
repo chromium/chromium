@@ -33,7 +33,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
-#include "net/cert/pki/extended_key_usage.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
@@ -54,6 +53,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
 namespace net::test_server {
@@ -123,23 +123,23 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
       return false;
     case OCSPResponseType::kMalformedRequest:
       *out_response = BuildOCSPResponseError(
-          OCSPResponse::ResponseStatus::MALFORMED_REQUEST);
+          bssl::OCSPResponse::ResponseStatus::MALFORMED_REQUEST);
       return true;
     case OCSPResponseType::kInternalError:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::INTERNAL_ERROR);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::INTERNAL_ERROR);
       return true;
     case OCSPResponseType::kTryLater:
       *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::TRY_LATER);
+          BuildOCSPResponseError(bssl::OCSPResponse::ResponseStatus::TRY_LATER);
       return true;
     case OCSPResponseType::kSigRequired:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::SIG_REQUIRED);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::SIG_REQUIRED);
       return true;
     case OCSPResponseType::kUnauthorized:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::UNAUTHORIZED);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::UNAUTHORIZED);
       return true;
     case OCSPResponseType::kInvalidResponse:
       *out_response = "3";

@@ -15,8 +15,6 @@
 #include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/internal/trust_store_features.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -26,23 +24,25 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
 namespace {
 
-// Parses |x509_cert| as a ParsedCertificate and stores the output in
+// Parses |x509_cert| as a bssl::ParsedCertificate and stores the output in
 // *|out_parsed_cert|. Wrap in ASSERT_NO_FATAL_FAILURE on callsites.
 ::testing::AssertionResult ParseX509Certificate(
     const scoped_refptr<X509Certificate>& x509_cert,
-    std::shared_ptr<const ParsedCertificate>* out_parsed_cert) {
-  CertErrors parsing_errors;
-  *out_parsed_cert = ParsedCertificate::Create(
+    std::shared_ptr<const bssl::ParsedCertificate>* out_parsed_cert) {
+  bssl::CertErrors parsing_errors;
+  *out_parsed_cert = bssl::ParsedCertificate::Create(
       bssl::UpRef(x509_cert->cert_buffer()),
       x509_util::DefaultParseCertificateOptions(), &parsing_errors);
   if (!*out_parsed_cert) {
     return ::testing::AssertionFailure()
-           << "ParseCertificate::Create() failed:\n"
+           << "bssl::ParseCertificate::Create() failed:\n"
            << parsing_errors.ToDebugString();
   }
   return ::testing::AssertionSuccess();
@@ -95,7 +95,7 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   raw_ptr<TestRootCerts> test_root_certs_;
 
   scoped_refptr<X509Certificate> root_cert_;
-  std::shared_ptr<const ParsedCertificate> parsed_root_cert_;
+  std::shared_ptr<const bssl::ParsedCertificate> parsed_root_cert_;
   ScopedCERTCertificate nss_root_cert_;
 };
 
@@ -111,9 +111,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust =
+  bssl::CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(CertificateTrust::ForTrustAnchor()
+  EXPECT_EQ(bssl::CertificateTrust::ForTrustAnchor()
                 .WithEnforceAnchorConstraints()
                 .WithEnforceAnchorExpiry()
                 .ToDebugString(),
@@ -131,9 +131,9 @@ TEST_F(SystemTrustStoreNSSTest,
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust =
+  bssl::CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+  EXPECT_EQ(bssl::CertificateTrust::ForTrustAnchor().ToDebugString(),
             trust.ToDebugString());
 }
 
@@ -148,9 +148,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(other_test_nssdb_.slot()));
 
-  CertificateTrust trust =
+  bssl::CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
 
@@ -163,9 +163,9 @@ TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust =
+  bssl::CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
 

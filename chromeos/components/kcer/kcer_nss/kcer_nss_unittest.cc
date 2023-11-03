@@ -25,11 +25,11 @@
 #include "crypto/nss_util.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "crypto/secure_hash.h"
-#include "net/cert/pem.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 // The tests here provide only the minimal coverage for the basic functionality
 // of Kcer. More thorough testing, including edge cases, will be done in a
@@ -178,7 +178,7 @@ absl::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
     return absl::nullopt;
   }
 
-  net::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
+  bssl::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
   if (!tokenizer.GetNext()) {
     return absl::nullopt;
   }
@@ -250,7 +250,8 @@ std::unique_ptr<net::CertBuilder> MakeCertBuilder(
     const std::vector<uint8_t>& public_key) {
   std::unique_ptr<net::CertBuilder> cert_builder =
       net::CertBuilder::FromSubjectPublicKeyInfo(public_key, issuer);
-  cert_builder->SetSignatureAlgorithm(net::SignatureAlgorithm::kRsaPkcs1Sha256);
+  cert_builder->SetSignatureAlgorithm(
+      bssl::SignatureAlgorithm::kRsaPkcs1Sha256);
   auto now = base::Time::Now();
   cert_builder->SetValidity(now, now + base::Days(30));
   cert_builder->SetSubjectCommonName("SubjectCommonName");
