@@ -110,6 +110,7 @@
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
+#include "base/win/dark_mode_support.h"
 #include "base/win/resource_exhaustion.h"
 #include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/browser/win/browser_util.h"
@@ -803,6 +804,9 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
+
+  // Make sure the 'uxtheme.dll' is pinned.
+  base::win::AllowDarkModeForApp(true);
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
