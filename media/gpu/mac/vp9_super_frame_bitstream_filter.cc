@@ -117,7 +117,7 @@ bool VP9SuperFrameBitstreamFilter::ShouldShowFrame(Vp9RawBitsReader* reader) {
 bool VP9SuperFrameBitstreamFilter::PreparePassthroughBuffer(
     scoped_refptr<DecoderBuffer> buffer) {
   data_ = CreatePassthroughBuffer(std::move(buffer));
-  return data_;
+  return !!data_;
 }
 
 bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
