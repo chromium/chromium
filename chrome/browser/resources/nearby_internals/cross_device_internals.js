@@ -17,6 +17,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {chimeBrowserProxy} from './chime_browser_proxy.js';
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
@@ -65,6 +66,9 @@ Polymer({
   /** @private {?NearbyPresenceBrowserProxy} */
   nearbyPresenceBrowserProxy_: null,
 
+  /** @private {?chimeBrowserProxy} */
+  chimeBrowserProxy_: null,
+
   /** @private {?NearbyPrefsBrowserProxy}*/
   prefsBrowserProxy_: null,
 
@@ -79,10 +83,11 @@ Polymer({
     featuresList: {
       type: Array,
       value: [
-        {name: 'Nearby Presence', value: FeatureValues.NearbyPresence},
-        {name: 'Nearby Share', value: FeatureValues.NearbyShare},
-        {name: 'Nearby Connections', value: FeatureValues.NearbyConnections},
-        {name: 'Fast Pair', value: FeatureValues.FastPair},
+        {name: 'Nearby Presence', value: FeatureValues.NEARBY_PRESENCE},
+        {name: 'Nearby Share', value: FeatureValues.NEARBY_SHARE},
+        {name: 'Nearby Connections', value: FeatureValues.NEARBY_CONNECTIONS},
+        {name: 'Fast Pair', value: FeatureValues.FAST_PAIR},
+        {name: 'Chime', value: FeatureValues.CHIME},
       ],
     },
 
@@ -90,10 +95,10 @@ Polymer({
     nearbyPresenceActionList: {
       type: Array,
       value: [
-        {name: 'Start Scan', value: ActionValues.STARTSCAN},
-        {name: 'Stop Scan', value: ActionValues.STOPSCAN},
-        {name: 'Sync Credentials', value: ActionValues.SYNCCREDENTIALS},
-        {name: 'First time flow', value: ActionValues.FIRSTTIMEFLOW},
+        {name: 'Start Scan', value: ActionValues.START_SCAN},
+        {name: 'Stop Scan', value: ActionValues.STOP_SCAN},
+        {name: 'Sync Credentials', value: ActionValues.SYNC_CREDENTIALS},
+        {name: 'First time flow', value: ActionValues.FIRST_TIME_FLOW},
       ],
     },
 
@@ -112,7 +117,7 @@ Polymer({
     nearbyShareActionList: {
       type: Array,
       value: [
-        {name: 'Reset Nearby Share', value: ActionValues.RESETNEARBYSHARE},
+        {name: 'Reset Nearby Share', value: ActionValues.RESET_NEARBY_SHARE},
       ],
     },
 
@@ -126,6 +131,14 @@ Polymer({
     fastPairActionList: {
       type: Array,
       value: [],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    chimeActionList: {
+      type: Array,
+      value: [
+        {name: 'Add Chime Client', value: ActionValues.ADD_CHIME_CLIENT},
+      ],
     },
 
     /** @private {!Array<!SelectOption>} */
@@ -170,10 +183,10 @@ Polymer({
     currentLogTypes: {
       type: FeatureValues,
       value: [
-        FeatureValues.NearbyShare,
-        FeatureValues.NearbyConnections,
-        FeatureValues.NearbyPresence,
-        FeatureValues.FastPair,
+        FeatureValues.NEARBY_SHARE,
+        FeatureValues.NEARBY_CONNECTIONS,
+        FeatureValues.NEARBY_PRESENCE,
+        FeatureValues.FAST_PAIR,
       ],
     },
   },
@@ -184,6 +197,7 @@ Polymer({
 
   created() {
     this.nearbyPresenceBrowserProxy_ = NearbyPresenceBrowserProxy.getInstance();
+    this.chimeBrowserProxy_ = chimeBrowserProxy.getInstance();
     this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
   },
 
@@ -194,6 +208,7 @@ Polymer({
    */
   attached() {
     this.nearbyPresenceBrowserProxy_.initialize();
+    this.chimeBrowserProxy_.initialize();
     this.addWebUIListener(
         'presence-device-found', device => this.onPresenceDeviceFound_(device));
     this.addWebUIListener(
@@ -222,38 +237,43 @@ Polymer({
 
   updateActionsSelect() {
     switch (Number(this.$.actionGroup.value)) {
-      case FeatureValues.NearbyPresence:
+      case FeatureValues.NEARBY_PRESENCE:
         this.set('actionsSelectList', this.nearbyPresenceActionList);
         break;
-      case FeatureValues.NearbyConnections:
+      case FeatureValues.NEARBY_CONNECTIONS:
         this.set('actionsSelectList', this.nearbyConnectionsActionList);
         break;
-      case FeatureValues.NearbyShare:
+      case FeatureValues.NEARBY_SHARE:
         this.set('actionsSelectList', this.nearbyShareActionList);
         break;
-      case FeatureValues.FastPair:
+      case FeatureValues.FAST_PAIR:
         this.set('actionsSelectList', this.fastPairActionList);
+        break;
+      case FeatureValues.CHIME:
+        this.set('actionsSelectList', this.chimeActionList);
         break;
     }
   },
 
   perform_action() {
     switch (Number(this.$.actionSelect.value)) {
-      case ActionValues.STARTSCAN:
+      case ActionValues.START_SCAN:
         this.nearbyPresenceBrowserProxy_.SendStartScan();
         break;
-      case ActionValues.STOPSCAN:
+      case ActionValues.STOP_SCAN:
         this.nearbyPresenceBrowserProxy_.SendStopScan();
         break;
-      case ActionValues.SYNCCREDENTIALS:
+      case ActionValues.SYNC_CREDENTIALS:
         this.nearbyPresenceBrowserProxy_.SendSyncCredentials();
         break;
-      case ActionValues.FIRSTTIMEFLOW:
+      case ActionValues.FIRST_TIME_FLOW:
         this.nearbyPresenceBrowserProxy_.SendFirstTimeFlow();
         break;
-      case ActionValues.RESETNEARBYSHARE:
+      case ActionValues.RESET_NEARBY_SHARE:
         this.prefsBrowserProxy_.clearNearbyPrefs();
         break;
+      case ActionValues.ADD_CHIME_CLIENT:
+        this.chimeBrowserProxy_.SendAddChimeClient();
       default:
         break;
     }

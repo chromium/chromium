@@ -23,59 +23,60 @@ Polymer({
     currentLogTypes: {
       type: FeatureValues,
       value: [
-        FeatureValues.NearbyShare,
-        FeatureValues.NearbyConnections,
-        FeatureValues.NearbyPresence,
-        FeatureValues.FastPair,
+        FeatureValues.NEARBY_SHARE,
+        FeatureValues.NEARBY_CONNECTIONS,
+        FeatureValues.NEARBY_PRESENCE,
+        FeatureValues.FAST_PAIR,
       ],
     },
   },
 
   nearbyPresenceCheckboxClicked() {
     if (this.$.nearbyPresenceCheckbox.checked &&
-        !this.currentLogTypes.includes(FeatureValues.NearbyPresence)) {
-      this.currentLogTypes.push(FeatureValues.NearbyPresence);
+        !this.currentLogTypes.includes(FeatureValues.NEARBY_PRESENCE)) {
+      this.currentLogTypes.push(FeatureValues.NEARBY_PRESENCE);
     }
     if (!this.$.nearbyPresenceCheckbox.checked &&
-        this.currentLogTypes.includes(FeatureValues.NearbyPresence)) {
+        this.currentLogTypes.includes(FeatureValues.NEARBY_PRESENCE)) {
       this.currentLogTypes.splice(
-          this.currentLogTypes.lastIndexOf(FeatureValues.NearbyPresence), 1);
+          this.currentLogTypes.lastIndexOf(FeatureValues.NEARBY_PRESENCE), 1);
     }
   },
 
   nearbyShareCheckboxClicked() {
     if (this.$.nearbyShareCheckbox.checked &&
-        !this.currentLogTypes.includes(FeatureValues.NearbyShare)) {
-      this.currentLogTypes.push(FeatureValues.NearbyShare);
+        !this.currentLogTypes.includes(FeatureValues.NEARBY_SHARE)) {
+      this.currentLogTypes.push(FeatureValues.NEARBY_SHARE);
     }
     if (!this.$.nearbyShareCheckbox.checked &&
-        this.currentLogTypes.includes(FeatureValues.NearbyShare)) {
+        this.currentLogTypes.includes(FeatureValues.NEARBY_SHARE)) {
       this.currentLogTypes.splice(
-          this.currentLogTypes.lastIndexOf(FeatureValues.NearbyShare), 1);
+          this.currentLogTypes.lastIndexOf(FeatureValues.NEARBY_SHARE), 1);
     }
   },
 
   nearbyConnectionsCheckboxClicked() {
     if (this.$.nearbyConnectionsCheckbox.checked &&
-        !this.currentLogTypes.includes(FeatureValues.NearbyConnections)) {
-      this.currentLogTypes.push(FeatureValues.NearbyConnections);
+        !this.currentLogTypes.includes(FeatureValues.NEARBY_CONNECTIONS)) {
+      this.currentLogTypes.push(FeatureValues.NEARBY_CONNECTIONS);
     }
     if (!this.$.nearbyConnectionsCheckbox.checked &&
-        this.currentLogTypes.includes(FeatureValues.NearbyConnections)) {
+        this.currentLogTypes.includes(FeatureValues.NEARBY_CONNECTIONS)) {
       this.currentLogTypes.splice(
-          this.currentLogTypes.lastIndexOf(FeatureValues.NearbyConnections), 1);
+          this.currentLogTypes.lastIndexOf(FeatureValues.NEARBY_CONNECTIONS),
+          1);
     }
   },
 
   fastPairCheckboxClicked() {
     if (this.$.fastPairCheckbox.checked &&
-        !this.currentLogTypes.includes(FeatureValues.FastPair)) {
-      this.currentLogTypes.push(FeatureValues.FastPair);
+        !this.currentLogTypes.includes(FeatureValues.FAST_PAIR)) {
+      this.currentLogTypes.push(FeatureValues.FAST_PAIR);
     }
     if (!this.$.fastPairCheckbox.checked &&
-        this.currentLogTypes.includes(FeatureValues.FastPair)) {
+        this.currentLogTypes.includes(FeatureValues.FAST_PAIR)) {
       this.currentLogTypes.splice(
-          this.currentLogTypes.lastIndexOf(FeatureValues.FastPair), 1);
+          this.currentLogTypes.lastIndexOf(FeatureValues.FAST_PAIR), 1);
     }
   },
 });

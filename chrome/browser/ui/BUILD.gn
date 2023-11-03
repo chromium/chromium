@@ -3435,6 +3435,8 @@ static_library("ui") {
       "webui/help/version_updater_chromeos.h",
       "webui/management/management_ui_handler_chromeos.cc",
       "webui/management/management_ui_handler_chromeos.h",
+      "webui/nearby_internals/nearby_internals_chime_handler.cc",
+      "webui/nearby_internals/nearby_internals_chime_handler.h",
       "webui/nearby_internals/nearby_internals_contact_handler.cc",
       "webui/nearby_internals/nearby_internals_contact_handler.h",
       "webui/nearby_internals/nearby_internals_http_handler.cc",

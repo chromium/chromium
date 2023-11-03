@@ -8,10 +8,11 @@
  * @enum {number}
  */
 export const FeatureValues = {
-  NearbyShare: 0,
-  NearbyConnections: 1,
-  NearbyPresence: 2,
-  FastPair: 3,
+  NEARBY_SHARE: 0,
+  NEARBY_CONNECTIONS: 1,
+  NEARBY_PRESENCE: 2,
+  FAST_PAIR: 3,
+  CHIME: 4,
 };
 
 /**
@@ -20,11 +21,12 @@ export const FeatureValues = {
  * @enum {number}
  */
 export const ActionValues = {
-  STARTSCAN: 0,
-  STOPSCAN: 1,
-  SYNCCREDENTIALS: 2,
-  FIRSTTIMEFLOW: 3,
-  RESETNEARBYSHARE: 4,
+  START_SCAN: 0,
+  STOP_SCAN: 1,
+  SYNC_CREDENTIALS: 2,
+  FIRST_TIME_FLOW: 3,
+  RESET_NEARBY_SHARE: 4,
+  ADD_CHIME_CLIENT: 5,
 };
 
 /**

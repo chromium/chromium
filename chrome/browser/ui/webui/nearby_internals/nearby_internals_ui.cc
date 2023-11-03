@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/nearby_internals/nearby_internals_chime_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_contact_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_http_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_logs_handler.h"
@@ -50,6 +51,7 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
       std::make_unique<NearbyInternalsPrefsHandler>(context));
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsPresenceHandler>(context));
+  web_ui->AddMessageHandler(std::make_unique<NearbyInternalsChimeHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsUiTriggerHandler>(context));
   web_ui->AddMessageHandler(std::make_unique<QuickPairHandler>());
