@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -225,14 +228,24 @@ public abstract class TabModelSelectorBase
                 return model.closeTab(tab);
             }
         }
-        assert false : "Tried to close a tab that is not in any model!"
-                       + " Is closing "
-                       + tab.isClosing()
-                       + " Is destroyed "
-                       + tab.isDestroyed()
-                       + " Is detached "
-                       + TabUtils.isDetached(tab);
+        assert false
+                : "Tried to close a tab that is not in any model!"
+                        + " Activity class name "
+                        + getTabActivityName(tab)
+                        + " Is closing "
+                        + tab.isClosing()
+                        + " Is destroyed "
+                        + tab.isDestroyed()
+                        + " Is detached "
+                        + TabUtils.isDetached(tab);
         return false;
+    }
+
+    private String getTabActivityName(Tab tab) {
+        if (tab.getWindowAndroid() == null) return "unknown";
+        Activity activity =
+                ContextUtils.activityFromContext(tab.getWindowAndroid().getContext().get());
+        return activity == null ? "unknown" : activity.getClass().getName();
     }
 
     @Override
