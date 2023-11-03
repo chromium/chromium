@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/dmabuf_uapi.h"
@@ -115,7 +116,6 @@ void WaylandBufferManagerHost::OnChannelDestroyed() {
   for (auto* window : connection_->window_manager()->GetAllWindows())
     window->OnChannelDestroyed();
 
-  all_bug_fixes_sent_callback_.Reset();
   buffer_manager_gpu_associated_.reset();
   receiver_.reset();
 }
@@ -126,49 +126,8 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
   TerminateGpuProcess();
 }
 
-void WaylandBufferManagerHost::OnAllBugFixesSent(
-    std::vector<uint32_t> bug_fix_ids) {
-  // TODO(crbug.com/1487446): Currently, we immediately call the callback when
-  // it's passed regardless of bug fix ids readiness, so it always falls into
-  // `all_bug_fixes_sent_callback_.is_null()` condition.
-
-  // If `all_bug_fixes_sent_callback_` is not registered yet, `bug_fix_ids`
-  // should be obtained by WaitBugFixIds call later.
-  if (all_bug_fixes_sent_callback_.is_null()) {
-    return;
-  }
-
-  std::move(all_bug_fixes_sent_callback_).Run(bug_fix_ids);
-}
-
-void WaylandBufferManagerHost::WaitForAllBugFixIds(
-    base::OnceCallback<void(const std::vector<uint32_t>&)> callback) {
-  // If `zaura_shell_send_all_bug_fixes_sent` event is not supported on the
-  // server, we are not sure when the bug fix ids are ready, so stop waiting for
-  // the ids. This is deprecated path.
-  // TODO(crbug.com/1480226): Remove this when M119 Ash becomes old enough.
-  if (!connection_->zaura_shell() ||
-      !connection_->zaura_shell()->SupportsAllBugFixesSent()) {
-    std::move(callback).Run(std::vector<uint32_t>());
-    return;
-  }
-
-  auto bug_fix_ids = connection_->zaura_shell()->MaybeGetBugFixIds();
-  if (bug_fix_ids) {
-    // Immediately call `callback` synchronously if the bug fix ids are ready.
-    std::move(callback).Run(bug_fix_ids.value());
-    return;
-  }
-
-  // If bug fix ids are not yet ready, immediately call `callback` with empty
-  // list of bug fix ids to avoid delaying WaylandBufferManagerGpu
-  // initialization long enough to cause race condition on GPU setup. We should
-  // wait bug fix ids when the race condition will be fixed.
-  // TODO(crbug.com/1487446): Store `callback` to `all_bug_fixes_sent_callback_`
-  // and wait calling it until the bug fix ids are ready.
-  LOG(WARNING) << "Bug fix ids are not yet ready for WaylandBufferManagerGpu "
-               << "initialization. See crbug.com/1487446 for more details.";
-  std::move(callback).Run(std::vector<uint32_t>());
+base::Version WaylandBufferManagerHost::GetServerVersion() const {
+  return connection_->GetServerVersion();
 }
 
 wl::BufferFormatsWithModifiersMap

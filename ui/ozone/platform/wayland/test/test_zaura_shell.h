@@ -40,7 +40,7 @@ class TestZAuraShell : public GlobalObject {
 
   // Compostitor string version. For testing purposes, it is help in a string,
   // so that it can store either valid or invalid values.
-  std::string compositor_version_string_;
+  std::string compositor_version_string_ = "1.2.3.4";
 
   // Bug fixes that shall be sent to the client.
   std::vector<uint32_t> bug_fixes_;

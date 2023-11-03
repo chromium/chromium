@@ -229,7 +229,22 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
   };
   wl_registry_add_listener(registry_.get(), &kRegistryListener, this);
 
-  while (!output_manager_ || !output_manager_->IsOutputReady()) {
+  // "To mark the end of the initial burst of events, the client can
+  // use the wl_display.sync request immediately after calling
+  // wl_display.get_registry."
+  // https://gitlab.freedesktop.org/wayland/wayland/-/blob/main/protocol/wayland.xml
+  //
+  // `RoundTripQueue()` internally calls `wl_display_roundtrip_queue()`, which
+  // blocks until wl_display.sync is done. Use it to ensure the required globals
+  // are emitted.
+  while (!WlGlobalsReady()) {
+    RoundTripQueue();
+  }
+
+  // Some wl_globals emits important information when bound.
+  // E.g. server version.
+  // Synchronously wait for it as well.
+  while (!WlObjectsReady()) {
     RoundTripQueue();
   }
 
@@ -266,6 +281,12 @@ void WaylandConnection::RoundTripQueue() {
 
 void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
   event_source()->SetShutdownCb(std::move(shutdown_cb));
+}
+
+base::Version WaylandConnection::GetServerVersion() const {
+  return zaura_shell()
+             ? zaura_shell()->server_version().value_or(base::Version{})
+             : base::Version{};
 }
 
 void WaylandConnection::SetPlatformCursor(wl_cursor* cursor_data,
@@ -318,6 +339,30 @@ void WaylandConnection::RegisterGlobalObjectFactory(
   CHECK_EQ(global_object_factories_.count(interface_name), 0U);
 
   global_object_factories_[interface_name] = factory;
+}
+
+bool WaylandConnection::WlGlobalsReady() const {
+  bool ready = !!compositor_;
+
+  // Output manager must be able to instantiate a valid WaylandScreen when
+  // requested by the upper layers.
+  ready &= output_manager_ && output_manager_->IsOutputReady();
+
+  return ready;
+}
+
+bool WaylandConnection::WlObjectsReady() const {
+  DCHECK(WlGlobalsReady());
+
+  bool ready = true;
+
+  // Lacros requires server version synchronously for gpu init.
+  if (zaura_shell_ && zaura_shell_get_version(zaura_shell_->wl_object()) >=
+                          ZAURA_SHELL_COMPOSITOR_VERSION_SINCE_VERSION) {
+    ready &= zaura_shell_->server_version().has_value();
+  }
+
+  return ready;
 }
 
 void WaylandConnection::Flush() {

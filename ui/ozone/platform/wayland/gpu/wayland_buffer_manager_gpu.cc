@@ -29,15 +29,6 @@
 
 namespace ui {
 
-namespace {
-
-// The minimum version for `augmented_surface` interface to use DP coordinates
-// for the root surface origin. Before this version, it uses pixel coordinates
-// which causes event targeter breakage when quads are out of the root surface.
-constexpr uint32_t kRootSurfaceOriginInDP = 10;
-
-}  // namespace
-
 WaylandBufferManagerGpu::WaylandBufferManagerGpu()
     : WaylandBufferManagerGpu(base::FilePath()) {}
 
@@ -88,7 +79,7 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_overlays,
     uint32_t supported_surface_augmentor_version,
     bool supports_single_pixel_buffer,
-    const std::vector<uint32_t>& bug_fix_ids) {
+    const base::Version& server_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // See the comment in the constructor.
@@ -115,8 +106,14 @@ void WaylandBufferManagerGpu::Initialize(
   supports_affine_transform_ =
       supported_surface_augmentor_version >=
       AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
+
+  // Clients at version 8 think clip rect is in parent surface's space, while
+  // clients at version 9 or above think it's in local surface's space.
+  // Unfortunately, clipping in version 9 is implemented incorrectly. It has
+  // been fixed in version 10, so use version 10 instead.
   supports_out_of_window_clip_rect_ =
-      supported_surface_augmentor_version >= kRootSurfaceOriginInDP;
+      supported_surface_augmentor_version >=
+      AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION + 2;
 
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
   BindHostInterface(std::move(remote_host));

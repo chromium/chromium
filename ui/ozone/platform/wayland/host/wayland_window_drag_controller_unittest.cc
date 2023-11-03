@@ -593,6 +593,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
+// TODO(crbug.com/1405471): Test needs to be updated for 112.0.5570.0 to remove
+// special handling logic in wayland_pointer.cc.
 TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
@@ -914,6 +916,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
 //    during the dnd operation. It should be ignored...
 // 6. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then drop.
+// TODO(crbug.com/1405471): Test needs to be updated for 112.0.5570.0 to remove
+// special handling logic in wayland_pointer.cc.
 TEST_P(WaylandWindowDragControllerTest,
        DragToOtherWindowIgnoringSpuriousPointerEnterEvent) {
   // Init and open |target_window|.

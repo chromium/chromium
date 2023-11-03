@@ -127,7 +127,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementSurface) {
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true,
-                                  /*bug_fix_ids=*/{});
+                                  /*server_version=*/{});
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;
@@ -175,7 +175,7 @@ TEST_P(WaylandZcrColorManagerTest, DoNotSetInvaliColorSpace) {
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true,
-                                  /*bug_fix_ids=*/{});
+                                  /*server_version=*/{});
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;

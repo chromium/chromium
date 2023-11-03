@@ -3608,7 +3608,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true,
-                                  /*bug_fix_ids=*/{});
+                                  /*server_version=*/{});
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id1 = 1;
@@ -4358,7 +4358,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true,
-                                  /*bug_fix_ids=*/{});
+                                  /*server_version=*/{});
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id = 1;

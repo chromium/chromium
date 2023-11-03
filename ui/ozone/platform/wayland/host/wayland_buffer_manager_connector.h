@@ -40,10 +40,6 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
  private:
   void OnTerminateGpuProcess(std::string message);
 
-  // Initializes WaylandBufferManagerGpu instance.
-  // Notified when all bug fix ids are ready. This must be called only once.
-  void OnAllBugFixesSent(const std::vector<uint32_t>& bug_fix_ids);
-
   // Non-owned pointer, which is used to bind a mojo pointer to the
   // WaylandBufferManagerHost.
   const raw_ptr<WaylandBufferManagerHost> buffer_manager_host_;

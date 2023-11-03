@@ -5,6 +5,7 @@
 module ui.ozone.mojom;
 
 import "skia/public/mojom/skcolor4f.mojom";
+import "mojo/public/mojom/base/version.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
@@ -117,7 +118,7 @@ interface WaylandBufferManagerGpu {
   // `supported_surface_augmentor_version` says what version of the augment
   // surface protocol the client is using. If the version is 0, the surface
   // augmentor is not available.
-  // `bug_fix_ids` indicates a list of the fixed bugs on the server side.
+  // `server_version` indicates the dotted version number on of the server.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
              map<gfx.mojom.BufferFormat,
                  array<uint64>> buffer_formats_with_modifiers,
@@ -127,7 +128,7 @@ interface WaylandBufferManagerGpu {
              bool supports_overlays,
              uint32 supported_surface_augmentor_version,
              bool supports_single_pixel_buffer,
-             array<uint32> bug_fix_ids);
+             mojo_base.mojom.Version server_version);
 
   // Signals about swap completion and presentation.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

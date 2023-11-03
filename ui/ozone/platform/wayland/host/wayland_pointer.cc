@@ -8,6 +8,7 @@
 #include <stylus-unstable-v2-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/version.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -108,11 +109,7 @@ void WaylandPointer::OnLeave(void* data,
 
   self->connection_->serial_tracker().ResetSerial(wl::SerialType::kMouseEnter);
 
-  auto event_dispatch_policy =
-      self->connection_->zaura_shell() &&
-              self->connection_->zaura_shell()->HasBugFix(1352584)
-          ? EventDispatchPolicyForPlatform()
-          : wl::EventDispatchPolicy::kImmediate;
+  auto event_dispatch_policy = EventDispatchPolicyForPlatform();
 
   self->delegate_->OnPointerFocusChanged(
       nullptr, self->delegate_->GetPointerLocation(), event_dispatch_policy);
