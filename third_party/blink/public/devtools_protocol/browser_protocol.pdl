@@ -1251,7 +1251,7 @@ domain Browser
       prompt
 
   # Definition of PermissionDescriptor defined in the Permissions API:
-  # https://w3c.github.io/permissions/#dictdef-permissiondescriptor.
+  # https://w3c.github.io/permissions/#dom-permissiondescriptor.
   experimental type PermissionDescriptor extends object
     properties
       # Name of permission.

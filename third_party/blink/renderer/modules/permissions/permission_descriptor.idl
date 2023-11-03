@@ -44,7 +44,7 @@ enum PermissionName {
 // The PermissionDescriptor dictionary is a base to describe permissions. Some
 // permissions will extend it. The methods reading it will re-parse it depending
 // on the name.
-// https://w3c.github.io/permissions/#dictdef-permissiondescriptor
+// https://w3c.github.io/permissions/#dom-permissiondescriptor
 dictionary PermissionDescriptor {
     required PermissionName name;
 };
