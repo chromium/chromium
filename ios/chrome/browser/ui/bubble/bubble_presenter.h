@@ -86,6 +86,10 @@ class DeviceSwitcherResultDispatcher;
 // button in the omnibox keyboard to search with their camera.
 - (void)presentLensKeyboardTipBubble;
 
+// Presents a help bubble to inform the user that their tracked packages will
+// appear in the Magic Stack.
+- (void)presentParcelTrackingTipBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

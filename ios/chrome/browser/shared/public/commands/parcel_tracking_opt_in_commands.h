@@ -27,6 +27,9 @@
             (NSArray<CustomTextCheckingResult*>*)parcels
                                      forStep:(ParcelTrackingStep)step;
 
+// Shows the Parcel Tracking IPH on the Magic Stack.
+- (void)showParcelTrackingIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PARCEL_TRACKING_OPT_IN_COMMANDS_H_
