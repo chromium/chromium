@@ -5,7 +5,12 @@
 #ifndef CHROME_COMMON_CHROME_RESULT_CODES_H_
 #define CHROME_COMMON_CHROME_RESULT_CODES_H_
 
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/result_codes.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/startup.h"  // nogncheck
+#endif
 
 namespace chrome {
 
@@ -126,11 +131,21 @@ enum ResultCode {
   // system state can't be recovered and will be unstable.
   RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED,
 
+  // The Lacros process exited because the post-login parameters received
+  // from Ash are either empty or invalid (Lacros-only).
+  RESULT_CODE_INVALID_POST_LOGIN_PARAMS,
+
   // Last return code (keep this last).
   RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(RESULT_CODE_CHROME_LAST_CODE == 38,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Defined in chromeos/startup/startup.h.
+static_assert(chromeos::RESULT_CODE_INVALID_POST_LOGIN_PARAMS ==
+              RESULT_CODE_INVALID_POST_LOGIN_PARAMS);
+#endif
+
+static_assert(RESULT_CODE_CHROME_LAST_CODE == 39,
               "Please make sure the enum values are in sync with enums.xml");
 
 // Returns true if the result code should be treated as a normal exit code i.e.

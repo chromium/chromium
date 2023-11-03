@@ -381,6 +381,8 @@ static_library("common_lib") {
     ]
     public_deps += [ "//ash/keyboard/ui" ]
     deps += [ "//ash/constants" ]
+  } else if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
   }
 
   if (is_chromeos) {

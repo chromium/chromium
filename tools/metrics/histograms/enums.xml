@@ -16360,6 +16360,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="35" label="RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
   <int value="36" label="RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS"/>
   <int value="37" label="RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED"/>
+  <int value="38" label="RESULT_CODE_INVALID_POST_LOGIN_PARAMS"/>
   <int value="131" label="SIGQUIT"/>
   <int value="132" label="SIGILL"/>
   <int value="133" label="SIGTRAP"/>
