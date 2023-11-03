@@ -926,6 +926,8 @@ void ScreenLocker::OnAuthScanDone(
       quick_unlock::FingerprintUnlockResult::kSuccess);
   LoginScreen::Get()->GetModel()->NotifyFingerprintAuthResult(
       primary_user->GetAccountId(), /*success*/ true);
+  fp_service_->EndCurrentAuthSession(base::BindOnce(
+      &ScreenLocker::OnEndFingerprintAuthSession, weak_factory_.GetWeakPtr()));
   VLOG(1) << "Fingerprint unlock is successful.";
   OnAuthSuccess(user_context);
 }
@@ -1007,6 +1009,11 @@ void ScreenLocker::MaybeDisablePinAndFingerprintFromTimeout(
       if (quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable(
               quick_unlock::Purpose::kUnlock)) {
         VLOG(1) << "Require strong auth to make fingerprint unlock available.";
+        // End fingerprint auth session to stop biod from broadcasting
+        // fingerprint scans.
+        fp_service_->EndCurrentAuthSession(
+            base::BindOnce(&ScreenLocker::OnEndFingerprintAuthSession,
+                           weak_factory_.GetWeakPtr()));
         LoginScreen::Get()->GetModel()->SetFingerprintState(
             account_id, FingerprintState::DISABLED_FROM_TIMEOUT);
       }
@@ -1047,6 +1054,12 @@ session_manager::UnlockType ScreenLocker::TransformUnlockType() {
       break;
   }
   return unlock_type;
+}
+
+void ScreenLocker::OnEndFingerprintAuthSession(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to end fingerprint auth session";
+  }
 }
 
 }  // namespace ash
