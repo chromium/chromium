@@ -51,6 +51,13 @@ bool IsSystemTrayForRootWindowVisible(size_t root_window_index);
 gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
                                          SkColor color);
 
+// Creates a solid color image with the given `size`, and returns its encoded
+// representation. `image_out` is filled with the raw decoded image if provided.
+//
+// This function can never fail.
+std::string CreateEncodedImageForTesting(const gfx::Size& size,
+                                         gfx::ImageSkia* image_out = nullptr);
+
 // Configures `window` with the specified title and color.
 void DecorateWindow(aura::Window* window,
                     const std::u16string& title,

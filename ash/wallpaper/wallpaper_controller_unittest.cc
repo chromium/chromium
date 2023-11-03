@@ -13,8 +13,8 @@
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/test/test_image_decoder.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
@@ -31,6 +31,7 @@
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
@@ -165,11 +166,6 @@ gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
   bitmap.eraseColor(color);
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   return image;
-}
-
-// Returns the bitmap for test image decoder.
-SkBitmap TestImageBitmap() {
-  return *CreateImage(10, 10, SK_ColorBLUE).bitmap();
 }
 
 // Returns number of child windows in a shell window container.
@@ -445,9 +441,7 @@ std::vector<backdrop::Image> ImageSet() {
 class WallpaperControllerTestBase : public AshTestBase {
  public:
   WallpaperControllerTestBase()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        decoder_(mock_animation_callback_.Get(),
-                 base::BindRepeating(&TestImageBitmap)) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   WallpaperControllerTestBase(const WallpaperControllerTestBase&) = delete;
   WallpaperControllerTestBase& operator=(const WallpaperControllerTestBase&) =
@@ -813,10 +807,7 @@ class WallpaperControllerTestBase : public AshTestBase {
       AccountId::FromUserEmailGaiaId(kChildEmail, kChildEmail);
 
  private:
-  base::MockRepeatingCallback<
-      std::vector<data_decoder::mojom::AnimationFramePtr>()>
-      mock_animation_callback_;
-  TestImageDecoder decoder_;
+  InProcessImageDecoder decoder_;
   base::Time mock_clock_origin_;
 };
 
@@ -1801,8 +1792,9 @@ TEST_P(
       OobeDialogState::GAIA_SIGNIN);
   // Log in and trigger `OnActiveUserPrefServiceChange`.
   SimulateUserLogin(kAccountId1);
-  controller_->SetPolicyWallpaper(kAccountId1, user_manager::USER_TYPE_REGULAR,
-                                  "some-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId1, user_manager::USER_TYPE_REGULAR,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   RunAllTasksUntilIdle();
   WallpaperInfo actual_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
@@ -1855,8 +1847,9 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   // Set a policy wallpaper. Verify that the user becomes policy controlled and
   // the wallpaper info is updated.
   ClearWallpaperCount();
-  controller_->SetPolicyWallpaper(kAccountId1, user_manager::USER_TYPE_REGULAR,
-                                  "some-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId1, user_manager::USER_TYPE_REGULAR,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   RunAllTasksUntilIdle();
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
@@ -2081,8 +2074,9 @@ TEST_P(WallpaperControllerTest, SetThirdPartyWallpaper_PolicyWallpaper) {
   gfx::ImageSkia third_party_wallpaper = CreateImage(640, 480, kWallpaperColor);
   // Set a policy wallpaper for |kUser2|. Verify that |kUser2| becomes policy
   // controlled.
-  controller_->SetPolicyWallpaper(kAccountId2, user_manager::USER_TYPE_REGULAR,
-                                  /*data=*/"some-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId2, user_manager::USER_TYPE_REGULAR,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(kAccountId2));
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
@@ -2276,8 +2270,9 @@ TEST_P(WallpaperControllerTest,
   // Second, set a user policy for which is being set for another
   // user and verifying that the policy has been applied successfully.
   WallpaperInfo policy_wallpaper_info;
-  controller_->SetPolicyWallpaper(kAccountId1, user_manager::USER_TYPE_REGULAR,
-                                  "policy-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId1, user_manager::USER_TYPE_REGULAR,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   RunAllTasksUntilIdle();
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &policy_wallpaper_info));
@@ -2448,8 +2443,9 @@ TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
   SimulateUserLogin(kAccountId1);
 
   // Set a policy wallpaper for the user. Verify the user is policy controlled.
-  controller_->SetPolicyWallpaper(kAccountId1, user_manager::USER_TYPE_REGULAR,
-                                  "policy-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId1, user_manager::USER_TYPE_REGULAR,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(kAccountId1));
 
@@ -2944,8 +2940,9 @@ TEST_P(WallpaperControllerTest, IsActiveUserWallpaperControlledByPolicy) {
   EXPECT_FALSE(controller_->IsActiveUserWallpaperControlledByPolicy());
   // Set a policy wallpaper for the active user. Verify that the active user
   // becomes policy controlled.
-  controller_->SetPolicyWallpaper(kAccountId1, user_manager::USER_TYPE_REGULAR,
-                                  "policy-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId1, user_manager::USER_TYPE_REGULAR,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
 
@@ -2967,9 +2964,9 @@ TEST_P(WallpaperControllerTest,
 
   // Set a policy wallpaper for the managed guest session. Verify that the
   // managed guest session becomes policy controlled.
-  controller_->SetPolicyWallpaper(kAccountId1,
-                                  user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                  "managed-guest-policy-image-data");
+  controller_->SetPolicyWallpaper(
+      kAccountId1, user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   SimulateUserLogin(kAccountId1, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(kAccountId1));
