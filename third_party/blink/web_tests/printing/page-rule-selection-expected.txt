@@ -2,42 +2,6 @@ This tests page style selection.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-Default margin is auto.
-PASS internals.pageProperty('margin-left', 0) is "auto"
-PASS internals.pageProperty('margin-left', 1) is "auto"
-PASS internals.pageProperty('margin-left', 2) is "auto"
-PASS internals.pageProperty('margin-left', 3) is "auto"
-PASS internals.pageProperty('margin-left', 4) is "auto"
-Set margin to 100px.
-PASS internals.pageProperty('margin-left', 0) is "100"
-PASS internals.pageProperty('margin-left', 1) is "100"
-PASS internals.pageProperty('margin-left', 2) is "100"
-PASS internals.pageProperty('margin-left', 3) is "100"
-PASS internals.pageProperty('margin-left', 4) is "100"
-Set margin for right pages to 50px. The first page is a right page.
-PASS internals.pageProperty('margin-left', 0) is "50"
-PASS internals.pageProperty('margin-left', 1) is "100"
-PASS internals.pageProperty('margin-left', 2) is "50"
-PASS internals.pageProperty('margin-left', 3) is "100"
-PASS internals.pageProperty('margin-left', 4) is "50"
-Set margin for left pages to 75px.
-PASS internals.pageProperty('margin-left', 0) is "50"
-PASS internals.pageProperty('margin-left', 1) is "75"
-PASS internals.pageProperty('margin-left', 2) is "50"
-PASS internals.pageProperty('margin-left', 3) is "75"
-PASS internals.pageProperty('margin-left', 4) is "50"
-Set margin for the first page to 125px.
-PASS internals.pageProperty('margin-left', 0) is "125"
-PASS internals.pageProperty('margin-left', 1) is "75"
-PASS internals.pageProperty('margin-left', 2) is "50"
-PASS internals.pageProperty('margin-left', 3) is "75"
-PASS internals.pageProperty('margin-left', 4) is "50"
-Change the document direction to RTL. This makes the first page a left page.
-PASS internals.pageProperty('margin-left', 0) is "125"
-PASS internals.pageProperty('margin-left', 1) is "50"
-PASS internals.pageProperty('margin-left', 2) is "75"
-PASS internals.pageProperty('margin-left', 3) is "50"
-PASS internals.pageProperty('margin-left', 4) is "75"
 Check font update and line height override.
 PASS internals.pageProperty('line-height', 0) is "180"
 PASS internals.pageProperty('font-family', 0) is "Arial"
