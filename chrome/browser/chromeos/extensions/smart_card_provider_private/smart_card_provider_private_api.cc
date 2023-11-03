@@ -42,71 +42,71 @@ namespace {
 device::mojom::SmartCardResultPtr ProviderResultCodeToSmartCardResult(
     scard_api::ResultCode code) {
   switch (code) {
-    case scard_api::RESULT_CODE_NONE:
+    case scard_api::ResultCode::kNone:
       return SmartCardResult::NewError(SmartCardError::kUnknown);
-    case scard_api::RESULT_CODE_SUCCESS:
+    case scard_api::ResultCode::kSuccess:
       return SmartCardResult::NewSuccess(SmartCardSuccess::kOk);
-    case scard_api::RESULT_CODE_REMOVED_CARD:
+    case scard_api::ResultCode::kRemovedCard:
       return SmartCardResult::NewError(SmartCardError::kRemovedCard);
-    case scard_api::RESULT_CODE_RESET_CARD:
+    case scard_api::ResultCode::kResetCard:
       return SmartCardResult::NewError(SmartCardError::kResetCard);
-    case scard_api::RESULT_CODE_UNPOWERED_CARD:
+    case scard_api::ResultCode::kUnpoweredCard:
       return SmartCardResult::NewError(SmartCardError::kUnpoweredCard);
-    case scard_api::RESULT_CODE_UNRESPONSIVE_CARD:
+    case scard_api::ResultCode::kUnresponsiveCard:
       return SmartCardResult::NewError(SmartCardError::kUnresponsiveCard);
-    case scard_api::RESULT_CODE_UNSUPPORTED_CARD:
+    case scard_api::ResultCode::kUnsupportedCard:
       return SmartCardResult::NewError(SmartCardError::kUnsupportedCard);
-    case scard_api::RESULT_CODE_READER_UNAVAILABLE:
+    case scard_api::ResultCode::kReaderUnavailable:
       return SmartCardResult::NewError(SmartCardError::kReaderUnavailable);
-    case scard_api::RESULT_CODE_SHARING_VIOLATION:
+    case scard_api::ResultCode::kSharingViolation:
       return SmartCardResult::NewError(SmartCardError::kSharingViolation);
-    case scard_api::RESULT_CODE_NOT_TRANSACTED:
+    case scard_api::ResultCode::kNotTransacted:
       return SmartCardResult::NewError(SmartCardError::kNotTransacted);
-    case scard_api::RESULT_CODE_NO_SMARTCARD:
+    case scard_api::ResultCode::kNoSmartcard:
       return SmartCardResult::NewError(SmartCardError::kNoSmartcard);
-    case scard_api::RESULT_CODE_PROTO_MISMATCH:
+    case scard_api::ResultCode::kProtoMismatch:
       return SmartCardResult::NewError(SmartCardError::kProtoMismatch);
-    case scard_api::RESULT_CODE_SYSTEM_CANCELLED:
+    case scard_api::ResultCode::kSystemCancelled:
       return SmartCardResult::NewError(SmartCardError::kSystemCancelled);
-    case scard_api::RESULT_CODE_NOT_READY:
+    case scard_api::ResultCode::kNotReady:
       return SmartCardResult::NewError(SmartCardError::kNotReady);
-    case scard_api::RESULT_CODE_CANCELLED:
+    case scard_api::ResultCode::kCancelled:
       return SmartCardResult::NewError(SmartCardError::kCancelled);
-    case scard_api::RESULT_CODE_INSUFFICIENT_BUFFER:
+    case scard_api::ResultCode::kInsufficientBuffer:
       return SmartCardResult::NewError(SmartCardError::kInsufficientBuffer);
-    case scard_api::RESULT_CODE_INVALID_HANDLE:
+    case scard_api::ResultCode::kInvalidHandle:
       return SmartCardResult::NewError(SmartCardError::kInvalidHandle);
-    case scard_api::RESULT_CODE_INVALID_PARAMETER:
+    case scard_api::ResultCode::kInvalidParameter:
       return SmartCardResult::NewError(SmartCardError::kInvalidParameter);
-    case scard_api::RESULT_CODE_INVALID_VALUE:
+    case scard_api::ResultCode::kInvalidValue:
       return SmartCardResult::NewError(SmartCardError::kInvalidValue);
-    case scard_api::RESULT_CODE_NO_MEMORY:
+    case scard_api::ResultCode::kNoMemory:
       return SmartCardResult::NewError(SmartCardError::kNoMemory);
-    case scard_api::RESULT_CODE_TIMEOUT:
+    case scard_api::ResultCode::kTimeout:
       return SmartCardResult::NewError(SmartCardError::kTimeout);
-    case scard_api::RESULT_CODE_UNKNOWN_READER:
+    case scard_api::ResultCode::kUnknownReader:
       return SmartCardResult::NewError(SmartCardError::kUnknownReader);
-    case scard_api::RESULT_CODE_UNSUPPORTED_FEATURE:
+    case scard_api::ResultCode::kUnsupportedFeature:
       return SmartCardResult::NewError(SmartCardError::kUnsupportedFeature);
-    case scard_api::RESULT_CODE_NO_READERS_AVAILABLE:
+    case scard_api::ResultCode::kNoReadersAvailable:
       return SmartCardResult::NewError(SmartCardError::kNoReadersAvailable);
-    case scard_api::RESULT_CODE_SERVICE_STOPPED:
+    case scard_api::ResultCode::kServiceStopped:
       return SmartCardResult::NewError(SmartCardError::kServiceStopped);
-    case scard_api::RESULT_CODE_NO_SERVICE:
+    case scard_api::ResultCode::kNoService:
       return SmartCardResult::NewError(SmartCardError::kNoService);
-    case scard_api::RESULT_CODE_COMM_ERROR:
+    case scard_api::ResultCode::kCommError:
       return SmartCardResult::NewError(SmartCardError::kCommError);
-    case scard_api::RESULT_CODE_INTERNAL_ERROR:
+    case scard_api::ResultCode::kInternalError:
       return SmartCardResult::NewError(SmartCardError::kInternalError);
-    case scard_api::RESULT_CODE_UNKNOWN_ERROR:
+    case scard_api::ResultCode::kUnknownError:
       return SmartCardResult::NewError(SmartCardError::kUnknownError);
-    case scard_api::RESULT_CODE_SERVER_TOO_BUSY:
+    case scard_api::ResultCode::kServerTooBusy:
       return SmartCardResult::NewError(SmartCardError::kServerTooBusy);
-    case scard_api::RESULT_CODE_UNEXPECTED:
+    case scard_api::ResultCode::kUnexpected:
       return SmartCardResult::NewError(SmartCardError::kUnexpected);
-    case scard_api::RESULT_CODE_SHUTDOWN:
+    case scard_api::ResultCode::kShutdown:
       return SmartCardResult::NewError(SmartCardError::kShutdown);
-    case scard_api::RESULT_CODE_UNKNOWN:
+    case scard_api::ResultCode::kUnknown:
       return SmartCardResult::NewError(SmartCardError::kUnknown);
   }
 }
@@ -192,11 +192,11 @@ scard_api::ShareMode ToApiShareMode(
     device::mojom::SmartCardShareMode share_mode) {
   switch (share_mode) {
     case device::mojom::SmartCardShareMode::kShared:
-      return scard_api::SHARE_MODE_SHARED;
+      return scard_api::ShareMode::kShared;
     case device::mojom::SmartCardShareMode::kExclusive:
-      return scard_api::SHARE_MODE_EXCLUSIVE;
+      return scard_api::ShareMode::kExclusive;
     case device::mojom::SmartCardShareMode::kDirect:
-      return scard_api::SHARE_MODE_DIRECT;
+      return scard_api::ShareMode::kDirect;
   }
 }
 
@@ -218,13 +218,13 @@ scard_api::Disposition ToApiDisposition(
     device::mojom::SmartCardDisposition disposition) {
   switch (disposition) {
     case device::mojom::SmartCardDisposition::kLeave:
-      return scard_api::DISPOSITION_LEAVE_CARD;
+      return scard_api::Disposition::kLeaveCard;
     case device::mojom::SmartCardDisposition::kReset:
-      return scard_api::DISPOSITION_RESET_CARD;
+      return scard_api::Disposition::kResetCard;
     case device::mojom::SmartCardDisposition::kUnpower:
-      return scard_api::DISPOSITION_UNPOWER_CARD;
+      return scard_api::Disposition::kUnpowerCard;
     case device::mojom::SmartCardDisposition::kEject:
-      return scard_api::DISPOSITION_EJECT_CARD;
+      return scard_api::Disposition::kEjectCard;
   }
 }
 
@@ -235,14 +235,14 @@ base::Value ToValue(device::mojom::SmartCardDisposition disposition) {
 device::mojom::SmartCardProtocol ToDeviceMojomSmartCardProtocol(
     scard_api::Protocol protocol) {
   switch (protocol) {
-    case scard_api::PROTOCOL_NONE:
-    case scard_api::PROTOCOL_UNDEFINED:
+    case scard_api::Protocol::kNone:
+    case scard_api::Protocol::kUndefined:
       return device::mojom::SmartCardProtocol::kUndefined;
-    case scard_api::PROTOCOL_T0:
+    case scard_api::Protocol::kT0:
       return device::mojom::SmartCardProtocol::kT0;
-    case scard_api::PROTOCOL_T1:
+    case scard_api::Protocol::kT1:
       return device::mojom::SmartCardProtocol::kT1;
-    case scard_api::PROTOCOL_RAW:
+    case scard_api::Protocol::kRaw:
       return device::mojom::SmartCardProtocol::kRaw;
   }
 }
@@ -250,18 +250,18 @@ device::mojom::SmartCardProtocol ToDeviceMojomSmartCardProtocol(
 device::mojom::SmartCardConnectionState ToDeviceMojomSmartCardConnectionState(
     scard_api::ConnectionState state) {
   switch (state) {
-    case scard_api::CONNECTION_STATE_NONE:
-    case scard_api::CONNECTION_STATE_ABSENT:
+    case scard_api::ConnectionState::kNone:
+    case scard_api::ConnectionState::kAbsent:
       return device::mojom::SmartCardConnectionState::kAbsent;
-    case scard_api::CONNECTION_STATE_PRESENT:
+    case scard_api::ConnectionState::kPresent:
       return device::mojom::SmartCardConnectionState::kPresent;
-    case scard_api::CONNECTION_STATE_SWALLOWED:
+    case scard_api::ConnectionState::kSwallowed:
       return device::mojom::SmartCardConnectionState::kSwallowed;
-    case scard_api::CONNECTION_STATE_POWERED:
+    case scard_api::ConnectionState::kPowered:
       return device::mojom::SmartCardConnectionState::kPowered;
-    case scard_api::CONNECTION_STATE_NEGOTIABLE:
+    case scard_api::ConnectionState::kNegotiable:
       return device::mojom::SmartCardConnectionState::kNegotiable;
-    case scard_api::CONNECTION_STATE_SPECIFIC:
+    case scard_api::ConnectionState::kSpecific:
       return device::mojom::SmartCardConnectionState::kSpecific;
   }
 }
@@ -269,13 +269,13 @@ device::mojom::SmartCardConnectionState ToDeviceMojomSmartCardConnectionState(
 scard_api::Protocol ToApiProtocol(device::mojom::SmartCardProtocol protocol) {
   switch (protocol) {
     case device::mojom::SmartCardProtocol::kUndefined:
-      return scard_api::PROTOCOL_UNDEFINED;
+      return scard_api::Protocol::kUndefined;
     case device::mojom::SmartCardProtocol::kT0:
-      return scard_api::PROTOCOL_T0;
+      return scard_api::Protocol::kT0;
     case device::mojom::SmartCardProtocol::kT1:
-      return scard_api::PROTOCOL_T1;
+      return scard_api::Protocol::kT1;
     case device::mojom::SmartCardProtocol::kRaw:
-      return scard_api::PROTOCOL_RAW;
+      return scard_api::Protocol::kRaw;
   }
 }
 
