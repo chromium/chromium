@@ -593,18 +593,21 @@ void DesksClient::LaunchAppsFromTemplate(
 
 desks_storage::DeskModel* DesksClient::GetDeskModel() {
   // Get local storage only when 1) Desk templates sync is
-  // disabled or 2) Desk Templates and Floating workspace are disabled.
-  if (!ash::features::IsDeskTemplateSyncEnabled() ||
+  // disabled or 2) Desk Templates and Floating workspace are disabled. If we
+  // are unable to get the desk sync service or its bridge, then we default to
+  // using the local storage.
+  desks_storage::DeskSyncService* desk_sync_service =
+      DeskSyncServiceFactory::GetForProfile(active_profile_);
+  if ((!desk_sync_service || !desk_sync_service->GetDeskModel()) ||
+      !ash::features::IsDeskTemplateSyncEnabled() ||
       (!ash::saved_desk_util::AreDesksTemplatesEnabled() &&
        !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
     DCHECK(save_and_recall_desks_storage_manager_.get());
     return save_and_recall_desks_storage_manager_.get();
   }
-  DCHECK(saved_desk_storage_manager_);
   saved_desk_storage_manager_->SetDeskSyncBridge(
       static_cast<desks_storage::DeskSyncBridge*>(
-          DeskSyncServiceFactory::GetForProfile(active_profile_)
-              ->GetDeskModel()));
+          desk_sync_service->GetDeskModel()));
   return saved_desk_storage_manager_.get();
 }
 
