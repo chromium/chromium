@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {AutomationUtil} from '../../common/automation_util.js';
-import {CursorRange} from '../../common/cursors/range.js';
 import {Flags} from '../../common/flags.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
 import {LocalStorage} from '../../common/local_storage.js';
@@ -52,8 +49,6 @@ import {TtsBackground} from './tts_background.js';
  * @fileoverview The entry point for all ChromeVox related code for the
  * background page.
  */
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
 
 /** ChromeVox background context. */
 export class Background extends ChromeVoxState {

@@ -39,15 +39,7 @@ export class ChromeVoxRangeObserver {
   onCurrentRangeChanged(range, opt_fromEditing = undefined) {}
 }
 
-/**
- * A class that handles tracking and changes to the ChromeVox range.
- *
- * ================ THIS CLASS IS MID-MIGRATION ================
- *
- * The logic relating to the ChromeVox range is being moved here from
- * ChromeVoxState in small chunks. During this transition, the logic will be
- * split between those two locations.
- */
+/** Handles tracking of and changes to the ChromeVox range. */
 export class ChromeVoxRange {
   /** @private */
   constructor() {
@@ -85,11 +77,6 @@ export class ChromeVoxRange {
   /** @param {?CursorRange} newPageSel */
   static set pageSel(newPageSel) {
     ChromeVoxRange.instance.pageSel_ = newPageSel;
-  }
-
-  /** @return {?CursorRange} */
-  static get previous() {
-    return ChromeVoxRange.instance.previous_;
   }
 
   /**
@@ -192,6 +179,7 @@ export class ChromeVoxRange {
    * @param {TtsSpeechProperties=} opt_speechProps Speech properties.
    * @param {boolean=} opt_skipSettingSelection If true, does not set
    *     the selection, otherwise it does by default.
+   * @private
    */
   navigateTo_(range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
     opt_focus = opt_focus ?? true;
