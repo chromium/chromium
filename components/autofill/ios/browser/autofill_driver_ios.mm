@@ -206,7 +206,7 @@ void AutofillDriverIOS::RendererShouldTriggerSuggestions(
 
 void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
     const FieldGlobalId& field,
-    const mojom::AutofillState state) {}
+    mojom::AutofillSuggestionAvailability suggestion_availability) {}
 
 void AutofillDriverIOS::PopupHidden() {
 }

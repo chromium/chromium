@@ -18,7 +18,7 @@ namespace autofill {
 
 using A11yUtilsTest = content::RenderViewTest;
 
-TEST_F(A11yUtilsTest, SetAutofillState) {
+TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   LoadHTML("<input id='input_id'>");
   blink::WebDocument document = GetMainFrame()->GetDocument();
 
@@ -41,7 +41,8 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kAutofillAvailable.
-  SetAutofillState(element, mojom::AutofillState::kAutofillAvailable);
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kAutofillAvailable);
   ax_context->UpdateAXForAllDocuments();
 
   node_data = ui::AXNodeData();
@@ -51,7 +52,8 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kAutocompleteAvailable.
-  SetAutofillState(element, mojom::AutofillState::kAutocompleteAvailable);
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
   ax_context->UpdateAXForAllDocuments();
 
   node_data = ui::AXNodeData();
@@ -61,7 +63,8 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kNoSuggestions.
-  SetAutofillState(element, mojom::AutofillState::kNoSuggestions);
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kNoSuggestions);
   ax_context->UpdateAXForAllDocuments();
 
   node_data = ui::AXNodeData();

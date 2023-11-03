@@ -101,8 +101,10 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // Hit testing.
   AXObject* AccessibilityHitTest(const gfx::Point&) const override;
 
-  // Called when autofill/autocomplete state changes on a form control.
-  void HandleAutofillStateChanged(WebAXAutofillState state) override;
+  // Called when autofill/autocomplete suggestion availability changes on a form
+  // control.
+  void HandleAutofillSuggestionAvailabilityChanged(
+      WebAXAutofillSuggestionAvailability suggestion_availability) override;
 
   // For a table.
   unsigned ColumnCount() const override;

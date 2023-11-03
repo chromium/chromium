@@ -194,10 +194,11 @@ class AutofillDriver {
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Tells the renderer to set the currently focused node's corresponding
-  // accessibility node's autofill state to |state|.
+  // accessibility node's autofill suggestion_availability to
+  // |suggestion_availability|.
   virtual void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
-      const mojom::AutofillState state) = 0;
+      mojom::AutofillSuggestionAvailability suggestion_availability) = 0;
 
   // Informs the renderer that the popup has been hidden.
   virtual void PopupHidden() = 0;

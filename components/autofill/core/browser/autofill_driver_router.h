@@ -321,10 +321,11 @@ class AutofillDriverRouter {
   void RendererShouldSetSuggestionAvailability(
       AutofillDriver* source,
       const FieldGlobalId& field,
-      const mojom::AutofillState state,
-      void (*callback)(AutofillDriver* target,
-                       const FieldRendererId& field,
-                       const mojom::AutofillState state));
+      mojom::AutofillSuggestionAvailability suggestion_availability,
+      void (*callback)(
+          AutofillDriver* target,
+          const FieldRendererId& field,
+          mojom::AutofillSuggestionAvailability suggestion_availability));
   void RendererShouldTriggerSuggestions(
       AutofillDriver* source,
       const FieldGlobalId& field,

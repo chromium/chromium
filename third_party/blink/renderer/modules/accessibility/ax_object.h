@@ -1324,7 +1324,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // TODO(accessibility): Remove virtual -- the only override is in a unit test.
   virtual void ChildrenChangedWithCleanLayout();
   virtual void HandleActiveDescendantChanged() {}
-  virtual void HandleAutofillStateChanged(WebAXAutofillState) {}
+  virtual void HandleAutofillSuggestionAvailabilityChanged(
+      WebAXAutofillSuggestionAvailability) {}
   virtual void HandleAriaExpandedChanged() {}
 
   // Static helper functions.

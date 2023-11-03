@@ -99,7 +99,7 @@ class AutofillDriverIOS : public AutofillDriver,
 
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
-      const mojom::AutofillState state) override;
+      mojom::AutofillSuggestionAvailability suggestion_availability) override;
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
 

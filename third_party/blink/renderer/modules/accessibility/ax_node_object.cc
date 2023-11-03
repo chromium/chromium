@@ -1737,9 +1737,11 @@ bool AXNodeObject::IsControl() const {
 }
 
 bool AXNodeObject::IsAutofillAvailable() const {
-  // Autofill state is stored in AXObjectCache.
-  WebAXAutofillState state = AXObjectCache().GetAutofillState(AXObjectID());
-  return state == WebAXAutofillState::kAutofillAvailable;
+  // Autofill suggestion availability is stored in AXObjectCache.
+  WebAXAutofillSuggestionAvailability suggestion_availability =
+      AXObjectCache().GetAutofillSuggestionAvailability(AXObjectID());
+  return suggestion_availability ==
+         WebAXAutofillSuggestionAvailability::kAutofillAvailable;
 }
 
 bool AXNodeObject::IsDefault() const {
@@ -2314,9 +2316,10 @@ unsigned AXNodeObject::HierarchicalLevel() const {
 
 String AXNodeObject::AutoComplete() const {
   // Check cache for auto complete state.
-  if (AXObjectCache().GetAutofillState(AXObjectID()) ==
-      WebAXAutofillState::kAutocompleteAvailable)
+  if (AXObjectCache().GetAutofillSuggestionAvailability(AXObjectID()) ==
+      WebAXAutofillSuggestionAvailability::kAutocompleteAvailable) {
     return "list";
+  }
 
   if (IsAtomicTextField() || IsARIATextField()) {
     const AtomicString& aria_auto_complete =
@@ -3533,8 +3536,8 @@ ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
     return ax::mojom::blink::HasPopup::kListbox;
   }
 
-  if (AXObjectCache().GetAutofillState(AXObjectID()) !=
-      WebAXAutofillState::kNoSuggestions) {
+  if (AXObjectCache().GetAutofillSuggestionAvailability(AXObjectID()) !=
+      WebAXAutofillSuggestionAvailability::kNoSuggestions) {
     return ax::mojom::blink::HasPopup::kMenu;
   }
 

@@ -220,8 +220,9 @@ void ContentPasswordManagerDriver::ClearPreviewedForm() {
 
 void ContentPasswordManagerDriver::SetSuggestionAvailability(
     autofill::FieldRendererId element_id,
-    const autofill::mojom::AutofillState state) {
-  GetAutofillAgent()->SetSuggestionAvailability(element_id, state);
+    autofill::mojom::AutofillSuggestionAvailability suggestion_availability) {
+  GetAutofillAgent()->SetSuggestionAvailability(element_id,
+                                                suggestion_availability);
 }
 
 PasswordGenerationFrameHelper*

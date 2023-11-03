@@ -239,13 +239,17 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
-  void SetSuggestionAvailability(FieldRendererId field,
-                                 const mojom::AutofillState state) override {
+  void SetSuggestionAvailability(
+      FieldRendererId field,
+      mojom::AutofillSuggestionAvailability suggestion_availability) override {
     value_renderer_id_ = field;
-    if (state == mojom::AutofillState::kAutofillAvailable)
+    if (suggestion_availability ==
+        mojom::AutofillSuggestionAvailability::kAutofillAvailable) {
       suggestions_available_ = true;
-    else if (state == mojom::AutofillState::kNoSuggestions)
+    } else if (suggestion_availability ==
+               mojom::AutofillSuggestionAvailability::kNoSuggestions) {
       suggestions_available_ = false;
+    }
     CallDone();
   }
 

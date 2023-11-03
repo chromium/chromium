@@ -73,8 +73,8 @@ enum WebAXRestriction {
   kWebAXRestrictionDisabled,
 };
 
-// Autofill state.
-enum WebAXAutofillState {
+// Availability of Autofill/Autocomplete suggestions.
+enum class WebAXAutofillSuggestionAvailability {
   kNoSuggestions = 0,
   kAutofillAvailable,
   kAutocompleteAvailable,

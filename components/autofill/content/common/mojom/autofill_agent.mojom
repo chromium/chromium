@@ -70,7 +70,9 @@ interface AutofillAgent {
 
   // Sets the autofill/autocomplete suggestion availability of |field| (if it is
   // still the currently selected node).
-  SetSuggestionAvailability(FieldRendererId field, AutofillState type);
+  SetSuggestionAvailability(
+    FieldRendererId field,
+    AutofillSuggestionAvailability suggestion_availability);
 
   // Sets the value of |field| (if it is still the currently selected node).
   // to the given data list value.

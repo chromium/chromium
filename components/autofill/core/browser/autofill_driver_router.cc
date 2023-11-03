@@ -600,12 +600,13 @@ void AutofillDriverRouter::RendererShouldTriggerSuggestions(
 void AutofillDriverRouter::RendererShouldSetSuggestionAvailability(
     AutofillDriver* source,
     const FieldGlobalId& field,
-    const mojom::AutofillState state,
-    void (*callback)(AutofillDriver* target,
-                     const FieldRendererId& field,
-                     const mojom::AutofillState state)) {
+    mojom::AutofillSuggestionAvailability suggestion_availability,
+    void (*callback)(
+        AutofillDriver* target,
+        const FieldRendererId& field,
+        mojom::AutofillSuggestionAvailability suggestion_availability)) {
   if (auto* target = DriverOfFrame(field.frame_token)) {
-    callback(target, field.renderer_id, state);
+    callback(target, field.renderer_id, suggestion_availability);
   }
 }
 

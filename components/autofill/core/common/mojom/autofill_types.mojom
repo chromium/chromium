@@ -486,8 +486,8 @@ struct ParsingResult {
   FieldRendererId confirm_password_renderer_id;
 };
 
-// Represents the autofill state.
-enum AutofillState {
+// Represents whether suggestions are available for Autofill/Autocomplete.
+enum AutofillSuggestionAvailability {
   // There are no available suggestions, neither autofill nor autocomplete, for
   // the input.
   kNoSuggestions,

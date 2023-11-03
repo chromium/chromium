@@ -841,13 +841,15 @@ void AutofillAgent::ApplyFieldAction(
 
 void AutofillAgent::SetSuggestionAvailability(
     FieldRendererId field_id,
-    const mojom::AutofillState state) {
+    mojom::AutofillSuggestionAvailability suggestion_availability) {
   if (last_queried_element_.IsNull() ||
       field_id != form_util::GetFieldRendererId(last_queried_element_)) {
     return;
   }
 
-  SetAutofillState(last_queried_element_.DynamicTo<WebInputElement>(), state);
+  SetAutofillSuggestionAvailability(
+      last_queried_element_.DynamicTo<WebInputElement>(),
+      suggestion_availability);
 }
 
 void AutofillAgent::AcceptDataListSuggestion(

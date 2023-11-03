@@ -430,16 +430,16 @@ void ContentAutofillDriver::RendererShouldTriggerSuggestions(
 
 void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
     const FieldGlobalId& field,
-    const mojom::AutofillState state) {
+    mojom::AutofillSuggestionAvailability suggestion_availability) {
   router().RendererShouldSetSuggestionAvailability(
-      this, field, state,
+      this, field, suggestion_availability,
       [](autofill::AutofillDriver* target, const FieldRendererId& field,
-         const mojom::AutofillState state) {
+         mojom::AutofillSuggestionAvailability suggestion_availability) {
         if (!cast(target)->RendererIsAvailable()) {
           return;
         }
-        cast(target)->GetAutofillAgent()->SetSuggestionAvailability(field,
-                                                                    state);
+        cast(target)->GetAutofillAgent()->SetSuggestionAvailability(
+            field, suggestion_availability);
       });
 }
 

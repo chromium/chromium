@@ -79,7 +79,7 @@ class TestAutofillDriverTemplate : public T {
       AutofillSuggestionTriggerSource trigger_source) override {}
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
-      const mojom::AutofillState state) override {}
+      mojom::AutofillSuggestionAvailability suggestion_availability) override {}
   void PopupHidden() override {}
   net::IsolationInfo IsolationInfo() override { return isolation_info_; }
   void SendFieldsEligibleForManualFillingToRenderer(

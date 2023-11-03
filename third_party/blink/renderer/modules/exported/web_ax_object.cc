@@ -967,12 +967,13 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
       blink_vertical_scroll_alignment);
 }
 
-void WebAXObject::HandleAutofillStateChanged(
-    const blink::WebAXAutofillState state) const {
+void WebAXObject::HandleAutofillSuggestionAvailabilityChanged(
+    blink::WebAXAutofillSuggestionAvailability suggestion_availability) const {
   if (IsDetached() || !private_->IsAXLayoutObject())
     return;
 
-  private_->HandleAutofillStateChanged(state);
+  private_->HandleAutofillSuggestionAvailabilityChanged(
+      suggestion_availability);
 }
 
 bool WebAXObject::CanCallAOMEventListenersForTesting() const {

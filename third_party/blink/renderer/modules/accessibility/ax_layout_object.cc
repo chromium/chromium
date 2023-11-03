@@ -1031,9 +1031,11 @@ Document* AXLayoutObject::GetDocument() const {
   return &GetLayoutObject()->GetDocument();
 }
 
-void AXLayoutObject::HandleAutofillStateChanged(WebAXAutofillState state) {
-  // Autofill state is stored in AXObjectCache.
-  AXObjectCache().SetAutofillState(AXObjectID(), state);
+void AXLayoutObject::HandleAutofillSuggestionAvailabilityChanged(
+    WebAXAutofillSuggestionAvailability suggestion_availability) {
+  // Autofill suggestion availability is stored in AXObjectCache.
+  AXObjectCache().SetAutofillSuggestionAvailability(AXObjectID(),
+                                                    suggestion_availability);
 }
 
 unsigned AXLayoutObject::ColumnCount() const {

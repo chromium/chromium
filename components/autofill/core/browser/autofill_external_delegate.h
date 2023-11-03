@@ -117,8 +117,10 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   virtual bool HasActiveScreenReader() const;
 
   // Indicates on focus changed if autofill/autocomplete is available or
-  // unavailable, so state can be announced by screen readers.
-  virtual void OnAutofillAvailabilityEvent(const mojom::AutofillState state);
+  // unavailable, so `suggestion_availability` can be announced by screen
+  // readers.
+  virtual void OnAutofillAvailabilityEvent(
+      mojom::AutofillSuggestionAvailability suggestion_availability);
 
   // Set the data list value associated with the current field.
   void SetCurrentDataListValues(std::vector<SelectOption> datalist);

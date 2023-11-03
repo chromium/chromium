@@ -10,9 +10,11 @@
 
 namespace autofill {
 
-// Sets corresponding blink's AutofillState enum value on an `element`.
-void SetAutofillState(const blink::WebInputElement& element,
-                      mojom::AutofillState state);
+// Sets corresponding blink's AutofillSuggestionAvailability enum value on an
+// `element`.
+void SetAutofillSuggestionAvailability(
+    const blink::WebInputElement& element,
+    mojom::AutofillSuggestionAvailability suggestion_availability);
 
 }  // namespace autofill
 

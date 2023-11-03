@@ -1985,7 +1985,7 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
   // Clear AXIDs from maps. Note: do not need to erase id from
   // changed_bounds_ids_, a set which is cleared each time
   // SerializeLocationChanges() is finished.
-  autofill_state_map_.erase(obj_id);
+  autofill_suggestion_availability_map_.erase(obj_id);
   fixed_or_sticky_node_ids_.erase(obj_id);
   cached_bounding_boxes_.erase(obj_id);
   // Clear id from relation cache.
@@ -5139,17 +5139,22 @@ ax::mojom::blink::EventFrom AXObjectCacheImpl::ComputeEventFrom() {
   return ax::mojom::blink::EventFrom::kPage;
 }
 
-WebAXAutofillState AXObjectCacheImpl::GetAutofillState(AXID id) const {
-  auto iter = autofill_state_map_.find(id);
-  if (iter == autofill_state_map_.end())
-    return WebAXAutofillState::kNoSuggestions;
+WebAXAutofillSuggestionAvailability
+AXObjectCacheImpl::GetAutofillSuggestionAvailability(AXID id) const {
+  auto iter = autofill_suggestion_availability_map_.find(id);
+  if (iter == autofill_suggestion_availability_map_.end()) {
+    return WebAXAutofillSuggestionAvailability::kNoSuggestions;
+  }
   return iter->value;
 }
 
-void AXObjectCacheImpl::SetAutofillState(AXID id, WebAXAutofillState state) {
-  WebAXAutofillState previous_state = GetAutofillState(id);
-  if (state != previous_state) {
-    autofill_state_map_.Set(id, state);
+void AXObjectCacheImpl::SetAutofillSuggestionAvailability(
+    AXID id,
+    WebAXAutofillSuggestionAvailability suggestion_availability) {
+  WebAXAutofillSuggestionAvailability previous_suggestion_availability =
+      GetAutofillSuggestionAvailability(id);
+  if (suggestion_availability != previous_suggestion_availability) {
+    autofill_suggestion_availability_map_.Set(id, suggestion_availability);
     MarkAXObjectDirty(ObjectFromAXID(id));
   }
 }

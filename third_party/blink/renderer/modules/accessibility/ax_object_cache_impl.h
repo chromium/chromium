@@ -458,8 +458,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   // For built-in HTML form validation messages.
   AXObject* ValidationMessageObjectIfInvalid();
 
-  WebAXAutofillState GetAutofillState(AXID id) const;
-  void SetAutofillState(AXID id, WebAXAutofillState state);
+  WebAXAutofillSuggestionAvailability GetAutofillSuggestionAvailability(
+      AXID id) const;
+  void SetAutofillSuggestionAvailability(
+      AXID id,
+      WebAXAutofillSuggestionAvailability suggestion_availability);
 
   std::pair<ax::mojom::blink::EventFrom, ax::mojom::blink::Action>
   active_event_from_data() const {
@@ -1018,8 +1021,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   wtf_size_t max_pending_updates_ = 1UL << 16;
   bool tree_updates_paused_ = false;
 
-  // Maps ids to their object's autofill state.
-  HashMap<AXID, WebAXAutofillState> autofill_state_map_;
+  // Maps ids to their object's autofill suggestion availability.
+  HashMap<AXID, WebAXAutofillSuggestionAvailability>
+      autofill_suggestion_availability_map_;
 
   // The set of node IDs whose bounds has changed since the last time
   // SerializeLocationChanges was called.

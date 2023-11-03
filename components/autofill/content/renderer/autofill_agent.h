@@ -127,8 +127,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TriggerSuggestions(
       FieldRendererId field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
-  void SetSuggestionAvailability(FieldRendererId field_id,
-                                 const mojom::AutofillState state) override;
+  void SetSuggestionAvailability(
+      FieldRendererId field_id,
+      mojom::AutofillSuggestionAvailability suggestion_availability) override;
   void AcceptDataListSuggestion(FieldRendererId field_id,
                                 const std::u16string& suggested_value) override;
   void PreviewPasswordSuggestion(const std::u16string& username,

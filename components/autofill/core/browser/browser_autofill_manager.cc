@@ -1554,11 +1554,11 @@ void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
   // There is no way of determining whether ChromeVox is in use, so assume it's
   // being used.
   external_delegate_->OnAutofillAvailabilityEvent(
-      mojom::AutofillState::kNoSuggestions);
+      mojom::AutofillSuggestionAvailability::kNoSuggestions);
 #else
   if (external_delegate_->HasActiveScreenReader()) {
     external_delegate_->OnAutofillAvailabilityEvent(
-        mojom::AutofillState::kNoSuggestions);
+        mojom::AutofillSuggestionAvailability::kNoSuggestions);
   }
 #endif
 }
@@ -1581,20 +1581,20 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   SuggestionsContext context;
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
-  // `OnAskForValuesToFillImpl()`, since the `AutofillState` is a sticky flag
-  // and needs to be reset when a non-autofillable field is focused.
-  // The suggestion trigger source doesn't influence the set of suggestions
-  // generated, but only the way suggestions behave when they are accepted. For
-  // this reason, checking whether suggestions are available can be done with
-  // the `kUnspecified` suggestion trigger source.
+  // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
+  // a sticky flag and needs to be reset when a non-autofillable field is
+  // focused. The suggestion trigger source doesn't influence the set of
+  // suggestions generated, but only the way suggestions behave when they are
+  // accepted. For this reason, checking whether suggestions are available can
+  // be done with the `kUnspecified` suggestion trigger source.
   GetAvailableSuggestions(form, field,
                           AutofillSuggestionTriggerSource::kUnspecified,
                           &suggestions, &context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
-          ? mojom::AutofillState::kAutofillAvailable
-          : mojom::AutofillState::kNoSuggestions);
+          ? mojom::AutofillSuggestionAvailability::kAutofillAvailable
+          : mojom::AutofillSuggestionAvailability::kNoSuggestions);
 }
 
 void BrowserAutofillManager::OnSelectControlDidChangeImpl(

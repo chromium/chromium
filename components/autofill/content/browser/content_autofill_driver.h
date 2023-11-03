@@ -247,7 +247,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const std::u16string& value) override;
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
-      const mojom::AutofillState state) override;
+      mojom::AutofillSuggestionAvailability suggestion_availability) override;
   void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;

@@ -237,7 +237,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   InsertDataListValues(&suggestions);
 
   if (suggestions.empty()) {
-    OnAutofillAvailabilityEvent(mojom::AutofillState::kNoSuggestions);
+    OnAutofillAvailabilityEvent(
+        mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
     manager_->client().HideAutofillPopup(PopupHidingReason::kNoSuggestions);
     return;
@@ -271,11 +272,11 @@ bool AutofillExternalDelegate::HasActiveScreenReader() const {
 }
 
 void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
-    const mojom::AutofillState state) {
+    mojom::AutofillSuggestionAvailability suggestion_availability) {
   // Availability of suggestions should be communicated to Blink because
   // accessibility objects live in both the renderer and browser processes.
   manager_->driver().RendererShouldSetSuggestionAvailability(
-      query_field_.global_id(), state);
+      query_field_.global_id(), suggestion_availability);
 }
 
 void AutofillExternalDelegate::SetCurrentDataListValues(
@@ -289,8 +290,9 @@ void AutofillExternalDelegate::OnPopupShown() {
   DCHECK_NE(GetPopupType(), PopupType::kPasswords);
 
   OnAutofillAvailabilityEvent(
-      has_autofill_suggestions_ ? mojom::AutofillState::kAutofillAvailable
-                                : mojom::AutofillState::kAutocompleteAvailable);
+      has_autofill_suggestions_
+          ? mojom::AutofillSuggestionAvailability::kAutofillAvailable
+          : mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
   manager_->DidShowSuggestions(has_autofill_suggestions_, query_form_,
                                query_field_);
 

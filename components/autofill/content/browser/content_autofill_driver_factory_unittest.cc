@@ -102,7 +102,8 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               (override));
   MOCK_METHOD(void,
               SetSuggestionAvailability,
-              (FieldRendererId field, mojom::AutofillState type),
+              (FieldRendererId field,
+               mojom::AutofillSuggestionAvailability suggestion_availability),
               (override));
   MOCK_METHOD(void,
               AcceptDataListSuggestion,

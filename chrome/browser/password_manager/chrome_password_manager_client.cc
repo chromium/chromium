@@ -1102,7 +1102,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
 
     driver->SetSuggestionAvailability(
         ui_data.generation_element_id,
-        autofill::mojom::AutofillState::kAutofillAvailable);
+        autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable);
     return;
   }
 
@@ -1597,8 +1597,8 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
   driver->SetSuggestionAvailability(
       ui_data.generation_element_id,
       popup_controller_ && popup_controller_->IsVisible()
-          ? autofill::mojom::AutofillState::kAutofillAvailable
-          : autofill::mojom::AutofillState::kNoSuggestions);
+          ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
+          : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
 }
 
 gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(
