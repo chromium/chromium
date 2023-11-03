@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 
 namespace {
@@ -104,8 +105,8 @@ class SpeechRecognitionImplTest : public InProcessBrowserTest {
     return sr_impl_->GetEventObserverWrapper(key);
   }
 
-  std::string CreateKey(absl::optional<int> client_id) {
-    return sr_impl_->CreateKey(client_id);
+  std::string CreateKey(ax::mojom::AssistiveTechnologyType type) {
+    return sr_impl_->CreateKey(type);
   }
 
   int GetNumRecognizers() { return sr_impl_->recognizers_.size(); }
@@ -154,12 +155,14 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartAndStop) {
   ASSERT_EQ(0, GetNumEventObserverWrappers());
 
   auto start_options = ax::mojom::StartOptions::New();
+  start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   sr_impl_->Start(std::move(start_options), base::DoNothing());
   sr_test_helper_->WaitForRecognitionStarted();
   ASSERT_EQ(1, GetNumRecognizers());
   ASSERT_EQ(1, GetNumEventObserverWrappers());
 
   auto stop_options = ax::mojom::StopOptions::New();
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   sr_impl_->Stop(std::move(stop_options), base::DoNothing());
   sr_test_helper_->WaitForRecognitionStopped();
   // Note that recognizers are kept alive because they can be re-used when
@@ -171,9 +174,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartAndStop) {
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartAndStopWithClientId) {
-  absl::optional<int> client_id(123);
   auto start_options = ax::mojom::StartOptions::New();
-  start_options->client_id = client_id;
+  start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
 
   sr_impl_->Start(std::move(start_options), base::DoNothing());
   sr_test_helper_->WaitForRecognitionStarted();
@@ -181,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartAndStopWithClientId) {
   ASSERT_EQ(1, GetNumEventObserverWrappers());
 
   auto stop_options = ax::mojom::StopOptions::New();
-  stop_options->client_id = client_id;
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   sr_impl_->Stop(std::move(stop_options), base::DoNothing());
   sr_test_helper_->WaitForRecognitionStopped();
 }
@@ -190,9 +192,10 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartOptions) {
   base::RunLoop waiter;
   auto options = ax::mojom::StartOptions::New();
 
-  absl::optional<int> client_id(123);
-  std::string key = CreateKey(client_id);
-  options->client_id = client_id;
+  ax::mojom::AssistiveTechnologyType type =
+      ax::mojom::AssistiveTechnologyType::kDictation;
+  std::string key = CreateKey(type);
+  options->type = type;
   options->locale = "ja-JP";
   options->interim_results = true;
   base::RepeatingCallback<void(ax::mojom::SpeechRecognitionStartInfoPtr info)>
@@ -218,9 +221,10 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchStopEvent) {
       mock_event_observer_impl;
 
   auto start_options = ax::mojom::StartOptions::New();
-  absl::optional<int> client_id(123);
-  std::string key = CreateKey(client_id);
-  start_options->client_id = client_id;
+  ax::mojom::AssistiveTechnologyType type =
+      ax::mojom::AssistiveTechnologyType::kDictation;
+  std::string key = CreateKey(type);
+  start_options->type = type;
 
   sr_impl_->Start(
       std::move(start_options),
@@ -245,8 +249,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchStopEvent) {
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchResultEvent) {
   // Variables used throughout the test.
   base::RunLoop waiter;
-  absl::optional<int> client_id(123);
-  std::string key = CreateKey(client_id);
+  ax::mojom::AssistiveTechnologyType type =
+      ax::mojom::AssistiveTechnologyType::kDictation;
+  std::string key = CreateKey(type);
 
   // Called after speech recognition has been stopped.
   base::RepeatingCallback<void()> on_stop_callback =
@@ -266,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchResultEvent) {
       mock_event_observer_impl;
 
   auto start_options = ax::mojom::StartOptions::New();
-  start_options->client_id = client_id;
+  start_options->type = type;
   sr_impl_->Start(
       std::move(start_options),
       base::BindLambdaForTesting(
@@ -289,8 +294,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchResultEvent) {
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchErrorEvent) {
   // Variables used throughout the test.
   base::RunLoop waiter;
-  absl::optional<int> client_id(123);
-  std::string key = CreateKey(client_id);
+  ax::mojom::AssistiveTechnologyType type =
+      ax::mojom::AssistiveTechnologyType::kDictation;
+  std::string key = CreateKey(type);
 
   // Called when a speech recognition result has been returned.
   base::RepeatingCallback<void(ax::mojom::SpeechRecognitionErrorEventPtr event)>
@@ -304,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchErrorEvent) {
       mock_event_observer_impl;
 
   auto start_options = ax::mojom::StartOptions::New();
-  start_options->client_id = client_id;
+  start_options->type = type;
   sr_impl_->Start(
       std::move(start_options),
       base::BindLambdaForTesting(

@@ -70,12 +70,8 @@ void SpeechRecognitionImpl::Bind(
 void SpeechRecognitionImpl::Start(ax::mojom::StartOptionsPtr options,
                                   StartCallback callback) {
   // Extract arguments.
-  absl::optional<int> client_id;
   absl::optional<std::string> locale;
   absl::optional<bool> interim_results;
-  if (options->client_id) {
-    client_id = *options->client_id;
-  }
   if (options->locale) {
     locale = *options->locale;
   }
@@ -83,7 +79,7 @@ void SpeechRecognitionImpl::Start(ax::mojom::StartOptionsPtr options,
     interim_results = *options->interim_results;
   }
 
-  std::string key = CreateKey(client_id);
+  std::string key = CreateKey(options->type);
   GetSpeechRecognizer(key)->HandleStart(
       locale, interim_results,
       base::BindOnce(&SpeechRecognitionImpl::StartHelper, GetWeakPtr(),
@@ -92,13 +88,7 @@ void SpeechRecognitionImpl::Start(ax::mojom::StartOptionsPtr options,
 
 void SpeechRecognitionImpl::Stop(ax::mojom::StopOptionsPtr options,
                                  StopCallback callback) {
-  // Extract arguments.
-  absl::optional<int> client_id;
-  if (options->client_id) {
-    client_id = *options->client_id;
-  }
-
-  std::string key = CreateKey(client_id);
+  std::string key = CreateKey(options->type);
   GetSpeechRecognizer(key)->HandleStop(
       base::BindOnce(&SpeechRecognitionImpl::StopHelper, GetWeakPtr(),
                      std::move(callback), key));
@@ -174,13 +164,13 @@ void SpeechRecognitionImpl::StopHelper(StopCallback callback,
   std::move(callback).Run();
 }
 
-std::string SpeechRecognitionImpl::CreateKey(absl::optional<int> client_id) {
-  std::string base = "Atp";
-  if (!client_id.has_value()) {
-    return base;
-  }
-
-  return base::StringPrintf("%s.%d", base.c_str(), *client_id);
+std::string SpeechRecognitionImpl::CreateKey(
+    ax::mojom::AssistiveTechnologyType type) {
+  // Dictation is the only accessibility feature that uses speech recognition.
+  // In the future, we can add support other accessibility features e.g.
+  // Voice Access.
+  DCHECK(type == ax::mojom::AssistiveTechnologyType::kDictation);
+  return "AtpSpeechRecognition.Dictation";
 }
 
 extensions::SpeechRecognitionPrivateRecognizer*

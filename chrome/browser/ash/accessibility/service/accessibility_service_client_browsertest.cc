@@ -1325,11 +1325,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   fake_service_->BindAnotherSpeechRecognition();
 
   auto start_options = ax::mojom::StartOptions::New();
+  start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   fake_service_->RequestSpeechRecognitionStart(std::move(start_options),
                                                base::DoNothing());
   sr_test_helper_->WaitForRecognitionStarted();
 
   auto stop_options = ax::mojom::StopOptions::New();
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   fake_service_->RequestSpeechRecognitionStop(std::move(stop_options),
                                               base::DoNothing());
   sr_test_helper_->WaitForRecognitionStopped();
@@ -1342,6 +1344,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 
   base::RunLoop start_waiter;
   auto start_options = ax::mojom::StartOptions::New();
+  start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   fake_service_->RequestSpeechRecognitionStart(
       std::move(start_options),
       base::BindLambdaForTesting(
@@ -1353,6 +1356,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 
   base::RunLoop stop_waiter;
   auto stop_options = ax::mojom::StopOptions::New();
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
   fake_service_->RequestSpeechRecognitionStop(
       std::move(stop_options),
       base::BindLambdaForTesting([&stop_waiter]() { stop_waiter.Quit(); }));

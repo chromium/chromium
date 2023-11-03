@@ -44,7 +44,11 @@ class AtpSpeechRecognition {
   constructor() {
     const SpeechRecognitionApi = ax.mojom.SpeechRecognition;
     this.remote_ = SpeechRecognitionApi.getRemote();
-    /** @private {!Map<number, !AtpSpeechRecognitionEventObserver>} */
+    /**
+     * @private {!Map<
+     *    !ax.mojom.AssistiveTechnologyType, !AtpSpeechRecognitionEventObserver
+     * >}
+     */
     this.observers_ = new Map();
     /** @type {!ChromeEvent} */
     this.onStop = new ChromeEvent();
@@ -78,11 +82,7 @@ class AtpSpeechRecognition {
         /*onErrorCallback=*/(event) => {
           this.handleOnError_(event);
         });
-      // Default client ID is 0. It is possible for clients to pass an ID of 0,
-      // but this will never happen in practice since we control the only
-      // existing caller and potential new callers.
-      const clientId = mojoOptions.clientId ?? 0;
-      this.observers_.set(clientId, observer);
+      this.observers_.set(mojoOptions.type, observer);
       callback(type);
     });
   }
@@ -95,8 +95,7 @@ class AtpSpeechRecognition {
   stop(options, callback) {
     const mojoOptions = AtpSpeechRecognition.convertStopOptions_(options);
     this.remote_.stop(mojoOptions).then(() => {
-      const clientId = mojoOptions.clientId ?? 0;
-      this.observers_.delete(clientId);
+      this.observers_.delete(mojoOptions.type);
       callback();
     });
   }
@@ -136,9 +135,8 @@ class AtpSpeechRecognition {
    */
   static convertStartOptions_(source) {
     const options = new ax.mojom.StartOptions();
-    if (source.clientId !== undefined) {
-      options.clientId = source.clientId;
-    }
+    options.type = AtpSpeechRecognition.clientIdToAssistiveTechnologyType_(
+        source.clientId);
     if (source.locale !== undefined) {
       options.locale = source.locale;
     }
@@ -156,10 +154,8 @@ class AtpSpeechRecognition {
    */
   static convertStopOptions_(source) {
     const options = new ax.mojom.StopOptions();
-    if (source.clientId !== undefined) {
-      options.clientId = source.clientId;
-    }
-
+    options.type = AtpSpeechRecognition.clientIdToAssistiveTechnologyType_(
+        source.clientId);
     return options;
   }
 
@@ -174,6 +170,17 @@ class AtpSpeechRecognition {
     }
 
     return 'network';
+  }
+
+  /**
+   * @param {number|undefined} clientId
+   * @return {!ax.mojom.AssistiveTechnologyType}
+   * @private
+   */
+  static clientIdToAssistiveTechnologyType_(clientId) {
+    // Use Dictation as the type since it's the only accessibility feature that
+    // uses speech recognition.
+    return ax.mojom.AssistiveTechnologyType.kDictation;
   }
 }
 

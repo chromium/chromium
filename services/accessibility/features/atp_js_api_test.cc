@@ -810,6 +810,8 @@ class SpeechRecognitionJSApiTest : public AtpJSApiTest {
     // permissions so we load support JS within the test.
     return std::vector<std::string>{
         "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "services/accessibility/public/mojom/"
+        "assistive_technology_type.mojom-lite.js",
         "services/accessibility/public/mojom/speech_recognition.mojom-lite.js",
         "services/accessibility/features/javascript/chrome_event.js",
         "services/accessibility/features/javascript/speech_recognition.js",

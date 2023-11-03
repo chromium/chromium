@@ -12,6 +12,7 @@
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 
 namespace content {
@@ -103,7 +104,7 @@ class SpeechRecognitionImpl
                   absl::optional<std::string> error);
 
   // Creates a key given a client ID.
-  std::string CreateKey(absl::optional<int> client_id);
+  std::string CreateKey(ax::mojom::AssistiveTechnologyType type);
 
   // Returns the speech recognizer associated with the key. Creates one if
   // none exists.

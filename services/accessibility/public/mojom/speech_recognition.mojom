@@ -4,6 +4,8 @@
 
 module ax.mojom;
 
+import "services/accessibility/public/mojom/assistive_technology_type.mojom";
+
 // Possible types of speech recognition.
 enum SpeechRecognitionType {
   kOnDevice,
@@ -26,9 +28,9 @@ struct SpeechRecognitionErrorEvent {
 
 // Options used when starting speech recognition.
 struct StartOptions {
-  // An optional ID to specify the client.
-  // TODO(b:304305202): Change this to ax::mojom::AssistiveTechnologyType.
-  int32? client_id;
+  // The type of assistive technology requesting speech recognition start.
+  // Note: Currently the only supported assistive technology type is Dictation.
+  AssistiveTechnologyType type;
   // The locale, in BCP-47 format to use for speech recognition.
   string? locale;
   // Whether interim speech results should be returned.
@@ -37,10 +39,11 @@ struct StartOptions {
 
 // Options used when stopping speech recognition.
 struct StopOptions {
-  // An optional ID to specify the client. This must match the client_id
-  // used when starting speech recognition to work as intended.
-  // TODO(b:304305202): Change this to ax::mojom::AssistiveTechnologyType.
-  int32? client_id;
+  // The type of assistive technology requesting speech recognition stop.
+  // This must match the AssistiveTechnologyType used when starting speech
+  // recognition to work as intended.
+  // Note: Currently the only supported assistive technology type is Dictation.
+  AssistiveTechnologyType type;
 };
 
 // This interface receives speech recognition events. The remote is in the OS
