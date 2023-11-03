@@ -21,16 +21,33 @@ class FakeSafeBrowsingUrlCheckerImpl
   explicit FakeSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination)
       : SafeBrowsingUrlCheckerImpl(
+            /*headers=*/net::HttpRequestHeaders(),
+            /*load_flags=*/0,
             request_destination,
+            /*has_user_gesture=*/false,
             base::MakeRefCounted<UrlCheckerDelegateImpl>(
                 /*database_manager=*/nullptr,
-                /*client=*/nullptr),
+                /*client=*/nullptr), /*web_contents_getter=*/
+            base::RepeatingCallback<content::WebContents*()>(),
             base::WeakPtr<web::WebState>(),
+            /*render_process_id=*/
+            security_interstitials::UnsafeResource::kNoRenderProcessId,
+            /*render_frame_id=*/
+            security_interstitials::UnsafeResource::kNoRenderFrameId,
+            /*frame_tree_node_id=*/
+            security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
             /*url_real_time_lookup_enabled=*/false,
             /*can_urt_check_subresource_url=*/false,
+            /*can_check_db=*/true,
+            /*can_check_high_confidence_allowlist=*/true,
+            /*url_lookup_service_metric_suffix=*/"",
+            /*last_committed_url=*/GURL::EmptyGURL(),
             web::GetUIThreadTaskRunner({}),
             /*url_lookup_service_on_ui=*/nullptr,
+            /*webui_delegate=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
+            /*mechanism_experimenter=*/nullptr,
+            /*is_mechanism_experiment_allowed=*/false,
             safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {}
   ~FakeSafeBrowsingUrlCheckerImpl() override = default;
 

@@ -197,6 +197,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    has_user_gesture,
                                    url_checker_delegate,
                                    web_contents_getter,
+                                   /*weak_web_state=*/nullptr,
                                    render_process_id,
                                    render_frame_id,
                                    frame_tree_node_id,

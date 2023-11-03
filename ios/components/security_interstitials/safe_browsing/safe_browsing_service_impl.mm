@@ -166,12 +166,27 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
               /*log_usage_histograms=*/true);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
-      request_destination, url_checker_delegate, web_state->GetWeakPtr(),
+      /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
+      request_destination, /*has_user_gesture=*/false, url_checker_delegate,
+      /*web_contents_getter=*/
+      base::RepeatingCallback<content::WebContents*()>(),
+      web_state->GetWeakPtr(),
+      /*render_process_id=*/
+      security_interstitials::UnsafeResource::kNoRenderProcessId,
+      /*render_frame_id=*/
+      security_interstitials::UnsafeResource::kNoRenderFrameId,
+      /*frame_tree_node_id=*/
+      security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
       can_perform_full_url_lookup, can_url_realtime_check_subresource_url,
+      /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+      /*url_lookup_service_metric_suffix=*/"",
+      /*last_committed_url=*/web_state->GetLastCommittedURL(),
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
+      /*webui_delegate=*/nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
-      hash_real_time_selection);
+      /*mechanism_experimenter=*/nullptr,
+      /*is_mechanism_experiment_allowed=*/false, hash_real_time_selection);
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {

@@ -172,7 +172,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       has_user_gesture, delegate_,
       base::BindRepeating(&GetWebContentsFromID, render_process_id_,
                           static_cast<int>(render_frame_id)),
-      render_process_id_, render_frame_id,
+      /*weak_web_state=*/nullptr, render_process_id_, render_frame_id,
       content::RenderFrameHost::kNoFrameTreeNodeId,
       /*url_real_time_lookup_enabled=*/false,
       /*can_urt_check_subresource_url=*/false,

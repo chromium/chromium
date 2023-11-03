@@ -495,9 +495,9 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         net::HttpRequestHeaders(), /*load_flags=*/0,
         optional_args.request_destination,
         /*has_user_gesture=*/false, url_checker_delegate_,
-        mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
-        UnsafeResource::kNoRenderFrameId, UnsafeResource::kNoFrameTreeNodeId,
-        url_real_time_lookup_enabled,
+        mock_web_contents_getter.Get(), /*weak_web_state=*/nullptr,
+        UnsafeResource::kNoRenderProcessId, UnsafeResource::kNoRenderFrameId,
+        UnsafeResource::kNoFrameTreeNodeId, url_real_time_lookup_enabled,
         optional_args.can_urt_check_subresource_url, can_check_safe_browsing_db,
         /*can_check_high_confidence_allowlist=*/true,
         /*url_lookup_service_metric_suffix=*/

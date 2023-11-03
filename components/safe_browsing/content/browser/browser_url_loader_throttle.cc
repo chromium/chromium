@@ -167,7 +167,7 @@ void BrowserURLLoaderThrottle::CheckerOnSB::Start(
   } else {
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         headers, load_flags, request_destination, has_user_gesture,
-        url_checker_delegate, web_contents_getter_,
+        url_checker_delegate, web_contents_getter_, nullptr,
         content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE,
         frame_tree_node_id_, url_real_time_lookup_enabled_,
         can_urt_check_subresource_url_, can_check_db_,
