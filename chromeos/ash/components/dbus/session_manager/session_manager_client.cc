@@ -366,9 +366,14 @@ class SessionManagerClientImpl : public SessionManagerClient {
                                        base::DoNothing());
   }
 
-  void StartDeviceWipe() override {
-    SimpleMethodCallToSessionManager(
-        login_manager::kSessionManagerStartDeviceWipe);
+  void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(
+        login_manager::kSessionManagerInterface,
+        login_manager::kSessionManagerClearForcedReEnrollmentVpd);
+    session_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     for (auto& observer : observers_) {
       observer.PowerwashRequested(/*admin_requested*/ false);
     }

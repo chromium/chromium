@@ -406,7 +406,8 @@ void FakeSessionManagerClient::LoadShillProfile(
       base::BindOnce(on_load_shill_profile_callback_, cryptohome_id));
 }
 
-void FakeSessionManagerClient::StartDeviceWipe() {
+void FakeSessionManagerClient::StartDeviceWipe(
+    chromeos::VoidDBusMethodCallback callback) {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

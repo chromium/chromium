@@ -308,7 +308,7 @@ void ChromeSessionManager::Initialize(
   // necessary, we trigger the device wipe here before the user can log in again
   // and return immediately because there is no need to show the login screen.
   if (g_browser_process->local_state()->GetBoolean(prefs::kForceFactoryReset)) {
-    SessionManagerClient::Get()->StartDeviceWipe();
+    SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
     return;
   }
 

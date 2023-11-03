@@ -245,7 +245,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const cryptohome::AccountIdentifier& cryptohome_id) = 0;
 
   // Starts the factory reset.
-  virtual void StartDeviceWipe() = 0;
+  virtual void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Starts a remotely initiated factory reset, similar to |StartDeviceWipe|
   // above, but also performs additional checks on Chrome OS side.
