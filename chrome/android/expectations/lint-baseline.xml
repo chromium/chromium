@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha09">
+<issues format="6" by="lint 8.3.0-alpha11" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha11">
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="        /* See {@link android.webkit.WebChromeClient}. */"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -14,7 +14,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="        /* See {@link android.webkit.GeolocationPermissions}. */"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -25,7 +25,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* See {@link android.webkit.WebSettings}. */"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -36,7 +36,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* See {@link android.webkit.WebSettings}. */"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -47,7 +47,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* See {@link android.webkit.WebSettings}. */"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -58,18 +58,18 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press"
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java"
-            line="232"
+            line="236"
             column="8"/>
     </issue>
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param intent The intent that was used to bind to the service."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -80,7 +80,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param srcDir A directory containing a crashpad::CrashReportDatabase."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -91,7 +91,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param anrFiles Pairs of serialized ANR proto file names and the versions they happened on."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -102,7 +102,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param srcDir A directory containing a crashpad::CrashReportDatabase."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -113,18 +113,18 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param args arguments of the callback."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="339"
+            line="347"
             column="8"/>
     </issue>
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @return Display.Modes supported by this Display."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -135,7 +135,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @return Current Display.Mode for the display."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -146,7 +146,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @return whether the observerMap was changed as a result of the call."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -157,7 +157,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @return whether the observer was removed as a result of the call."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -168,7 +168,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param requestShipping Whether the merchant requested a shipping address."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -179,7 +179,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param methodTypes The list of types of the payment methods, defined in"
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -190,7 +190,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param shouldFake Whether to fake the version check."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -201,7 +201,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param featureName The feature that uses the UKM reporting."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -212,18 +212,18 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param success Whether provisioning has succeeded or not."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1293"
+            line="1379"
             column="8"/>
     </issue>
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* Returns the {@link WebContentns} for which the message is intended to be shown. */"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -234,7 +234,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param delegate Delegate providing the WindowAndroid and Context to display the UI."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -245,18 +245,18 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* Destroy the single tab card on the {@link NewTabPageLayout}. */"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1201"
+            line="1203"
             column="43"/>
     </issue>
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param activity The activity the share sheet belongs to."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -267,7 +267,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="             * @param dataType  The type of the data contained in the section."
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -278,7 +278,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="         * @param response The payment response to send to the merchant."
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -289,7 +289,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param context The Context to create tha handler for."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -300,7 +300,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param activity The activity the share sheet belongs to."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -311,7 +311,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @param tab The tab being tested."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -322,7 +322,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * {@link StartSurfaceState#SHOWN_HOMEPAGE} when the refactoring is disabled."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -333,7 +333,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * @params type Information about where the tab was created from."
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -344,18 +344,18 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
-        errorLine1="     * @param tabsToolbarView @{link View} used to create the drag shadow."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="This block comment looks like it was intended to be a javadoc comment"
+        errorLine1="     * @param toolbarContainerView @{link View} used to create the drag shadow."
+        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabDragSource.java"
-            line="331"
+            line="296"
             column="8"/>
     </issue>
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* Destroy and clean up {@link DragStateTracker} to the content view. */"
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -366,7 +366,7 @@
 
     <issue
         id="WrongCommentType"
-        message="This block comment looks like it was intended to be a KDoc comment"
+        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="     * Updates the native {@link WebContents} with a new window. This moves the NativeView and"
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -443,161 +443,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `deleteLegacyChannels`"
-        errorLine1="            mChannelsInitializer.deleteLegacyChannels();"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="74"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `initializeStartupChannels`"
-        errorLine1="            mChannelsInitializer.initializeStartupChannels();"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="75"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `updateLocale`"
-        errorLine1="            mChannelsInitializer.updateLocale(ContextUtils.getApplicationContext().getResources());"
-        errorLine2="                                 ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
-            line="84"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `onFrameworkExitedPictureInPicture`"
-        errorLine1="            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();"
-        errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1183"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `FullscreenVideoPictureInPictureController`"
-        errorLine1="                    new FullscreenVideoPictureInPictureController("
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1203"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `attemptPictureInPicture`"
-        errorLine1="        mFullscreenVideoPictureInPictureController.attemptPictureInPicture();"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1218"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `onFrameworkExitedPictureInPicture`"
-        errorLine1="            mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();"
-        errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1284"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `getInstance`"
-        errorLine1="        return SiteChannelsManager.getInstance();"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppModule.java"
-            line="77"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `getChannelIdForOrigin`"
-        errorLine1="        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="175"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `getInstance`"
-        errorLine1="        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="175"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 25 (current min is 24): `reportNewTabShortcutUsed`"
-        errorLine1="                    reportNewTabShortcutUsed(false);"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1646"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 25 (current min is 24): `reportNewTabShortcutUsed`"
-        errorLine1="                        reportNewTabShortcutUsed(true);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1686"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 25 (current min is 24): `reportNewTabShortcutUsed`"
-        errorLine1="            reportNewTabShortcutUsed(false);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2245"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 25 (current min is 24): `reportNewTabShortcutUsed`"
-        errorLine1="                reportNewTabShortcutUsed(true);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2260"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 24): `clearAllContentCaptureData`"
+        message="Call requires API level 29 (current min is 26): `clearAllContentCaptureData`"
         errorLine1="            contentCaptureController.clearAllContentCaptureData();"
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -608,7 +454,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `clearContentCaptureDataForURLs`"
+        message="Call requires API level 29 (current min is 26): `clearContentCaptureDataForURLs`"
         errorLine1="                    contentCaptureController.clearContentCaptureDataForURLs(deletedURLs);"
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -619,7 +465,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `notifyViewAppeared`"
+        message="Call requires API level 29 (current min is 26): `notifyViewAppeared`"
         errorLine1="        return notifyViewAppeared(parentPlatformSessionData, data);"
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
@@ -630,7 +476,7 @@
 
     <issue
         id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 24): `NotificationTask`"
+        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="class ContentRemovedTask extends NotificationTask {"
         errorLine2="                                 ~~~~~~~~~~~~~~~~">
         <location
@@ -641,7 +487,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `NotificationTask`"
+        message="Call requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
         <location
@@ -652,7 +498,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `log`"
+        message="Call requires API level 29 (current min is 26): `log`"
         errorLine1="        log(&quot;ContentRemovedTask.removeContent&quot;);"
         errorLine2="        ~~~">
         <location
@@ -663,7 +509,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `buildCurrentSession`"
+        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
         errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -674,7 +520,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewsDisappeared("
         errorLine2="                           ~~~~~~~~~~~">
         <location
@@ -685,7 +531,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `notifyViewsDisappeared`"
+        message="Call requires API level 29 (current min is 26): `notifyViewsDisappeared`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewsDisappeared("
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -696,7 +542,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                platformSessionData.contentCaptureSession,"
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -707,7 +553,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getRootPlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, mRemovedIds);"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -718,7 +564,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `autofillId`"
+        message="Field requires API level 29 (current min is 26): `autofillId`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, mRemovedIds);"
         errorLine2="                                                              ~~~~~~~~~~">
         <location
@@ -729,7 +575,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mPlatformSession`"
+        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, mRemovedIds);"
         errorLine2="                ~~~~~~~~~~~~~~~~">
         <location
@@ -740,7 +586,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId("
         errorLine2="                                                   ~~~~~~~~~~~">
         <location
@@ -751,7 +597,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `newAutofillId`"
+        message="Call requires API level 29 (current min is 26): `newAutofillId`"
         errorLine1="        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId("
         errorLine2="                                                                 ~~~~~~~~~~~~~">
         <location
@@ -762,7 +608,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession,"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -773,7 +619,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getRootPlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, data.getId());"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -784,7 +630,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `autofillId`"
+        message="Field requires API level 29 (current min is 26): `autofillId`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, data.getId());"
         errorLine2="                                                              ~~~~~~~~~~">
         <location
@@ -795,7 +641,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mPlatformSession`"
+        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, data.getId());"
         errorLine2="                ~~~~~~~~~~~~~~~~">
         <location
@@ -806,7 +652,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewTextChanged("
         errorLine2="                           ~~~~~~~~~~~">
         <location
@@ -817,7 +663,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `notifyViewTextChanged`"
+        message="Call requires API level 29 (current min is 26): `notifyViewTextChanged`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewTextChanged("
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -828,7 +674,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession, autofillId, data.getValue());"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -839,7 +685,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 30 (current min is 24): `collectAndWriteAnrs`"
+        message="Call requires API level 30 (current min is 26): `collectAndWriteAnrs`"
         errorLine1="            List&lt;String> anrs = AnrCollector.collectAndWriteAnrs(anrDir);"
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -850,7 +696,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -861,7 +707,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -872,7 +718,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -883,7 +729,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 24): `logGestureType`"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -894,7 +740,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getDownloadUriForFileName`"
+        message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
         errorLine1="        return getDownloadUriForFileName(fileName) != null;"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -905,7 +751,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `createPendingParams`"
+        message="Call requires API level 29 (current min is 26): `createPendingParams`"
         errorLine1="                createPendingParams(fileName, mimeType, originalUrl, referrer);"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -916,7 +762,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getDownloadUriForFileName`"
+        message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
         errorLine1="                Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(file.getName());"
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -927,7 +773,7 @@
 
     <issue
         id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 24): `NotificationTask`"
+        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="public class FaviconUpdateTask extends NotificationTask {"
         errorLine2="                                       ~~~~~~~~~~~~~~~~">
         <location
@@ -938,7 +784,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `NotificationTask`"
+        message="Call requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
         <location
@@ -949,7 +795,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `log`"
+        message="Call requires API level 29 (current min is 26): `log`"
         errorLine1="        log(&quot;FaviconUpdateTask.updateFavicon&quot;);"
         errorLine2="        ~~~">
         <location
@@ -960,7 +806,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `buildCurrentSession`"
+        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
         errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
         errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -971,7 +817,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyFaviconUpdated("
         errorLine2="                           ~~~~~~~~~~~">
         <location
@@ -982,7 +828,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `notifyFaviconUpdated`"
+        message="Call requires API level 29 (current min is 26): `notifyFaviconUpdated`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyFaviconUpdated("
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -993,7 +839,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession, mSession.get(0).getFavicon());"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1004,7 +850,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mSession`"
+        message="Field requires API level 29 (current min is 26): `mSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession, mSession.get(0).getFavicon());"
         errorLine2="                                                                 ~~~~~~~~">
         <location
@@ -1015,7 +861,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `addDirectAction`"
+        message="Call requires API level 29 (current min is 26): `addDirectAction`"
         errorLine1="            reporter.addDirectAction(ACTION_ID).withParameter("
         errorLine2="                     ~~~~~~~~~~~~~~~">
         <location
@@ -1026,7 +872,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `withParameter`"
+        message="Call requires API level 29 (current min is 26): `withParameter`"
         errorLine1="            reporter.addDirectAction(ACTION_ID).withParameter("
         errorLine2="                                                ~~~~~~~~~~~~~">
         <location
@@ -1059,18 +905,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 26 (current min is 24): `CREATOR`"
-        errorLine1="          _arg0 = data.createTypedArrayList(org.chromium.components.autofill_public.ViewType.CREATOR);"
-        errorLine2="                                                                                             ~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/autofill_aidl/org/chromium/components/autofill_public/IViewTypeCallback.java"
-            line="72"
-            column="94"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 24): `addDirectAction`"
+        message="Call requires API level 29 (current min is 26): `addDirectAction`"
         errorLine1="                reporter.addDirectAction(entry.getKey());"
         errorLine2="                         ~~~~~~~~~~~~~~~">
         <location
@@ -1081,7 +916,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 30 (current min is 24): `getExitReason`"
+        message="Call requires API level 30 (current min is 26): `getExitReason`"
         errorLine1="            int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);"
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
@@ -1092,29 +927,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `isValidSiteChannelId`"
-        errorLine1="        if (channelId == null || !SiteChannelsManager.isValidSiteChannelId(channelId)) {"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java"
-            line="412"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `toSiteOrigin`"
-        errorLine1="        return SiteChannelsManager.toSiteOrigin(channelId);"
-        errorLine2="                                   ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java"
-            line="415"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 24): `getBitmapFromIcon`"
+        message="Call requires API level 28 (current min is 26): `getBitmapFromIcon`"
         errorLine1="        return getBitmapFromIcon(notification.getLargeIcon());"
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
@@ -1125,7 +938,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 24): `getBitmapFromIcon`"
+        message="Call requires API level 28 (current min is 26): `getBitmapFromIcon`"
         errorLine1="        return getBitmapFromIcon(notification.getSmallIcon());"
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
@@ -1136,29 +949,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `ChannelsInitializer`"
-        errorLine1="        ChannelsInitializer channelsInitializer = new ChannelsInitializer(notificationManagerProxy,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactory.java"
-            line="46"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `getInstance`"
-        errorLine1="                ChromeChannelDefinitions.getInstance(), context.getResources());"
-        errorLine2="                                         ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactory.java"
-            line="47"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 24): `getMaximumWindowMetricsBounds`"
+        message="Call requires API level 30 (current min is 26): `getMaximumWindowMetricsBounds`"
         errorLine1="        Rect rect = ApiHelperForR.getMaximumWindowMetricsBounds(windowManager);"
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1169,7 +960,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 30 (current min is 24): `getDisplay`"
+        message="Call requires API level 30 (current min is 26): `getDisplay`"
         errorLine1="                ApiHelperForR.getDisplay(mWindowContext));"
         errorLine2="                              ~~~~~~~~~~">
         <location
@@ -1180,18 +971,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `createNotificationChannel`"
-        errorLine1="                mNotificationManager.createNotificationChannel();"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/PriceMessageService.java"
-            line="245"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 24): `NotificationTask`"
+        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="abstract class ProcessContentCaptureDataTask extends NotificationTask {"
         errorLine2="                                                     ~~~~~~~~~~~~~~~~">
         <location
@@ -1202,7 +982,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `NotificationTask`"
+        message="Call requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
         <location
@@ -1213,7 +993,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `log`"
+        message="Call requires API level 29 (current min is 26): `log`"
         errorLine1="        log(&quot;ProcessContentTaskBase.processContent&quot;);"
         errorLine2="        ~~~">
         <location
@@ -1224,7 +1004,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `buildCurrentSession`"
+        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
         errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1235,7 +1015,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `createOrGetSession`"
+        message="Call requires API level 29 (current min is 26): `createOrGetSession`"
         errorLine1="                createOrGetSession(parentPlatformSessionData, data);"
         errorLine2="                ~~~~~~~~~~~~~~~~~~">
         <location
@@ -1246,7 +1026,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `PlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `PlatformSessionData`"
         errorLine1="            PlatformSessionData platformSessionData = new PlatformSessionData("
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1257,7 +1037,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                    parentPlatformSessionData.contentCaptureSession, autofillId);"
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1268,7 +1048,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 30 (current min is 24): `getExitReason`"
+        message="Call requires API level 30 (current min is 26): `getExitReason`"
         errorLine1="        recordAsEnumHistogram(umaName, getExitReason(pid));"
         errorLine2="                                       ~~~~~~~~~~~~~">
         <location
@@ -1279,7 +1059,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="                () -> PlatformContentCaptureController.getInstance()));"
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
@@ -1290,40 +1070,40 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `onPerformDirectAction`"
+        message="Call requires API level 29 (current min is 26): `onPerformDirectAction`"
         errorLine1="        mDirectActionInitializer.onPerformDirectAction("
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1097"
+            line="1113"
             column="34"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `onGetDirectActions`"
+        message="Call requires API level 29 (current min is 26): `onGetDirectActions`"
         errorLine1="        mDirectActionInitializer.onGetDirectActions(cancellationSignal, callback);"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1112"
+            line="1128"
             column="34"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `DirectActionInitializer`"
+        message="Call requires API level 29 (current min is 26): `DirectActionInitializer`"
         errorLine1="        mDirectActionInitializer = new DirectActionInitializer(mActivityType,"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1642"
+            line="1658"
             column="36"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 24): `onSelectionModified`"
+        message="Call requires API level 28 (current min is 26): `onSelectionModified`"
         errorLine1="                        mSmartSelectionEventProcessor.onSelectionModified("
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1334,7 +1114,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 24): `onSelectionAction`"
+        message="Call requires API level 28 (current min is 26): `onSelectionAction`"
         errorLine1="                        mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText,"
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
         <location
@@ -1345,7 +1125,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 24): `onSelectionStarted`"
+        message="Call requires API level 28 (current min is 26): `onSelectionStarted`"
         errorLine1="                        mSmartSelectionEventProcessor.onSelectionStarted("
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
         <location
@@ -1356,29 +1136,29 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 24): `onSelectionAction`"
+        message="Call requires API level 28 (current min is 26): `onSelectionAction`"
         errorLine1="                mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText,"
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1708"
+            line="1724"
             column="47"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 24): `onSelectionModified`"
+        message="Call requires API level 28 (current min is 26): `onSelectionModified`"
         errorLine1="                mSmartSelectionEventProcessor.onSelectionModified("
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1870"
+            line="1886"
             column="47"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 24): `NotificationTask`"
+        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="class SessionRemovedTask extends NotificationTask {"
         errorLine2="                                 ~~~~~~~~~~~~~~~~">
         <location
@@ -1389,7 +1169,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `NotificationTask`"
+        message="Call requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
         <location
@@ -1400,7 +1180,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `log`"
+        message="Call requires API level 29 (current min is 26): `log`"
         errorLine1="        log(&quot;SessionRemovedTask.removeSession&quot;);"
         errorLine2="        ~~~">
         <location
@@ -1411,7 +1191,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getFrameIdToPlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `getFrameIdToPlatformSessionData`"
         errorLine1="                mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1422,7 +1202,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mPlatformSession`"
+        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
         errorLine1="                mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());"
         errorLine2="                ~~~~~~~~~~~~~~~~">
         <location
@@ -1433,7 +1213,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mSession`"
+        message="Field requires API level 29 (current min is 26): `mSession`"
         errorLine1="                mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());"
         errorLine2="                                                                          ~~~~~~~~">
         <location
@@ -1444,7 +1224,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `destroyContentCaptureSession`"
+        message="Call requires API level 29 (current min is 26): `destroyContentCaptureSession`"
         errorLine1="        PlatformAPIWrapper.getInstance().destroyContentCaptureSession("
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1455,7 +1235,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        PlatformAPIWrapper.getInstance().destroyContentCaptureSession("
         errorLine2="                           ~~~~~~~~~~~">
         <location
@@ -1466,7 +1246,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                removedPlatformSessionData.contentCaptureSession);"
         errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1477,7 +1257,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getRootPlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData();"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1488,7 +1268,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mPlatformSession`"
+        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData();"
         errorLine2="                ~~~~~~~~~~~~~~~~">
         <location
@@ -1499,7 +1279,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mSession`"
+        message="Field requires API level 29 (current min is 26): `mSession`"
         errorLine1="        if (mSession.size() > 2) {"
         errorLine2="            ~~~~~~~~">
         <location
@@ -1510,7 +1290,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getFrameIdToPlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `getFrameIdToPlatformSessionData`"
         errorLine1="                    mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());"
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1521,7 +1301,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mPlatformSession`"
+        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
         errorLine1="                    mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());"
         errorLine2="                    ~~~~~~~~~~~~~~~~">
         <location
@@ -1532,7 +1312,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mSession`"
+        message="Field requires API level 29 (current min is 26): `mSession`"
         errorLine1="                    mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());"
         errorLine2="                                                                           ~~~~~~~~">
         <location
@@ -1543,7 +1323,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewDisappeared("
         errorLine2="                           ~~~~~~~~~~~">
         <location
@@ -1554,7 +1334,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `notifyViewDisappeared`"
+        message="Call requires API level 29 (current min is 26): `notifyViewDisappeared`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewDisappeared("
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1565,7 +1345,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession,"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1576,7 +1356,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `autofillId`"
+        message="Field requires API level 29 (current min is 26): `autofillId`"
         errorLine1="                removedPlatformSessionData.autofillId);"
         errorLine2="                                           ~~~~~~~~~~">
         <location
@@ -1587,7 +1367,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `addDirectAction`"
+        message="Call requires API level 29 (current min is 26): `addDirectAction`"
         errorLine1="        if (isAvailable()) reporter.addDirectAction(mActionId);"
         errorLine2="                                    ~~~~~~~~~~~~~~~">
         <location
@@ -1598,51 +1378,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `setTextClassifier`"
-        errorLine1="        mProvider.setTextClassifier(textClassifier);"
-        errorLine2="                  ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionClient.java"
-            line="128"
-            column="19"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `getTextClassifier`"
-        errorLine1="        return mProvider.getTextClassifier();"
-        errorLine2="                         ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionClient.java"
-            line="133"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `sendSmartSelectionRequest`"
-        errorLine1="        sendSmartSelectionRequest(RequestType.SUGGEST_AND_CLASSIFY, text, start, end);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
-            line="86"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `sendSmartSelectionRequest`"
-        errorLine1="        sendSmartSelectionRequest(RequestType.CLASSIFY, text, start, end);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
-            line="90"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 24): `android.view.SurfaceControl#writeToParcel`"
+        message="Call requires API level 29 (current min is 26): `android.view.SurfaceControl#writeToParcel`"
         errorLine1="            mSurfaceControl.writeToParcel(out, 0);"
         errorLine2="                            ~~~~~~~~~~~~~">
         <location
@@ -1653,18 +1389,18 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 27 (current min is 24): `setNavigationBarScrimFraction`"
+        message="Call requires API level 27 (current min is 26): `setNavigationBarScrimFraction`"
         errorLine1="                        controller.setNavigationBarScrimFraction(scrimFraction);"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="637"
+            line="641"
             column="36"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 27 (current min is 24): `destroy`"
+        message="Call requires API level 27 (current min is 26): `destroy`"
         errorLine1="        if (mNavigationBarColorController != null) mNavigationBarColorController.destroy();"
         errorLine2="                                                                                 ~~~~~~~">
         <location
@@ -1675,7 +1411,7 @@
 
     <issue
         id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 24): `NotificationTask`"
+        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="public class TitleUpdateTask extends NotificationTask {"
         errorLine2="                                     ~~~~~~~~~~~~~~~~">
         <location
@@ -1686,7 +1422,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `NotificationTask`"
+        message="Call requires API level 29 (current min is 26): `NotificationTask`"
         errorLine1="        super(null, platformSession);"
         errorLine2="        ~~~~~">
         <location
@@ -1697,7 +1433,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `log`"
+        message="Call requires API level 29 (current min is 26): `log`"
         errorLine1="        log(&quot;TitleUpdateTask.updateTitle&quot;);"
         errorLine2="        ~~~">
         <location
@@ -1708,7 +1444,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `buildCurrentSession`"
+        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
         errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
         errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1719,7 +1455,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId("
         errorLine2="                                                   ~~~~~~~~~~~">
         <location
@@ -1730,7 +1466,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `newAutofillId`"
+        message="Call requires API level 29 (current min is 26): `newAutofillId`"
         errorLine1="        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId("
         errorLine2="                                                                 ~~~~~~~~~~~~~">
         <location
@@ -1741,7 +1477,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession,"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1752,7 +1488,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getRootPlatformSessionData`"
+        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, mMainFrame.getId());"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1763,7 +1499,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `autofillId`"
+        message="Field requires API level 29 (current min is 26): `autofillId`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, mMainFrame.getId());"
         errorLine2="                                                              ~~~~~~~~~~">
         <location
@@ -1774,7 +1510,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `mPlatformSession`"
+        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
         errorLine1="                mPlatformSession.getRootPlatformSessionData().autofillId, mMainFrame.getId());"
         errorLine2="                ~~~~~~~~~~~~~~~~">
         <location
@@ -1785,7 +1521,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `getInstance`"
+        message="Call requires API level 29 (current min is 26): `getInstance`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewTextChanged("
         errorLine2="                           ~~~~~~~~~~~">
         <location
@@ -1796,7 +1532,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `notifyViewTextChanged`"
+        message="Call requires API level 29 (current min is 26): `notifyViewTextChanged`"
         errorLine1="        PlatformAPIWrapper.getInstance().notifyViewTextChanged("
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1807,7 +1543,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
+        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
         errorLine1="                parentPlatformSessionData.contentCaptureSession, autofillId, mMainFrame.getText());"
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1818,7 +1554,7 @@
 
     <issue
         id="NewApi"
-        message="Extending ZygotePreload requires API level 29 (current min is 24): `ZygotePreload`"
+        message="Extending ZygotePreload requires API level 29 (current min is 26): `ZygotePreload`"
         errorLine1="public class TrichromeZygotePreload extends ZygotePreload {"
         errorLine2="                                            ~~~~~~~~~~~~~">
         <location
@@ -1829,24 +1565,13 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 24): `doPreloadCommon`"
+        message="Call requires API level 29 (current min is 26): `doPreloadCommon`"
         errorLine1="        doPreloadCommon(appInfo);"
         errorLine2="        ~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
             line="24"
             column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `addShortcutWithShortcutManager`"
-        errorLine1="            addShortcutWithShortcutManager(id, title, icon, isIconAdaptive, shortcutIntent);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
-            line="71"
-            column="13"/>
     </issue>
 
     <issue
@@ -1894,7 +1619,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="307"
+            line="318"
             column="53"/>
     </issue>
 
@@ -2257,7 +1982,7 @@
         errorLine2="                                                       ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="413"
+            line="412"
             column="56"/>
     </issue>
 
@@ -2499,7 +2224,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="167"
+            line="168"
             column="13"/>
     </issue>
 
@@ -2774,7 +2499,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="236"
+            line="235"
             column="47"/>
     </issue>
 
@@ -2807,7 +2532,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkRow.java"
-            line="378"
+            line="402"
             column="9"/>
     </issue>
 
@@ -3060,7 +2785,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="570"
+            line="569"
             column="20"/>
     </issue>
 
@@ -3073,105 +2798,6 @@
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
             line="46"
             column="20"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="                android:clickable=&quot;true&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
-            line="52"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="                android:clickable=&quot;true&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
-            line="76"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="                android:clickable=&quot;true&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
-            line="100"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="        android:clickable=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"
-            line="43"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="            android:clickable=&quot;true&quot; >"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/search_activity.xml"
-            line="30"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="    android:clickable=&quot;true&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/toolbar/java/res/layout/start_top_toolbar.xml"
-            line="15"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="        android:clickable=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
-            line="39"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="                android:clickable=&quot;true&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
-            line="101"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="                android:clickable=&quot;true&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
-            line="126"
-            column="17"/>
     </issue>
 
 </issues>
