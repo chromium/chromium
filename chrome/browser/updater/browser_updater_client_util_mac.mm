@@ -276,14 +276,15 @@ void SetupSystemUpdater() {
   }
 
   base::apple::ScopedCFTypeRef<CFErrorRef> error;
-  Boolean result = SMJobBless(kSMDomainSystemLaunchd,
-                              base::SysUTF8ToCFStringRef(kPrivilegedHelperName),
-                              authorization, error.InitializeInto());
+  Boolean result =
+      SMJobBless(kSMDomainSystemLaunchd,
+                 base::SysUTF8ToCFStringRef(kPrivilegedHelperName).get(),
+                 authorization, error.InitializeInto());
   if (!result) {
     base::apple::ScopedCFTypeRef<CFStringRef> desc(
-        CFErrorCopyDescription(error));
+        CFErrorCopyDescription(error.get()));
     VLOG(0) << "Could not bless the privileged helper. Resulting error: "
-            << base::SysCFStringRefToUTF8(desc);
+            << base::SysCFStringRefToUTF8(desc.get());
   }
 
   base::MakeRefCounted<BrowserUpdaterHelperClientMac>()->SetupSystemUpdater(
