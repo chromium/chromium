@@ -38,6 +38,14 @@ const DialogMode = {
 const UserAllowlistCheckScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   enterpriseManaged: boolean,
+ *   familyLinkAllowed: boolean,
+ * }}
+ */
+let UserAllowlistCheckScreenData;
 
 /**
  * @polymer
@@ -84,7 +92,7 @@ class UserAllowlistCheckScreenElement extends
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {!Object=} opt_data Optional additional information.
+   * @param {UserAllowlistCheckScreenData} opt_data Screen initial payload
    */
   onBeforeShow(opt_data) {
     const isManaged = opt_data && opt_data.enterpriseManaged;

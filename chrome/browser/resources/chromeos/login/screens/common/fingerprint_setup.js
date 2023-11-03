@@ -69,6 +69,14 @@ const FingerprintSetupBase = mixinBehaviors(
 FingerprintSetupBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   isChildAccount: boolean,
+ * }}
+ */
+let FingerprintSetupScreenData;
+
+/**
  * @polymer
  */
 class FingerprintSetup extends FingerprintSetupBase {
@@ -166,6 +174,9 @@ class FingerprintSetup extends FingerprintSetupBase {
     return FingerprintUIState.START;
   }
 
+  /**
+   * @param {FingerprintSetupScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     this.isChildAccount_ = data['isChildAccount'];
     this.setAnimationState_(true);

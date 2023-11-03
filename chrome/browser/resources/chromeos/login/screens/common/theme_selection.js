@@ -68,6 +68,15 @@ const UserAction = {
 };
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   selectedTheme: string,
+ *   shouldShowReturn: boolean,
+ * }}
+ */
+let ThemeSelectionScreenData;
+
+/**
  * @polymer
  */
 class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
@@ -129,6 +138,9 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     this.initializeLoginScreen('ThemeSelectionScreen');
   }
 
+  /**
+   * @param {ThemeSelectionScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     if ('selectedTheme' in data) {
       this.selectedTheme = data.selectedTheme;

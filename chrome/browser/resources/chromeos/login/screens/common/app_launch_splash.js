@@ -37,6 +37,24 @@ const AppLaunchSplashBase =
 AppLaunchSplashBase.$;
 
 /**
+ * @typedef {{
+ *   name: string,
+ *   iconURL: string,
+ *   url: string,
+ * }}
+ */
+let AppData;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   shortcutEnabled: boolean,
+ *   appInfo: AppData,
+ * }}
+ */
+let AppLaunchSplashScreenData;
+
+/**
  * @polymer
  */
 class AppLaunchSplash extends AppLaunchSplashBase {
@@ -97,7 +115,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {string} data Screen init payload.
+   * @param {AppLaunchSplashScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
     this.$.configNetwork.hidden = true;
@@ -128,8 +146,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
 
   /**
    * Updates the app name and icon.
-   * @param {Object} app Details of app being launched.
-   * @suppress {missingProperties}
+   * @param {AppData} app Details of app being launched.
    */
   updateApp(app) {
     this.appName = app.name;

@@ -37,6 +37,17 @@ const DeviceDisabledElementBase = mixinBehaviors(
  */
 DeviceDisabledElementBase.$;
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   serial: string,
+ *   domain: string,
+ *   message: string,
+ *   isDisabledAdDevice: boolean,
+ * }}
+ */
+let DeviceDisabledScreenData;
+
 /** @polymer */
 class DeviceDisabled extends DeviceDisabledElementBase {
   static get is() {
@@ -116,7 +127,7 @@ class DeviceDisabled extends DeviceDisabledElementBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data Screen init payload.
+   * @param {DeviceDisabledScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
     if ('serial' in data) {

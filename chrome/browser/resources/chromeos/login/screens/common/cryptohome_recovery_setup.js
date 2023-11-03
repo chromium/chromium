@@ -72,9 +72,6 @@ class CryptohomeRecoverySetup extends CryptohomeRecoverySetupBase {
     this.initializeLoginScreen('CryptohomeRecoverySetupScreen');
   }
 
-  // Invoked just before being shown. Contains all the data for the screen.
-  onBeforeShow(data) {}
-
   reset() {
     this.setUIStep(CryptohomeRecoverySetupUIState.LOADING);
   }

@@ -107,7 +107,7 @@ class PasswordSelection extends PasswordSelectionBase {
   }
 
   // Invoked just before being shown. Contains all the data for the screen.
-  onBeforeShow(data) {
+  onBeforeShow() {
     this.selectedPasswordType = PasswordType.LOCAL_PASSWORD;
   }
 

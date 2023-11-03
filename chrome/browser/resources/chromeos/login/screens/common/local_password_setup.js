@@ -54,6 +54,14 @@ const LocalPasswordSetupBase = mixinBehaviors(
     PolymerElement);
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   showBackButton: boolean,
+ * }}
+ */
+let LocalPasswordSetupScreenData;
+
+/**
  * @polymer
  */
 class LocalPasswordSetup extends LocalPasswordSetupBase {
@@ -105,6 +113,7 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
+   * @param {LocalPasswordSetupScreenData} data Screen initial payload
    */
   onBeforeShow(data) {
     this.reset_();
