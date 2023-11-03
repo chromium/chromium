@@ -66,6 +66,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3397,6 +3398,13 @@ class ManagedGuestSessionAppMetricsTest : public AppPlatformMetricsServiceTest {
         {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   }
 
+  void SimulateMgsShutdown() {
+    ukm::UkmRecorder::Get()->NotifyStartShutdown();
+    // User preferences are deleted on sign out in MGS.
+    GetPrefService()->ClearPref(kAppUsageTime);
+    ResetAppPlatformMetricsService();
+  }
+
  private:
   chromeos::FakeManagedGuestSession managed_guest_session_;
 };
@@ -3417,23 +3425,38 @@ TEST_P(ManagedGuestSessionAppMetricsTest, ReportsUsageTimeUkmAfter2Hours) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_P(ManagedGuestSessionAppMetricsTest, UsageTimeUkmNotReportedAfterReboot) {
+TEST_P(ManagedGuestSessionAppMetricsTest, UsageTimeUkmReportedOnShutdown) {
   std::unique_ptr<Browser> browser = CreateBrowserWindow();
   ModifyInstance(app_constants::kChromeAppId,
                  browser->window()->GetNativeWindow(), kActiveInstanceState);
 
   task_environment_.FastForwardBy(base::Minutes(5));
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kInactiveInstanceState);
   VerifyNoAppUsageTimeUkm();
 
-  // User prefs are deleted for MGS, so AppKM will not be reported after
-  // reboot.
-  GetPrefService()->ClearPref(kAppUsageTime);
-  ResetAppPlatformMetricsService();
+  SimulateMgsShutdown();
 
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(5),
+                        AppTypeName::kChromeBrowser);
+}
+
+TEST_P(ManagedGuestSessionAppMetricsTest, UsageTimeUkmReportedInShortSessions) {
+  std::unique_ptr<Browser> browser = CreateBrowserWindow();
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+
+  // "Usage metrics are updated every 5 minutes or during shutdown. Sleep only 3
+  // minutes and simulate on shutdown update."
+  task_environment_.FastForwardBy(base::Minutes(3));
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kInactiveInstanceState);
   VerifyNoAppUsageTimeUkm();
 
-  task_environment_.FastForwardBy(base::Minutes(5));
-  VerifyNoAppUsageTimeUkm();
+  SimulateMgsShutdown();
+
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(3),
+                        AppTypeName::kChromeBrowser);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

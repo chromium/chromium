@@ -186,6 +186,11 @@ class MockDemographicMetricsProvider
                void(Report* report));
 };
 
+class MockUkmRecorderObserver : public UkmRecorder::Observer {
+ public:
+  MOCK_METHOD0(OnStartingShutdown, void());
+};
+
 // A simple Provider that emits a 'TestProviderEvent' on session close (i.e. a
 // Report being emitted).
 class UkmTestMetricsProvider : public metrics::TestMetricsProvider {
@@ -1293,8 +1298,9 @@ TEST_F(UkmServiceTest, SupportedSchemes) {
     auto source_id = GetAllowlistedSourceId(id_counter++);
     recorder.UpdateSourceURL(source_id, GURL(test.url));
     TestEvent1(source_id).Record(&service);
-    if (test.expected_kept)
+    if (test.expected_kept) {
       ++expected_kept_count;
+    }
   }
 
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
@@ -1349,8 +1355,9 @@ TEST_F(UkmServiceTest, SupportedSchemesNoExtensions) {
     auto source_id = GetAllowlistedSourceId(id_counter++);
     recorder.UpdateSourceURL(source_id, GURL(test.url));
     TestEvent1(source_id).Record(&service);
-    if (test.expected_kept)
+    if (test.expected_kept) {
       ++expected_kept_count;
+    }
   }
 
   service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
@@ -1627,8 +1634,9 @@ TEST_F(UkmServiceTest, FilterRejectsEvent) {
     bool FilterEntry(
         mojom::UkmEntry* entry,
         base::flat_set<uint64_t>* filtered_metric_hashes) override {
-      if (entry->event_hash == kTestEvent1EntryNameHash)
+      if (entry->event_hash == kTestEvent1EntryNameHash) {
         return true;
+      }
 
       filtered_metric_hashes->replace(base::test::ToVector(
           entry->metrics, &decltype(entry->metrics)::value_type::first));
@@ -1932,6 +1940,16 @@ TEST_F(UkmServiceTest, PurgeLogsOnClonedInstallDetected) {
   EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(UkmServiceTest, NotifyObserverOnShutdown) {
+  MockUkmRecorderObserver observer;
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  ukm::UkmRecorder::Get()->AddObserver(&observer);
+  EXPECT_CALL(observer, OnStartingShutdown()).Times(1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
@@ -2019,10 +2037,11 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(UkmConsentType::APPS, UkmConsentType::MSBB),
     [](const testing::TestParamInfo<
         UkmServiceTestWithIndependentAppKM::ParamType>& info) {
-      if (info.param == UkmConsentType::APPS)
+      if (info.param == UkmConsentType::APPS) {
         return "TestApps";
-      else
+      } else {
         return "TestMSBB";
+      }
     });
 
 namespace {
@@ -2113,10 +2132,11 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(true, false),
     [](const testing::TestParamInfo<
         UkmServiceTestWithIndependentAppKMFullConsent::ParamType>& info) {
-      if (info.param)
+      if (info.param) {
         return "TestAllConsent";
-      else
+      } else {
         return "TestNoConsent";
+      }
     });
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

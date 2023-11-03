@@ -116,4 +116,18 @@ ukm::SourceId UkmRecorder::GetSourceIdFromScopeImpl(const GURL& scope_url,
   return source_id;
 }
 
+void UkmRecorder::NotifyStartShutdown() {
+  for (auto& observer : observers_) {
+    observer.OnStartingShutdown();
+  }
+}
+
+void UkmRecorder::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void UkmRecorder::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 }  // namespace ukm

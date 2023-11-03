@@ -86,6 +86,7 @@
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_test_utils.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
@@ -103,6 +104,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
+#include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -113,7 +115,9 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -129,6 +133,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/ukm/ukm_test_helper.h"
+#include "components/unified_consent/unified_consent_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -151,6 +157,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/metrics_proto/ukm/entry.pb.h"
+#include "third_party/metrics_proto/ukm/report.pb.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -387,6 +395,20 @@ DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
 bool IsFullManagementDisclosureNeeded(AccountId account) {
   auto* broker = GetDeviceLocalAccountPolicyBroker(account);
   return ash::login::IsFullManagementDisclosureNeeded(broker);
+}
+
+ukm::UkmService* GetUkmService() {
+  return g_browser_process->GetMetricsServicesManager()->GetUkmService();
+}
+
+void EnableUrlKeyedAnonymizedDataCollection(Profile* profile) {
+  unified_consent::UnifiedConsentService* consent_service =
+      UnifiedConsentServiceFactory::GetForProfile(profile);
+  if (consent_service) {
+    consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
+        true);
+  }
 }
 
 }  // namespace
@@ -2827,6 +2849,54 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, WebAppsInPublicSession) {
   Profile* profile = GetProfileForTest();
   ASSERT_TRUE(profile);
   EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile));
+}
+
+// TODO(b/307518336): move UKM tests to
+// chrome/browser/metrics/ukm_browsertest.cc.
+class DeviceLocalAccountUkmTest : public DeviceLocalAccountTest {
+ public:
+  void SetChromeMetricsEnabled(bool value) {
+    chrome_metrics_enabled_ = value;
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &chrome_metrics_enabled_);
+  }
+
+ private:
+  bool chrome_metrics_enabled_;
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, PRE_ReportUkmOnShutdown) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  SetChromeMetricsEnabled(true);
+
+  // Setup managed guest session.
+  AddPublicSessionToDevicePolicy(kAccountId1);
+  UploadAndInstallDeviceLocalAccountPolicy();
+  WaitForPolicy();
+  ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
+  WaitForSessionStart();
+  ASSERT_TRUE(chromeos::IsManagedGuestSession());
+
+  EnableUrlKeyedAnonymizedDataCollection(GetProfileForTest());
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // A browser is opened by default in MGS.
+  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+
+  // Delete all UKM to check metrics reported during the shutdown.
+  ukm_test_helper.PurgeData();
+  EXPECT_FALSE(ukm_test_helper.HasUnsentLogs());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, ReportUkmOnShutdown) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  SetChromeMetricsEnabled(true);
+
+  // Check metrics from the previous managed guest session.
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+  std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
+  ASSERT_EQ(1, report->sources_size());
+  EXPECT_EQ(ukm::SourceType::APP_ID, report->sources().Get(0).type());
 }
 
 class AmbientAuthenticationManagedGuestSessionTest

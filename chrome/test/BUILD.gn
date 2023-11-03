@@ -4991,6 +4991,7 @@ if (!is_android) {
         "//chromeos/ash/services/network_config:in_process_instance",
         "//chromeos/components/editor_menu/public/cpp",
         "//chromeos/components/kcer:key_permissions_proto",
+        "//chromeos/components/mgs",
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers:quick_answers",
         "//chromeos/components/quick_answers/public/cpp:cpp",
