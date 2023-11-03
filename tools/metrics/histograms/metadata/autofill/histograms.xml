@@ -2042,6 +2042,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FillingMethodUsed" enum="AutofillFillingMethodMetric"
+    expires_after="2024-11-03">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded when the an address suggestion is accepted by the user. The filling
+    method defines whether the user chose to fill the whole form, a specific
+    field or a group of fields (address fields, phone fields, name fields or
+    email fields).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FindFormControlElementByUniqueRendererIdDuration"
     units="microseconds" expires_after="2022-10-30">
   <obsolete>

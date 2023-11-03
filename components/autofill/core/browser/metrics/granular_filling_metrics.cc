@@ -18,4 +18,10 @@ void LogDeleteAddressProfileDialogClosed(bool user_accepted_delete) {
                             user_accepted_delete);
 }
 
+void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method) {
+  CHECK_LE(filling_method, AutofillFillingMethodMetric::kMaxValue);
+  base::UmaHistogramEnumeration("Autofill.FillingMethodUsed.", filling_method,
+                                AutofillFillingMethodMetric::kMaxValue);
+}
+
 }  // namespace autofill::autofill_metrics
