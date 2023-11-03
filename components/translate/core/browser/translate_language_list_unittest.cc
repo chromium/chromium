@@ -103,6 +103,17 @@ TEST_F(TranslateLanguageListTest, IsSupportedLanguage) {
   EXPECT_FALSE(language_list.IsSupportedLanguage("xx"));
 }
 
+// Test that IsSupportedPartialTranslateLanguage() is true for languages that
+// should be supported, and false for invalid languages.
+TEST_F(TranslateLanguageListTest, IsSupportedPartialTranslateLanguage) {
+  TranslateLanguageList language_list;
+  EXPECT_TRUE(language_list.IsSupportedPartialTranslateLanguage("en"));
+  EXPECT_TRUE(language_list.IsSupportedPartialTranslateLanguage("zh-CN"));
+  EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("xx"));
+  EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("ilo"));
+  EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("mni-Mtei"));
+}
+
 // Sanity test for the default set of supported languages. The default set of
 // languages should be large (> 100) and must contain very common languages.
 // If either of these tests are not true, the default language configuration is

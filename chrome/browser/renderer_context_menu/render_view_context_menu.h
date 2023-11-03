@@ -291,6 +291,7 @@ class RenderViewContextMenu
   void AppendLinkToTextItems();
   void AppendPrintItem();
   void AppendPartialTranslateItem();
+  void AppendTranslateItem();
   void AppendMediaRouterItem();
   void AppendReadingModeItem();
   void AppendRotationItems();
@@ -410,6 +411,10 @@ class RenderViewContextMenu
   // checks multiple criteria, e.g. whether translation is disabled by a policy
   // or whether the current page can be translated.
   bool CanTranslate(bool menu_logging);
+
+  // Whether or not partial translation is supported for the current target
+  // language.
+  bool CanPartiallyTranslateTargetLanguage();
 
   // Under the correct conditions, issues a preconnection to the Lens URL and
   // warms up a renderer process.

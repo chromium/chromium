@@ -374,8 +374,14 @@ std::string TranslateLanguageList::GetLanguageCode(base::StringPiece language) {
 }
 
 bool TranslateLanguageList::IsSupportedLanguage(base::StringPiece language) {
-  return std::binary_search(supported_languages_.begin(),
-                            supported_languages_.end(), language);
+  return base::ranges::binary_search(supported_languages_, language);
+}
+
+// static
+bool TranslateLanguageList::IsSupportedPartialTranslateLanguage(
+    base::StringPiece language) {
+  return base::ranges::binary_search(kDefaultSupportedPartialTranslateLanguages,
+                                     language);
 }
 
 // static

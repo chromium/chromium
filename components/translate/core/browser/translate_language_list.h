@@ -56,6 +56,9 @@ class TranslateLanguageList {
   // Returns true if |language| is supported by the translation server.
   bool IsSupportedLanguage(base::StringPiece language);
 
+  // Returns true if |language| is supported by the partial translation server.
+  static bool IsSupportedPartialTranslateLanguage(base::StringPiece language);
+
   // Fetches the language list from the translate server if resource requests
   // are allowed, and otherwise keeps the request as pending until allowed.
   void RequestLanguageList();

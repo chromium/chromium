@@ -957,6 +957,25 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
 }
 
+TEST_F(TranslateManagerTest, CanPartiallyTranslateTargetLanguage) {
+  translate_manager_ = std::make_unique<TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+  translate_prefs_.SetRecentTargetLanguage("en");
+  EXPECT_TRUE(translate_manager_->CanPartiallyTranslateTargetLanguage());
+
+  translate_prefs_.SetRecentTargetLanguage("es");
+  EXPECT_TRUE(translate_manager_->CanPartiallyTranslateTargetLanguage());
+
+  translate_prefs_.SetRecentTargetLanguage("zh-CN");
+  EXPECT_TRUE(translate_manager_->CanPartiallyTranslateTargetLanguage());
+
+  translate_prefs_.SetRecentTargetLanguage("ilo");
+  EXPECT_FALSE(translate_manager_->CanPartiallyTranslateTargetLanguage());
+
+  translate_prefs_.SetRecentTargetLanguage("mni-Mtei");
+  EXPECT_FALSE(translate_manager_->CanPartiallyTranslateTargetLanguage());
+}
+
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");
