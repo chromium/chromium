@@ -57,10 +57,10 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   auto convert_execution_world = [](api::user_scripts::ExecutionWorld world) {
     switch (world) {
       // Execution world defaults to `kUserScript` when it's not provided.
-      case api::user_scripts::EXECUTION_WORLD_NONE:
-      case api::user_scripts::EXECUTION_WORLD_USER_SCRIPT:
+      case api::user_scripts::ExecutionWorld::kNone:
+      case api::user_scripts::ExecutionWorld::kUserScript:
         return api::extension_types::ExecutionWorld::kUserScript;
-      case api::user_scripts::EXECUTION_WORLD_MAIN:
+      case api::user_scripts::ExecutionWorld::kMain:
         return api::extension_types::ExecutionWorld::kMain;
     }
   };
@@ -158,9 +158,9 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
             NOTREACHED_NORETURN()
                 << "ISOLATED worlds are not supported in this API.";
           case api::extension_types::ExecutionWorld::kUserScript:
-            return api::user_scripts::EXECUTION_WORLD_USER_SCRIPT;
+            return api::user_scripts::ExecutionWorld::kUserScript;
           case api::extension_types::ExecutionWorld::kMain:
-            return api::user_scripts::EXECUTION_WORLD_MAIN;
+            return api::user_scripts::ExecutionWorld::kMain;
         }
       };
 
@@ -446,8 +446,8 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.js = std::move(new_script.js);
   }
 
-  if (new_script.world) {
-    original_script.world = std::move(new_script.world);
+  if (new_script.world != api::user_scripts::ExecutionWorld::kNone) {
+    original_script.world = new_script.world;
   }
 
   // Note: for the update application, we disregard allowed_in_incognito.

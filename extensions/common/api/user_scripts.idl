@@ -4,6 +4,7 @@
 
 // Use the <code>userScripts</code> API to execute user scripts in the User
 // Scripts context.
+[modernised_enums]
 namespace userScripts {
   // The JavaScript world for a user script to execute within.
   enum ExecutionWorld {
