@@ -196,8 +196,8 @@
   },
   {
     "name": "android-improved-bookmarks",
-    "owners": ["wylieb@chromium.org", "skym@chromium.org", "bttk@chromium.org"],
-    "expiry_milestone": 120
+    "owners": ["wylieb@chromium.org", "skym@chromium.org"],
+    "expiry_milestone": 125
   },
   {
     "name": "animated-image-drag-shadow",
