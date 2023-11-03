@@ -136,10 +136,7 @@ LocalBookmarkModelMerger::FindGuidMatches(
     CHECK(local_node->uuid().is_valid());
 
     // Exclude non-syncable nodes (e.g. managed nodes).
-    // TODO(crbug.com/1494120): Revisit if permanent nodes need to be
-    // special-cased.
-    if (!local_node->is_permanent_node() &&
-        !local_model->IsNodeSyncable(local_node)) {
+    if (!local_model->IsNodeSyncable(local_node)) {
       continue;
     }
 
