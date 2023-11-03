@@ -234,7 +234,7 @@ class CertGenerator {
   inline std::vector<uint8_t> GetBytes();
   inline GURL GetGurl();
   inline net::IPAddress GetIpAddress();
-  std::vector<net::KeyUsageBit> GetKeyUsages();
+  std::vector<bssl::KeyUsageBit> GetKeyUsages();
 
   void GenerateCert();
 
@@ -314,35 +314,35 @@ inline net::IPAddress CertGenerator::GetIpAddress() {
   }
 }
 
-std::vector<net::KeyUsageBit> CertGenerator::GetKeyUsages() {
-  std::vector<net::KeyUsageBit> result;
+std::vector<bssl::KeyUsageBit> CertGenerator::GetKeyUsages() {
+  std::vector<bssl::KeyUsageBit> result;
   uint16_t key_usages = data_provider_.ConsumeIntegral<uint16_t>();
-  if (key_usages & net::KEY_USAGE_BIT_DIGITAL_SIGNATURE) {
-    result.push_back(net::KEY_USAGE_BIT_DIGITAL_SIGNATURE);
+  if (key_usages & bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE) {
+    result.push_back(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE);
   }
-  if (key_usages & net::KEY_USAGE_BIT_NON_REPUDIATION) {
-    result.push_back(net::KEY_USAGE_BIT_NON_REPUDIATION);
+  if (key_usages & bssl::KEY_USAGE_BIT_NON_REPUDIATION) {
+    result.push_back(bssl::KEY_USAGE_BIT_NON_REPUDIATION);
   }
-  if (key_usages & net::KEY_USAGE_BIT_KEY_ENCIPHERMENT) {
-    result.push_back(net::KEY_USAGE_BIT_KEY_ENCIPHERMENT);
+  if (key_usages & bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT) {
+    result.push_back(bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT);
   }
-  if (key_usages & net::KEY_USAGE_BIT_DATA_ENCIPHERMENT) {
-    result.push_back(net::KEY_USAGE_BIT_DATA_ENCIPHERMENT);
+  if (key_usages & bssl::KEY_USAGE_BIT_DATA_ENCIPHERMENT) {
+    result.push_back(bssl::KEY_USAGE_BIT_DATA_ENCIPHERMENT);
   }
-  if (key_usages & net::KEY_USAGE_BIT_KEY_AGREEMENT) {
-    result.push_back(net::KEY_USAGE_BIT_KEY_AGREEMENT);
+  if (key_usages & bssl::KEY_USAGE_BIT_KEY_AGREEMENT) {
+    result.push_back(bssl::KEY_USAGE_BIT_KEY_AGREEMENT);
   }
-  if (key_usages & net::KEY_USAGE_BIT_KEY_CERT_SIGN) {
-    result.push_back(net::KEY_USAGE_BIT_KEY_CERT_SIGN);
+  if (key_usages & bssl::KEY_USAGE_BIT_KEY_CERT_SIGN) {
+    result.push_back(bssl::KEY_USAGE_BIT_KEY_CERT_SIGN);
   }
-  if (key_usages & net::KEY_USAGE_BIT_CRL_SIGN) {
-    result.push_back(net::KEY_USAGE_BIT_CRL_SIGN);
+  if (key_usages & bssl::KEY_USAGE_BIT_CRL_SIGN) {
+    result.push_back(bssl::KEY_USAGE_BIT_CRL_SIGN);
   }
-  if (key_usages & net::KEY_USAGE_BIT_ENCIPHER_ONLY) {
-    result.push_back(net::KEY_USAGE_BIT_ENCIPHER_ONLY);
+  if (key_usages & bssl::KEY_USAGE_BIT_ENCIPHER_ONLY) {
+    result.push_back(bssl::KEY_USAGE_BIT_ENCIPHER_ONLY);
   }
-  if (key_usages & net::KEY_USAGE_BIT_DECIPHER_ONLY) {
-    result.push_back(net::KEY_USAGE_BIT_DECIPHER_ONLY);
+  if (key_usages & bssl::KEY_USAGE_BIT_DECIPHER_ONLY) {
+    result.push_back(bssl::KEY_USAGE_BIT_DECIPHER_ONLY);
   }
   return result;
 }
@@ -447,7 +447,7 @@ void CertGenerator::GenerateCert() {
     cert_builder_->SetSubjectAltNames(dns_names, ip_addresses);
   }
   if (GetBool()) {
-    std::vector<net::KeyUsageBit> key_usages = GetKeyUsages();
+    std::vector<bssl::KeyUsageBit> key_usages = GetKeyUsages();
     if (!key_usages.empty()) {  // Empty not allowed.
       cert_builder_->SetKeyUsages(key_usages);
     }
