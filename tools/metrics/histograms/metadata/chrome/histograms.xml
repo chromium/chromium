@@ -114,14 +114,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.TrustTokenGetter.Action"
-    enum="KAnonymityTrustTokenGetterAction" expires_after="M117">
+    enum="KAnonymityTrustTokenGetterAction" expires_after="M124">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
     Track execution of KAnonymityTrustTokenGetter requests for both normal
     operation and errors. The kTryGetTrustTokenAndKey enumeration is emitted
     when the service is called and either kGetTrustTokenSuccess or one of the
-    error enumerations is emitted at the end of the request.
+    error enumerations is emitted at the end of the request. Note: This metric
+    expired after M117 and before M121.
   </summary>
 </histogram>
 
