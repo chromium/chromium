@@ -124,7 +124,7 @@ void NetworkScreen::ShowImpl() {
       NetworkHandler::Get()->technology_state_controller();
   controller->SetTechnologiesEnabled(NetworkTypePattern::Physical(), true,
                                      network_handler::ErrorCallback());
-  Refresh();
+
   // QuickStart should not be enabled for Demo mode or OS Install flows
   if (features::IsOobeQuickStartEnabled() &&
       !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
@@ -143,6 +143,10 @@ void NetworkScreen::ShowImpl() {
     // Shows the typical network list.
     view_->ShowScreenWithData({});
   }
+
+  // Call Refresh() last. This could cause the NetworkScreen to exit, in which
+  // case we don't want to access member variables after this point.
+  Refresh();
 }
 
 void NetworkScreen::HideImpl() {
@@ -439,11 +443,13 @@ bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
     return false;
   }
 
-  if (!first_ethernet_connection_)
+  if (!first_ethernet_connection_) {
     return false;
+  }
 
-  if (!network_state_helper_->IsConnectedToEthernet())
+  if (!network_state_helper_->IsConnectedToEthernet()) {
     return false;
+  }
 
   first_ethernet_connection_ = false;
 

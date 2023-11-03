@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
@@ -47,6 +49,11 @@ QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
     return QuickStartMetrics::ScreenName::kChooseChromebookSetup;
   }
   return QuickStartMetrics::ScreenName::kOther;
+}
+
+bool IsConnectedToWiFi() {
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectedNetworkByType(NetworkTypePattern::WiFi()) != nullptr;
 }
 
 }  // namespace
@@ -154,7 +161,7 @@ void QuickStartController::OnStatusChanged(
   // TODO(b/298042953): Emit ScreenOpened metrics when automatically resuming
   // after an update.
   switch (status.step) {
-    case Step::ADVERTISING_WITH_QR_CODE: {
+    case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
       CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload));
       qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
@@ -162,22 +169,25 @@ void QuickStartController::OnStatusChanged(
       QuickStartMetrics::RecordScreenOpened(
           QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
-    }
-    case Step::PIN_VERIFICATION: {
+    case Step::ADVERTISING_WITHOUT_QR_CODE:
+      // TODO(b/282934168): Implement these screens fully
+      QS_LOG(INFO) << "Hit screen which is not implemented. Continuing";
+      return;
+    case Step::PIN_VERIFICATION:
       CHECK(status.pin.length() == 4);
       pin_ = status.pin;
       UpdateUiState(UiState::SHOWING_PIN);
       QuickStartMetrics::RecordScreenOpened(
           QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
-    }
-    case Step::ERROR:
-      AbortFlow();
-      // Triggers a screen exit if there is a UiDelegate driving the UI.
-      if (!ui_delegates_.empty()) {
-        CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
-              current_screen_ == NetworkScreenHandler::kScreenId);
-        ui_delegates_.begin()->OnUiUpdateRequested(UiState::EXIT_SCREEN);
+    case Step::CONNECTED:
+      controller_state_ = ControllerState::CONNECTED;
+      if (IsConnectedToWiFi()) {
+        // This will cause the QuickStartScreen to exit and the NetworkScreen
+        // will be shown next.
+        UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
+      } else {
+        bootstrap_controller_->AttemptWifiCredentialTransfer();
       }
       return;
     case Step::REQUESTING_WIFI_CREDENTIALS:
@@ -225,12 +235,14 @@ void QuickStartController::OnStatusChanged(
     case Step::NONE:
       // Indicates we've stopped advertising. No action required.
       return;
-    case Step::CONNECTED:
-      controller_state_ = ControllerState::CONNECTED;
-      return;
-    case Step::ADVERTISING_WITHOUT_QR_CODE:
-      // TODO(b/282934168): Implement these screens fully
-      QS_LOG(INFO) << "Hit screen which is not implemented. Continuing";
+    case Step::ERROR:
+      AbortFlow();
+      // Triggers a screen exit if there is a UiDelegate driving the UI.
+      if (!ui_delegates_.empty()) {
+        CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
+              current_screen_ == NetworkScreenHandler::kScreenId);
+        ui_delegates_.begin()->OnUiUpdateRequested(UiState::EXIT_SCREEN);
+      }
       return;
   }
 }

@@ -424,11 +424,11 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
           mojom::UserVerificationResult::kUserVerified,
           /*is_first_user_verification=*/true));
 
-  EXPECT_EQ(fake_observer_->last_status.step,
-            Step::REQUESTING_WIFI_CREDENTIALS);
+  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
 
+  bootstrap_controller_->AttemptWifiCredentialTransfer();
   fake_target_device_connection_broker_->GetFakeConnection()
       ->SendWifiCredentials(
           mojom::WifiCredentials("ssid", mojom::WifiSecurityType::kWEP,
@@ -455,6 +455,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
           mojom::UserVerificationResult::kUserVerified,
           /*is_first_user_verification=*/true));
 
+  bootstrap_controller_->AttemptWifiCredentialTransfer();
   fake_target_device_connection_broker_->GetFakeConnection()
       ->SendWifiCredentials(absl::nullopt);
 

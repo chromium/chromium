@@ -273,8 +273,6 @@ void TargetDeviceBootstrapController::OnUserVerificationResult(
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
-
-  AttemptWifiCredentialTransfer();
 }
 
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
