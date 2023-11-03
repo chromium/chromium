@@ -113,22 +113,22 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   std::vector<DesktopMediaList::Type> media_types;
   for (auto source_type : sources) {
     switch (source_type) {
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_NONE: {
+      case api::desktop_capture::DesktopCaptureSourceType::kNone: {
         return RespondNow(Error(kInvalidSourceNameError));
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_SCREEN: {
+      case api::desktop_capture::DesktopCaptureSourceType::kScreen: {
         media_types.push_back(DesktopMediaList::Type::kScreen);
         break;
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_WINDOW: {
+      case api::desktop_capture::DesktopCaptureSourceType::kWindow: {
         media_types.push_back(DesktopMediaList::Type::kWindow);
         break;
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_TAB: {
+      case api::desktop_capture::DesktopCaptureSourceType::kTab: {
         media_types.push_back(DesktopMediaList::Type::kWebContents);
         break;
       }
-      case api::desktop_capture::DESKTOP_CAPTURE_SOURCE_TYPE_AUDIO: {
+      case api::desktop_capture::DesktopCaptureSourceType::kAudio: {
         request_audio = true;
         break;
       }
