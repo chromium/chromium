@@ -228,12 +228,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.lastUserAction_ = Action.GOT_IT;
     this.lastUnusedSitePermissionsListAcknowledged_ = this.sites_;
 
-    // Pre-emptively set the header to the completion state, as that is the
-    // state we expect at the end of the animation. In the corner case that
-    // another site was added to the list at exactly the same time as the
-    // animation runs, the callback will still re-render the header correctly.
-    this.setHeaderToCompletionState_();
-
     this.$.module.animateHide(
         /* all origins */ null,
         this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList.bind(
