@@ -107,11 +107,6 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
     return;
   }
 
-  if (disposition != WindowOpenDisposition::NEW_POPUP) {
-    // Ignore if not a popup.
-    return;
-  }
-
   if (!new_contents->HasOpener()) {
     // Ignore if popup doesn't have opener access.
     return;
