@@ -41,6 +41,8 @@ if (enable_vulkan) {
 
     public_configs = [ ":vulkan_config" ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     defines = [ "IS_VULKAN_IMPL" ]
 
     deps = [
@@ -65,6 +67,8 @@ if (enable_vulkan) {
     ]
 
     defines = [ "IS_VULKAN_IMPL" ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":vulkan_function_pointers",
@@ -112,6 +116,8 @@ if (enable_vulkan) {
     if (ozone_platform == "x11") {
       defines += [ "OZONE_PLATFORM_IS_X11" ]
     }
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":buildflags",
