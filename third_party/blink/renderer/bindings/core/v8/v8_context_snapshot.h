@@ -34,7 +34,7 @@ class CORE_EXPORT V8ContextSnapshot {
 
   static void EnsureInterfaceTemplates(v8::Isolate* isolate);
 
-  static v8::StartupData TakeSnapshot();
+  static v8::StartupData TakeSnapshot(v8::Isolate* isolate);
 
   static const intptr_t* GetReferenceTable();
 
@@ -52,7 +52,7 @@ class CORE_EXPORT V8ContextSnapshot {
   using EnsureInterfaceTemplatesFuncType = void (*)(v8::Isolate*);
   static void SetEnsureInterfaceTemplatesFunc(
       EnsureInterfaceTemplatesFuncType func);
-  using TakeSnapshotFuncType = v8::StartupData (*)();
+  using TakeSnapshotFuncType = v8::StartupData (*)(v8::Isolate*);
   static void SetTakeSnapshotFunc(TakeSnapshotFuncType func);
   using GetReferenceTableFuncType = const intptr_t* (*)();
   static void SetGetReferenceTableFunc(GetReferenceTableFuncType func);
