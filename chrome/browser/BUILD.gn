@@ -2978,8 +2978,6 @@ static_library("browser") {
       "android/profile_key_util.h",
       "android/quick_delete/quick_delete_bridge.cc",
       "android/quick_delete/quick_delete_bridge.h",
-      "android/reading_list/reading_list_manager_factory.cc",
-      "android/reading_list/reading_list_manager_factory.h",
       "android/recently_closed_tabs_bridge.cc",
       "android/recently_closed_tabs_bridge.h",
       "android/renderer_host/chrome_navigation_ui_data_android.cc",
