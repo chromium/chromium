@@ -130,6 +130,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         value: () =>
             loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount'),
       },
+
+      tabOrganizationEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('tabOrganizationEnabled'),
+      },
     };
   }
 

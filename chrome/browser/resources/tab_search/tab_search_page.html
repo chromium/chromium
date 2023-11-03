@@ -3,12 +3,12 @@
     --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
   }
 
-  :host(.iron-selected) #tabSearchPage {
+  :host([tab-organization-enabled]:is(.iron-selected)) #tabSearchPage {
     animation: fadeIn 200ms linear, paddingIn 250ms var(--standard-curve);
     opacity: 1;
   }
 
-  :host(:not(.iron-selected)) #tabSearchPage {
+  :host([tab-organization-enabled]:not(.iron-selected)) #tabSearchPage {
     animation: fadeOut 200ms linear, marginOut 250ms var(--standard-curve);
     opacity: 0;
   }
