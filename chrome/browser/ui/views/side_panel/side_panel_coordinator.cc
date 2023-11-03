@@ -58,6 +58,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -81,10 +82,19 @@ void ConfigureControlButton(views::ImageButton* button) {
   button->SetMinimumImageSize(
       gfx::Size(minimum_button_size, minimum_button_size));
 
-  button->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            ChromeDistanceMetric::
+                DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL)));
+
+  } else {
+    button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+  }
   button->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
@@ -142,11 +152,18 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
 
 std::unique_ptr<views::ImageView> CreateIcon() {
   std::unique_ptr<views::ImageView> icon = std::make_unique<views::ImageView>();
+  int horizontal_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    horizontal_margin =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            ChromeDistanceMetric::
+                DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL) *
+        2;
+  }
   icon->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+      gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));
   return icon;
 }
 
