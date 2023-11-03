@@ -94,7 +94,11 @@ public final class DeveloperUiService extends Service {
                         if (sOverriddenFlags.isEmpty()) {
                             disableDeveloperMode();
                         } else {
-                            enableDeveloperMode();
+                            try {
+                                enableDeveloperMode();
+                            } catch (IllegalStateException e) {
+                                logSuspectedForegroundServiceStartNotAllowedException();
+                            }
                         }
                     }
                 }
@@ -289,13 +293,7 @@ public final class DeveloperUiService extends Service {
         try {
             startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
         } catch (IllegalStateException e) {
-            // Expecting a ForegroundServiceStartNotAllowedException, but that's an S API.
-            assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                    : "Unable enable developer mode, this is only expected on Android S";
-            String msg =
-                    "Unable to create foreground service (client is likely in "
-                            + "background). Continuing as a background service.";
-            Log.w(TAG, msg);
+            logSuspectedForegroundServiceStartNotAllowedException();
 
             // Mark that we failed to start developer mode fully.
             // Mark as not enabled to let enableDeveloperMode run again, which will call
@@ -305,6 +303,16 @@ public final class DeveloperUiService extends Service {
                 mDeveloperModeEnabled = false;
             }
         }
+    }
+
+    private void logSuspectedForegroundServiceStartNotAllowedException() {
+        // Expecting a ForegroundServiceStartNotAllowedException, but that's an S API.
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                : "Unable enable developer mode, this is only expected on Android S";
+        String msg =
+                "Unable to create foreground service (client is likely in "
+                        + "background). Continuing as a background service.";
+        Log.w(TAG, msg);
     }
 
     /**
@@ -346,8 +354,11 @@ public final class DeveloperUiService extends Service {
 
             ComponentName developerModeState =
                     new ComponentName(this, DeveloperModeUtils.DEVELOPER_MODE_STATE_COMPONENT);
-            getPackageManager().setComponentEnabledSetting(developerModeState,
-                    PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+            getPackageManager()
+                    .setComponentEnabledSetting(
+                            developerModeState,
+                            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+                            PackageManager.DONT_KILL_APP);
 
             // Finally, stop the service explicitly. Do this last to make sure we do the other
             // necessary cleanup.
