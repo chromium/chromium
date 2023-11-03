@@ -7,16 +7,15 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-class Profile;
 
 namespace wallpaper_handlers {
 
 class MockSeaPenFetcher : public SeaPenFetcher {
  public:
-  explicit MockSeaPenFetcher(Profile* profile);
+  MockSeaPenFetcher();
 
   MockSeaPenFetcher(const MockSeaPenFetcher&) = delete;
   MockSeaPenFetcher& operator=(const MockSeaPenFetcher&) = delete;

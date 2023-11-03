@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/profiles/profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
@@ -29,8 +28,7 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
 
 }  // namespace
 
-MockSeaPenFetcher::MockSeaPenFetcher(Profile* profile)
-    : SeaPenFetcher(profile) {
+MockSeaPenFetcher::MockSeaPenFetcher() {
   ON_CALL(*this, Start)
       .WillByDefault(
           [](const std::string& text, OnWallpaperSearchComplete callback) {

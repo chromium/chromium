@@ -79,7 +79,7 @@ void TestWallpaperFetcherDelegate::FetchGooglePhotosAccessToken(
 
 std::unique_ptr<SeaPenFetcher>
 TestWallpaperFetcherDelegate::CreateSeaPenFetcher(Profile* profile) const {
-  return std::make_unique<testing::NiceMock<MockSeaPenFetcher>>(profile);
+  return std::make_unique<testing::NiceMock<MockSeaPenFetcher>>();
 }
 
 }  // namespace wallpaper_handlers

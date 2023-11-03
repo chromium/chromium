@@ -113,8 +113,7 @@ void WallpaperFetcherDelegateImpl::FetchGooglePhotosAccessToken(
 
 std::unique_ptr<SeaPenFetcher>
 WallpaperFetcherDelegateImpl::CreateSeaPenFetcher(Profile* profile) const {
-  // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new SeaPenFetcher(profile));
+  return SeaPenFetcher::MakeSeaPenFetcher(profile);
 }
 
 }  // namespace wallpaper_handlers
