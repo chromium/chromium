@@ -869,7 +869,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   // KeyPressEventCallback that serves as a sink to ensure that every key press
   // event the tests create and have the WebContents forward is handled by some
-  // key press event callback. It is necessary to have this sinkbecause if no
+  // key press event callback. It is necessary to have this sink because if no
   // key press event callback handles the event (at least on Mac), a DCHECK
   // ends up going off that the |event| doesn't have an |os_event| associated
   // with it.
@@ -1323,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm,
               ValuesAre(MergeValue(kEmptyAddress, {"lastname", "Wadda"})));
 }
 
-// Test that multiple autofillings work.
+// Test that multiple autofill operations work.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm,
                        FillChangeSecondFieldRefillAndClearSecondField) {
   CreateTestProfile();
@@ -1356,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm,
   EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
-// Test that multiple autofillings work.
+// Test that multiple autofill operations work.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm,
                        FillChangeSecondFieldRefillSecondFieldClearFirst) {
   CreateTestProfile();
@@ -1386,7 +1386,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm,
   EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
-// Test that multiple autofillings work.
+// Test that multiple autofill operations work.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm,
                        FillThenFillSomeWithAnotherProfileThenClear) {
   CreateTestProfile();
@@ -1569,11 +1569,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
         id->c_str());
     return content::EvalJs(GetWebContents(), script).ExtractString();
   };
-  std::string orginalcolor = GetBackgroundColor(GetElementById("firstname"));
+  std::string original_color = GetBackgroundColor(GetElementById("firstname"));
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
                            {.num_profile_suggestions = 0, .target_index = 1}));
   EXPECT_EQ("Bob", GetFieldValueById("firstname"));
-  EXPECT_EQ(GetBackgroundColor(GetElementById("firstname")), orginalcolor);
+  EXPECT_EQ(GetBackgroundColor(GetElementById("firstname")), original_color);
 }
 
 // Test that an <input> field with a <datalist> has a working drop down even if
@@ -2228,7 +2228,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForCompanyName) {
 
 // TODO(https://crbug.com/1279102): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       NoAutofillSugggestionForCompanyName) {
+                       NoAutofillSuggestionForCompanyName) {
   static const char kTestShippingFormWithCompanyString[] = R"(
       An example of a shipping address form.
       <form action="https://www.example.com/" method="POST">
@@ -2590,7 +2590,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
 
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
-  // triees to preview or fill.
+  // tries to preview or fill.
   histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
                                         true, 2);
 
@@ -2604,7 +2604,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_NoAutocomplete) {
 }
 
 // Test that we do not fill formless non-checkout forms when we enable the
-// formless form restrictions. This test differes from the NoAutocomplete
+// formless form restrictions. This test differs from the NoAutocomplete
 // version of the the test in that at least one of the fields has an
 // autocomplete attribute, so autofill will always be aware of the existence
 // of the form.
@@ -2621,7 +2621,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_SomeAutocomplete) {
 
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
-  // triees to preview or fill.
+  // tries to preview or fill.
   histogram_tester().ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
                                         true, 2);
 
@@ -3596,7 +3596,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   ASSERT_TRUE(test_api(*autofill_manager).FlushPendingVotes());
   load_stop_observer.Wait();
 
-  // Short hand for ExpectbucketCount:
+  // Short hand for ExpectBucketCount:
   auto expect_count = [&](base::StringPiece name,
                           base::HistogramBase::Sample sample,
                           base::HistogramBase::Count expected_count) {
@@ -3693,7 +3693,7 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
     // Enable ChromeVox, disable earcons and wait for key mappings to be
     // fetched.
     ASSERT_FALSE(ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-    // TODO(accessibility): fix console error/warnings and insantiate
+    // TODO(accessibility): fix console error/warnings and instantiate
     // |console_observer_| here.
 
     // Load ChromeVox and block until it's fully loaded.
@@ -3881,7 +3881,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   run_loop.Run();
 }
 
-// Tests that non-link-click, renderer-inititiated navigation triggers a
+// Tests that non-link-click, renderer-initiated navigation triggers a
 // submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
                        ProbableSubmission) {
@@ -3935,7 +3935,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that an XHR request can indicate a form submission.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       XhrSuccededAndHideForm) {
+                       XhrSucceededAndHideForm) {
   base::RunLoop run_loop;
 
   // Ensure that only expected form submissions are recorded.
@@ -3965,7 +3965,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // Tests that an XHR request can indicate a form submission - even if the form
 // is deleted from the DOM.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       XhrSuccededAndDeleteForm) {
+                       XhrSucceededAndDeleteForm) {
   base::RunLoop run_loop;
 
   // Ensure that only expected form submissions are recorded.
