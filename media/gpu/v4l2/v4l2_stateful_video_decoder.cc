@@ -210,21 +210,23 @@ class H264FrameReassembler {
   bool HasFragments() const { return !frame_fragments_.empty(); }
 
  private:
-  // Parses |data| and returns either:
-  // - absl::nullopt if parsing |data| fails.
-  // - 0 if |data| contains a fragment (a.k.a. slice) or fragments of a frame.
-  // - The index of the first frame boundary found inside |data|, if this
-  //   contains more than one whole frame.
-  // - |size| if |data| contains a fragment (a.k.a. "slice") of a new frame
-  //   (a given fragment can mark the beginning of a new whole frame but
-  //   doesn't know whether there are fragments of the same frame following).
+  // Parses |data| and returns either absl::nullopt, if parsing |data| fails, or
+  // a pair of a boolean flag and a size_t, where:
+  // - The boolean flag tells whether |data| contains the beginning of a new
+  //   frame (and necessarily the end of a previous one, if any).
+  // - If said flag is true, then the returned size_t is the length of the first
+  //   found whole frame.
+  // - If said flag is false, then the returned size_t is the size of the first
+  //   fragment (a.k.a. "slice"), which might be smaller than |size|.
   //
   // It is assumed that:
   // - |data| contains an integer number of NALUs.
   // - |data| contains at most 2 whole frames.
-  //   TODO(mcasas): Support more, as seen in e.g. CAPCM*1_Sand_E.h264.
-  absl::optional<size_t> FindH264FrameBoundary(const uint8_t* const data,
-                                               size_t size);
+  //   TODO(mcasas): Support more frames, as seen in e.g. CAPCM*1_Sand_E.h264,
+  //   switch_1080p_720p_240frames.h264.
+  absl::optional<std::pair<bool, size_t>> FindH264FrameBoundary(
+      const uint8_t* const data,
+      size_t size);
 
   H264Parser h264_parser_;
   static constexpr int kInvalidSPS = -1;
@@ -1126,8 +1128,8 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   // frame boundary / the beginning of a new frame), we can't do much: store it
   // for later reassembly. Otherwise, |buffer| marks the beginning of a new
   // frame and needs further processing.
-  const auto h264_found_frame_size = *result;
-  if (h264_found_frame_size == 0) {
+  const bool is_new_frame_found = result->first;
+  if (!is_new_frame_found) {
     VLOGF(3) << "|buffer| is a frame fragment, storing it for reassembly.";
     frame_fragments_.emplace_back(std::move(buffer));
     std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
@@ -1137,7 +1139,7 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
       whole_frames;
 
-  // If we reached here, |buffer| marks a new frame; reassemble any previously
+  // If we reach here, |buffer| marks a new frame; reassemble any previously
   // stored |frame_fragments_| (a.k.a. "slices") into a new DecoderBuffer.
   if (HasFragments()) {
     VLOGF(3) << "|buffer| is a new frame fragment; " << frame_fragments_.size()
@@ -1146,8 +1148,8 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
         ReassembleFragments(frame_fragments_), base::DoNothing()));
   }
 
-  const bool contains_multiple_frames =
-      h264_found_frame_size < buffer->data_size();
+  const size_t found_frame_size = result->second;
+  const bool contains_multiple_frames = found_frame_size < buffer->data_size();
   if (!contains_multiple_frames) {
     // We cannot know if |buffer| is a full frame or a fragment (we'll only know
     // when we find the beginning of the next frame). Save the current |buffer|
@@ -1160,13 +1162,11 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   // The code here assumes there's just two whole frames in |buffer|.
   // TODO(mcasas): Support more, as seen in e.g. CAPCM*1_Sand_E.h264.
   VLOGF(3) << "|buffer| contains several frames, need to split them.";
-  auto first_frame =
-      DecoderBuffer::CopyFrom(buffer->data(), h264_found_frame_size);
+  auto first_frame = DecoderBuffer::CopyFrom(buffer->data(), found_frame_size);
 
-  const auto h264_second_frame_size =
-      buffer->data_size() - h264_found_frame_size;
-  auto second_frame = DecoderBuffer::CopyFrom(
-      buffer->data() + h264_found_frame_size, h264_second_frame_size);
+  const auto h264_second_frame_size = buffer->data_size() - found_frame_size;
+  auto second_frame = DecoderBuffer::CopyFrom(buffer->data() + found_frame_size,
+                                              h264_second_frame_size);
 
   // Note that |decode_cb| is a OnceCallback, so should be called only once,
   // when the |second_frame| is enqueued.
@@ -1178,9 +1178,9 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   return whole_frames;
 }
 
-absl::optional<size_t> H264FrameReassembler::FindH264FrameBoundary(
-    const uint8_t* const data,
-    size_t data_size) {
+absl::optional<std::pair<bool, size_t>>
+H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
+                                            size_t data_size) {
   h264_parser_.SetStream(data, data_size);
   while (true) {
     H264NALU nalu;
@@ -1192,7 +1192,7 @@ absl::optional<size_t> H264FrameReassembler::FindH264FrameBoundary(
     }
     if (result == H264Parser::kEOStream) {
       NOTREACHED_NORETURN()
-          << "|data| did not contain a whole NALU, this should never happen";
+          << "|data| did not contain a whole NALU while parsing";
     }
     DCHECK_EQ(result, H264Parser::kOk);
 
@@ -1222,14 +1222,14 @@ absl::optional<size_t> H264FrameReassembler::FindH264FrameBoundary(
           LOG(ERROR) << "Could not parse SPS header.";
           return absl::nullopt;
         }
-        return nalu_size;
+        return std::make_pair(true, nalu_size);
       case H264NALU::kPPS:
         result = h264_parser_.ParsePPS(&pps_id_);
         if (result != H264Parser::kOk) {
           LOG(ERROR) << "Could not parse PPS header.";
           return absl::nullopt;
         }
-        return nalu_size;
+        return std::make_pair(true, nalu_size);
       case H264NALU::kNonIDRSlice:
       case H264NALU::kIDRSlice: {
         H264SliceHeader curr_slice_header;
@@ -1238,16 +1238,17 @@ absl::optional<size_t> H264FrameReassembler::FindH264FrameBoundary(
           // In this function we just want to find frame boundaries, so return
           // but don't mark an error.
           LOG(WARNING) << "Could not parse NALU header.";
-          return nalu_size;
+          return std::make_pair(true, nalu_size);
         }
         const bool is_new_frame =
-            previous_slice_header_ &&
-            IsNewH264Frame(h264_parser_.GetSPS(sps_id_),
-                           h264_parser_.GetPPS(pps_id_),
-                           previous_slice_header_.get(), &curr_slice_header);
+            !previous_slice_header_ ||
+            (previous_slice_header_ &&
+             IsNewH264Frame(h264_parser_.GetSPS(sps_id_),
+                            h264_parser_.GetPPS(pps_id_),
+                            previous_slice_header_.get(), &curr_slice_header));
         previous_slice_header_ =
             std::make_unique<H264SliceHeader>(curr_slice_header);
-        return is_new_frame ? nalu_size : 0;
+        return std::make_pair(is_new_frame, nalu_size);
       }
       case H264NALU::kSEIMessage:
       case H264NALU::kAUD:
@@ -1261,7 +1262,7 @@ absl::optional<size_t> H264FrameReassembler::FindH264FrameBoundary(
       case H264NALU::kReserved17:
       case H264NALU::kReserved18:
         // Anything else than SPS, PPS and Non/IDRs marks a new frame boundary.
-        return nalu_size;
+        return std::make_pair(true, nalu_size);
       default:
         NOTREACHED_NORETURN() << "Unknown NALU, id: " << nalu.nal_unit_type;
     }
