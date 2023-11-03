@@ -4130,6 +4130,7 @@ if (enable_nocompile_tests_new) {
       "observer_list_nocompile.nc",
       "sequence_checker_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
+      "task/bind_post_task_nocompile.nc",
       "task/task_traits_nocompile.nc",
       "thread_annotations_nocompile.nc",
       "types/variant_util_nocompile.nc",
@@ -4159,7 +4160,6 @@ if (enable_nocompile_tests) {
       "metrics/field_trial_params_unittest.nc",
       "metrics/histogram_unittest.nc",
       "strings/string_piece_unittest.nc",
-      "task/bind_post_task_unittest.nc",
       "traits_bag_unittest.nc",
       "types/pass_key_unittest.nc",
     ]
