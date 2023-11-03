@@ -239,7 +239,7 @@ public class TrackingProtectionNoticeController {
                     }
 
                     private void maybeShowNotice(Tab tab) {
-                        if (tab == null) return;
+                        if (tab == null || tab.isIncognito()) return;
 
                         int securityLevel =
                                 SecurityStateModel.getSecurityLevelForWebContents(

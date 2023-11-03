@@ -171,6 +171,18 @@ public final class TrackingProtectionNoticeTest {
 
     @Test
     @SmallTest
+    public void testNoticeNotShownWhenIncognito() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
+
+        sActivityTestRule.startMainActivityOnBlankPage();
+
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+        sActivityTestRule.loadUrlInNewTab(UrlConstants.GOOGLE_URL, /* incognito= */ true);
+        onView(withId(R.id.message_banner)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
     // TODO(crbug.com/1497465): Fix flakiness on histogramWatcher assertion.
     public void testNoticeNotShownMoreThanOnceWhenNewTabWithSecurePageIsOpened() {
         mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
