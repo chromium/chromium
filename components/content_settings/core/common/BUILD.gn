@@ -83,6 +83,9 @@ mojom("mojo_bindings") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+
   cpp_typemaps = [
     {
       types = [
