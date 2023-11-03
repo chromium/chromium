@@ -1462,7 +1462,7 @@
         ],
         # TODO(crbug.com/1439624): Remove experiment and ci_only
         # once the test suite is stable.
-        'ci_only': True,
+        # 'ci_only': True,
         'experiment_percentage': 100,
       },
       'android-12l-x64-fyi-dbg': {
