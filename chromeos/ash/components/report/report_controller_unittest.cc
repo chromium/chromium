@@ -5,36 +5,30 @@
 #include "chromeos/ash/components/report/report_controller.h"
 
 #include "base/files/file_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/dbus/private_computing/fake_private_computing_client.h"
+#include "chromeos/ash/components/dbus/private_computing/private_computing_client.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.h"
+#include "chromeos/ash/components/report/device_metrics/use_case/stub_psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
 #include "chromeos/ash/components/report/prefs/fresnel_pref_names.h"
 #include "chromeos/ash/components/report/utils/network_utils.h"
 #include "chromeos/ash/components/report/utils/test_utils.h"
-#include "chromeos/ash/components/report/utils/time_utils.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 
 namespace psm_rlwe = private_membership::rlwe;
-
-using psm_rlwe_test =
-    psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase;
 
 using pc_preserved_file_test =
     private_computing::PrivateComputingClientRegressionTestData;
@@ -42,38 +36,12 @@ namespace ash::report::device_metrics {
 
 class ReportControllerTestBase : public testing::Test {
  public:
-  static psm_rlwe::PrivateMembershipRlweClientRegressionTestData*
-  GetPsmTestData() {
-    static base::NoDestructor<
-        psm_rlwe::PrivateMembershipRlweClientRegressionTestData>
-        data;
-    return data.get();
-  }
-
   static private_computing::PrivateComputingClientRegressionTestData*
   GetPreservedFileTestData() {
     static base::NoDestructor<
         private_computing::PrivateComputingClientRegressionTestData>
         preserved_file_test_data;
     return preserved_file_test_data.get();
-  }
-
-  static void CreatePsmTestData() {
-    base::FilePath src_root_dir;
-    ASSERT_TRUE(
-        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
-    const base::FilePath kPsmTestDataPath =
-        src_root_dir.AppendASCII("third_party")
-            .AppendASCII("private_membership")
-            .AppendASCII("src")
-            .AppendASCII("internal")
-            .AppendASCII("testing")
-            .AppendASCII("regression_test_data")
-            .AppendASCII("test_data.binarypb");
-    ASSERT_TRUE(base::PathExists(kPsmTestDataPath));
-    ASSERT_TRUE(utils::ParseProtoFromFile(kPsmTestDataPath, GetPsmTestData()));
-
-    ASSERT_EQ(GetPsmTestData()->test_cases_size(), utils::kPsmTestCaseSize);
   }
 
   static void CreatePreservedFileTestData() {
@@ -98,9 +66,6 @@ class ReportControllerTestBase : public testing::Test {
   }
 
   static void SetUpTestSuite() {
-    // Initialize PSM test data used to fake check membership flow.
-    CreatePsmTestData();
-
     // Initialize preserved file test data.
     CreatePreservedFileTestData();
   }
@@ -175,11 +140,39 @@ class ReportControllerTestBase : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  // Generate a well-formed fake PSM network response body for testing purposes.
-  const std::string GetFresnelOprfResponse(const psm_rlwe_test& test_case) {
+  // Generate a well-formed fake PSM network request and response bodies for
+  // testing purposes.
+  const std::string GetFresnelOprfResponse() {
     FresnelPsmRlweOprfResponse psm_oprf_response;
-    *psm_oprf_response.mutable_rlwe_oprf_response() = test_case.oprf_response();
+    *psm_oprf_response.mutable_rlwe_oprf_response() =
+        psm_rlwe::PrivateMembershipRlweOprfResponse();
     return psm_oprf_response.SerializeAsString();
+  }
+
+  const std::string GetFresnelQueryResponse() {
+    FresnelPsmRlweQueryResponse psm_query_response;
+    *psm_query_response.mutable_rlwe_query_response() =
+        psm_rlwe::PrivateMembershipRlweQueryResponse();
+    return psm_query_response.SerializeAsString();
+  }
+
+  void SimulateOprfRequest(
+      StubPsmClientManagerDelegate* delegate,
+      const psm_rlwe::PrivateMembershipRlweOprfRequest& request) {
+    delegate->set_oprf_request(request);
+  }
+
+  void SimulateQueryRequest(
+      StubPsmClientManagerDelegate* delegate,
+      const psm_rlwe::PrivateMembershipRlweQueryRequest& request) {
+    delegate->set_query_request(request);
+  }
+
+  void SimulateMembershipResponses(
+      StubPsmClientManagerDelegate* delegate,
+      const private_membership::rlwe::RlweMembershipResponses&
+          membership_responses) {
+    delegate->set_membership_responses(membership_responses);
   }
 
   void SimulateOprfResponse(const std::string& serialized_response_body,
@@ -189,13 +182,6 @@ class ReportControllerTestBase : public testing::Test {
         response_code);
 
     task_environment_.RunUntilIdle();
-  }
-
-  const std::string GetFresnelQueryResponse(const psm_rlwe_test& test_case) {
-    FresnelPsmRlweQueryResponse psm_query_response;
-    *psm_query_response.mutable_rlwe_query_response() =
-        test_case.query_response();
-    return psm_query_response.SerializeAsString();
   }
 
   // Generate a well-formed fake PSM network response body for testing purposes.
@@ -238,10 +224,6 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
   void SetUp() override {
     ReportControllerTestBase::SetUp();
 
-    // PSM test data at index [5,9] contain negative check membership results.
-    psm_test_case_ = utils::GetPsmTestCase(GetPsmTestData(), 5);
-    ASSERT_FALSE(psm_test_case_.is_positive_membership_expected());
-
     // Default network to being synchronized and available.
     GetSystemClockTestInterface()->SetServiceIsAvailable(true);
     GetSystemClockTestInterface()->SetNetworkSynchronized(true);
@@ -252,12 +234,21 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
     GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
         private_computing::SaveStatusResponse());
 
+    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // Stub successful request payloads when created by the PSM client.
+    StubPsmClientManagerDelegate* psm_client_delegate =
+        new StubPsmClientManagerDelegate();
+    SimulateOprfRequest(psm_client_delegate,
+                        psm_rlwe::PrivateMembershipRlweOprfRequest());
+    SimulateQueryRequest(psm_client_delegate,
+                         psm_rlwe::PrivateMembershipRlweQueryRequest());
+    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
-        std::make_unique<FakePsmDelegate>(
-            psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
-            std::vector{psm_test_case_.plaintext_id()}));
+        std::make_unique<PsmClientManager>(
+            base::WrapUnique(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
   }
@@ -272,10 +263,20 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
  protected:
   ReportController* GetReportController() { return report_controller_.get(); }
 
-  psm_rlwe_test GetPsmTestCase() { return psm_test_case_; }
+  // Returns a single negative membership response.
+  psm_rlwe::RlweMembershipResponses GetMembershipResponses() {
+    psm_rlwe::RlweMembershipResponses membership_responses;
+
+    psm_rlwe::RlweMembershipResponses::MembershipResponseEntry* entry =
+        membership_responses.add_membership_responses();
+    private_membership::MembershipResponse* membership_response =
+        entry->mutable_membership_response();
+    membership_response->set_is_member(false);
+
+    return membership_responses;
+  }
 
  private:
-  psm_rlwe_test psm_test_case_;
   std::unique_ptr<ReportController> report_controller_;
 };
 
@@ -315,12 +316,9 @@ TEST_F(ReportControllerSimpleFlowTest, CompleteFlowOnFreshDevice) {
   // Start reporting sequence.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed response bodies for the pending network requests.
-  psm_rlwe_test psm_test_case = GetPsmTestCase();
-
   // First mock network requests for 1DA use case.
-  SimulateOprfResponse(GetFresnelOprfResponse(psm_test_case), net::HTTP_OK);
-  SimulateQueryResponse(GetFresnelQueryResponse(psm_test_case), net::HTTP_OK);
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
   SimulateImportResponse(std::string(), net::HTTP_OK);
 
   // Next mock network requests for 28DA use case.
@@ -368,12 +366,9 @@ TEST_F(ReportControllerSimpleFlowTest, DeviceFlowAcrossOneDay) {
 
   EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
 
-  // Return well formed response bodies for the pending network requests.
-  psm_rlwe_test psm_test_case = GetPsmTestCase();
-
   // First mock network requests for 1DA use case.
-  SimulateOprfResponse(GetFresnelOprfResponse(psm_test_case), net::HTTP_OK);
-  SimulateQueryResponse(GetFresnelQueryResponse(psm_test_case), net::HTTP_OK);
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
   SimulateImportResponse(std::string(), net::HTTP_OK);
 
   // Next mock network requests for 28DA use case.
@@ -429,12 +424,9 @@ TEST_F(ReportControllerSimpleFlowTest, DeviceFlowAcrossOneWeek) {
 
   EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
 
-  // Return well formed response bodies for the pending network requests.
-  psm_rlwe_test psm_test_case = GetPsmTestCase();
-
   // First mock network requests for 1DA use case.
-  SimulateOprfResponse(GetFresnelOprfResponse(psm_test_case), net::HTTP_OK);
-  SimulateQueryResponse(GetFresnelQueryResponse(psm_test_case), net::HTTP_OK);
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
   SimulateImportResponse(std::string(), net::HTTP_OK);
 
   // Next mock network requests for 28DA use case.
@@ -490,12 +482,9 @@ TEST_F(ReportControllerSimpleFlowTest, DeviceFlowAcrossOneMonth) {
 
   EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
 
-  // Return well formed response bodies for the pending network requests.
-  psm_rlwe_test psm_test_case = GetPsmTestCase();
-
   // First mock network requests for 1DA use case.
-  SimulateOprfResponse(GetFresnelOprfResponse(psm_test_case), net::HTTP_OK);
-  SimulateQueryResponse(GetFresnelQueryResponse(psm_test_case), net::HTTP_OK);
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
   SimulateImportResponse(std::string(), net::HTTP_OK);
 
   // Next mock network requests for 28DA use case.
@@ -574,10 +563,6 @@ class ReportControllerPreservedFileReadWriteSuccessTest
   void SetUp() override {
     ReportControllerTestBase::SetUp();
 
-    // PSM test data at index [5,9] contain negative check membership results.
-    psm_test_case_ = utils::GetPsmTestCase(GetPsmTestData(), 5);
-    ASSERT_FALSE(psm_test_case_.is_positive_membership_expected());
-
     // Default network to being synchronized and available.
     GetSystemClockTestInterface()->SetServiceIsAvailable(true);
     GetSystemClockTestInterface()->SetNetworkSynchronized(true);
@@ -592,12 +577,21 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
         test.save_response());
 
+    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // Stub successful request payloads when created by the PSM client.
+    StubPsmClientManagerDelegate* psm_client_delegate =
+        new StubPsmClientManagerDelegate();
+    SimulateOprfRequest(psm_client_delegate,
+                        psm_rlwe::PrivateMembershipRlweOprfRequest());
+    SimulateQueryRequest(psm_client_delegate,
+                         psm_rlwe::PrivateMembershipRlweQueryRequest());
+    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
         base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
-        std::make_unique<FakePsmDelegate>(
-            psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
-            std::vector{psm_test_case_.plaintext_id()}));
+        std::make_unique<PsmClientManager>(
+            base::WrapUnique(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
   }
@@ -612,10 +606,20 @@ class ReportControllerPreservedFileReadWriteSuccessTest
  protected:
   ReportController* GetReportController() { return report_controller_.get(); }
 
-  psm_rlwe_test GetPsmTestCase() { return psm_test_case_; }
+  // Returns a single negative membership response.
+  psm_rlwe::RlweMembershipResponses GetMembershipResponses() {
+    psm_rlwe::RlweMembershipResponses membership_responses;
+
+    psm_rlwe::RlweMembershipResponses::MembershipResponseEntry* entry =
+        membership_responses.add_membership_responses();
+    private_membership::MembershipResponse* membership_response =
+        entry->mutable_membership_response();
+    membership_response->set_is_member(false);
+
+    return membership_responses;
+  }
 
  private:
-  psm_rlwe_test psm_test_case_;
   std::unique_ptr<ReportController> report_controller_;
 };
 

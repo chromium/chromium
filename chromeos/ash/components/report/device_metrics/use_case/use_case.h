@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
@@ -38,18 +39,6 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
   MarketSegment market_segment;
 };
 
-// Create a delegate which can be used to create fakes in unit tests.
-// Fake via. delegate is required for creating deterministic unit tests.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) PsmDelegateInterface {
- public:
-  virtual ~PsmDelegateInterface() = default;
-  virtual rlwe::StatusOr<
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
-  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
-                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
-                      plaintext_ids) = 0;
-};
-
 // Helper class to group UseCase class parameters.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
  public:
@@ -59,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& high_entropy_seed,
       PrefService* local_state,
-      std::unique_ptr<PsmDelegateInterface> psm_delegate);
+      std::unique_ptr<PsmClientManager> psm_client_manager);
   ~UseCaseParameters();
 
   const base::Time GetActiveTs() const;
@@ -77,7 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
   PrefService* GetLocalState() const;
 
   // Used to enable passing the real and fake PSM client.
-  PsmDelegateInterface* GetPsmDelegate() const;
+  PsmClientManager* GetPsmClientManager() const;
 
  private:
   // Represents the device's online timestamp, adjusted to Pacific Time (PST).
@@ -105,7 +94,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
   const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   // Abstract class used to generate the PSM RLWE client.
-  std::unique_ptr<PsmDelegateInterface> psm_delegate_;
+  std::unique_ptr<PsmClientManager> psm_client_manager_;
 };
 
 // Base class for each use case that is reporting to Fresnel server.
@@ -166,21 +155,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCase {
   net::NetworkTrafficAnnotationTag GetCheckMembershipTrafficTag();
   net::NetworkTrafficAnnotationTag GetCheckInTrafficTag();
 
-  // Return address of |psm_rlwe_client_| unique pointer, or null if not set.
-  private_membership::rlwe::PrivateMembershipRlweClient* GetPsmRlweClient();
-
-  // Generate the PSM RLWE client used to create OPRF and Query request bodies.
-  void SetPsmRlweClient(
-      private_membership::rlwe::RlweUseCase psm_use_case,
-      std::vector<private_membership::rlwe::RlwePlaintextId> query_psm_ids);
-
   UseCaseParameters* GetParams() const;
 
  private:
-  // Used to generate the request body of Oprf and Query requests.
-  std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-      psm_rlwe_client_;
-
   // Store shared params that are use across all use cases.
   // Field will live throughout object lifetime.
   const raw_ptr<UseCaseParameters> params_;

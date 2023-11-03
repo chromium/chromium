@@ -58,25 +58,6 @@ class ObservationImpl;
 struct ChromeDeviceMetadataParameters;
 }  // namespace device_metrics
 
-// TODO(hirthanan): Delete in following CL, as this is part of an immediate
-// cleanup.
-// Currently the real implementation for creating the PSM client.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) PsmDelegateImpl
-    : public device_metrics::PsmDelegateInterface {
- public:
-  PsmDelegateImpl() = default;
-  PsmDelegateImpl(const PsmDelegateImpl&) = delete;
-  PsmDelegateImpl& operator=(const PsmDelegateImpl&) = delete;
-  ~PsmDelegateImpl() override = default;
-
-  // PsmDelegateInterface:
-  rlwe::StatusOr<
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
-  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
-                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
-                      plaintext_ids) override;
-};
-
 // Observe the network in order to report metrics to Fresnel
 // using private set membership.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
@@ -103,7 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Time chrome_first_run_time,
       base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
-      std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate);
+      std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager);
   ReportController(const ReportController&) = delete;
   ReportController& operator=(const ReportController&) = delete;
   ~ReportController() override;
@@ -226,7 +207,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
   bool is_device_reporting_ = false;
 
   // Used to enable passing the real and fake PSM client to this class.
-  std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate_;
+  std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager_;
 
   // Store parameters used across the reporting use cases throughout reporting
   // object lifetime.

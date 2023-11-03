@@ -228,6 +228,7 @@
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/power/dark_resume_controller.h"
+#include "chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
 #include "chromeos/ash/components/report/report_controller.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -1815,7 +1816,9 @@ void ChromeBrowserMainPartsAsh::StartReportController() {
           ->GetSharedURLLoaderFactory(),
       first_run::GetFirstRunSentinelCreationTime(),
       std::move(check_oobe_completed_callback),
-      std::make_unique<report::PsmDelegateImpl>());
+      std::make_unique<ash::report::device_metrics::PsmClientManager>(
+          std::make_unique<
+              report::device_metrics::RealPsmClientManagerDelegate>()));
 
 #endif
 }
