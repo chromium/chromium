@@ -542,6 +542,8 @@ TEST_F(Vp9ParserTest, SecondClearSubsampleSuperframeMarkerSubsampleParsing) {
 }
 
 TEST_F(Vp9ParserTest, TestIncrementIV) {
+  vp9_parser_ = std::make_unique<Vp9Parser>(false);
+
   std::vector<std::tuple<char const*, uint32_t, char const*>> input_output = {
       {"--------aaaaaaaa", 1, "--------aaaaaaab"},
       {"--------aaaaaaa\377", 1, "--------aaaaaab\0"},

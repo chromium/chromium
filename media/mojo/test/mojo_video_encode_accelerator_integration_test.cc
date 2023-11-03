@@ -118,10 +118,9 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
   // verifies that the appropriate message goes through the mojo pipe and is
   // responded by a RequireBitstreamBuffers() on |mock_vea_client|.
   void Initialize(MockVideoEncodeAcceleratorClient* mock_vea_client) {
-    const uint64_t kShMemSize = fake_vea()->minimum_output_buffer_size();
-
     EXPECT_CALL(*mock_vea_client,
-                RequireBitstreamBuffers(_, kInputVisibleSize, kShMemSize));
+                RequireBitstreamBuffers(_, kInputVisibleSize,
+                                        kMinimumOutputBufferSize));
 
     const VideoEncodeAccelerator::Config config(
         PIXEL_FORMAT_I420, kInputVisibleSize, kValidOutputProfile,
