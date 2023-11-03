@@ -18,7 +18,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -70,8 +69,8 @@ namespace {
 
 // Increments the appropriate value in the histogram by one.
 void LogOmniboxSuggestRequest(RemoteRequestHistogramValue request_value) {
-  UMA_HISTOGRAM_ENUMERATION("Omnibox.SuggestRequests", request_value,
-                            RemoteRequestHistogramValue::kMaxValue);
+  base::UmaHistogramEnumeration("Omnibox.SuggestRequests", request_value,
+                                RemoteRequestHistogramValue::kMaxValue);
 }
 
 bool HasMultipleWords(const std::u16string& text) {
@@ -518,11 +517,11 @@ void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
     const base::TimeDelta elapsed_time =
         base::TimeTicks::Now() - time_suggest_request_sent_;
     if (success) {
-      UMA_HISTOGRAM_TIMES("Omnibox.SuggestRequest.Success.GoogleResponseTime",
-                          elapsed_time);
+      base::UmaHistogramTimes(
+          "Omnibox.SuggestRequest.Success.GoogleResponseTime", elapsed_time);
     } else {
-      UMA_HISTOGRAM_TIMES("Omnibox.SuggestRequest.Failure.GoogleResponseTime",
-                          elapsed_time);
+      base::UmaHistogramTimes(
+          "Omnibox.SuggestRequest.Failure.GoogleResponseTime", elapsed_time);
     }
   }
 }

@@ -24,7 +24,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -66,33 +66,34 @@ namespace {
 const size_t kMaxQueryLength = 200;
 
 void LogOmniboxDocumentRequest(RemoteRequestHistogramValue request_value) {
-  UMA_HISTOGRAM_ENUMERATION("Omnibox.DocumentSuggest.Requests", request_value,
-                            RemoteRequestHistogramValue::kMaxValue);
+  base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.Requests",
+                                request_value,
+                                RemoteRequestHistogramValue::kMaxValue);
 }
 
 void LogTotalTime(base::TimeTicks start_time, bool interrupted) {
   DCHECK(!start_time.is_null());
   const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.TotalTime", elapsed_time);
+  base::UmaHistogramTimes("Omnibox.DocumentSuggest.TotalTime", elapsed_time);
   if (interrupted) {
-    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.TotalTime.Interrupted",
-                        elapsed_time);
+    base::UmaHistogramTimes("Omnibox.DocumentSuggest.TotalTime.Interrupted",
+                            elapsed_time);
   } else {
-    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.TotalTime.NotInterrupted",
-                        elapsed_time);
+    base::UmaHistogramTimes("Omnibox.DocumentSuggest.TotalTime.NotInterrupted",
+                            elapsed_time);
   }
 }
 
 void LogRequestTime(base::TimeTicks start_time, bool interrupted) {
   DCHECK(!start_time.is_null());
   const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.RequestTime", elapsed_time);
+  base::UmaHistogramTimes("Omnibox.DocumentSuggest.RequestTime", elapsed_time);
   if (interrupted) {
-    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.RequestTime.Interrupted",
-                        elapsed_time);
+    base::UmaHistogramTimes("Omnibox.DocumentSuggest.RequestTime.Interrupted",
+                            elapsed_time);
   } else {
-    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.RequestTime.NotInterrupted",
-                        elapsed_time);
+    base::UmaHistogramTimes(
+        "Omnibox.DocumentSuggest.RequestTime.NotInterrupted", elapsed_time);
   }
 }
 
@@ -646,7 +647,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     return matches;
   }
   size_t num_results = results->size();
-  UMA_HISTOGRAM_COUNTS_1M("Omnibox.DocumentSuggest.ResultCount", num_results);
+  base::UmaHistogramCounts1M("Omnibox.DocumentSuggest.ResultCount",
+                             num_results);
 
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
