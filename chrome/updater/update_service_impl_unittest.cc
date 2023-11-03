@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -400,6 +401,27 @@ INSTANTIATE_TEST_SUITE_P(
          {},
          true},
         {UpdateService::ErrorCategory::kInstall,
+         GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY,
+         base::WideToUTF8(
+             GetLocalizedStringF(IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE,
+                                 L"GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY")),
+         {},
+         true},
+        {UpdateService::ErrorCategory::kInstall,
+         GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY,
+         base::WideToUTF8(
+             GetLocalizedStringF(IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE,
+                                 L"GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY")),
+         {},
+         true},
+        {UpdateService::ErrorCategory::kInstall,
+         GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE,
+             L"GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL")),
+         {},
+         true},
+        {UpdateService::ErrorCategory::kInstall,
          GOOPDATEINSTALL_E_FILENAME_INVALID,
          base::WideToUTF8(
              GetLocalizedString(IDS_INVALID_INSTALLER_FILENAME_BASE)),
@@ -411,6 +433,28 @@ INSTANTIATE_TEST_SUITE_P(
              {GetLocalizedString(IDS_INSTALLER_FAILED_TO_START_BASE), L"\n",
               GetLocalizedStringF(IDS_EXTRA_CODE_BASE, L"0x2")})),
          ERROR_FILE_NOT_FOUND, true},
+
+        {UpdateService::ErrorCategory::kInstall,
+         ERROR_SUCCESS_REBOOT_INITIATED,
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_INSTALL_REBOOT_BASE,
+             GetTextForSystemError(ERROR_SUCCESS_REBOOT_INITIATED))),
+         {},
+         true},
+        {UpdateService::ErrorCategory::kInstall,
+         ERROR_SUCCESS_REBOOT_REQUIRED,
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_INSTALL_REBOOT_BASE,
+             GetTextForSystemError(ERROR_SUCCESS_REBOOT_REQUIRED))),
+         {},
+         true},
+        {UpdateService::ErrorCategory::kInstall,
+         ERROR_SUCCESS_RESTART_REQUIRED,
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_INSTALL_REBOOT_BASE,
+             GetTextForSystemError(ERROR_SUCCESS_RESTART_REQUIRED))),
+         {},
+         true},
     }));
 
 TEST_P(UpdateServiceImplGetInstallerTextTest, TestCases) {

@@ -1881,9 +1881,13 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog for runtime errors that occur while installing.">
           Install error: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
         </message>
+        <message name="IDS_INSTALL_REBOOT"
+                 desc="Message displayed in the main dialog when a system reboot is required or has been initiated after installing.">
+          Reboot required: <ph name="INSTALL_SUCCESS">$1<ex>success-message-internal</ex></ph>
+        </message>
         <message name="IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY"
                  desc="Error message displayed in the main dialog when an IT admin has disabled installation or update of this application using Windows Group Policy.">
-          Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
+          Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
         </message>
         <message name="IDS_INVALID_INSTALLER_FILENAME"
                  desc="Error message displayed in the main dialog when the application installer's filename extension is not recognized.">

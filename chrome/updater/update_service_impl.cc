@@ -203,6 +203,12 @@ std::wstring GetTextForInstallerError(int error_code) {
     case GOOPDATEINSTALL_E_INSTALLER_FAILED_START:
       return GetLocalizedString(IDS_INSTALLER_FAILED_TO_START_BASE);
 
+    case ERROR_SUCCESS_REBOOT_INITIATED:
+    case ERROR_SUCCESS_REBOOT_REQUIRED:
+    case ERROR_SUCCESS_RESTART_REQUIRED:
+      return GetLocalizedStringF(IDS_INSTALL_REBOOT_BASE,
+                                 GetTextForSystemError(error_code));
+
     default:
       return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
                                  GetTextForSystemError(error_code));
@@ -954,8 +960,9 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
 #if BUILDFLAG(IS_WIN)
-              return InstallerResult(kErrorApplicationInstallerFailed,
-                                     HRESULTFromLastError());
+              InstallerResult result(kErrorApplicationInstallerFailed);
+              result.original_error = HRESULTFromLastError();
+              return result;
 #else   // BUILDFLAG(IS_WIN)
               return InstallerResult(kErrorApplicationInstallerFailed);
 #endif  // BUILDFLAG(IS_WIN)

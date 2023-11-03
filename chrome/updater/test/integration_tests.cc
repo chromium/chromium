@@ -2467,7 +2467,7 @@ INSTANTIATE_TEST_SUITE_P(
             base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
                           base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
             ERROR_SUCCESS_REBOOT_REQUIRED,
-            "Install error: The requested operation is successful. Changes "
+            "Reboot required: The requested operation is successful. Changes "
             "will not be effective until the system is rebooted. ",
             {},
             {},
