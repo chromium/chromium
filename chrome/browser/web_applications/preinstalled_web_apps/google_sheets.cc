@@ -4,14 +4,21 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_sheets.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
+#include "components/webapps/common/web_app_id.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -97,30 +104,35 @@ constexpr Translation kNameTranslations[] = {
 
 }  // namespace
 
-ExternalInstallOptions GetConfigForGoogleSheets() {
+ExternalInstallOptions GetConfigForGoogleSheets(bool is_standalone_tabbed) {
   ExternalInstallOptions options(
       /*install_url=*/GURL("https://docs.google.com/spreadsheets/"
                            "installwebapp?usp=chrome_default"),
-      /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
+      /*user_display_mode=*/
+      is_standalone_tabbed ? mojom::UserDisplayMode::kStandalone
+                           : mojom::UserDisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.uninstall_and_replace.push_back("felcaaldnbdncclmgdcncolpebgiejap");
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
-  options.app_info_factory = base::BindRepeating([]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
-    info->title =
-        base::UTF8ToUTF16(GetTranslatedName("Sheets", kNameTranslations));
+  options.app_info_factory = base::BindRepeating(
+      [](bool is_standalone_tabbed) {
+        auto info = std::make_unique<WebAppInstallInfo>();
+        info->title =
+            base::UTF8ToUTF16(GetTranslatedName("Sheets", kNameTranslations));
 
-    info->start_url =
-        GURL("https://docs.google.com/spreadsheets/?usp=installed_webapp");
-    info->scope = GURL("https://docs.google.com/spreadsheets/");
-    info->display_mode = DisplayMode::kBrowser;
-    info->icon_bitmaps.any = LoadBundledIcons(
-        {IDR_PREINSTALLED_WEB_APPS_GOOGLE_SHEETS_ICON_192_PNG});
-    return info;
-  });
+        info->start_url =
+            GURL("https://docs.google.com/spreadsheets/?usp=installed_webapp");
+        info->scope = GURL("https://docs.google.com/spreadsheets/");
+        info->display_mode =
+            is_standalone_tabbed ? DisplayMode::kTabbed : DisplayMode::kBrowser;
+        info->icon_bitmaps.any = LoadBundledIcons(
+            {IDR_PREINSTALLED_WEB_APPS_GOOGLE_SHEETS_ICON_192_PNG});
+        return info;
+      },
+      is_standalone_tabbed);
   options.expected_app_id = kGoogleSheetsAppId;
 
   return options;

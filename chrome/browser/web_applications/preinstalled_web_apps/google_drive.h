@@ -9,7 +9,7 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleDrive();
+ExternalInstallOptions GetConfigForGoogleDrive(bool is_standalone);
 
 }  // namespace web_app
 

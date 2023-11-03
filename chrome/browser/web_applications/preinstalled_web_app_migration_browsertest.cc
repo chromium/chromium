@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     return info;
   });
   preinstalled_apps.apps.push_back(std::move(options));
-  EXPECT_EQ(1u, GetPreinstalledWebApps().size());
+  EXPECT_EQ(1u, GetPreinstalledWebApps(*profile()).size());
   // Set up pre-migration state.
   {
     base::HistogramTester histograms;

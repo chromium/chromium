@@ -815,7 +815,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     ConsumeInstallOptions callback,
     ParsedConfigs parsed_configs) {
   // Add hard coded configs.
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps()) {
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps(*profile_)) {
     parsed_configs.options_list.push_back(std::move(options));
   }
 
