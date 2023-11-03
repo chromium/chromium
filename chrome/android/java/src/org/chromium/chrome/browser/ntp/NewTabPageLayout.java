@@ -706,7 +706,7 @@ public class NewTabPageLayout extends LinearLayout {
             marginLayoutParams.topMargin = getResources().getDimensionPixelSize(shouldShowLogo()
                             ? R.dimen.tile_grid_layout_top_margin
                             : R.dimen.tile_grid_layout_no_logo_top_margin);
-            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+            marginLayoutParams.bottomMargin = getResources().getDimensionPixelSize(
                     R.dimen.tile_carousel_layout_bottom_margin);
         } else {
             // Set a bit more top padding on the tile grid if there is no logo.
@@ -717,7 +717,7 @@ public class NewTabPageLayout extends LinearLayout {
         }
 
         if (mIsNtpAsHomeSurfaceOnTablet) {
-            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+            marginLayoutParams.bottomMargin = getResources().getDimensionPixelSize(
                     R.dimen.mvt_container_bottom_margin_tablet);
         }
     }
@@ -1051,7 +1051,7 @@ public class NewTabPageLayout extends LinearLayout {
     // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMvtTopMargin() {
         if (!shouldShowLogo()) {
-            return getResources().getDimensionPixelOffset(
+            return getResources().getDimensionPixelSize(
                     R.dimen.tile_grid_layout_no_logo_top_margin);
         }
 
@@ -1066,14 +1066,14 @@ public class NewTabPageLayout extends LinearLayout {
             resourcesId = R.dimen.tile_grid_layout_top_margin_pull_up;
         }
 
-        return getResources().getDimensionPixelOffset(resourcesId);
+        return getResources().getDimensionPixelSize(resourcesId);
     }
 
     // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMvtBottomMargin() {
         int resourcesId = R.dimen.tile_grid_layout_bottom_margin;
 
-        if (!shouldShowLogo()) return getResources().getDimensionPixelOffset(resourcesId);
+        if (!shouldShowLogo()) return getResources().getDimensionPixelSize(resourcesId);
 
         if (FeedPositionUtils.isFeedPushDownLargeEnabled()) {
             resourcesId = R.dimen.tile_grid_layout_bottom_margin_push_down_large;
@@ -1083,7 +1083,7 @@ public class NewTabPageLayout extends LinearLayout {
             resourcesId = R.dimen.tile_grid_layout_bottom_margin_pull_up;
         }
 
-        return getResources().getDimensionPixelOffset(resourcesId);
+        return getResources().getDimensionPixelSize(resourcesId);
     }
 
     /**
