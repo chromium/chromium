@@ -66,16 +66,18 @@ base::OnceCallback<void(
 {%- endmacro -%}
 
 {%- macro build_message_flags(is_response, is_sync_text, allow_interrupt_text,
-                              expects_response_text, flags_name) %}
+                              is_urgent_text, expects_response_text, flags_name) %}
 {%-   if is_response %}
   const uint32_t kFlags = mojo::Message::kFlagIsResponse |
       (({{is_sync_text}}) ? mojo::Message::kFlagIsSync : 0) |
-      (({{allow_interrupt_text}}) ? 0 : mojo::Message::kFlagNoInterrupt);
+      (({{allow_interrupt_text}}) ? 0 : mojo::Message::kFlagNoInterrupt) |
+      (({{is_urgent_text}}) ? mojo::Message::kFlagIsUrgent : 0);
 {%-   else %}
   const uint32_t kFlags =
       (({{expects_response_text}}) ? mojo::Message::kFlagExpectsResponse : 0) |
       (({{is_sync_text}}) ? mojo::Message::kFlagIsSync : 0) |
-      (({{allow_interrupt_text}}) ? 0 : mojo::Message::kFlagNoInterrupt);
+      (({{allow_interrupt_text}}) ? 0 : mojo::Message::kFlagNoInterrupt) |
+      (({{is_urgent_text}}) ? mojo::Message::kFlagIsUrgent : 0);
 {%-   endif %}
 {%- endmacro %}
 
@@ -134,14 +136,15 @@ class {{message_typename}}
       bool expects_response,
 {%-   endif %}
       bool is_sync,
-      bool allow_interrupt
+      bool allow_interrupt,
+      bool is_urgent
 {%-   if parameters -%}
       ,
       {{declare_params("param_", parameters)}}
 {%-   endif %}) {
 
     {{build_message_flags(is_response, "is_sync", "allow_interrupt",
-                          "expects_response", "kFlags")}}
+                          "is_urgent", "expects_response", "kFlags")}}
 
     if (!serialize) {
       return mojo::Message(std::make_unique<{{message_typename}}>(

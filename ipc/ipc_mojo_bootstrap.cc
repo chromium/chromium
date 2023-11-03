@@ -34,6 +34,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/typed_macros.h"
 #include "ipc/ipc_channel.h"
+#include "ipc/urgent_message_observer.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/connector.h"
@@ -122,6 +123,35 @@ struct MessageMemoryDumpInfoHash {
     return base::HashInts(
         info.id, info.profiler_tag ? base::FastHash(info.profiler_tag) : 0);
   }
+};
+
+class ScopedUrgentMessageNotification {
+ public:
+  explicit ScopedUrgentMessageNotification(
+      UrgentMessageObserver* observer = nullptr)
+      : observer_(observer) {
+    if (observer_) {
+      observer_->OnUrgentMessageReceived();
+    }
+  }
+
+  ~ScopedUrgentMessageNotification() {
+    if (observer_) {
+      observer_->OnUrgentMessageProcessed();
+    }
+  }
+
+  ScopedUrgentMessageNotification(ScopedUrgentMessageNotification&& other)
+      : observer_(std::exchange(other.observer_, nullptr)) {}
+
+  ScopedUrgentMessageNotification& operator=(
+      ScopedUrgentMessageNotification&& other) {
+    observer_ = std::exchange(other.observer_, nullptr);
+    return *this;
+  }
+
+ private:
+  raw_ptr<UrgentMessageObserver> observer_;
 };
 
 class ChannelAssociatedGroupController
@@ -410,6 +440,10 @@ class ChannelAssociatedGroupController
   }
 
   bool PrefersSerializedMessages() override { return true; }
+
+  void SetUrgentMessageObserver(UrgentMessageObserver* observer) {
+    urgent_message_observer_ = observer;
+  }
 
  private:
   class Endpoint;
@@ -984,6 +1018,11 @@ class ChannelAssociatedGroupController
               ? endpoint->task_runner()
               : proxy_task_runner_.get();
 
+      ScopedUrgentMessageNotification scoped_urgent_message_notification(
+          message->has_flag(mojo::Message::kFlagIsUrgent)
+              ? urgent_message_observer_
+              : nullptr);
+
       if (message->has_flag(mojo::Message::kFlagIsSync)) {
         MessageWrapper message_wrapper(this, std::move(*message));
         // Sync messages may need to be handled by the endpoint if it's blocking
@@ -998,7 +1037,8 @@ class ChannelAssociatedGroupController
               FROM_HERE,
               base::BindOnce(
                   &ChannelAssociatedGroupController::AcceptSyncMessage, this,
-                  id, *message_id));
+                  id, *message_id,
+                  std::move(scoped_urgent_message_notification)));
         }
         return true;
       }
@@ -1017,7 +1057,8 @@ class ChannelAssociatedGroupController
             FROM_HERE,
             base::BindOnce(
                 &ChannelAssociatedGroupController::AcceptOnEndpointThread, this,
-                std::move(*message)));
+                std::move(*message),
+                std::move(scoped_urgent_message_notification)));
       }
       return true;
     }
@@ -1029,7 +1070,9 @@ class ChannelAssociatedGroupController
     return client->HandleIncomingMessage(message);
   }
 
-  void AcceptOnEndpointThread(mojo::Message message) {
+  void AcceptOnEndpointThread(
+      mojo::Message message,
+      ScopedUrgentMessageNotification scoped_urgent_message_notification) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
                  "ChannelAssociatedGroupController::AcceptOnEndpointThread");
 
@@ -1079,7 +1122,10 @@ class ChannelAssociatedGroupController
       RaiseError();
   }
 
-  void AcceptSyncMessage(mojo::InterfaceId interface_id, uint32_t message_id) {
+  void AcceptSyncMessage(
+      mojo::InterfaceId interface_id,
+      uint32_t message_id,
+      ScopedUrgentMessageNotification scoped_urgent_message_notification) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
                  "ChannelAssociatedGroupController::AcceptSyncMessage");
 
@@ -1179,6 +1225,8 @@ class ChannelAssociatedGroupController
   uint32_t next_interface_id_ = 2;
 
   std::map<uint32_t, scoped_refptr<Endpoint>> endpoints_;
+
+  raw_ptr<UrgentMessageObserver> urgent_message_observer_ = nullptr;
 };
 
 bool ControllerMemoryDumpProvider::OnMemoryDump(
@@ -1253,6 +1301,10 @@ class MojoBootstrapImpl : public MojoBootstrap {
 
   mojo::AssociatedGroup* GetAssociatedGroup() override {
     return &associated_group_;
+  }
+
+  void SetUrgentMessageObserver(UrgentMessageObserver* observer) override {
+    controller_->SetUrgentMessageObserver(observer);
   }
 
   scoped_refptr<ChannelAssociatedGroupController> controller_;

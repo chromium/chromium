@@ -34,6 +34,7 @@
 namespace IPC {
 
 class Listener;
+class UrgentMessageObserver;
 
 //------------------------------------------------------------------------------
 // See
@@ -227,6 +228,12 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // |message| must be allocated using operator new.  This object will be
   // deleted once the contents of the Message have been sent.
   bool Send(Message* message) override = 0;
+
+  // Sets the UrgentMessageObserver for this channel. `observer` must outlive
+  // the channel.
+  //
+  // Only channel associated mojo interfaces support urgent messages.
+  virtual void SetUrgentMessageObserver(UrgentMessageObserver* observer);
 
 #if !BUILDFLAG(IS_NACL)
   // Generates a channel ID that's non-predictable and unique.

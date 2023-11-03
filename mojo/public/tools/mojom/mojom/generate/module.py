@@ -417,6 +417,7 @@ ATTRIBUTE_DEFAULT = 'Default'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
 ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
 ATTRIBUTE_STABLE = 'Stable'
+ATTRIBUTE_SUPPORTS_URGENT = 'SupportsUrgent'
 ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
 ATTRIBUTE_UUID = 'Uuid'
@@ -1253,6 +1254,11 @@ class Method:
   @property
   def allowed_context(self):
     return self.attributes.get(ATTRIBUTE_ALLOWED_CONTEXT) \
+        if self.attributes else None
+
+  @property
+  def supports_urgent(self):
+    return self.attributes.get(ATTRIBUTE_SUPPORTS_URGENT) \
         if self.attributes else None
 
   @property
