@@ -28,7 +28,7 @@ export function jsSetter<T>(self: any, name: string, value: T) {
 }
 
 /** Converts camelCase to DOM style casing: myName => my-name. */
-function convertToKebabCase(jsName: string): string {
+export function convertToKebabCase(jsName: string): string {
   return jsName.replace(/([A-Z])/g, '-$1').toLowerCase();
 }
 

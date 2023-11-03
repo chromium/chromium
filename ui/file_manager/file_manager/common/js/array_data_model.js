@@ -23,7 +23,7 @@ export class ArrayDataModel extends EventTarget {
     this.indexes_ = [];
     this.compareFunctions_ = {};
 
-    /** @type {?Object} */
+    /** @type {null|{field: string|null, direction: string|null}} */
     this.sortStatus_;
 
     for (let i = 0; i < array.length; i++) {
@@ -92,13 +92,11 @@ export class ArrayDataModel extends EventTarget {
 
   /**
    * Returns current sort status.
-   * @return {!Object} Current sort status.
+   * @return {{field: string|null, direction: string|null}} Current sort status.
    */
   get sortStatus() {
     if (this.sortStatus_) {
       return this.createSortStatus(
-          // @ts-ignore: error TS2339: Property 'direction' does not exist on
-          // type 'Object'.
           this.sortStatus_.field, this.sortStatus_.direction);
     } else {
       return this.createSortStatus(null, null);
@@ -333,7 +331,7 @@ export class ArrayDataModel extends EventTarget {
    * Creates sort status with given field and direction.
    * @param {?string} field Sort field.
    * @param {?string} direction Sort direction.
-   * @return {!Object} Created sort status.
+   * @return {{field: string|null, direction: string|null}} Created sort status.
    */
   createSortStatus(field, direction) {
     return {field: field, direction: direction};

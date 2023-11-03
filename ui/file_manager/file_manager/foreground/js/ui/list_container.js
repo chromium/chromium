@@ -192,7 +192,7 @@ export class ListContainer {
       // @ts-ignore: error TS2339: Property 'querySelector' does not exist on
       // type 'FileTable'.
       const list = table.querySelector('#file-list');
-      list.setAttribute('aria-multiselectable', 'false');
+      list?.setAttribute('aria-multiselectable', 'false');
       grid.setAttribute('aria-multiselectable', 'false');
     }
   }

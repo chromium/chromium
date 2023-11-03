@@ -146,7 +146,7 @@ export class TableColumnModel extends EventTarget {
    * @param index The index of the column.
    * @param table Owner table.
    */
-  renderHeader(index: number, table: Element) {
+  renderHeader(index: number, table: HTMLElement) {
     const c = this.columns_[index]!;
     return c.headerRenderFunction.call(c, table);
   }
