@@ -1401,10 +1401,8 @@ void PasswordAutofillAgent::OnFrameDetached() {
   // for examples of sites that perform login using this technique.
   // We are treating primary main frame and the root of embedded frames the same
   // on purpose.
-  if (browser_has_form_to_process_ && render_frame()->GetWebFrame()->Parent()) {
-    DCHECK(FrameCanAccessPasswordManager());
-    // We should set `browser_has_form_to_process_ = false` here but
-    // `CleanupOnDocumentShutdown()` takes care of that.
+  if (FrameCanAccessPasswordManager() &&
+      render_frame()->GetWebFrame()->Parent()) {
     GetPasswordManagerDriver().DynamicFormSubmission(
         SubmissionIndicatorEvent::FRAME_DETACHED);
   }
@@ -1693,7 +1691,6 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   password_to_username_.clear();
   last_supplied_password_info_iter_ = web_input_to_password_info_.end();
   should_show_popup_without_passwords_ = false;
-  browser_has_form_to_process_ = false;
   field_data_manager_.get()->ClearData();
   username_autofill_state_ = WebAutofillState::kNotFilled;
   password_autofill_state_ = WebAutofillState::kNotFilled;
@@ -1751,8 +1748,6 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   }
 
   GetPasswordManagerDriver().InformAboutUserInput(*form_data);
-
-  browser_has_form_to_process_ = true;
 }
 
 bool PasswordAutofillAgent::FillUserNameAndPassword(
@@ -1939,7 +1934,6 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
                                       *field_data_manager_);
 
   GetPasswordManagerDriver().PasswordFormSubmitted(*submitted_form_data);
-  browser_has_form_to_process_ = false;
 }
 
 void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
@@ -1954,9 +1948,7 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
-      if (browser_has_form_to_process_) {
-        CHECK(FrameCanAccessPasswordManager());
-        browser_has_form_to_process_ = false;
+      if (FrameCanAccessPasswordManager()) {
         GetPasswordManagerDriver().DynamicFormSubmission(
             ToSubmissionIndicatorEvent(source));
       }
