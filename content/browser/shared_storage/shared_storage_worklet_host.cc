@@ -300,13 +300,9 @@ void SharedStorageWorkletHost::SelectURL(
         /*success=*/false, /*error_message=*/
         "Internal error: page does not exist.",
         /*result_config=*/absl::nullopt);
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
-  // This channel is associated with blink::mojom::SharedStorageDocumentService.
-  // Thus both `page_` and `document_service_` should be valid.
-  DCHECK(page_);
   DCHECK(document_service_);
 
   if (!blink::IsValidSharedStorageURLsArrayLength(urls_with_metadata.size())) {
