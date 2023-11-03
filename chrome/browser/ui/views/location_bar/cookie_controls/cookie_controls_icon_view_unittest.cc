@@ -30,6 +30,11 @@ std::u16string BlockedLabel() {
       IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL);
 }
 
+std::u16string LimitedLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL);
+}
+
 std::u16string TrackingProtectionLabel() {
   return l10n_util::GetStringUTF16(IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL);
 }
@@ -162,6 +167,24 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   ExecuteIcon();
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceOpened), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
+}
+
+TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceLabelAnimation) {
+  view_->OnStatusChanged(CookieControlsStatus::kEnabled,
+                         CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         GetParam(), base::Time::Now() + base::Days(10));
+  // Medium confidence to avoid triggering "Site not working"
+  view_->OnBreakageConfidenceLevelChanged(
+      CookieControlsBreakageConfidenceLevel::kMedium);
+  ExecuteIcon();
+  // Force the icon to animate and set the label again
+  view_->OnFinishedPageReloadWithChangedSettings();
+
+  EXPECT_TRUE(Visible());
+  EXPECT_TRUE(LabelShown());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? LimitedLabel() : BlockedLabel());
 }
 
 TEST_P(CookieControlsIconViewUnitTest,

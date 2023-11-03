@@ -4021,6 +4021,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
+      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are limited on the current site.">
+        Third-party cookies limited
+      </message>
       <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL" desc="Label for the Page Action (omnibox) icon that highlights the Tracking Protection bubble entrypoint when cookies are blocked and we have high confidence that this is breaking the current site.">
         Site not working?
       </message>
