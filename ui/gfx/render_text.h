@@ -452,6 +452,8 @@ class GFX_EXPORT RenderText {
   // by the use of SetElideBehavior(...).
   void SetEliding(bool value);
   void ApplyEliding(bool value, const Range& range);
+  // Replace the text by the empty text because it can't fit.
+  void SetTextFullyElided();
 
   // Returns whether this style is enabled consistently across the entire
   // RenderText.
@@ -962,6 +964,9 @@ class GFX_EXPORT RenderText {
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
   internal::StyleArray styles_;
   BreakList<bool> elidings_;
+  // Sets when no codepoint can fit the display width; even the ellipsis. The
+  // layout text must be empty.
+  bool text_fully_elided_ = false;
 
   mutable BreakList<SkColor> layout_colors_;
   mutable BreakList<BaselineStyle> layout_baselines_;
