@@ -17,6 +17,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/install_service_work_item_impl.h"
+#include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -186,7 +187,10 @@ class InstallServiceWorkItemTest : public ::testing::Test {
     base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", KEY_READ);
     key.DeleteKey(kClsidRegPath);
     key.DeleteKey(kAppidRegPath);
-    key.DeleteKey(IID_REGISTRY_PATH);
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH,
+                                   key_flag);
+    }
     key.DeleteKey(TYPELIB_REGISTRY_PATH);
   }
 
