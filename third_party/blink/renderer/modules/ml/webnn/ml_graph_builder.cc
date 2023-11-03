@@ -144,34 +144,6 @@ webnn::RoundingType BlinkRoundingTypeToComponent(
   NOTREACHED_NORETURN();
 }
 
-webnn::ReduceKind BlinkReduceKindToComponent(
-    blink::MLOperator::OperatorKind kind) {
-  switch (kind) {
-    case blink::MLOperator::OperatorKind::kReduceL1:
-      return webnn::ReduceKind::kL1;
-    case blink::MLOperator::OperatorKind::kReduceL2:
-      return webnn::ReduceKind::kL2;
-    case blink::MLOperator::OperatorKind::kReduceLogSum:
-      return webnn::ReduceKind::kLogSum;
-    case blink::MLOperator::OperatorKind::kReduceLogSumExp:
-      return webnn::ReduceKind::kLogSumExp;
-    case blink::MLOperator::OperatorKind::kReduceMax:
-      return webnn::ReduceKind::kMax;
-    case blink::MLOperator::OperatorKind::kReduceMean:
-      return webnn::ReduceKind::kMean;
-    case blink::MLOperator::OperatorKind::kReduceMin:
-      return webnn::ReduceKind::kMin;
-    case blink::MLOperator::OperatorKind::kReduceProduct:
-      return webnn::ReduceKind::kProduct;
-    case blink::MLOperator::OperatorKind::kReduceSum:
-      return webnn::ReduceKind::kSum;
-    case blink::MLOperator::OperatorKind::kReduceSumSquare:
-      return webnn::ReduceKind::kSumSquare;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
 base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
     const blink::MLConv2dOptions* options) {
   CHECK(options);
@@ -381,25 +353,49 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
                        const MLOperand* input,
                        const MLReduceOptions* options,
                        ExceptionState& exception_state) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce,
+  // When axes is not specified, it’s set to [0, ..., N-1], where N is
+  // the rank of the input tensor.
   const auto input_rank = input->Dimensions().size();
-  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
-  auto validated_output = webnn::ValidateReduceAndInferOutput(
-      BlinkReduceKindToComponent(kind), ConvertToComponentOperand(input), axes,
-      options->keepDimensions());
-  if (!validated_output.has_value()) {
+  Vector<uint32_t> default_axes(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; i++) {
+    default_axes[i] = i;
+  }
+  const auto axes = options->getAxesOr(std::move(default_axes));
+  auto validation_result = webnn::ValidateAxes(axes, input_rank);
+  if (!validation_result.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_output.error()));
+        String::FromUTF8(validation_result.error()));
     return nullptr;
   }
 
+  Vector<uint32_t> output_shape;
+  if (options->keepDimensions()) {
+    output_shape = input->Dimensions();
+    for (auto axis : axes) {
+      output_shape[axis] = 1;
+    }
+  } else {
+    for (wtf_size_t i = 0; i < input_rank; i++) {
+      if (!axes.Contains(i)) {
+        output_shape.push_back(input->Dimensions()[i]);
+      }
+    }
+  }
+
+  // Currently, WebNN doesn't support using empty dimensions to represent a
+  // scalar. An issue has been filed to track it -
+  // https://github.com/webmachinelearning/webnn/issues/390. As a workaround, we
+  // set output_shape to {1} to represent a scalar output.
+  if (output_shape.size() == 0) {
+    output_shape.push_back(1);
+  }
+
   auto* reduce = MakeGarbageCollected<MLOperator>(builder, kind, options);
-  // According to WebNN spec
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce, the output
-  // tensor of reduce has the same type as its input.
-  auto output = MLOperand::ValidateAndCreateOutput(
-      builder, ComponentOperandTypeToBlink(validated_output->data_type),
-      Vector<uint32_t>(validated_output->dimensions), reduce);
+  auto output = MLOperand::ValidateAndCreateOutput(builder, input->Type(),
+                                                   output_shape, reduce);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());
@@ -1015,16 +1011,8 @@ BUILD_ELEMENTWISE_UNARY_OP(neg, kNeg)
                        options, exception_state);                      \
   }
 
-BUILD_REDUCE_OP(reduceL1, kReduceL1)
-BUILD_REDUCE_OP(reduceL2, kReduceL2)
-BUILD_REDUCE_OP(reduceLogSum, kReduceLogSum)
-BUILD_REDUCE_OP(reduceLogSumExp, kReduceLogSumExp)
-BUILD_REDUCE_OP(reduceMax, kReduceMax)
-BUILD_REDUCE_OP(reduceMean, kReduceMean)
-BUILD_REDUCE_OP(reduceMin, kReduceMin)
-BUILD_REDUCE_OP(reduceProduct, kReduceProduct)
 BUILD_REDUCE_OP(reduceSum, kReduceSum)
-BUILD_REDUCE_OP(reduceSumSquare, kReduceSumSquare)
+BUILD_REDUCE_OP(reduceMean, kReduceMean)
 
 MLOperand* MLGraphBuilder::elu(const MLOperand* input,
                                const MLEluOptions* options,

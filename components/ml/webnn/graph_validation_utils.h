@@ -68,19 +68,6 @@ enum AutoPad { kExplicit, kSameUpper, kSameLower };
 // Represents the `MLRoundingType` that is used to compute the output shape.
 enum RoundingType { kFloor, kCeil };
 
-enum ReduceKind {
-  kL1,
-  kL2,
-  kLogSum,
-  kLogSumExp,
-  kMax,
-  kMean,
-  kMin,
-  kProduct,
-  kSum,
-  kSumSquare
-};
-
 // A size has height and width values.
 template <typename T>
 struct Size2d {
@@ -280,14 +267,6 @@ base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
 base::expected<Operand, std::string> ValidateSliceAndInferOutput(
     const Operand& input,
     const SliceAttributes& attributes);
-
-// Validate and infer output information of reduce operator defined in
-// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce
-base::expected<Operand, std::string> ValidateReduceAndInferOutput(
-    ReduceKind kind,
-    const Operand& input,
-    base::span<const uint32_t> axes,
-    bool keepDimensions = false);
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions);

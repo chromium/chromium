@@ -232,12 +232,6 @@ class GraphInfoBuilder final {
                   uint64_t slope_operand_id,
                   uint64_t output_operand_id);
 
-  void BuildReduce(mojom::Reduce::Kind kind,
-                   uint64_t input_operand_id,
-                   uint64_t output_operand_id,
-                   std::vector<uint32_t> axes,
-                   bool keep_dimensions);
-
   void BuildRelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
   // A `Resample2dAttributes` type should have the following members:

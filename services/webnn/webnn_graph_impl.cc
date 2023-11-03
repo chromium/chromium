@@ -78,32 +78,6 @@ webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
   NOTREACHED_NORETURN();
 }
 
-webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
-  switch (kind) {
-    case mojom::Reduce::Kind::kL1:
-      return webnn::ReduceKind::kL1;
-    case mojom::Reduce::Kind::kL2:
-      return webnn::ReduceKind::kL2;
-    case mojom::Reduce::Kind::kLogSum:
-      return webnn::ReduceKind::kLogSum;
-    case mojom::Reduce::Kind::kLogSumExp:
-      return webnn::ReduceKind::kLogSumExp;
-    case mojom::Reduce::Kind::kMax:
-      return webnn::ReduceKind::kMax;
-    case mojom::Reduce::Kind::kMean:
-      return webnn::ReduceKind::kMean;
-    case mojom::Reduce::Kind::kMin:
-      return webnn::ReduceKind::kMin;
-    case mojom::Reduce::Kind::kProduct:
-      return webnn::ReduceKind::kProduct;
-    case mojom::Reduce::Kind::kSum:
-      return webnn::ReduceKind::kSum;
-    case mojom::Reduce::Kind::kSumSquare:
-      return webnn::ReduceKind::kSumSquare;
-  }
-  NOTREACHED_NORETURN();
-}
-
 bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
   if (std::isnan(clamp->min_value) || std::isnan(clamp->max_value)) {
     // The min or max value are nan.
@@ -727,28 +701,6 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
-                    const mojom::ReducePtr& reduce) {
-  auto* input = GetMojoOperand(id_to_operand_map, reduce->input_operand_id);
-  auto* output = GetMojoOperand(id_to_operand_map, reduce->output_operand_id);
-  if (!input || !output || output == input) {
-    // The reduce operator is invalid.
-    return false;
-  }
-
-  auto validated_output = ValidateReduceAndInferOutput(
-      MojoReduceTypeToComponent(reduce->kind), ConvertToComponentOperand(input),
-      reduce->axes, reduce->keep_dimensions);
-  if (!validated_output.has_value()) {
-    return false;
-  }
-  if (validated_output != ConvertToComponentOperand(output)) {
-    return false;
-  }
-
-  return true;
-}
-
 base::flat_map<std::string, size_t> CreateByteLengthMap(
     const std::vector<uint64_t>& operand_ids,
     const base::flat_map<uint64_t, mojom::OperandPtr>& id_to_operand_map) {
@@ -795,8 +747,6 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
     case mojom::Operation::Tag::kPrelu:
       return ValidatePrelu(id_to_operand_map, operation->get_prelu());
-    case mojom::Operation::Tag::kReduce:
-      return ValidateReduce(id_to_operand_map, operation->get_reduce());
     case mojom::Operation::Tag::kResample2d:
       return ValidateResample2d(id_to_operand_map, operation->get_resample2d());
     case mojom::Operation::Tag::kReshape:

@@ -3062,38 +3062,11 @@ MLOperand* BuildReduce(V8TestingScope& scope,
                        const MLReduceOptions* options) {
   MLOperand* output = nullptr;
   switch (kind) {
-    case ReduceKind::kL1:
-      output = builder->reduceL1(input, options, scope.GetExceptionState());
-      break;
-    case ReduceKind::kL2:
-      output = builder->reduceL2(input, options, scope.GetExceptionState());
-      break;
-    case ReduceKind::kLogSum:
-      output = builder->reduceLogSum(input, options, scope.GetExceptionState());
-      break;
-    case ReduceKind::kLogSumExp:
-      output =
-          builder->reduceLogSumExp(input, options, scope.GetExceptionState());
-      break;
-    case ReduceKind::kMax:
-      output = builder->reduceMax(input, options, scope.GetExceptionState());
-      break;
     case ReduceKind::kMean:
       output = builder->reduceMean(input, options, scope.GetExceptionState());
       break;
-    case ReduceKind::kMin:
-      output = builder->reduceMin(input, options, scope.GetExceptionState());
-      break;
-    case ReduceKind::kProduct:
-      output =
-          builder->reduceProduct(input, options, scope.GetExceptionState());
-      break;
     case ReduceKind::kSum:
       output = builder->reduceSum(input, options, scope.GetExceptionState());
-      break;
-    case ReduceKind::kSumSquare:
-      output =
-          builder->reduceSumSquare(input, options, scope.GetExceptionState());
       break;
   }
   return output;
@@ -3108,35 +3081,11 @@ void CheckReduceOutput(const MLOperand* input,
   auto* reduce = output->Operator();
   EXPECT_NE(reduce, nullptr);
   switch (kind) {
-    case ReduceKind::kL1:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceL1);
-      break;
-    case ReduceKind::kL2:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceL2);
-      break;
-    case ReduceKind::kLogSum:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceLogSum);
-      break;
-    case ReduceKind::kLogSumExp:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceLogSumExp);
-      break;
-    case ReduceKind::kMax:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMax);
-      break;
     case ReduceKind::kMean:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMean);
       break;
-    case ReduceKind::kMin:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceMin);
-      break;
-    case ReduceKind::kProduct:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceProduct);
-      break;
     case ReduceKind::kSum:
       EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceSum);
-      break;
-    case ReduceKind::kSumSquare:
-      EXPECT_EQ(reduce->Kind(), MLOperator::OperatorKind::kReduceSumSquare);
       break;
   }
   EXPECT_EQ(reduce->IsConnected(), true);
@@ -3145,15 +3094,11 @@ void CheckReduceOutput(const MLOperand* input,
 
 TEST_F(MLGraphBuilderTest, ReduceTest) {
   V8TestingScope scope;
-  MLGraphBuilder* builder =
+  auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
-  const auto kReduceKinds = {ReduceKind::kL1,     ReduceKind::kL2,
-                             ReduceKind::kLogSum, ReduceKind::kLogSumExp,
-                             ReduceKind::kMax,    ReduceKind::kMean,
-                             ReduceKind::kMin,    ReduceKind::kProduct,
-                             ReduceKind::kSum,    ReduceKind::kSumSquare};
-  for (const auto reduce_kind : kReduceKinds) {
+  const auto ReduceKinds = {ReduceKind::kMean, ReduceKind::kSum};
+  for (const auto reduce_kind : ReduceKinds) {
     {
       // Test reduce with default options.
       auto* input = BuildInput(builder, "input", {1, 3, 4, 4},
@@ -3219,25 +3164,6 @@ TEST_F(MLGraphBuilderTest, ReduceTest) {
       EXPECT_EQ(scope.GetExceptionState().Message(),
                 "Two or more values are same in the axes sequence.");
     }
-  }
-  // Test throw error when the input type is not one of the floating point types
-  // for these four reduce kind.
-  const auto kFloatRestrictReduceKinds = {ReduceKind::kL2, ReduceKind::kLogSum,
-                                          ReduceKind::kLogSumExp,
-                                          ReduceKind::kMean};
-  for (const auto reduce_kind : kFloatRestrictReduceKinds) {
-    // Test throwing exception when the two values are same in axes sequence.
-    auto* input =
-        BuildInput(builder, "input", {1, 2, 5, 5},
-                   V8MLOperandType::Enum::kInt32, scope.GetExceptionState());
-    auto* options = MLReduceOptions::Create();
-    options->setAxes({0, 1});
-    auto* output = BuildReduce(scope, builder, reduce_kind, input, options);
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The input type must be one of the floating point types.");
   }
 }
 

@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -903,49 +902,6 @@ base::expected<Operand, std::string> ValidateSliceAndInferOutput(
   // The output is a tensor the same as the specified slice sizes.
   std::vector<uint32_t> output_shape;
   output_shape.assign(attributes.sizes.begin(), attributes.sizes.end());
-  return Operand(input.data_type, std::move(output_shape));
-}
-
-base::expected<Operand, std::string> ValidateReduceAndInferOutput(
-    ReduceKind kind,
-    const Operand& input,
-    base::span<const uint32_t> axes,
-    bool keep_dimensions) {
-  auto input_dimensions = input.dimensions;
-  auto input_rank = input_dimensions.size();
-  auto validation_result = ValidateAxes(axes, input_rank);
-  if (!validation_result.has_value()) {
-    return base::unexpected(validation_result.error());
-  }
-
-  if (kind == ReduceKind::kL2 || kind == ReduceKind::kMean ||
-      kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
-    if (!IsFloatingPointType(input.data_type)) {
-      return base::unexpected(
-          "The input type must be one of the floating point types.");
-    }
-  }
-
-  std::vector<uint32_t> output_shape;
-  if (keep_dimensions) {
-    output_shape = input_dimensions;
-    for (auto axis : axes) {
-      output_shape[axis] = 1;
-    }
-  } else {
-    for (size_t i = 0; i < input_rank; i++) {
-      if (!base::Contains(axes, i)) {
-        output_shape.push_back(input_dimensions[i]);
-      }
-    }
-  }
-  // Currently, WebNN doesn't support using empty dimensions to represent a
-  // scalar. An issue has been filed to track it -
-  // https://github.com/webmachinelearning/webnn/issues/390. As a workaround, we
-  // set output_shape to {1} to represent a scalar output.
-  if (output_shape.size() == 0) {
-    output_shape.push_back(1);
-  }
   return Operand(input.data_type, std::move(output_shape));
 }
 

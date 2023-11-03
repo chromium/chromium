@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -526,59 +525,6 @@ OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewPrelu(std::move(prelu_mojo));
 }
 
-OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
-                                  const MLOperator* reduce) {
-  auto reduce_mojo = blink_mojom::Reduce::New();
-  switch (reduce->Kind()) {
-    case MLOperator::OperatorKind::kReduceL1:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kL1;
-      break;
-    case MLOperator::OperatorKind::kReduceL2:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kL2;
-      break;
-    case MLOperator::OperatorKind::kReduceLogSum:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kLogSum;
-      break;
-    case MLOperator::OperatorKind::kReduceLogSumExp:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kLogSumExp;
-      break;
-    case MLOperator::OperatorKind::kReduceMax:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kMax;
-      break;
-    case MLOperator::OperatorKind::kReduceMean:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kMean;
-      break;
-    case MLOperator::OperatorKind::kReduceMin:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kMin;
-      break;
-    case MLOperator::OperatorKind::kReduceProduct:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kProduct;
-      break;
-    case MLOperator::OperatorKind::kReduceSum:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kSum;
-      break;
-    case MLOperator::OperatorKind::kReduceSumSquare:
-      reduce_mojo->kind = blink_mojom::Reduce::Kind::kSumSquare;
-      break;
-    default:
-      NOTREACHED();
-  }
-  reduce_mojo->input_operand_id = GetOperatorInputId(reduce, operand_to_id_map);
-  reduce_mojo->output_operand_id =
-      GetOperatorOutputId(reduce, operand_to_id_map);
-
-  const auto* options =
-      static_cast<const blink::MLReduceOptions*>(reduce->Options());
-  CHECK(options);
-  const auto input_rank = reduce->Inputs()[0]->Dimensions().size();
-  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
-  CHECK_LE(axes.size(), input_rank);
-  reduce_mojo->axes = axes;
-  reduce_mojo->keep_dimensions = options->keepDimensions();
-
-  return blink_mojom::Operation::NewReduce(std::move(reduce_mojo));
-}
-
 OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
                                        const MLOperator* resample2d) {
   auto resample2d_mojo = blink_mojom::Resample2d::New();
@@ -766,26 +712,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreatePool2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kPRelu:
       return CreatePreluOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kReduceL1:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceL2:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceLogSum:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceLogSumExp:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceMax:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceMean:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceMin:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceProduct:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceSum:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kReduceSumSquare:
-      return CreateReduceOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kResample2d:
       return CreateResample2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kRelu:

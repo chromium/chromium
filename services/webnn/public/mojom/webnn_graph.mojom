@@ -194,37 +194,6 @@ struct Pad {
   PaddingMode mode;
 };
 
-struct Reduce  {
-  enum Kind {
-    kL1,
-    kL2,
-    kLogSum,
-    kLogSumExp,
-    kMax,
-    kMean,
-    kMin,
-    kProduct,
-    kSum,
-    kSumSquare,
-  };
-
-  // The kind of reduce operation.
-  Kind kind;
-  // The id of input operand is used to get the `Operand` description from
-  // `GraphInfo.id_to_operand_map`.
-  uint64 input_operand_id;
-  // The id of output operand is used to get the `Operand` description from
-  // `GraphInfo.id_to_operand_map`.
-  uint64 output_operand_id;
-
-  // Axes indicates the dimensions to reduce. The values in the sequence
-  // must be in the range [0, N-1] where N is the rank of the input tensor.
-  // The length of the sequence should be less than or equal to N.
-  array<uint32> axes;
-  // If true, retains reduced dimensions with size 1.
-  bool keep_dimensions = false;
-};
-
 // Represents an average or max pooling operation across all the elements with
 // moving window over the input tensor.
 // This struct also contains the attributes of pool2d operator, but the
@@ -484,7 +453,6 @@ union Operation {
   Pad pad;
   Pool2d pool2d;
   Prelu prelu;
-  Reduce reduce;
   Relu relu;
   Resample2d resample2d;
   Reshape reshape;
