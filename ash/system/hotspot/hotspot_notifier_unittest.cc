@@ -58,7 +58,7 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
         std::make_unique<network_config::CrosNetworkConfigTestHelper>();
     cros_hotspot_config_test_helper_ =
         std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/false);
+            /*use_fake_implementation=*/true);
 
     NoSessionAshTestBase::SetUp();
     LogIn();
@@ -140,6 +140,18 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void UpdateHotspotInfo(hotspot_config::mojom::HotspotState state,
+                         hotspot_config::mojom::HotspotAllowStatus allow_status,
+                         uint32_t client_count = 0) {
+    auto hotspot_info = hotspot_config::mojom::HotspotInfo::New();
+    hotspot_info->state = state;
+    hotspot_info->allow_status = allow_status;
+    hotspot_info->client_count = client_count;
+    cros_hotspot_config_test_helper_->SetFakeHotspotInfo(
+        std::move(hotspot_info));
+    base::RunLoop().RunUntilIdle();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
@@ -165,6 +177,12 @@ TEST_F(HotspotNotifierTest, AdminRestricted) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kAdminRestrictedNotificationId));
+
+  UpdateHotspotInfo(hotspot_config::mojom::HotspotState::kEnabling,
+                    hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kInternalErrorNotificationId));
 }
 
 TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
@@ -181,6 +199,12 @@ TEST_F(HotspotNotifierTest, WiFiTurnedOn) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kWiFiTurnedOnNotificationId));
+
+  UpdateHotspotInfo(hotspot_config::mojom::HotspotState::kEnabling,
+                    hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kWiFiTurnedOnNotificationId));
 }
 
 TEST_F(HotspotNotifierTest, AutoDisabled) {
@@ -197,6 +221,12 @@ TEST_F(HotspotNotifierTest, AutoDisabled) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kAutoDisabledNotificationId));
+
+  UpdateHotspotInfo(hotspot_config::mojom::HotspotState::kEnabling,
+                    hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kAutoDisabledNotificationId));
 
   message_center::MessageCenter::Get()->ClickOnNotificationButton(
       HotspotNotifier::kAutoDisabledNotificationId, 0);
@@ -220,6 +250,12 @@ TEST_F(HotspotNotifierTest, InternalError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kInternalErrorNotificationId));
+
+  UpdateHotspotInfo(hotspot_config::mojom::HotspotState::kEnabling,
+                    hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kInternalErrorNotificationId));
 }
 
 TEST_F(HotspotNotifierTest, HotspotTurnedOn) {

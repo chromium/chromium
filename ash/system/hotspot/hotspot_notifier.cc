@@ -130,6 +130,21 @@ void HotspotNotifier::OnGetHotspotInfo(
     return;
   }
 
+  if (hotspot_info->state == hotspot_config::mojom::HotspotState::kEnabling) {
+    message_center->RemoveNotification(
+        HotspotNotifier::kAutoDisabledNotificationId,
+        /*by_user=*/false);
+    message_center->RemoveNotification(
+        HotspotNotifier::kInternalErrorNotificationId,
+        /*by_user=*/false);
+    message_center->RemoveNotification(
+        HotspotNotifier::kWiFiTurnedOnNotificationId,
+        /*by_user=*/false);
+    message_center->RemoveNotification(
+        HotspotNotifier::kAdminRestrictedNotificationId,
+        /*by_user=*/false);
+  }
+
   if (hotspot_info->state == hotspot_config::mojom::HotspotState::kEnabled) {
     const std::u16string& title =
         l10n_util::GetStringUTF16(IDS_ASH_HOTSPOT_ON_TITLE);
