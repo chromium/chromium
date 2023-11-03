@@ -15,11 +15,14 @@
 
 import asyncio
 import os
+import ssl
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
 import websockets
+from pytest_httpserver import HTTPServer
 from test_helpers import (execute_command, get_tree, goto_url,
                           read_JSON_message, wait_for_event, wait_for_events)
 
@@ -168,18 +171,44 @@ def hang_url(local_server: LocalHttpServer):
         local_server.hang_forever_stop()
 
 
-@pytest.fixture
-def bad_ssl_url():
-    """
-    Return a URL with an expired SSL certificate.
+@pytest.fixture(scope="session")
+def ssl_context_err_cert_authority_invalid():
+    """Return a SSL context with an invalid certificate authority."""
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 
+    cert_file_name = Path(__file__).parent / "tools" / "cert.pem"
+    key_file_name = Path(__file__).parent / "tools" / "key.pem"
+
+    context.load_cert_chain(cert_file_name, key_file_name)
+
+    return context
+
+
+@pytest.fixture(scope="session")
+def https_server_err_cert_authority_invalid(
+        ssl_context_err_cert_authority_invalid):
+    """Return a HTTPServer instance with SSL enabled.
+    See https://pytest-httpserver.readthedocs.io/en/latest/fixtures.html#make-httpserver"""
+    server = HTTPServer(ssl_context=ssl_context_err_cert_authority_invalid)
+    server.start()
+
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+
+
+@pytest.fixture(scope="session")
+def bad_ssl_url(https_server_err_cert_authority_invalid):
+    """
+    Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
 
     > Your connection is not private
-    > NET::ERR_CERT_DATE_INVALID
+    > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    # TODO: Switch to a local server so that it works off-line.
-    return "https://expired.badssl.com/"
+    return https_server_err_cert_authority_invalid.url_for("/")
 
 
 @pytest.fixture

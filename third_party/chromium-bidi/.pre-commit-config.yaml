@@ -84,6 +84,7 @@ repos:
         # skip false positives
         args:
           [--skip=package-lock.json, --skip=tests/screenshot/test_screenshot.py]
+        exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
     rev: v0.1.1
     hooks:

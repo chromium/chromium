@@ -306,7 +306,7 @@ async def test_network_bad_ssl(websocket, context_id, bad_ssl_url):
                 "timings": ANY_DICT
             },
             "timestamp": ANY_TIMESTAMP,
-            "errorText": "net::ERR_CERT_DATE_INVALID"
+            "errorText": "net::ERR_CERT_AUTHORITY_INVALID"
         }
     }
 
