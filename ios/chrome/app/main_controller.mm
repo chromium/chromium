@@ -86,7 +86,7 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/sessions/session_restoration_util.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -823,12 +823,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         dispatch_semaphore_signal(semaphore);
       }
     };
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      [[SessionServiceIOS sharedService]
-          shutdownWithCompletion:completionBlock];
-    } else {
-      completionBlock();
-    }
+
+    ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
+        self.appState.mainBrowserState, base::BindOnce(completionBlock));
 
     if (metrics) {
       metrics->Stop();

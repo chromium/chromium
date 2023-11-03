@@ -10,6 +10,7 @@
 #import "base/files/file_path.h"
 #import "base/format_macros.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/logging.h"
@@ -75,8 +76,8 @@ const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
   return self;
 }
 
-- (void)shutdownWithCompletion:(ProceduralBlock)completion {
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(completion));
+- (void)shutdownWithClosure:(base::OnceClosure)closure {
+  _taskRunner->PostTask(FROM_HERE, std::move(closure));
 }
 
 - (void)saveSession:(__weak SessionWindowIOSFactory*)factory

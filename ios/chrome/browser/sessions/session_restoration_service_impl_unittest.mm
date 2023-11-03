@@ -314,13 +314,8 @@ class SessionRestorationServiceImplTest : public PlatformTest {
 
   // Wait until all task posted on the background sequence are complete.
   void WaitForBackgroundTaskComplete() {
-    // Since the current TaskRunner is injected in the service to use for
-    // background processing, posting a task to and waiting for it to be
-    // invoked will ensure that all pending background processing is now
-    // complete.
     base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
+    service_->InvokeClosureWhenBackgroundProcessingDone(run_loop.QuitClosure());
     run_loop.Run();
   }
 

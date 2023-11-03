@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 
 // To get access to UseSessionSerializationOptimizations().
@@ -31,5 +32,16 @@ void SaveSessionForBrowser(Browser* browser) {
         ->SaveSessions();
   } else {
     SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(true);
+  }
+}
+
+void ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
+    ChromeBrowserState* browser_state,
+    base::OnceClosure closure) {
+  if (web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+        ->InvokeClosureWhenBackgroundProcessingDone(std::move(closure));
+  } else {
+    [[SessionServiceIOS sharedService] shutdownWithClosure:std::move(closure)];
   }
 }

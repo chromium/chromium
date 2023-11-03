@@ -49,6 +49,8 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
       web::proto::WebStateStorage storage) final;
+  void InvokeClosureWhenBackgroundProcessingDone(
+      base::OnceClosure closure) final;
 
  private:
   // Helper type used to record information about a single WebStateList.

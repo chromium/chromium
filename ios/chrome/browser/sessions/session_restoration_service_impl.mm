@@ -372,6 +372,12 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
       base::ReturnValueOnce<NSData*>(nil));
 }
 
+void SessionRestorationServiceImpl::InvokeClosureWhenBackgroundProcessingDone(
+    base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_runner_->PostTask(FROM_HERE, std::move(closure));
+}
+
 #pragma mark - Private
 
 void SessionRestorationServiceImpl::MarkWebStateListDirty(

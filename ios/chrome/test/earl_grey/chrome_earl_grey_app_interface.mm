@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_util.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -89,10 +88,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "ui/base/device_form_factor.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -193,14 +188,12 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)saveSessionImmediately {
   SaveSessionForBrowser(chrome_test_util::GetMainBrowser());
 
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    ProceduralBlock completionBlock = ^{
-      dispatch_semaphore_signal(semaphore);
-    };
-    [[SessionServiceIOS sharedService] shutdownWithCompletion:completionBlock];
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-  }
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
+      chrome_test_util::GetOriginalBrowserState(), base::BindOnce(^{
+        dispatch_semaphore_signal(semaphore);
+      }));
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 + (NSError*)clearAllWebStateBrowsingData {

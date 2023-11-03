@@ -251,6 +251,7 @@ source_set("session_util") {
     ":restoration_agent",
     ":session_restoration_service",
     ":session_restoration_service_factory",
+    ":session_service",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/web/common:features",
   ]
