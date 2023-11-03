@@ -202,8 +202,8 @@ source_set("session_restoration_service_impl") {
 
 source_set("session_restoration_service_factory") {
   sources = [
-    "session_restoration_service_factory.cc",
     "session_restoration_service_factory.h",
+    "session_restoration_service_factory.mm",
   ]
   deps = [
     ":session_restoration_service_impl",
