@@ -144,8 +144,29 @@ gfx::RectF SVGMaskGeometry::ComputePositioningArea(
 }
 
 gfx::Vector2dF SVGMaskGeometry::ComputePhase() const {
-  // TODO(fs): Support phase computations.
-  return gfx::Vector2dF();
+  // Given the size that the whole image should draw at, and the input phase
+  // requested by the content, and the space between repeated tiles, compute a
+  // phase that is no more than one size + space in magnitude.
+  const gfx::SizeF step_per_tile = tile_size_ + spacing_;
+  return {std::fmod(-phase_.x(), step_per_tile.width()),
+          std::fmod(-phase_.y(), step_per_tile.height())};
+}
+
+float GetSpaceBetweenImageTiles(float area_size, float tile_size) {
+  const float number_of_tiles = std::floor(area_size / tile_size);
+  if (number_of_tiles < 1) {
+    return -1;
+  }
+  return (area_size - number_of_tiles * tile_size) / (number_of_tiles - 1);
+}
+
+float ComputeRoundedTileSize(float area_size, float tile_size) {
+  const float nr_tiles = std::max(1.0f, std::round(area_size / tile_size));
+  return area_size / nr_tiles;
+}
+
+float ComputeTilePhase(float position, float tile_extent) {
+  return tile_extent ? tile_extent - std::fmod(position, tile_extent) : 0;
 }
 
 float ResolveWidthForRatio(float height, const gfx::SizeF& natural_ratio) {
@@ -236,20 +257,121 @@ void SVGMaskGeometry::Calculate(const FillLayer& layer) {
   dest_rect_ = positioning_area;
   tile_size_ = ComputeTileSize(layer, positioning_area);
 
-  if (!object_.IsSVGForeignObject()) {
-    if (clip_rect_) {
-      clip_rect_->InvScale(object_.StyleRef().EffectiveZoom());
-    }
-    dest_rect_.InvScale(object_.StyleRef().EffectiveZoom());
-    tile_size_.InvScale(object_.StyleRef().EffectiveZoom());
-  }
+  const gfx::SizeF available_size = positioning_area.size() - tile_size_;
+  const gfx::PointF computed_position(
+      FloatValueForLength(layer.PositionX(), available_size.width()),
+      FloatValueForLength(layer.PositionY(), available_size.height()));
+  // Adjust position based on the specified edge origin.
+  const gfx::PointF offset(
+      layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
+          ? available_size.width() - computed_position.x()
+          : computed_position.x(),
+      layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
+          ? available_size.height() - computed_position.y()
+          : computed_position.y());
 
   const FillRepeat& repeat = layer.Repeat();
-  if (repeat.x == EFillRepeat::kNoRepeatFill) {
-    dest_rect_.set_width(tile_size_.width());
+  switch (repeat.x) {
+    case EFillRepeat::kRoundFill:
+      if (tile_size_.width() <= 0) {
+        break;
+      }
+      if (positioning_area.width() > 0) {
+        const float rounded_width = ComputeRoundedTileSize(
+            positioning_area.width(), tile_size_.width());
+        // Maintain aspect ratio if mask-size: auto is set
+        if (layer.SizeLength().Height().IsAuto() &&
+            repeat.y != EFillRepeat::kRoundFill) {
+          tile_size_.set_height(
+              ResolveHeightForRatio(rounded_width, tile_size_));
+        }
+        tile_size_.set_width(rounded_width);
+
+        // Force the first tile to line up with the edge of the positioning
+        // area.
+        phase_.set_x(ComputeTilePhase(offset.x(), tile_size_.width()));
+      }
+      break;
+    case EFillRepeat::kRepeatFill:
+      if (tile_size_.width() <= 0) {
+        break;
+      }
+      phase_.set_x(ComputeTilePhase(offset.x(), tile_size_.width()));
+      break;
+    case EFillRepeat::kSpaceFill: {
+      if (tile_size_.width() <= 0) {
+        break;
+      }
+      const float space = GetSpaceBetweenImageTiles(positioning_area.width(),
+                                                    tile_size_.width());
+      if (space >= 0) {
+        spacing_.set_width(space);
+        phase_.set_x(ComputeTilePhase(0, tile_size_.width() + space));
+        break;
+      }
+      // Handle as no-repeat.
+      [[fallthrough]];
+    }
+    case EFillRepeat::kNoRepeatFill:
+      dest_rect_.set_x(dest_rect_.x() + offset.x());
+      dest_rect_.set_width(tile_size_.width());
+      break;
   }
-  if (repeat.y == EFillRepeat::kNoRepeatFill) {
-    dest_rect_.set_height(tile_size_.height());
+
+  switch (repeat.y) {
+    case EFillRepeat::kRoundFill:
+      if (tile_size_.height() <= 0) {
+        break;
+      }
+      if (positioning_area.height() > 0) {
+        const float rounded_height = ComputeRoundedTileSize(
+            positioning_area.height(), tile_size_.height());
+        // Maintain aspect ratio if mask-size: auto is set
+        if (layer.SizeLength().Width().IsAuto() &&
+            repeat.x != EFillRepeat::kRoundFill) {
+          tile_size_.set_width(
+              ResolveWidthForRatio(rounded_height, tile_size_));
+        }
+        tile_size_.set_height(rounded_height);
+
+        phase_.set_y(ComputeTilePhase(offset.y(), tile_size_.height()));
+      }
+      break;
+    case EFillRepeat::kRepeatFill:
+      if (tile_size_.height() <= 0) {
+        break;
+      }
+      phase_.set_y(ComputeTilePhase(offset.y(), tile_size_.height()));
+      break;
+    case EFillRepeat::kSpaceFill: {
+      if (tile_size_.height() <= 0) {
+        break;
+      }
+      const float space = GetSpaceBetweenImageTiles(positioning_area.height(),
+                                                    tile_size_.height());
+      if (space >= 0) {
+        spacing_.set_height(space);
+        phase_.set_y(ComputeTilePhase(0, tile_size_.height() + space));
+        break;
+      }
+      // Handle as no-repeat.
+      [[fallthrough]];
+    }
+    case EFillRepeat::kNoRepeatFill:
+      dest_rect_.set_y(dest_rect_.y() + offset.y());
+      dest_rect_.set_height(tile_size_.height());
+      break;
+  }
+
+  if (!object_.IsSVGForeignObject()) {
+    const float zoom = object_.StyleRef().EffectiveZoom();
+    if (clip_rect_) {
+      clip_rect_->InvScale(zoom);
+    }
+    dest_rect_.InvScale(zoom);
+    tile_size_.InvScale(zoom);
+    spacing_.InvScale(zoom);
+    phase_.InvScale(zoom);
   }
 }
 
@@ -358,6 +480,10 @@ void PaintMaskLayer(const FillLayer& layer,
     return;
   }
   geometry.Calculate(layer);
+
+  if (geometry.TileSize().IsEmpty()) {
+    return;
+  }
 
   scoped_refptr<Image> image =
       style_image->GetImage(info.object, info.object.GetDocument(),
