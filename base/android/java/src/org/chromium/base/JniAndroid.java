@@ -30,6 +30,19 @@ public final class JniAndroid {
     }
 
     /**
+     * Indicates that native code was faced with an uncaught Java exception.
+     *
+     * <p>{@code #getCause} returns the original uncaught exception.
+     */
+    public static class UncaughtExceptionException extends RuntimeException {
+        public UncaughtExceptionException(String nativeStackTrace, Throwable uncaughtException) {
+            super(
+                    "Native stack trace:" + System.lineSeparator() + nativeStackTrace,
+                    uncaughtException);
+        }
+    }
+
+    /**
      * Called by the Chromium native JNI framework when faced with an uncaught Java exception while
      * executing a Java method from native code.
      *
@@ -46,12 +59,21 @@ public final class JniAndroid {
      * native exception handler. Errors will be sent to the system log instead.
      *
      * @param throwable The uncaught Java exception that was thrown by a Java method called via JNI.
+     * @param nativeStackTrace The stack trace of the native code that called the Java method that
+     *     threw.
      */
     @CalledByNative
-    private static void handleException(Throwable throwable) {
+    private static void handleException(Throwable throwable, String nativeStackTrace) {
         // Try to make sure the exception details at least make their way to the log even if the
         // rest of this method goes horribly wrong.
         Log.e(TAG, "Handling uncaught Java exception", throwable);
+
+        // Wrap the original exception so that we can annotate it with native stack information,
+        // with the goal of including as much information in the Java crash report as possible.
+        // (The native caller might itself have been called from Java. We don't need to care about
+        // that because the stack trace in `throwable` includes the *entire* Java stack of the
+        // current thread, even if there are native calls in the middle.)
+        throwable = new UncaughtExceptionException(nativeStackTrace, throwable);
 
         // The Chromium JNI framework does not support resuming execution after a Java method called
         // through JNI throws an exception - we have to terminate the process at some point,

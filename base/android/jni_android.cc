@@ -342,12 +342,11 @@ void CheckException(JNIEnv* env) {
       << "Uncaught Java exception in native code. Please include the Java "
          "exception stack from the Android log in your crash report.";
 
-  // TODO: this terminates the process from the Java side, which means the crash
-  // is treated as a Java crash, as opposed to a native crash. This is what we
-  // want (the true root cause of the crash is a Java exception, after all), but
-  // that also means we don't get any information about the native side of the
-  // stack. We should try to mitigate that in some way.
-  Java_JniAndroid_handleException(env, throwable);
+  const std::string native_stack_trace = base::debug::StackTrace().ToString();
+  LOG(ERROR) << "Native stack trace:" << std::endl << native_stack_trace;
+
+  Java_JniAndroid_handleException(
+      env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
 
   // Ideally handleException() should have terminated the process and we should
   // not get here. In the unlikely case it didn't, we need to do that ourselves.
