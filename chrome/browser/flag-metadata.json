@@ -6027,11 +6027,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "oobe-simon",
-    "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "optimization-guide-debug-logs",
     "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 125

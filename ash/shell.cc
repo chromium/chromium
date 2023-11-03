@@ -1641,7 +1641,7 @@ void Shell::Init(
 
   window_tree_host_manager_->InitHosts();
 
-  if (ash::features::IsOobeSimonEnabled()) {
+  if (ash::features::IsBootAnimationEnabled()) {
     booting_animation_controller_ =
         std::make_unique<BootingAnimationController>();
   }

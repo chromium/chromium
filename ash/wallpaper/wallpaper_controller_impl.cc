@@ -1982,7 +1982,7 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
 
 void WallpaperControllerImpl::ShowOobeWallpaper() {
   base::FilePath file_path;
-  if (features::IsOobeSimonEnabled()) {
+  if (features::IsBootAnimationEnabled()) {
     file_path = base::FilePath(
         FILE_PATH_LITERAL("/usr/share/chromeos-assets/animated_splash_screen/"
                           "oobe_wallpaper.jpg"));

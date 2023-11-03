@@ -57,7 +57,7 @@ class OobeWebDialogView : public views::WebDialogView {
                     ui::WebDialogDelegate* delegate,
                     std::unique_ptr<WebContentsHandler> handler)
       : views::WebDialogView(context, delegate, std::move(handler)) {
-    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       set_use_round_corners(/*round=*/true);
       set_corner_radius(kOobeDialogCornerRadius);
     }
@@ -141,7 +141,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     SetFocusTraversesOut(true);
     AddChildView(oobe_view_.get());
 
-    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.
       view_shadow_ = std::make_unique<ViewShadow>(oobe_view_.get(),
                                                   kOobeDialogShadowElevation);
@@ -438,7 +438,7 @@ void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
 
 ui::WebDialogDelegate::FrameKind OobeUIDialogDelegate::GetWebDialogFrameKind()
     const {
-  return (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled())
+  return (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled())
              ? ui::WebDialogDelegate::FrameKind::kDialog
              : ui::WebDialogDelegate::FrameKind::kNonClient;
 }

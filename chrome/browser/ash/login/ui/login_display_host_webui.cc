@@ -285,7 +285,7 @@ void ShowLoginWizardFinish(
   DCHECK(session_manager::SessionManager::Get());
   DCHECK(LoginDisplayHost::default_host());
   // Postpone loading wallpaper if the booting animation might be played.
-  if (!features::IsOobeSimonEnabled() ||
+  if (!features::IsBootAnimationEnabled() ||
       session_manager::SessionManager::Get()->session_state() !=
           session_manager::SessionState::OOBE) {
     WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
@@ -576,7 +576,7 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     wizard_controller_->Init(first_screen);
   }
 
-  if (ash::features::IsOobeSimonEnabled()) {
+  if (ash::features::IsBootAnimationEnabled()) {
     auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
     const bool should_show =
         wizard_controller_->current_screen() == welcome_screen;
@@ -747,7 +747,7 @@ void LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed() {
 }
 
 void LoginDisplayHostWebUI::FinishBootingAnimation() {
-  CHECK(features::IsOobeSimonEnabled());
+  CHECK(features::IsBootAnimationEnabled());
   ash::Shell::Get()->booting_animation_controller()->Finish();
   GetOobeUI()->GetCoreOobe()->TriggerDown();
 }
@@ -874,7 +874,7 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
   // Subscribe to crash events.
   content::WebContentsObserver::Observe(login_view_->GetWebContents());
   login_view_->LoadURL(url);
-  if (!ash::features::IsOobeSimonEnabled()) {
+  if (!ash::features::IsBootAnimationEnabled()) {
     login_window_->Show();
   }
   CHECK(GetOobeUI());
@@ -1192,9 +1192,9 @@ void ShowLoginWizard(OobeScreenId first_screen) {
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572
     display_host->StartWizard(WelcomeView::kScreenId);
-    // Make sure we load an initial wallpaper here. If the booting animation
+    // Make sure we load an initial wallpaper here. If the boot animation
     // might be played it will be covered by the StartWizard call.
-    if (!ash::features::IsOobeSimonEnabled()) {
+    if (!ash::features::IsBootAnimationEnabled()) {
       WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
     }
     return;

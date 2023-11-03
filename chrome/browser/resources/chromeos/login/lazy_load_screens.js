@@ -14,10 +14,10 @@ const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
 const flowSpecificScreensList = isOobeFlow ? oobeScreensList : loginScreensList;
 const lazyLoadingEnabled = loadTimeData.getBoolean('isOobeLazyLoadingEnabled');
 
-const isOobeSimon = loadTimeData.getBoolean('isOobeSimonEnabled');
+const isBootAnimation = loadTimeData.getBoolean('isBootAnimationEnabled');
 const animationTransitionTime = 900;
 let aboutToShrink = false;
-if (isOobeSimon) {
+if (isBootAnimation) {
   document.addEventListener('about-to-shrink', () => {
     aboutToShrink = true;
   }, {once: true});

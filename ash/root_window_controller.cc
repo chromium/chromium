@@ -1417,7 +1417,7 @@ void RootWindowController::CreateContainers() {
 
   // Make sure booting animation container is always on top of all other
   // siblings under the `magnified_container`.
-  if (ash::features::IsOobeSimonEnabled()) {
+  if (ash::features::IsBootAnimationEnabled()) {
     aura::Window* booting_animation_container =
         CreateContainer(kShellWindowId_BootingAnimationContainer,
                         "BootingAnimationContainer", magnified_container);

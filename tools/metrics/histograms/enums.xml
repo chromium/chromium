@@ -51062,7 +51062,6 @@ from previous Chrome versions.
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>
   <int value="-514672474"
       label="PolicyProvidedTrustAnchorsAllowedAtLockScreen:enabled"/>
-  <int value="-514581113" label="OobeSimon:disabled"/>
   <int value="-514076866" label="MovablePartialScreenshot:disabled"/>
   <int value="-513967943" label="CryptAuthV2Enrollment:disabled"/>
   <int value="-513459348"
@@ -54207,7 +54206,6 @@ from previous Chrome versions.
   <int value="1015895665" label="drop-sync-credential:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
   <int value="1017523412" label="ExtensionsMenuAccessControl:disabled"/>
-  <int value="1017569133" label="OobeSimon:enabled"/>
   <int value="1018797564" label="EnableAppListSearchAutocomplete:disabled"/>
   <int value="1018998019" label="memlog"/>
   <int value="1019321025" label="FeatureManagement16Desks:disabled"/>

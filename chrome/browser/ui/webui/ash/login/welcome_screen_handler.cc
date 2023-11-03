@@ -112,7 +112,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
     builder->Add("welcomeScreenGreetingSubtitle",
                  IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  } else if (features::IsOobeSimonEnabled()) {
+  } else if (features::IsBootAnimationEnabled()) {
     auto product_name =
         ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
             IDR_CROS_OOBE_PRODUCT_NAME);

@@ -4145,9 +4145,6 @@ extern const char kOobeJellyDescription[];
 extern const char kOobeJellyModalName[];
 extern const char kOobeJellyModalDescription[];
 
-extern const char kOobeSimonName[];
-extern const char kOobeSimonDescription[];
-
 // Prefer keeping this section sorted to adding new declarations down here.
 
 extern const char kLacrosSharedComponentsDirName[];

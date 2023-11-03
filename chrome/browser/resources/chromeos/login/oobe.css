@@ -18,13 +18,13 @@
   --oobe-bg-color: var(--cros-sys-app_base_shaded);
 }
 :root.jelly-enabled,
-:root.simon-enabled {
+:root.boot-animation-enabled {
   --oobe-container-border-radius: 24px;
 }
 @media screen and (min-height:1040px),
         screen and (min-width:1040px) {
   :root.jelly-modal-enabled:not([tablet=true]),
-  :root.simon-enabled:not([tablet=true]) {
+  :root.boot-animation-enabled:not([tablet=true]) {
     /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
     --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
   }
@@ -39,9 +39,9 @@ body {
 @media screen and (min-height:1040px),
         screen and (min-width:1040px) {
   html.jelly-modal-enabled:not([tablet=true]),
-  html.simon-enabled:not([tablet=true]),
+  html.boot-animation-enabled:not([tablet=true]),
   :root.jelly-modal-enabled:not([tablet=true]) body,
-  :root.simon-enabled:not([tablet=true]) body {
+  :root.boot-animation-enabled:not([tablet=true]) body {
     background-color: transparent;
   }
 }
@@ -170,12 +170,12 @@ Styles related to the `md-screen-container`
   right: 0;
   top: 0;
 }
-/* Animation to fade in shelf for simon-enabled */
-:root.simon-enabled #scroll-container:has(#oobe.connect
+/* Animation to fade in shelf for boot-animation-enabled */
+:root.boot-animation-enabled #scroll-container:has(#oobe.connect
 #inner-container:not(.down)) {
   transition: bottom 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
 }
-:root.simon-enabled #scroll-container:has(#oobe.connect
+:root.boot-animation-enabled #scroll-container:has(#oobe.connect
 #inner-container.down) {
   bottom: 0;
 }
@@ -239,20 +239,25 @@ Styles related to the `md-screen-container`
   width: 100%;
   z-index: -1;
 }
-:root.simon-enabled #inner-container:not(.down-finished) #welcome-backdrop {
+:root.boot-animation-enabled #inner-container:not(.down-finished)
+#welcome-backdrop {
   /* Property duration curve delay */
   transition: background-color 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
 }
-:root.simon-enabled[dir=rtl] #oobe.connect #welcome-backdrop {
+:root.boot-animation-enabled[dir=rtl] #oobe.connect
+#welcome-backdrop {
   transform: scaleX(-100%);
 }
-:root.simon-enabled #oobe.connect #inner-container.down #welcome-backdrop {
+:root.boot-animation-enabled #oobe.connect #inner-container.down
+#welcome-backdrop {
   background-color: white;
 }
-:root.simon-enabled #oobe.connect #welcome-backdrop:has(~[multistep=greeting]) {
+:root.boot-animation-enabled #oobe.connect
+#welcome-backdrop:has(~[multistep=greeting]) {
   display: block;
 }
-:root.simon-enabled #oobe.connect #inner-container:has([multistep=greeting]) {
+:root.boot-animation-enabled #oobe.connect
+#inner-container:has([multistep=greeting]) {
   background-color: transparent;
 }
 
@@ -260,7 +265,7 @@ Styles related to the `md-screen-container`
 .oobe-display #inner-container:not(.down) {
   transition: transform 200ms ease-in-out;
 }
-:root.simon-enabled #oobe.connect #inner-container:not(.down) {
+:root.boot-animation-enabled #oobe.connect #inner-container:not(.down) {
   min-height: var(--oobe-adaptive-dialog-height);
   min-width: var(--oobe-adaptive-dialog-width);
   /* Property duration curve delay */
@@ -268,7 +273,7 @@ Styles related to the `md-screen-container`
               min-height 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00),
               min-width 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
 }
-:root.simon-enabled #oobe.connect #inner-container:not(.down-finished)
+:root.boot-animation-enabled #oobe.connect #inner-container:not(.down-finished)
 #connect {
   /* Property duration curve delay */
   transition: opacity 250ms linear 900ms;
@@ -277,17 +282,18 @@ Styles related to the `md-screen-container`
 .oobe-display #inner-container.down {
   transform: translateY(50px) rotateX(-2.5deg);
 }
-:root.simon-enabled #oobe.connect #inner-container.down {
+:root.boot-animation-enabled #oobe.connect #inner-container.down {
   border-radius: 0;
   min-height: 100vh;
   min-width: 100vw;
   transform: translateY(0) rotateX(0);
 }
-:root.simon-enabled [orientation=vertical] #oobe.connect #inner-container.down {
+:root.boot-animation-enabled [orientation=vertical] #oobe.connect
+#inner-container.down {
   min-height: 100vw;
   min-width: 100vh;
 }
-:root.simon-enabled #oobe.connect #inner-container.down #connect {
+:root.boot-animation-enabled #oobe.connect #inner-container.down #connect {
   opacity: 0;
 }
 

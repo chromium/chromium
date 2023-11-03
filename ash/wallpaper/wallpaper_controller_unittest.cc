@@ -3907,17 +3907,16 @@ TEST_P(WallpaperControllerTest, ShowWallpaperForEphemeralUser) {
 // which OOBE wallpaper flow should be used
 class WallpaperControllerOobeWallpaperTest
     : public WallpaperControllerTestBase,
-      public testing::WithParamInterface<std::tuple</*OobeSimon*/ bool,
+      public testing::WithParamInterface<std::tuple</*BootAnimation*/ bool,
                                                     /*OobeJelly*/ bool,
                                                     /*OobeJellyModal*/ bool>> {
  public:
   WallpaperControllerOobeWallpaperTest() {
-    const bool oobe_simon = std::get<0>(GetParam());
+    const bool boot_animation = std::get<0>(GetParam());
     const bool oobe_jelly = std::get<1>(GetParam());
     const bool oobe_jelly_modal = std::get<2>(GetParam());
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kFeatureManagementOobeSimon, oobe_simon},
-         {features::kOobeSimon, oobe_simon},
+        {{features::kFeatureManagementOobeSimon, boot_animation},
          {chromeos::features::kJelly, oobe_jelly},
          {features::kOobeJelly, oobe_jelly},
          {features::kOobeJellyModal, oobe_jelly_modal}});

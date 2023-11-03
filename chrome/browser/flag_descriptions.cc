@@ -7222,10 +7222,6 @@ const char kOobeJellyModalName[] = "Jelly modal feature for OOBE";
 const char kOobeJellyModalDescription[] =
     "Feature to enable the Jelly modal feature in out of box experience.";
 
-const char kOobeSimonName[] = "Simon features for OOBE";
-const char kOobeSimonDescription[] =
-    "Feature to enable the Simon features in out of box experience.";
-
 const char kLacrosSharedComponentsDirName[] =
     "Place browser components in a shared location";
 const char kLacrosSharedComponentsDirDescription[] =

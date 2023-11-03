@@ -195,7 +195,6 @@ constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
-// Project Simon TODO(b/269117729) - Rename with final names.
 constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
 #endif
 
@@ -210,7 +209,7 @@ void AddProductLogoResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kProductLogoPath, IDR_PRODUCT_LOGO_64);
 }
 
-void AddProjectSimonResources(content::WebUIDataSource* source) {
+void AddBootAnimationResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
 #endif
@@ -311,8 +310,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyModalEnabled",
                      features::IsOobeJellyModalEnabled());
-  // TODO (b/269117729) Cleanup OobeSimon
-  source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
+  source->AddBoolean("isBootAnimationEnabled",
+                     features::IsBootAnimationEnabled());
   source->AddBoolean("isOobeAssistantEnabled",
                      !features::IsOobeSkipAssistantEnabled());
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",
@@ -353,8 +352,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   // Configure shared resources
   AddProductLogoResources(source);
-  if (ash::features::IsOobeSimonEnabled()) {
-    AddProjectSimonResources(source);
+  if (ash::features::IsBootAnimationEnabled()) {
+    AddBootAnimationResources(source);
   }
 
   quick_unlock::AddFingerprintResources(source);
@@ -783,9 +782,8 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
   if (features::IsOobeJellyModalEnabled()) {
     oobeClasses += "jelly-modal-enabled ";
   }
-  // TODO (b/269117729) Cleanup OobeSimon
-  if (features::IsOobeSimonEnabled()) {
-    oobeClasses += "simon-enabled ";
+  if (features::IsBootAnimationEnabled()) {
+    oobeClasses += "boot-animation-enabled ";
   }
   localized_strings.Set("oobeClasses", oobeClasses);
 

@@ -8598,9 +8598,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"oobe-jelly-modal", flag_descriptions::kOobeJellyModalName,
      flag_descriptions::kOobeJellyModalDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kOobeJellyModal)},
-    {"oobe-simon", flag_descriptions::kOobeSimonName,
-     flag_descriptions::kOobeSimonDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kOobeSimon)},
 
     {"smds-support", flag_descriptions::kSmdsSupportName,
      flag_descriptions::kSmdsSupportDescription, kOsCrOS,

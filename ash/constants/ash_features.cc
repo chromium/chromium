@@ -1910,11 +1910,10 @@ BASE_FEATURE(kOobeLazyLoading,
              "OobeLazyLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables OOBE Simon features.
+// Enables boot animation feature.
 BASE_FEATURE(kFeatureManagementOobeSimon,
              "FeatureManagementOobeSimon",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kOobeSimon, "OobeSimon", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Skipping the assistant setup screen in OOBE.
 BASE_FEATURE(kOobeSkipAssistant,
@@ -3821,9 +3820,8 @@ bool IsOobeJellyModalEnabled() {
   return IsOobeJellyEnabled() && base::FeatureList::IsEnabled(kOobeJellyModal);
 }
 
-bool IsOobeSimonEnabled() {
-  return base::FeatureList::IsEnabled(kFeatureManagementOobeSimon) &&
-         base::FeatureList::IsEnabled(kOobeSimon);
+bool IsBootAnimationEnabled() {
+  return base::FeatureList::IsEnabled(kFeatureManagementOobeSimon);
 }
 
 bool IsOobeSkipAssistantEnabled() {
