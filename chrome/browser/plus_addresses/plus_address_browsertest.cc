@@ -61,5 +61,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressServiceBrowserTest,
           GetActiveWebContents()->GetBrowserContext());
   EXPECT_NE(plus_address_service, nullptr);
   EXPECT_TRUE(plus_address_service->SupportsPlusAddresses(
-      url::Origin::Create(GURL("https://test.example"))));
+      url::Origin::Create(GURL("https://test.example")),
+      /*is_off_the_record=*/false));
 }

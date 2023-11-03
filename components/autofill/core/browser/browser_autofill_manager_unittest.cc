@@ -253,7 +253,10 @@ std::string kElvisProfileGuid = MakeGuid(1);
 // and does not trigger any UI elements.
 class MockPlusAddressService : public plus_addresses::PlusAddressService {
  public:
-  MOCK_METHOD(bool, SupportsPlusAddresses, (url::Origin), (override));
+  MOCK_METHOD(bool,
+              SupportsPlusAddresses,
+              (url::Origin, bool is_off_the_record),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {

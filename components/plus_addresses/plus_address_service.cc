@@ -58,8 +58,11 @@ PlusAddressService::PlusAddressService(
   }
 }
 
-bool PlusAddressService::SupportsPlusAddresses(url::Origin origin) {
+bool PlusAddressService::SupportsPlusAddresses(url::Origin origin,
+                                               bool is_off_the_record) {
   // TODO(b/295187452): Also check `origin` here.
+  // TODO(b/308988053): implement OTR behavior. Only existing can be offered in
+  // that mode.
   return is_enabled();
 }
 

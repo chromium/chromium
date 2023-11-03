@@ -3808,7 +3808,8 @@ BrowserAutofillManager::MaybeGetPlusAddressSuggestion() {
       client().GetPlusAddressService();
   if (!plus_address_service ||
       !plus_address_service->SupportsPlusAddresses(
-          client().GetLastCommittedPrimaryMainFrameOrigin())) {
+          client().GetLastCommittedPrimaryMainFrameOrigin(),
+          client().IsOffTheRecord())) {
     return absl::nullopt;
   }
   absl::optional<std::string> maybe_address =
