@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncService;
@@ -305,6 +306,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    @Override
+    public @Nullable ManagedBottomSheetController getPageInsightsBottomSheetController() {
+        PageInsightsCoordinator coordinator = getPageInsightsCoordinator();
+        if (coordinator == null) {
+            return null;
+        }
+        return coordinator.getBottomSheetController();
+    }
+
     private void maybeCreatePageInsightsComponent() {
         if (!isPageInsightsHubEnabled() || mPageInsightsCoordinator != null) return;
 
@@ -329,6 +339,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mExpandedBottomSheetHelper,
                         mBrowserControlsManager,
                         mBrowserControlsManager,
+                        mBackPressManager,
                         this::isPageInsightsHubEnabled,
                         mPageInsightsFirstLoadTimeMs);
 

@@ -45,6 +45,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -144,6 +145,8 @@ public class PageInsightsCoordinatorTest {
     private PageInsightsSurfaceRenderer mSurfaceRenderer;
     @Mock
     private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock
+    private BackPressManager mBackPressManager;
 
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
@@ -221,19 +224,22 @@ public class PageInsightsCoordinatorTest {
         });
         doReturn(true).when(mIsPageInsightsHubEnabled).getAsBoolean();
         mPageInsightsCoordinator =
-                new PageInsightsCoordinator(
-                        activity,
-                        new View(ContextUtils.getApplicationContext()),
-                        mTabProvider,
-                        mShareDelegateSupplier,
-                        mProfileSupplier,
-                        mPageInsightsController,
-                        mBottomUiController,
-                        mExpandedSheetHelper,
-                        mBrowserControlsStateProvider,
-                        mBrowserControlsSizer,
-                        mIsPageInsightsHubEnabled,
-                        0);
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PageInsightsCoordinator(
+                                        activity,
+                                        new View(ContextUtils.getApplicationContext()),
+                                        mTabProvider,
+                                        mShareDelegateSupplier,
+                                        mProfileSupplier,
+                                        mPageInsightsController,
+                                        mBottomUiController,
+                                        mExpandedSheetHelper,
+                                        mBrowserControlsStateProvider,
+                                        mBrowserControlsSizer,
+                                        mBackPressManager,
+                                        mIsPageInsightsHubEnabled,
+                                        0));
         doReturn(mTab).when(mTabProvider).get();
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());

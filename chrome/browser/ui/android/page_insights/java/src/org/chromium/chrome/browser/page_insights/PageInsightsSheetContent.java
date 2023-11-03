@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -34,6 +35,11 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     interface OnBottomSheetTapHandler {
         /** Returns true if the tap has been handled. */
+        boolean handle();
+    }
+
+    interface OnBackPressHandler {
+        /** Returns true if the back press has been handled. */
         boolean handle();
     }
 
@@ -51,6 +57,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private boolean mShouldPrivacyNoticeBeShown;
     private int mFullScreenHeight;
     private Callback<View> mOnPrivacyNoticeLinkClickCallback;
+    private final OnBackPressHandler mOnBackPressHandler;
+    private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
     private static final SharedPreferencesManager sSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private static final long INVALID_TIMESTAMP = -1;
@@ -67,13 +75,15 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
             Context context,
             View layoutView,
             Callback<View> onPrivacyNoticeLinkClickCallback,
+            OnBackPressHandler onBackPressHandler,
+            ObservableSupplierImpl<Boolean> willHandleBackPressSupplier,
             OnBottomSheetTapHandler onBottomSheetTapHandler) {
         mLayoutView = layoutView;
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
             R.layout.page_insights_sheet_toolbar, null);
         mToolbarView
-            .findViewById(R.id.page_insights_back_button)
-            .setOnClickListener((view)-> onBackButtonPressed());
+                .findViewById(R.id.page_insights_back_button)
+                .setOnClickListener((view) -> onBackPressHandler.handle());
         mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.page_insights_sheet_content, null);
 
@@ -87,6 +97,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
         mContext = context;
         mOnPrivacyNoticeLinkClickCallback = onPrivacyNoticeLinkClickCallback;
+        mOnBackPressHandler = onBackPressHandler;
+        mWillHandleBackPressSupplier = willHandleBackPressSupplier;
         mFullScreenHeight = context.getResources().getDisplayMetrics().heightPixels;
         updateContentDimensions();
     }
@@ -205,8 +217,19 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         updateContentDimensions();
     }
 
-    private void onBackButtonPressed(){
-        showFeedPage();
+    @Override
+    public boolean handleBackPress() {
+        return mOnBackPressHandler.handle();
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mWillHandleBackPressSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        mOnBackPressHandler.handle();
     }
 
     void showLoadingIndicator() {
