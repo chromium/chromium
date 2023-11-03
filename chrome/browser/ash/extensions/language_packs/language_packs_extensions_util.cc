@@ -18,24 +18,24 @@ LanguagePackResultToExtensionStatus(
 
   if (result.operation_error != PackResult::ErrorCode::kNone) {
     if (result.operation_error == PackResult::ErrorCode::kNeedReboot) {
-      return input_method_private::LANGUAGE_PACK_STATUS_ERRORNEEDSREBOOT;
+      return input_method_private::LanguagePackStatus::kErrorNeedsReboot;
     } else {
-      return input_method_private::LANGUAGE_PACK_STATUS_ERROROTHER;
+      return input_method_private::LanguagePackStatus::kErrorOther;
     }
   }
 
   switch (result.pack_state) {
     case PackResult::StatusCode::kUnknown:
-      return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
+      return input_method_private::LanguagePackStatus::kUnknown;
     case PackResult::StatusCode::kNotInstalled:
-      return input_method_private::LANGUAGE_PACK_STATUS_NOTINSTALLED;
+      return input_method_private::LanguagePackStatus::kNotInstalled;
     case PackResult::StatusCode::kInProgress:
-      return input_method_private::LANGUAGE_PACK_STATUS_INPROGRESS;
+      return input_method_private::LanguagePackStatus::kInProgress;
     case PackResult::StatusCode::kInstalled:
-      return input_method_private::LANGUAGE_PACK_STATUS_INSTALLED;
+      return input_method_private::LanguagePackStatus::kInstalled;
   }
   LOG(ERROR) << "Unexpected PackResult pack_state.";
-  return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
+  return input_method_private::LanguagePackStatus::kUnknown;
 }
 
 }  // namespace chromeos

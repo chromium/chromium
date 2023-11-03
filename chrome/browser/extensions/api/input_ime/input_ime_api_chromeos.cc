@@ -734,7 +734,7 @@ class ImeObserverChromeOS
   input_method_private::AutoCapitalizeType
   ConvertInputContextAutoCapitalizePrivate(ash::AutocapitalizationMode mode) {
     if (!GetKeyboardConfig().auto_capitalize)
-      return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
+      return input_method_private::AutoCapitalizeType::kOff;
 
     switch (mode) {
       case ash::AutocapitalizationMode::kUnspecified:
@@ -747,15 +747,15 @@ class ImeObserverChromeOS
         // "unspecified" and translates to JS falsy empty string, because the
         // API specifies a non-falsy AutoCapitalizeType enum for
         // InputContext.autoCapitalize.
-        return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
+        return input_method_private::AutoCapitalizeType::kOff;
       case ash::AutocapitalizationMode::kNone:
-        return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
+        return input_method_private::AutoCapitalizeType::kOff;
       case ash::AutocapitalizationMode::kCharacters:
-        return input_method_private::AUTO_CAPITALIZE_TYPE_CHARACTERS;
+        return input_method_private::AutoCapitalizeType::kCharacters;
       case ash::AutocapitalizationMode::kWords:
-        return input_method_private::AUTO_CAPITALIZE_TYPE_WORDS;
+        return input_method_private::AutoCapitalizeType::kWords;
       case ash::AutocapitalizationMode::kSentences:
-        return input_method_private::AUTO_CAPITALIZE_TYPE_SENTENCES;
+        return input_method_private::AutoCapitalizeType::kSentences;
     }
   }
 

@@ -424,17 +424,17 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
       switch (segments_arg.style) {
-        case input_method_private::UNDERLINE_STYLE_UNDERLINE:
+        case input_method_private::UnderlineStyle::kUnderline:
           segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
           break;
-        case input_method_private::UNDERLINE_STYLE_DOUBLEUNDERLINE:
+        case input_method_private::UnderlineStyle::kDoubleUnderline:
           segment_info.style =
               InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
           break;
-        case input_method_private::UNDERLINE_STYLE_NOUNDERLINE:
+        case input_method_private::UnderlineStyle::kNoUnderline:
           segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
           break;
-        case input_method_private::UNDERLINE_STYLE_NONE:
+        case input_method_private::UnderlineStyle::kNone:
           EXTENSION_FUNCTION_VALIDATE(false);
           break;
       }
@@ -512,9 +512,8 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
   // If there are no language packs associated with an input method, installed
   // is returned.
   if (!handwriting_locale.has_value()) {
-    return RespondNow(
-        WithArguments(ToString(input_method_private::LanguagePackStatus::
-                                   LANGUAGE_PACK_STATUS_INSTALLED)));
+    return RespondNow(WithArguments(
+        ToString(input_method_private::LanguagePackStatus::kInstalled)));
   }
   if (!ash::language_packs::HandwritingLocaleToDlc(*handwriting_locale)
            .has_value()) {
@@ -529,9 +528,8 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
                      "does not have DLC: "
                   << *handwriting_locale;
     }
-    return RespondNow(
-        WithArguments(ToString(input_method_private::LanguagePackStatus::
-                                   LANGUAGE_PACK_STATUS_INSTALLED)));
+    return RespondNow(WithArguments(
+        ToString(input_method_private::LanguagePackStatus::kInstalled)));
   }
 
   ash::language_packs::LanguagePackManager::GetInstance()->GetPackState(
