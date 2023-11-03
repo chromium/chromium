@@ -20,8 +20,10 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
@@ -167,6 +169,8 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           companion::visual_search::features::kVisualSearchSuggestions,
 #endif  // !BUILDFLAG(IS_ANDROID)
           blink::features::kBrowsingTopics,
+          net::features::kTpcdSupportSettings,
+          features::kPersistentOriginTrials,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
