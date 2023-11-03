@@ -25598,6 +25598,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="52"
       label="Rounded corners position
              EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION"/>
+  <int value="53"
+      label="Enable page insights hub EXTRA_ENABLE_PAGE_INSIGHTS_HUB"/>
 </enum>
 
 <enum name="CustomTabsMinimizedFeatureAvailability">
