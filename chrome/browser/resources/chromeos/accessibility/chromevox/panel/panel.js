@@ -366,34 +366,7 @@ export class Panel extends PanelInterface {
       await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
           opt_activateMenuTitle);
 
-      const actions =
-          await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
-      for (const standardAction of actions.standardActions) {
-        const actionMsg = Panel.ACTION_TO_MSG_ID[standardAction];
-        if (!actionMsg) {
-          continue;
-        }
-        const commandName = CommandStore.commandForMessage(actionMsg);
-        let shortcutName = '';
-        if (commandName) {
-          const commandBinding = bindingMap.get(commandName);
-          shortcutName = commandBinding ? commandBinding.keySeq : '';
-        }
-        const actionDesc = Msgs.getMsg(actionMsg);
-        actionsMenu.addMenuItem(
-            actionDesc, shortcutName, '' /* menuItemBraille */,
-            '' /* gesture */,
-            () => BackgroundBridge.PanelBackground
-                      .performStandardActionOnCurrentNode(standardAction));
-      }
-
-      for (const customAction of actions.customActions) {
-        actionsMenu.addMenuItem(
-            customAction.description, '' /* menuItemShortcut */,
-            '' /* menuItemBraille */, '' /* gesture */,
-            () => BackgroundBridge.PanelBackground
-                      .performCustomActionOnCurrentNode(customAction.id));
-      }
+      await this.menuManager_.addActionsMenuItems(actionsMenu, bindingMap);
 
       // Activate either the specified menu or the search menu.
       const selectedMenu =
@@ -941,16 +914,6 @@ export class Panel extends PanelInterface {
     $('options').disabled = sessionState !== 'IN_SESSION';
   }
 }
-
-Panel.ACTION_TO_MSG_ID = {
-  decrement: 'action_decrement_description',
-  doDefault: 'perform_default_action',
-  increment: 'action_increment_description',
-  scrollBackward: 'action_scroll_backward_description',
-  scrollForward: 'action_scroll_forward_description',
-  showContextMenu: 'show_context_menu',
-  longClick: 'force_long_click_on_current_item',
-};
 
 window.addEventListener('load', async () => await Panel.init(), false);
 
