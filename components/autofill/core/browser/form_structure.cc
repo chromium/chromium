@@ -694,6 +694,42 @@ void FormStructure::ParseApiQueryResponse(
 }
 
 // static
+std::map<std::pair<FormSignature, FieldSignature>, std::deque<FieldSuggestion>>
+FormStructure::GetSuggestionsMapFromResponse(
+    const AutofillQueryResponse& response,
+    const std::vector<FormSignature>& queried_form_signatures) {
+  std::map<std::pair<FormSignature, FieldSignature>,
+           std::deque<FieldSuggestion>>
+      fields_suggestions;
+  for (int form_idx = 0;
+       form_idx < std::min(response.form_suggestions_size(),
+                           static_cast<int>(queried_form_signatures.size()));
+       ++form_idx) {
+    FormSignature form_signature = queried_form_signatures[form_idx];
+    for (const auto& field :
+         response.form_suggestions(form_idx).field_suggestions()) {
+      FieldSignature field_signature(field.field_signature());
+      fields_suggestions[{form_signature, field_signature}].push_back(field);
+    }
+  }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(features::kAutofillOverridePredictions)) {
+    InsertParsedOverrides(
+        ParseServerPredictionOverrides(
+            features::kAutofillOverridePredictionsSpecification.Get()),
+        fields_suggestions);
+    InsertParsedOverrides(
+        ParseServerPredictionOverrides(
+            features::
+                kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
+                    .Get()),
+        fields_suggestions);
+  }
+#endif
+  return fields_suggestions;
+}
+
+// static
 std::optional<FieldSuggestion> FormStructure::GetFieldSuggestion(
     const FormStructure& form,
     const AutofillField& field,
@@ -801,37 +837,10 @@ void FormStructure::ProcessQueryResponse(
 
   bool heuristics_detected_fillable_field = false;
   bool query_response_overrode_heuristics = false;
-
   std::map<std::pair<FormSignature, FieldSignature>,
            std::deque<FieldSuggestion>>
-      field_types;
-
-  for (int form_idx = 0;
-       form_idx < std::min(response.form_suggestions_size(),
-                           static_cast<int>(queried_form_signatures.size()));
-       ++form_idx) {
-    FormSignature form_sig = queried_form_signatures[form_idx];
-    for (const auto& field :
-         response.form_suggestions(form_idx).field_suggestions()) {
-      FieldSignature field_sig(field.field_signature());
-      field_types[{form_sig, field_sig}].push_back(field);
-    }
-  }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kAutofillOverridePredictions)) {
-    InsertParsedOverrides(
-        ParseServerPredictionOverrides(
-            features::kAutofillOverridePredictionsSpecification.Get()),
-        field_types);
-    InsertParsedOverrides(
-        ParseServerPredictionOverrides(
-            features::
-                kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification
-                    .Get()),
-        field_types);
-  }
-#endif
+      fields_suggestions =
+          GetSuggestionsMapFromResponse(response, queried_form_signatures);
 
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
@@ -840,7 +849,7 @@ void FormStructure::ProcessQueryResponse(
     std::map<FieldSignature, size_t> field_rank_map;
     for (auto& field : form->fields_) {
       std::optional<FieldSuggestion> field_suggestion =
-          GetFieldSuggestion(*form, *field, field_types);
+          GetFieldSuggestion(*form, *field, fields_suggestions);
       if (!field_suggestion) {
         continue;
       }

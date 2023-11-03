@@ -480,6 +480,17 @@ class FormStructure {
         kRequiredFieldsForFormsWithOnlyPasswordFields;
   };
 
+  // Builds a map from a pair of (form_signature, field_signature) to all the
+  // server FieldSuggestion's retrieved from `response`. Also includes the
+  // manual overrides provided from the feature `AutofillOverridePredictions`.
+  static std::map<std::pair<FormSignature, FieldSignature>,
+                  std::deque<FieldSuggestion>>
+  GetSuggestionsMapFromResponse(
+      const AutofillQueryResponse& response,
+      const std::vector<FormSignature>& queried_form_signatures);
+
+  // Given `form` and `field`, returns the appropriate FieldSuggestion stored
+  // for that field in `fields_suggestions`.
   static std::optional<FieldSuggestion> GetFieldSuggestion(
       const FormStructure& form,
       const AutofillField& field,
