@@ -93,6 +93,12 @@
     padding: 0px;
   }
 
+  .color-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: -2px;
+    --customize-chrome-check-mark-wrapper-size: 16px;
+    --customize-chrome-check-mark-wrapper-top: -2px;
+  }
+
   .descriptor-d {
     border-radius: 50%;
     display: block;
@@ -155,13 +161,13 @@
     transform: translateX(-50%);
   }
 
-  customize-chrome-check-mark-wrapper {
+  .image-check-mark-wrapper {
     --customize-chrome-check-mark-wrapper-end: -4px;
     --customize-chrome-check-mark-wrapper-size: 20px;
     --customize-chrome-check-mark-wrapper-top: -6px;
   }
 
-  customize-chrome-check-mark-wrapper[checked] .image-container {
+  .image-check-mark-wrapper[checked] .image-container {
     padding-top: calc(100% - 4px);
     width: calc(100% - 4px);
   }
@@ -235,13 +241,23 @@
     </customize-chrome-combobox>
     <div id="descriptorMenuD">
       <template is="dom-repeat" items="[[descriptorD_]]">
-        <cr-button on-click="onSelectedColorChanged_">
-          <span class="descriptor-d" style$="background-color: [[item]];">
-          </span>
+        <cr-button class="default-color" on-click="onDefaultColorClick_">
+          <customize-chrome-check-mark-wrapper class="color-check-mark-wrapper"
+              checked="[[isDefaultColorSelected_(item, selectedDefaultColor_)]]"
+              checkmark-border-hidden>
+            <span class="descriptor-d" style$="background-color: [[item]];">
+            </span>
+          </customize-chrome-check-mark-wrapper>
         </cr-button>
       </template>
       <cr-button id="customColorContainer" on-click="onCustomColorClick_">
-        <div id="colorPickerIcon"></div>
+        <customize-chrome-check-mark-wrapper class="color-check-mark-wrapper"
+            checked="[[selectedHue_]]" checkmark-border-hidden>
+          <div class="descriptor-d"
+              style$="background: hsl([[selectedHue_]], 100%, 50%);">
+            <div id="colorPickerIcon"></div>
+          </div>
+        </customize-chrome-check-mark-wrapper>
       </cr-button>
       <cr-theme-hue-slider-dialog id="hueSlider"
           on-selected-hue-changed="onSelectedHueChanged_">
@@ -276,7 +292,7 @@
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]">
         <div class="tile result" tabindex="0" role="button"
             on-click="onResultClick_">
-          <customize-chrome-check-mark-wrapper
+          <customize-chrome-check-mark-wrapper class="image-check-mark-wrapper"
               checked="[[isBackgroundSelected_(item.id, theme_)]]">
             <div class="image-container">
               <img src="data:image/png;base64,[[item.image]]">

@@ -97,6 +97,35 @@ suite('WallpaperSearchTest', () => {
               .querySelectorAll('#descriptorMenuD cr-button')
               .length);
     });
+
+    test('check marks one item in descriptorMenuD at a time', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertFalse(
+          !!$$(wallpaperSearchElement, '#descriptorMenuD cr-button [checked]'));
+
+      $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
+
+      let checkedMarkedColors =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '#descriptorMenuD cr-button [checked]');
+      assertEquals(1, checkedMarkedColors.length);
+      assertEquals(
+          checkedMarkedColors[0],
+          $$(wallpaperSearchElement,
+             '.default-color .color-check-mark-wrapper'));
+
+      wallpaperSearchElement.$.hueSlider.dispatchEvent(
+          new Event('selected-hue-changed'));
+
+      checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          '#descriptorMenuD cr-button [checked]');
+      assertEquals(1, checkedMarkedColors.length);
+      assertEquals(
+          checkedMarkedColors[0],
+          $$(wallpaperSearchElement, '#customColorContainer [checked]'));
+    });
   });
 
   suite('Search', () => {
@@ -400,8 +429,8 @@ suite('WallpaperSearchTest', () => {
       await waitAfterNextRender(wallpaperSearchElement);
 
       // The first result should be checked and be the only one checked.
-      const firstResult = $$(
-          wallpaperSearchElement, '.tile customize-chrome-check-mark-wrapper');
+      const firstResult =
+          $$(wallpaperSearchElement, '.tile .image-check-mark-wrapper');
       const checkedResults =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
               '.tile [checked]');

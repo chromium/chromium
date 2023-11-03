@@ -42,6 +42,7 @@ export interface ErrorState {
 
 export interface WallpaperSearchElement {
   $: {
+    customColorContainer: HTMLElement,
     descriptorComboboxA: CustomizeChromeCombobox,
     descriptorComboboxB: CustomizeChromeCombobox,
     descriptorComboboxC: CustomizeChromeCombobox,
@@ -92,6 +93,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: false,
       },
       results_: Object,
+      selectedHue_: Number,
       status_: {
         type: WallpaperSearchStatus,
         value: WallpaperSearchStatus.kOk,
@@ -114,11 +116,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorState_: ErrorState|null = null;
   private loading_: boolean;
   private results_: WallpaperSearchResult[];
-  private status_: WallpaperSearchStatus;
+  private selectedDefaultColor_: string|undefined;
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
   private selectedDescriptorC_: string|null;
   private selectedDescriptorD_: DescriptorDValue|null;
+  private selectedHue_: number|undefined;
+  private status_: WallpaperSearchStatus;
   private submitBtnText_: string;
   private theme_: Theme|undefined;
 
@@ -238,20 +242,30 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.theme_.backgroundImage.localBackgroundId.high === id.high);
   }
 
+  private isDefaultColorSelected_(color: string): boolean {
+    return color === this.selectedDefaultColor_;
+  }
+
   private async onBackClick_() {
     this.dispatchEvent(new Event('back-click'));
   }
 
-  private onCustomColorClick_(e: Event) {
-    this.$.hueSlider.showAt(e.target as HTMLElement);
+  private onCustomColorClick_() {
+    this.$.hueSlider.showAt(this.$.customColorContainer);
   }
 
-  private onSelectedColorChanged_(e: DomRepeatEvent<string>) {
-    this.selectedDescriptorD_ = {color: hexColorToSkColor(e.model.item)};
+  private onDefaultColorClick_(e: DomRepeatEvent<string>) {
+    this.selectedHue_ = undefined;
+    this.selectedDefaultColor_ = e.model.item;
+    this.selectedDescriptorD_ = {
+      color: hexColorToSkColor(this.selectedDefaultColor_),
+    };
   }
 
   private async onSelectedHueChanged_() {
-    this.selectedDescriptorD_ = {hue: this.$.hueSlider.selectedHue};
+    this.selectedDefaultColor_ = undefined;
+    this.selectedHue_ = this.$.hueSlider.selectedHue;
+    this.selectedDescriptorD_ = {hue: this.selectedHue_};
   }
 
   private async onSearchClick_() {
