@@ -16,15 +16,15 @@ export class SettingsManager {
     await Settings.init(Object.values(Preference));
     Settings.addListener(
         Preference.AUTO_SCAN_ENABLED,
-        pref => AutoScanManager.setEnabled(Boolean(pref.value)));
+        value => AutoScanManager.setEnabled(Boolean(value)));
     Settings.addListener(
         Preference.AUTO_SCAN_TIME,
-        pref => AutoScanManager.setPrimaryScanTime(
-            /** @type {number} */ (pref.value)));
+        value => AutoScanManager.setPrimaryScanTime(
+            /** @type {number} */ (value)));
     Settings.addListener(
         Preference.AUTO_SCAN_KEYBOARD_TIME,
-        pref => AutoScanManager.setKeyboardScanTime(
-            /** @type {number} */ (pref.value)));
+        value => AutoScanManager.setKeyboardScanTime(
+            /** @type {number} */ (value)));
 
     if (!SettingsManager.settingsAreConfigured_()) {
       chrome.accessibilityPrivate.openSettingsSubpage(
