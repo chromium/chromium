@@ -1,51 +1,3 @@
-diff --git a/third_party/libevent/buffer.c b/third_party/libevent/buffer.c
-index 64324bb..ebf35c9 100644
---- a/third_party/libevent/buffer.c
-+++ b/third_party/libevent/buffer.c
-@@ -356,7 +356,6 @@ int
- evbuffer_expand(struct evbuffer *buf, size_t datlen)
- {
- 	size_t used = buf->misalign + buf->off;
--	size_t need;
- 
- 	assert(buf->totallen >= used);
- 
-diff --git a/third_party/libevent/evdns.c b/third_party/libevent/evdns.c
-index fa23163..f1c70d0 100644
---- a/third_party/libevent/evdns.c
-+++ b/third_party/libevent/evdns.c
-@@ -55,7 +55,9 @@
- #endif
- 
- /* #define _POSIX_C_SOURCE 200507 */
-+#ifndef _GNU_SOURCE
- #define _GNU_SOURCE
-+#endif
- 
- #ifdef DNS_USE_CPU_CLOCK_FOR_ID
- #ifdef DNS_USE_OPENSSL_FOR_ID
-@@ -134,7 +136,7 @@
- typedef ev_uint8_t u_char;
- typedef unsigned int uint;
- #endif
--#include <event.h>
-+#include "event.h"
- 
- #define u64 ev_uint64_t
- #define u32 ev_uint32_t
-diff --git a/third_party/libevent/evdns.h b/third_party/libevent/evdns.h
-index 1eb5c38..fca4ac3 100644
---- a/third_party/libevent/evdns.h
-+++ b/third_party/libevent/evdns.h
-@@ -165,7 +165,7 @@ extern "C" {
- #endif
- 
- /* For integer types. */
--#include <evutil.h>
-+#include "evutil.h"
- 
- /** Error codes 0-5 are as described in RFC 1035. */
- #define DNS_ERR_NONE 0
 diff --git a/third_party/libevent/event.c b/third_party/libevent/event.c
 index da6cd42..36b1c51 100644
 --- a/third_party/libevent/event.c
@@ -198,19 +150,6 @@ index d1f5d9e..f0887b9 100644
  
  #ifdef WIN32
  #define WIN32_LEAN_AND_MEAN
-diff --git a/third_party/libevent/evhttp.h b/third_party/libevent/evhttp.h
-index cba8be1..48c1d91 100644
---- a/third_party/libevent/evhttp.h
-+++ b/third_party/libevent/evhttp.h
-@@ -27,7 +27,7 @@
- #ifndef _EVHTTP_H_
- #define _EVHTTP_H_
- 
--#include <event.h>
-+#include "event.h"
- 
- #ifdef __cplusplus
- extern "C" {
 diff --git a/third_party/libevent/evutil.h b/third_party/libevent/evutil.h
 index dcb0013..8b664b9 100644
 --- a/third_party/libevent/evutil.h
