@@ -105,10 +105,6 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
     GetScripts(script_type).insert(extension_id);
   }
 
-  void AddFrame(content::RenderFrameHost* frame) { frames_.insert(frame); }
-  void RemoveFrame(content::RenderFrameHost* frame) { frames_.erase(frame); }
-  const std::set<content::RenderFrameHost*>& frames() const { return frames_; }
-
   const ExtensionIdSet& content_scripts() const { return content_scripts_; }
   const ExtensionIdSet& user_scripts() const { return user_scripts_; }
 
@@ -143,12 +139,6 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   // maintained by the ScriptInjectionTracker.
   ExtensionIdSet content_scripts_;
   ExtensionIdSet user_scripts_;
-
-  // Set of frames that are *currently* hosted in this particular renderer
-  // process.  This is mostly used just to get GetLastCommittedURL of these
-  // frames so that when a new extension is loaded, then ScriptInjectionTracker
-  // can know where content scripts may be injected.
-  std::set<content::RenderFrameHost*> frames_;
 
   // Only used for tracing.
   const raw_ref<content::RenderProcessHost> process_;
@@ -800,30 +790,6 @@ void ScriptInjectionTracker::DidFinishNavigation(
 }
 
 // static
-void ScriptInjectionTracker::RenderFrameCreated(
-    base::PassKey<ExtensionWebContentsObserver> pass_key,
-    content::RenderFrameHost* frame) {
-  TRACE_EVENT("extensions", "ScriptInjectionTracker::RenderFrameCreated",
-              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess());
-
-  auto& process_data =
-      RenderProcessHostUserData::GetOrCreate(*frame->GetProcess());
-  process_data.AddFrame(frame);
-}
-
-// static
-void ScriptInjectionTracker::RenderFrameDeleted(
-    base::PassKey<ExtensionWebContentsObserver> pass_key,
-    content::RenderFrameHost* frame) {
-  TRACE_EVENT("extensions", "ScriptInjectionTracker::RenderFrameDeleted",
-              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess());
-
-  auto& process_data =
-      RenderProcessHostUserData::GetOrCreate(*frame->GetProcess());
-  process_data.RemoveFrame(frame);
-}
-
-// static
 void ScriptInjectionTracker::WillExecuteCode(
     base::PassKey<ScriptExecutor> pass_key,
     ScriptType script_type,
@@ -875,24 +841,27 @@ void ScriptInjectionTracker::WillUpdateScriptsInRenderer(
               ChromeTrackEvent::kChromeExtensionId,
               ExtensionIdForTracing(host_id.id));
 
-  const Extension* extension =
+  scoped_refptr<const Extension> extension =
       FindExtensionByHostId(process.GetBrowserContext(), host_id);
   if (!extension) {
     return;
   }
 
-  auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
-  const std::set<content::RenderFrameHost*>& frames_in_process =
-      process_data.frames();
-  bool any_frame_matches_scripts = base::ranges::any_of(
-      frames_in_process, [extension](content::RenderFrameHost* frame) {
+  bool any_frame_matches_scripts = false;
+  process.ForEachRenderFrameHost(base::BindRepeating(
+      [](scoped_refptr<const Extension> extension,
+         bool* any_frame_matches_scripts, content::RenderFrameHost* frame) {
         auto url = frame->GetLastCommittedURL();
-        return DoWebViewScripstMatch(*extension, *frame) ||
-               DoStaticContentScriptsMatch(*extension, *frame, url) ||
-               DoDynamicContentScriptsMatch(*extension, *frame, url) ||
-               DoUserScriptsMatch(*extension, *frame, url);
-      });
+        if (DoWebViewScripstMatch(*extension, *frame) ||
+            DoStaticContentScriptsMatch(*extension, *frame, url) ||
+            DoDynamicContentScriptsMatch(*extension, *frame, url) ||
+            DoUserScriptsMatch(*extension, *frame, url)) {
+          *any_frame_matches_scripts = true;
+        }
+      },
+      extension, &any_frame_matches_scripts));
   if (any_frame_matches_scripts) {
+    auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
     process_data.AddScript(ScriptType::kContentScript, extension->id());
   } else {
     TRACE_EVENT_INSTANT("extensions",

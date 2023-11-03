@@ -97,12 +97,6 @@ class ScriptInjectionTracker {
   static void DidFinishNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
       content::NavigationHandle* navigation);
-  static void RenderFrameCreated(
-      base::PassKey<ExtensionWebContentsObserver> pass_key,
-      content::RenderFrameHost* frame);
-  static void RenderFrameDeleted(
-      base::PassKey<ExtensionWebContentsObserver> pass_key,
-      content::RenderFrameHost* frame);
 
   // Called before ExtensionMsg_ExecuteCode is sent to a renderer process
   // (typically when handling chrome.tabs.executeScript or a similar API call).
