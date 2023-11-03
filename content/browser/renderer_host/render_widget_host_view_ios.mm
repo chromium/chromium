@@ -969,6 +969,10 @@ void RenderWidgetHostViewIOS::GestureEventAck(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result,
     blink::mojom::ScrollResultDataPtr scroll_result_data) {
+  // Stop flinging if a GSU event with momentum phase is sent to the renderer
+  // but not consumed.
+  StopFlingingIfNecessary(event, ack_result);
+
   UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kGestureScrollBegin:
