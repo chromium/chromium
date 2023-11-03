@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -172,10 +170,6 @@ TEST_F(SettingsRootTableViewControllerTest, TestDeleteToolbar) {
 // view controller will be removed from the navigation stack.
 TEST_F(SettingsRootTableViewControllerTest,
        TestSettingsWillBeDismissedCallTiming) {
-  // Make sure kill switch is enabled.
-  base::test::ScopedFeatureList feature_list(
-      kSettingsWillBeDismissedBugFixKillSwitch);
-
   FakeSettingsRootTableViewController* controller =
       [[FakeSettingsRootTableViewController alloc]
           initWithStyle:UITableViewStylePlain];

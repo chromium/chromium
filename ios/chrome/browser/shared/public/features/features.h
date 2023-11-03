@@ -240,10 +240,6 @@ BASE_DECLARE_FEATURE(kIOSSaveToDrive);
 // Feature flag enabling Save to Photos.
 BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 
-// Kill switch to control the `settingsWillBeDismissed` bug fix (see
-// crbug.com/1482284).
-BASE_DECLARE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch);
-
 // Enables the new UIEditMenuInteraction system to be used in place of
 // UIMenuController which was deprecated in iOS 16.
 // TODO(crbug.com/1489734) Remove Flag once the minimum iOS deployment version

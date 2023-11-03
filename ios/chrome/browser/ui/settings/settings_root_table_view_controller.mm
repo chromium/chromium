@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -207,16 +206,8 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // can leave the new top view controller with a toolbar when it doesn't
   // require one. Disabling editing mode to avoid this. See crbug.com/1404111 as
   // an example.
-  if (!parent) {
-    if (!base::FeatureList::IsEnabled(
-            kSettingsWillBeDismissedBugFixKillSwitch) &&
-        [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
-      [self performSelector:@selector(settingsWillBeDismissed)];
-    }
-
-    if (self.isEditing) {
-      [self setEditing:NO animated:NO];
-    }
+  if (!parent && self.isEditing) {
+    [self setEditing:NO animated:NO];
   }
 
   [self.navigationController setToolbarHidden:YES animated:YES];
@@ -224,9 +215,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
-  if (!parent &&
-      base::FeatureList::IsEnabled(kSettingsWillBeDismissedBugFixKillSwitch) &&
-      [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
+  if (!parent && [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
     [self performSelector:@selector(settingsWillBeDismissed)];
   }
 }
