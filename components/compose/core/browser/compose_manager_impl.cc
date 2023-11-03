@@ -20,6 +20,7 @@ namespace {
 void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
                           autofill::FieldGlobalId field,
                           const std::u16string& text) {
+  // TODO(crbug.com/1331312): Replace this call by FillOrPreviewField.
   if (manager) {
     manager->driver().ApplyFieldAction(
         autofill::mojom::ActionPersistence::kFill,

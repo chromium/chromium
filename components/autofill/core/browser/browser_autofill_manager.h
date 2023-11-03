@@ -142,6 +142,7 @@ class BrowserAutofillManager : public AutofillManager,
       const AutofillTriggerDetails& trigger_details);
 
   // Records filling information and routes the filling back to the driver.
+  // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
   void FillOrPreviewField(mojom::ActionPersistence action_persistence,
                           mojom::TextReplacement text_replacement,
                           const FormData& form,
