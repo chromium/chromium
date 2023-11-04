@@ -199,7 +199,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private StripLayoutTab mTabAtPositionForTesting;
     private final StripTabEventHandler mStripTabEventHandler = new StripTabEventHandler();
     private final TabLoadTrackerCallback mTabLoadTrackerHost = new TabLoadTrackerCallbackImpl();
+
+    // Common state used for animations on the strip triggered by independent actions including and
+    // not limited to tab closure, tab creation/selection, and tab reordering. Not intended to be
+    // used for hover actions. Consider using setAndStartRunningAnimator() to set and start this
+    // animator.
     private Animator mRunningAnimator;
+
     private final TintedCompositorButton mNewTabButton;
     private final CompositorButton mModelSelectorButton;
 
@@ -1639,7 +1645,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     void updateLastHoveredTab(StripLayoutTab hoveredTab) {
         if (hoveredTab == null) return;
-        // Hovered into a drawn tab that is for example, hidden behind the model selector button.
+
+        // Do nothing if attempting to update the hover state of a tab while a tab strip animation
+        // is running. This is to avoid applying the tab hover state during animations triggered for
+        // some actions on the strip, for example, resizing the strip after tab closure, that might
+        // cause the hover state to show / stick undesirably.
+        if (mRunningAnimator != null && mRunningAnimator.isRunning()) return;
+
+        // Do nothing if hovering into a drawn tab that is for example, hidden behind the model
+        // selector button.
         if (isTabCompletelyHidden(hoveredTab)) return;
 
         mLastHoveredTab = hoveredTab;
@@ -1737,8 +1751,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 3. Start the tab closing animator.
         mMultiStepTabCloseAnimRunning = true;
-        mRunningAnimator = tabClosingAnimator;
-        mRunningAnimator.start();
+        setAndStartRunningAnimator(tabClosingAnimator);
 
         // 3. Fake a selection on the next tab now.
         if (!runImprovedTabAnimations && nextTab != null) {
@@ -1896,7 +1909,22 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (listener != null) set.addListener(listener);
 
         finishAnimations();
-        mRunningAnimator = set;
+        setAndStartRunningAnimator(set);
+    }
+
+    private void setAndStartRunningAnimator(Animator animator) {
+        mRunningAnimator = animator;
+        mRunningAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        // Clear any persisting tab hover state after tab strip animations have
+                        // ended. This is to prevent the hover state from sticking after an action
+                        // on the strip, including and not limited to tab closure and tab
+                        // reordering.
+                        clearTabHoverState();
+                    }
+                });
         mRunningAnimator.start();
     }
 
@@ -3357,8 +3385,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mAnimationsDisabledForTesting = true;
     }
 
-    protected Animator getRunningAnimatorForTesting() {
+    Animator getRunningAnimatorForTesting() {
         return mRunningAnimator;
+    }
+
+    void setRunningAnimatorForTesting(Animator animator) {
+        mRunningAnimator = animator;
     }
 
     protected boolean isMultiStepCloseAnimationsRunningForTesting() {
