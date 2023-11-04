@@ -239,6 +239,8 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   auto srgb_hdr_supported =
       connection_->zcr_color_manager()->GetVersion() >=
       ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR_SINCE_VERSION;
+  // Disable lacros HDR feature due to crbug.com/1497481
+  srgb_hdr_supported = false;
   if (srgb_hdr_supported && color_management_output &&
       color_management_output->gfx_color_space() &&
       color_management_output->gfx_color_space()->IsHDR()) {
