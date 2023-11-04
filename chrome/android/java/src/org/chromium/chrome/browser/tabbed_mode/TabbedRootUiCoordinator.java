@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.ui.signin.FullScreenSyncPromoUtil;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
+import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
@@ -957,7 +958,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private boolean maybeShowPromo() {
-        // Only one promo can be shown in one run to avoid nagging users too much.
+        // NOTE: Only one promo can be shown in one run to avoid nagging users too much.
+
+        // The PWA Restore promotion runs when we've detected that a user has switched to a new
+        // device but is leaving behind web apps on the old device. It promotes the idea that the
+        // user can restore their web apps from their old device (if they have any), and as such it
+        // is most effective when shown shortly after the first-run experience. It is therefore
+        // at the front of the list of promotions.
+        if (PwaRestorePromoUtils.launchPromoIfNeeded(
+                mActivity, mWindowAndroid, R.drawable.ic_arrow_back_24dp)) {
+            return true;
+        }
         if (FullScreenSyncPromoUtil.launchPromoIfNeeded(mActivity,
                     SyncConsentActivityLauncherImpl.get(), VersionInfo.getProductMajorVersion())) {
             return true;

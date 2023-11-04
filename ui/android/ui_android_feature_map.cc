@@ -16,7 +16,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kConvertTrackpadEventsToMouse,
     &ui::kDeprecatedExternalPickerFunction,
-    &ui::kPwaRestoreUi,
     &ui::kReportAllAvailablePointerTypes,
 };
 
