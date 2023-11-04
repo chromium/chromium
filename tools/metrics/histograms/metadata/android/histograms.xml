@@ -2167,16 +2167,6 @@ chromium-metrics-reviews@google.com.
   <token key="MessageIdentifier" variants="MessageIdentifiers"/>
 </histogram>
 
-<histogram name="Android.ModalDialog.SecurityFilteredTouchResult"
-    enum="SecurityFilteredTouchResult" expires_after="2023-09-01">
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the action taken on a security sensitive touch event in modal
-    dialog. As of M84 it is used for site premission dialogs.
-  </summary>
-</histogram>
-
 <histogram name="Android.ModerateBindingCount" units="bindings"
     expires_after="M77">
   <obsolete>
