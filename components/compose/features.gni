@@ -4,5 +4,5 @@
 
 declare_args() {
   # Whether Compose is enabled in the build.
-  enable_compose = is_mac || is_win || is_linux
+  enable_compose = is_mac || is_win || is_linux || is_chromeos
 }
