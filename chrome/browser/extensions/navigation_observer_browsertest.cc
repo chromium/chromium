@@ -35,7 +35,6 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
     extension_id_ = extension_->id();
     extension_resource_url_ = extension_->GetResourceURL("file.html");
 
-    NavigationObserver::SetAllowedRepeatedPromptingForTesting(true);
     ASSERT_TRUE(extension_);
 
     registry_ = ExtensionRegistry::Get(profile());
@@ -66,10 +65,6 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
 IN_PROC_BROWSER_TEST_F(
     DisableExtensionBrowserTest,
     PromptToReEnableExtensionsOnNavigation_PermissionsIncrease) {
-  base::ScopedClosureRunner reset_repeated_prompting(base::BindOnce([]() {
-    NavigationObserver::SetAllowedRepeatedPromptingForTesting(false);
-  }));
-
   // Disable the extension due to a permissions increase.
   extension_service()->DisableExtension(
       extension_id_, disable_reason::DISABLE_PERMISSIONS_INCREASE);

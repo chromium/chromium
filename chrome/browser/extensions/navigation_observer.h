@@ -13,16 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-
-class Profile;
-
-namespace content {
-class NavigationController;
-}
 
 namespace extensions {
 
@@ -30,61 +24,46 @@ namespace extensions {
 // navigates into an extension that has been disabled due to a permission
 // increase, it prompts the user to accept the new permissions and re-enables
 // the extension.
-class NavigationObserver : public content::NotificationObserver,
-                           public ExtensionRegistryObserver {
+class NavigationObserver
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<NavigationObserver>,
+      public ExtensionRegistryObserver {
  public:
-  explicit NavigationObserver(Profile* profile);
-
   NavigationObserver(const NavigationObserver&) = delete;
   NavigationObserver& operator=(const NavigationObserver&) = delete;
 
   ~NavigationObserver() override;
 
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // Allows showing the prompt for the same extensions multiple times in a
-  // session.
-  static void SetAllowedRepeatedPromptingForTesting(bool allowed);
-
  private:
-  // Registers for the NOTIFICATION_NAV_ENTRY_COMMITTED notification.
-  void RegisterForNotifications();
+  explicit NavigationObserver(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<NavigationObserver>;
 
-  // Checks if |nav_controller| has entered an extension's web extent. If it
+  // Checks if the WebContents has navigated to an extension's web extent. If it
   // has and the extension is disabled due to a permissions increase, this
   // prompts the user to accept the new permissions and enables the extension.
-  void PromptToEnableExtensionIfNecessary(
-      content::NavigationController* nav_controller);
+  void PromptToEnableExtensionIfNecessary(const GURL& url);
 
   void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+
+  // content::WebContentsObserver:
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
 
-  content::NotificationRegistrar registrar_;
-
-  raw_ptr<Profile> profile_;
-
   // The UI used to confirm enabling extensions.
   std::unique_ptr<ExtensionInstallPrompt> extension_install_prompt_;
 
   // The data we keep track of when prompting to enable extensions.
   std::string in_progress_prompt_extension_id_;
-  raw_ptr<content::NavigationController>
-      in_progress_prompt_navigation_controller_;
-
-  // The extension ids we've already prompted the user about.
-  std::set<std::string> prompted_extensions_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
   base::WeakPtrFactory<NavigationObserver> weak_factory_{this};
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace extensions
