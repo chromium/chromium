@@ -106,6 +106,9 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
     metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
   }
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
+  if (delegate_->MimeType()) {
+    metadata->setMimeType(WTF::String::FromUTF8(*delegate_->MimeType()));
+  }
   return metadata;
 }
 

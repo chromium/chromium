@@ -37,6 +37,7 @@ class RTCEncodedAudioFrameDelegate
   void SetRtpTimestamp(uint32_t timestamp, ExceptionState& exception_state);
   absl::optional<uint32_t> Ssrc() const;
   absl::optional<uint8_t> PayloadType() const;
+  absl::optional<std::string> MimeType() const;
   absl::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
   absl::optional<uint64_t> AbsCaptureTime() const;
