@@ -55,8 +55,9 @@ void VirtualFidoDiscovery::StartInternal() {
   devices_pending_discovery_start_.clear();
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&VirtualFidoDiscovery::NotifyDiscoveryStarted,
-                                AsWeakPtr(), true /* success */));
+      FROM_HERE,
+      base::BindOnce(&VirtualFidoDiscovery::NotifyDiscoveryStarted,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/true));
 }
 
 }  // namespace content
