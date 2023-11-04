@@ -29,7 +29,8 @@ found in the LICENSE file.
             android:id="@+id/page_insights_privacy_notice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp"
             android:visibility="gone">
             <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
                 android:id="@+id/page_insights_privacy_notice_card"
