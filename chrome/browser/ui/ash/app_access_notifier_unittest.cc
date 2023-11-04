@@ -52,13 +52,9 @@ constexpr char kPrivacyIndicatorsLaunchSettingsHistogramName[] =
 // in all displays.
 ash::PrivacyIndicatorsTrayItemView* GetPrivacyIndicatorsView(
     ash::RootWindowController* root_window_controller) {
-  return ash::features::IsQsRevampEnabled()
-             ? root_window_controller->GetStatusAreaWidget()
-                   ->notification_center_tray()
-                   ->privacy_indicators_view()
-             : root_window_controller->GetStatusAreaWidget()
-                   ->unified_system_tray()
-                   ->privacy_indicators_view();
+  return root_window_controller->GetStatusAreaWidget()
+      ->notification_center_tray()
+      ->privacy_indicators_view();
 }
 
 void ExpectPrivacyIndicatorsVisible(bool visible) {

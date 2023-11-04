@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -106,13 +105,9 @@ struct IsActiveTestParam {
 void ExpectPrivacyIndicatorsVisible(bool visible) {
   for (RootWindowController* root_window_controller :
        Shell::Get()->GetAllRootWindowControllers()) {
-    auto* view = features::IsQsRevampEnabled()
-                     ? root_window_controller->GetStatusAreaWidget()
-                           ->notification_center_tray()
-                           ->privacy_indicators_view()
-                     : root_window_controller->GetStatusAreaWidget()
-                           ->unified_system_tray()
-                           ->privacy_indicators_view();
+    auto* view = root_window_controller->GetStatusAreaWidget()
+                     ->notification_center_tray()
+                     ->privacy_indicators_view();
 
     EXPECT_EQ(view->GetVisible(), visible);
   }

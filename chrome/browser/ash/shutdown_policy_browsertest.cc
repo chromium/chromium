@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -132,16 +131,10 @@ class ShutdownPolicyInSessionTest : public ShutdownPolicyBaseTest {
   }
 };
 
-// Tests that by default the shutdown button tooltip is "Shut down" in the old
-// view or "Power menu" in the revamped view.
+// Tests that by default the shutdown button tooltip is "Power menu".
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, TestBasic) {
   OpenSystemTrayMenu();
-  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
-    EXPECT_TRUE(HasShutdownButtonTooltip("Power menu"));
-  } else {
-    EXPECT_TRUE(HasShutdownButtonTooltip("Shut down"));
-  }
-
+  EXPECT_TRUE(HasShutdownButtonTooltip("Power menu"));
   CloseSystemTrayMenu();
 }
 

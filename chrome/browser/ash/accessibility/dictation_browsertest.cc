@@ -2108,7 +2108,6 @@ class NotificationCenterDictationTest : public DictationTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DictationTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   void SetUpOnMainThread() override {
@@ -2131,7 +2130,6 @@ class NotificationCenterDictationTest : public DictationTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 

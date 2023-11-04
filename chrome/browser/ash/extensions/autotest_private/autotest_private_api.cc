@@ -6676,7 +6676,6 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
   static const base::Feature* const kAllowList[] = {
       // clang-format off
       &ash::features::kPrivacyIndicators,
-      &ash::features::kQsRevamp,
       &ash::features::kVideoConference,
       &chromeos::features::kJelly,
       &kDisabledFeatureForTest,
