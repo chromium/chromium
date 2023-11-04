@@ -468,6 +468,8 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
   UpdateResizeHandleBounds(quadrant);
 #endif
+
+  views::Widget::OnNativeWidgetMove();
 }
 
 void VideoOverlayWindowViews::OnNativeWidgetSizeChanged(
