@@ -746,15 +746,13 @@ void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
-  if (change.type == ChildrenChangeType::kElementInserted) {
-    if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
-      OptionInserted(*option, option->Selected());
-    } else if (auto* optgroup =
-                   DynamicTo<HTMLOptGroupElement>(change.sibling_changed)) {
-      for (auto& child_option :
-           Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
-        OptionInserted(child_option, child_option.Selected());
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    for (Node& node : NodeTraversal::ChildrenOf(*this)) {
+      ElementInserted(node);
     }
+  } else if (change.type == ChildrenChangeType::kElementInserted) {
+    ElementInserted(*change.sibling_changed);
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       OptionRemoved(*option);
@@ -779,6 +777,17 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
 
 bool HTMLSelectElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
   return true;
+}
+
+void HTMLSelectElement::ElementInserted(Node& node) {
+  if (auto* option = DynamicTo<HTMLOptionElement>(&node)) {
+    OptionInserted(*option, option->Selected());
+  } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(&node)) {
+    for (auto& child_option :
+         Traversal<HTMLOptionElement>::ChildrenOf(*optgroup)) {
+      OptionInserted(child_option, child_option.Selected());
+    }
+  }
 }
 
 void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,

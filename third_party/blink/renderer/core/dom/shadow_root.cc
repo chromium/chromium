@@ -251,7 +251,13 @@ bool ShadowRoot::NeedsSlotAssignmentRecalc() const {
 void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
   ContainerNode::ChildrenChanged(change);
 
-  if (change.IsChildElementChange()) {
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    // No need to call CheckForSiblingStyleChanges() as at this point the
+    // node is not in the active document (CheckForSiblingStyleChanges() does
+    // nothing when not in the active document).
+    DCHECK(!InActiveDocument());
+  } else if (change.IsChildElementChange()) {
     CheckForSiblingStyleChanges(
         change.type == ChildrenChangeType::kElementRemoved
             ? kSiblingElementRemoved

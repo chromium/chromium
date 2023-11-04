@@ -381,6 +381,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
 
+  void AdjustDirectionalityIfNeededAfterInsert(Node& node);
+
   TranslateAttributeMode GetTranslateAttributeMode() const;
 
   void HandleKeypressEvent(KeyboardEvent&);

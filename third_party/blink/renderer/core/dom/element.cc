@@ -4359,15 +4359,8 @@ void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
     }
     stay_within = change.sibling_changed;
   } else if (change.IsChildInsertion()) {
-    if (change.sibling_changed->IsTextNode()) {
-      const absl::optional<TextDirection> new_text_direction =
-          BidiParagraph::BaseDirectionForString(
-              change.sibling_changed->textContent(true));
-      if (!new_text_direction ||
-          (*new_text_direction == CachedDirectionality() &&
-           !DirAutoInheritsFromParent())) {
-        return;
-      }
+    if (!ShouldAdjustDirectionalityForInsert(change)) {
+      return;
     }
     stay_within = change.sibling_changed;
   }
@@ -4395,6 +4388,32 @@ void Element::AdjustDirectionalityIfNeededAfterChildrenChanged(
       }
     }
   }
+}
+
+bool Element::ShouldAdjustDirectionalityForInsert(
+    const ChildrenChange& change) const {
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    for (Node& child : NodeTraversal::ChildrenOf(*this)) {
+      if (!DoesChildTextNodesDirectionMatchThis(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return !DoesChildTextNodesDirectionMatchThis(*change.sibling_changed);
+}
+
+bool Element::DoesChildTextNodesDirectionMatchThis(const Node& node) const {
+  if (node.IsTextNode()) {
+    const absl::optional<TextDirection> new_text_direction =
+        BidiParagraph::BaseDirectionForString(node.textContent(true));
+    if (!new_text_direction || (*new_text_direction == CachedDirectionality() &&
+                                !DirAutoInheritsFromParent())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {

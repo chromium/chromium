@@ -1536,6 +1536,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void RecomputeDirectionFromParent();
 
+  // Returns true if the directionality needs to be updated for insert.
+  bool ShouldAdjustDirectionalityForInsert(const ChildrenChange& change) const;
+
+  // Returns true if node is a text node and the direction is not set, or
+  // matches this. Generally only useful from
+  // ShouldAdjustDirectionalityForInsert().
+  bool DoesChildTextNodesDirectionMatchThis(const Node& node) const;
+
   ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
 
   // FIXME: Everyone should allow author shadows.

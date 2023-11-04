@@ -94,6 +94,10 @@ void HTMLOptGroupElement::ChildrenChanged(const ChildrenChange& change) {
   auto* select = OwnerSelectElement();
   if (!select)
     return;
+  // Code path used for kFinishedBuildingDocumentFragmentTree should not be
+  // hit for optgroups as fast-path parser does not handle optgroups.
+  DCHECK_NE(change.type,
+            ChildrenChangeType::kFinishedBuildingDocumentFragmentTree);
   if (change.type == ChildrenChangeType::kElementInserted) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed))
       select->OptionInserted(*option, option->Selected());

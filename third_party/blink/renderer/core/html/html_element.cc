@@ -2491,10 +2491,13 @@ void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
       // The new code for handling this is in Element::InsertedInto and
       // Element::RemovedFrom.
       !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    auto* element = DynamicTo<HTMLElement>(change.sibling_changed);
-    if (element && !element->NeedsInheritDirectionalityFromParent() &&
-        ElementInheritsDirectionality(element)) {
-      element->UpdateDirectionalityAndDescendant(CachedDirectionality());
+    if (change.type ==
+        ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+      for (Node& node : NodeTraversal::ChildrenOf(*this)) {
+        AdjustDirectionalityIfNeededAfterInsert(node);
+      }
+    } else if (change.sibling_changed) {
+      AdjustDirectionalityIfNeededAfterInsert(*change.sibling_changed);
     }
   }
 }
@@ -2545,6 +2548,14 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
         return;
       }
     }
+  }
+}
+
+void HTMLElement::AdjustDirectionalityIfNeededAfterInsert(Node& node) {
+  auto* html_element = DynamicTo<HTMLElement>(node);
+  if (html_element && !html_element->NeedsInheritDirectionalityFromParent() &&
+      ElementInheritsDirectionality(html_element)) {
+    html_element->UpdateDirectionalityAndDescendant(CachedDirectionality());
   }
 }
 
