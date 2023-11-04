@@ -713,7 +713,7 @@ void MediaFoundationRendererClient::LogRenderingStrategy() {
   }
 
   MEDIA_LOG(INFO, media_log_)
-      << "MediaFoundationRenderingStrategy: " << strategy;
+      << "MediaFoundationClearRenderingStrategy: " << strategy;
 }
 
 }  // namespace media
