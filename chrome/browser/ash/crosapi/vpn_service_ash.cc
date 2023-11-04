@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -157,12 +158,16 @@ void VpnConfigurationImpl::OnPacketReceived(const std::vector<char>& data) {
 
 void VpnConfigurationImpl::OnPlatformMessage(uint32_t platform_message) {
   DCHECK(vpn_service_);
-  DCHECK_GE(api_vpn::PLATFORM_MESSAGE_LAST, platform_message);
+  DCHECK_GE(static_cast<uint32_t>(api_vpn::PlatformMessage::kMaxValue),
+            platform_message);
 
-  if (platform_message == api_vpn::PLATFORM_MESSAGE_CONNECTED) {
+  if (platform_message ==
+      base::to_underlying(api_vpn::PlatformMessage::kConnected)) {
     vpn_service_->SetActiveConfiguration(this);
-  } else if (platform_message == api_vpn::PLATFORM_MESSAGE_DISCONNECTED ||
-             platform_message == api_vpn::PLATFORM_MESSAGE_ERROR) {
+  } else if (platform_message ==
+                 base::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
+             platform_message ==
+                 base::to_underlying(api_vpn::PlatformMessage::kError)) {
     vpn_service_->SetActiveConfiguration(nullptr);
     if (pepper_vpn_proxy_observer_) {
       pepper_vpn_proxy_observer_->OnUnbind();
@@ -271,7 +276,8 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
   }
 
   if (active_configuration_ == configuration) {
-    configuration->OnPlatformMessage(api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
+    configuration->OnPlatformMessage(
+        base::to_underlying(api_vpn::PlatformMessage::kDisconnected));
   }
 
   DestroyConfigurationInternal(configuration);
@@ -339,8 +345,8 @@ void VpnServiceForExtensionAsh::NotifyConnectionStateChanged(
   ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
       active_configuration_->object_path(),
       connection_success
-          ? api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_CONNECTED
-          : api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_FAILURE,
+          ? base::to_underlying(api_vpn::VpnConnectionState::kConnected)
+          : base::to_underlying(api_vpn::VpnConnectionState::kFailure),
       std::move(success), std::move(failure));
 }
 

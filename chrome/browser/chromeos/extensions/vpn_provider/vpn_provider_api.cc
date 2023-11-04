@@ -304,8 +304,7 @@ VpnProviderNotifyConnectionStateChangedFunction::Run() {
   // Cannot be VPN_CONNECTION_STATE_NONE at this point -- see !params guard
   // above.
   bool connection_success =
-      params->state ==
-      api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_CONNECTED;
+      params->state == api_vpn::VpnConnectionState::kConnected;
   service->NotifyConnectionStateChanged(
       extension_id(), connection_success,
       base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::

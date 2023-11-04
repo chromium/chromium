@@ -163,7 +163,7 @@ void VpnServiceForExtension::OnAddDialog() {
   DispatchEvent(std::make_unique<extensions::Event>(
       extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
       api_vpn::OnUIEvent::kEventName,
-      api_vpn::OnUIEvent::Create(api_vpn::UI_EVENT_SHOWADDDIALOG,
+      api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowAddDialog,
                                  std::string()),
       browser_context_));
 }
@@ -173,7 +173,7 @@ void VpnServiceForExtension::OnConfigureDialog(
   DispatchEvent(std::make_unique<extensions::Event>(
       extensions::events::HistogramValue::VPN_PROVIDER_ON_UI_EVENT,
       api_vpn::OnUIEvent::kEventName,
-      api_vpn::OnUIEvent::Create(api_vpn::UI_EVENT_SHOWCONFIGUREDIALOG,
+      api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowConfigureDialog,
                                  configuration_name),
       browser_context_));
 }
