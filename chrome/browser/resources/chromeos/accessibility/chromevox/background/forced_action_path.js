@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Monitors user actions.
+ * @fileoverview Forces user actions down a predetermined path.
  */
 import {KeyCode} from '../../common/key_code.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
@@ -16,9 +16,6 @@ import {QueueMode} from '../common/tts_types.js';
 
 import {CommandHandlerInterface} from './input/command_handler_interface.js';
 import {Output} from './output/output.js';
-
-const Action = BridgeConstants.UserActionMonitor.Action;
-const TARGET = BridgeConstants.UserActionMonitor.TARGET;
 
 /**
  * The types of actions we want to monitor.
@@ -33,37 +30,66 @@ const ActionType = {
 };
 
 /**
- * Monitors user actions. Receives a queue of expected actions upon construction
- * and blocks ChromeVox execution until each action is matched. Hooks into
- * various handlers to intercept user actions before they are processed by the
- * rest of ChromeVox.
+ * Monitors user actions and forces them down a predetermined path. Receives a
+ * queue of expected actions upon construction and blocks ChromeVox execution
+ * until each action is matched. Hooks into various handlers to intercept user
+ * actions before they are processed by the rest of ChromeVox.
  */
-export class UserActionMonitor {
+export class ForcedActionPath {
   /**
-   * @param {!Array<UserActionMonitor.ActionInfo>} actionInfos A queue of
+   * @param {!Array<ForcedActionPath.ActionInfo>} actionInfos A queue of
    *     expected actions.
    * @param {function():void} onFinishedCallback Runs once after all expected
    *     actions have been matched.
    */
   constructor(actionInfos, onFinishedCallback) {
     if (actionInfos.length === 0) {
-      throw new Error(`UserActionMonitor: actionInfos can't be empty`);
+      throw new Error(`ForcedActionPath: actionInfos can't be empty`);
     }
 
     /** @private {number} */
     this.actionIndex_ = 0;
-    /** @private {!Array<!UserActionMonitor.Action>} */
+    /** @private {!Array<!ForcedActionPath.Action>} */
     this.actions_ = [];
     /** @private {function():void} */
     this.onFinishedCallback_ = onFinishedCallback;
 
     for (let i = 0; i < actionInfos.length; ++i) {
       this.actions_.push(
-          UserActionMonitor.Action.fromActionInfo(actionInfos[i]));
+          ForcedActionPath.Action.fromActionInfo(actionInfos[i]));
     }
     if (this.actions_[0].beforeActionCallback) {
       this.actions_[0].beforeActionCallback();
     }
+  }
+
+  // Static methods.
+
+  /** @private */
+  static closeChromeVox_() {
+    (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
+  }
+
+  /**
+   * Creates a new forced action path.
+   * @param {!Array<{
+   *    type: string,
+   *    value: (string|Object),
+   *    beforeActionMsg: (string|undefined),
+   *    afterActionMsg: (string|undefined)
+   * }>} actions
+   * @param {function(): void} callback
+   */
+  static create(actions, callback) {
+    if (ForcedActionPath.instance) {
+      throw 'Error: trying to create a second ForcedActionPath';
+    }
+    ForcedActionPath.instance = new ForcedActionPath(actions, callback);
+  }
+
+  /** Destroys the forced action path. */
+  static destroy() {
+    ForcedActionPath.instance = null;
   }
 
   // Public methods.
@@ -76,8 +102,8 @@ export class UserActionMonitor {
    */
   onKeySequence(actualSequence) {
     if (actualSequence.equals(
-            UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_)) {
-      UserActionMonitor.closeChromeVox_();
+            ForcedActionPath.CLOSE_CHROMEVOX_KEY_SEQUENCE_)) {
+      ForcedActionPath.closeChromeVox_();
       return true;
     }
 
@@ -142,7 +168,7 @@ export class UserActionMonitor {
   nextAction_() {
     if (this.actionIndex_ < 0 || this.actionIndex_ >= this.actions_.length) {
       throw new Error(
-          `UserActionMonitor: can't call nextAction_(), invalid index`);
+          `ForcedActionPath: can't call nextAction_(), invalid index`);
     }
 
     this.actionIndex_ += 1;
@@ -163,7 +189,7 @@ export class UserActionMonitor {
   }
 
   /**
-   * @return {!UserActionMonitor.Action}
+   * @return {!ForcedActionPath.Action}
    * @private
    */
   getExpectedAction_() {
@@ -171,34 +197,7 @@ export class UserActionMonitor {
       return this.actions_[this.actionIndex_];
     }
 
-    throw new Error('UserActionMonitor: actionIndex_ is invalid.');
-  }
-
-  /** @private */
-  static closeChromeVox_() {
-    (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
-  }
-
-  /**
-   * Creates a new user action monitor.
-   * @param {!Array<{
-   *    type: string,
-   *    value: (string|Object),
-   *    beforeActionMsg: (string|undefined),
-   *    afterActionMsg: (string|undefined)
-   * }>} actions
-   * @param {function(): void} callback
-   */
-  static create(actions, callback) {
-    if (UserActionMonitor.instance) {
-      throw 'Error: trying to create a second UserActionMonitor';
-    }
-    UserActionMonitor.instance = new UserActionMonitor(actions, callback);
-  }
-
-  /** Destroys the user action monitor */
-  static destroy() {
-    UserActionMonitor.instance = null;
+    throw new Error('ForcedActionPath: actionIndex_ is invalid.');
   }
 }
 
@@ -207,11 +206,11 @@ export class UserActionMonitor {
  * @const {!KeySequence}
  * @private
  */
-UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
+ForcedActionPath.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
     {keys: {keyCode: [KeyCode.Z], ctrlKey: [true], altKey: [true]}});
 
 /**
- * Defines an object that is used to create a UserActionMonitor.Action.
+ * Defines an object that is used to create a ForcedActionPath.Action.
  * @typedef {{
  *    type: ActionType,
  *    value: (string|Object),
@@ -221,10 +220,10 @@ UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
  *    afterActionCmd: (!Command|undefined),
  * }}
  */
-UserActionMonitor.ActionInfo;
+ForcedActionPath.ActionInfo;
 
 // Represents an expected action.
-UserActionMonitor.Action = class {
+ForcedActionPath.Action = class {
   /**
    * Please see below for more information on arguments:
    * type: The type of action.
@@ -258,14 +257,14 @@ UserActionMonitor.Action = class {
       case ActionType.KEY_SEQUENCE:
         if (!(this.value instanceof KeySequence)) {
           throw new Error(
-              'UserActionMonitor: Must provide a KeySequence value for ' +
+              'ForcedActionPath: Must provide a KeySequence value for ' +
               'Actions of type ActionType.KEY_SEQUENCE');
         }
         break;
       default:
         if (typeof this.value !== 'string') {
           throw new Error(
-              'UserActionMonitor: Must provide a string value for Actions ' +
+              'ForcedActionPath: Must provide a string value for Actions ' +
               'if type is other than ActionType.KEY_SEQUENCE');
         }
     }
@@ -273,15 +272,15 @@ UserActionMonitor.Action = class {
 
   /**
    * Constructs a new Action given an ActionInfo object.
-   * @param {!UserActionMonitor.ActionInfo} info
-   * @return {!UserActionMonitor.Action}
+   * @param {!ForcedActionPath.ActionInfo} info
+   * @return {!ForcedActionPath.Action}
    */
   static fromActionInfo(info) {
     switch (info.type) {
       case ActionType.KEY_SEQUENCE:
         if (typeof info.value !== 'object') {
           throw new Error(
-              'UserActionMonitor: Must provide an object resembling a ' +
+              'ForcedActionPath: Must provide an object resembling a ' +
               'KeySequence for Actions of type ActionType.KEY_SEQUENCE');
         }
         break;
@@ -289,7 +288,7 @@ UserActionMonitor.Action = class {
       default:
         if (typeof info.value !== 'string') {
           throw new Error(
-              'UserActionMonitor: Must provide a string value for Actions if ' +
+              'ForcedActionPath: Must provide a string value for Actions if ' +
               'type is other than ActionType.KEY_SEQUENCE');
         }
     }
@@ -309,20 +308,20 @@ UserActionMonitor.Action = class {
         return;
       }
 
-      UserActionMonitor.Action.output_(beforeActionMsg);
+      ForcedActionPath.Action.output_(beforeActionMsg);
     };
 
     // A function that either provides output or performs a command when the
     // action has been matched.
     const afterActionCallback = () => {
       if (afterActionMsg) {
-        UserActionMonitor.Action.output_(afterActionMsg);
+        ForcedActionPath.Action.output_(afterActionMsg);
       } else if (afterActionCmd) {
-        UserActionMonitor.Action.onCommand_(afterActionCmd);
+        ForcedActionPath.Action.onCommand_(afterActionCmd);
       }
     };
 
-    return new UserActionMonitor.Action({
+    return new ForcedActionPath.Action({
       type,
       value,
       shouldPropagate,
@@ -332,7 +331,7 @@ UserActionMonitor.Action = class {
   }
 
   /**
-   * @param {!UserActionMonitor.Action} other
+   * @param {!ForcedActionPath.Action} other
    * @return {boolean}
    */
   equals(other) {
@@ -369,19 +368,24 @@ UserActionMonitor.Action = class {
   }
 };
 
-/** @type {UserActionMonitor} */
-UserActionMonitor.instance;
+/** @type {ForcedActionPath} */
+ForcedActionPath.instance;
 
 BridgeHelper.registerHandler(
-    TARGET, Action.CREATE,
+    BridgeConstants.ForcedActionPath.TARGET,
+    BridgeConstants.ForcedActionPath.Action.CREATE,
     actions =>
-        new Promise(resolve => UserActionMonitor.create(actions, resolve)));
+        new Promise(resolve => ForcedActionPath.create(actions, resolve)));
 BridgeHelper.registerHandler(
-    TARGET, Action.DESTROY, () => UserActionMonitor.destroy());
-BridgeHelper.registerHandler(TARGET, Action.ON_KEY_DOWN, evt => {
-  if (!UserActionMonitor.instance) {
-    // Continue propagating.
-    return true;
-  }
-  return UserActionMonitor.instance.onKeyDown(evt);
-});
+    BridgeConstants.ForcedActionPath.TARGET,
+    BridgeConstants.ForcedActionPath.Action.DESTROY,
+    () => ForcedActionPath.destroy());
+BridgeHelper.registerHandler(
+    BridgeConstants.ForcedActionPath.TARGET,
+    BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN, evt => {
+      if (!ForcedActionPath.instance) {
+        // Continue propagating.
+        return true;
+      }
+      return ForcedActionPath.instance.onKeyDown(evt);
+    });

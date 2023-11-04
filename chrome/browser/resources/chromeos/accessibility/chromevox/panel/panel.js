@@ -801,22 +801,22 @@ export class Panel extends PanelInterface {
     const backgroundPage = chrome.extension.getBackgroundPage();
 
     $('chromevox-tutorial').addEventListener('closetutorial', async evt => {
-      // Ensure UserActionMonitor is destroyed before closing tutorial.
-      await BackgroundBridge.UserActionMonitor.destroy();
+      // Ensure ForcedActionPath is destroyed before closing tutorial.
+      await BackgroundBridge.ForcedActionPath.destroy();
       this.onCloseTutorial_();
     });
     $('chromevox-tutorial')
         .addEventListener('startinteractivemode', async evt => {
           const actions = evt.detail.actions;
-          await BackgroundBridge.UserActionMonitor.create(actions);
-          await BackgroundBridge.UserActionMonitor.destroy();
+          await BackgroundBridge.ForcedActionPath.create(actions);
+          await BackgroundBridge.ForcedActionPath.destroy();
           if (this.tutorial_ && this.tutorial_.showNextLesson) {
             this.tutorial_.showNextLesson();
           }
         });
     $('chromevox-tutorial')
         .addEventListener('stopinteractivemode', async evt => {
-          await BackgroundBridge.UserActionMonitor.destroy();
+          await BackgroundBridge.ForcedActionPath.destroy();
         });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', evt => {
       BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
@@ -836,8 +836,8 @@ export class Panel extends PanelInterface {
     });
     $('chromevox-tutorial').addEventListener('openUrl', async evt => {
       const url = evt.detail.url;
-      // Ensure UserActionMonitor is destroyed before closing tutorial.
-      await BackgroundBridge.UserActionMonitor.destroy();
+      // Ensure ForcedActionPath is destroyed before closing tutorial.
+      await BackgroundBridge.ForcedActionPath.destroy();
       this.onCloseTutorial_();
       BrowserUtil.openBrowserUrl(url);
     });

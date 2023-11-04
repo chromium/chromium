@@ -194,6 +194,41 @@ BackgroundBridge.EventStreamLogger = {
   },
 };
 
+BackgroundBridge.ForcedActionPath = {
+  /**
+   * Creates a new user action monitor.
+   * Resolves after all actions in |actions| have been observed.
+   * @param {!Array<{
+   *     type: string,
+   *     value: (string|Object),
+   *     beforeActionMsg: (string|undefined),
+   *     afterActionMsg: (string|undefined)}>} actions
+   * @return {!Promise}
+   */
+  async create(actions) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ForcedActionPath.TARGET,
+        BridgeConstants.ForcedActionPath.Action.CREATE, actions);
+  },
+
+  /**
+   * Destroys the user action monitor.
+   * @return {!Promise}
+   */
+  async destroy() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ForcedActionPath.TARGET,
+        BridgeConstants.ForcedActionPath.Action.DESTROY);
+  },
+
+  /** @return {!Promise<boolean>} */
+  async onKeyDown(event) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ForcedActionPath.TARGET,
+        BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN, event);
+  },
+};
+
 BackgroundBridge.LogStore = {
   /**
    * Clear the log buffer.
@@ -381,41 +416,5 @@ BackgroundBridge.TtsBackground = {
         BridgeConstants.TtsBackground.TARGET,
         BridgeConstants.TtsBackground.Action.UPDATE_PUNCTUATION_ECHO,
         punctuationEcho);
-  },
-};
-
-
-BackgroundBridge.UserActionMonitor = {
-  /**
-   * Creates a new user action monitor.
-   * Resolves after all actions in |actions| have been observed.
-   * @param {!Array<{
-   *     type: string,
-   *     value: (string|Object),
-   *     beforeActionMsg: (string|undefined),
-   *     afterActionMsg: (string|undefined)}>} actions
-   * @return {!Promise}
-   */
-  async create(actions) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.CREATE, actions);
-  },
-
-  /**
-   * Destroys the user action monitor.
-   * @return {!Promise}
-   */
-  async destroy() {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.DESTROY);
-  },
-
-  /** @return {!Promise<boolean>} */
-  async onKeyDown(event) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, event);
   },
 };

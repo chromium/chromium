@@ -93,7 +93,7 @@ export class LearnMode {
         return true;
       }
 
-      BackgroundBridge.UserActionMonitor.onKeyDown(evt).then(
+      BackgroundBridge.ForcedActionPath.onKeyDown(evt).then(
           (shouldPropagate) => {
             if (shouldPropagate) {
               ChromeVoxKbHandler.basicKeyDownActionsListener(evt);

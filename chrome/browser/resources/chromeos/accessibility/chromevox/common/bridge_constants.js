@@ -99,6 +99,16 @@ BridgeConstants.EventStreamLogger = {
 };
 
 /** @public {!BridgeEntry} */
+BridgeConstants.ForcedActionPath = {
+  TARGET: 'ForcedActionPath',
+  Action: {
+    CREATE: 'create',
+    DESTROY: 'destroy',
+    ON_KEY_DOWN: 'onKeyDown',
+  },
+};
+
+/** @public {!BridgeEntry} */
 BridgeConstants.GestureCommandHandler = {
   TARGET: 'GestureCommandHandler',
   Action: {
@@ -166,16 +176,6 @@ BridgeConstants.TtsBackground = {
     GET_CURRENT_VOICE: 'getCurrentVoice',
     SPEAK: 'speak',
     UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
-  },
-};
-
-/** @public {!BridgeEntry} */
-BridgeConstants.UserActionMonitor = {
-  TARGET: 'UserActionMonitor',
-  Action: {
-    CREATE: 'create',
-    DESTROY: 'destroy',
-    ON_KEY_DOWN: 'onKeyDown',
   },
 };
 

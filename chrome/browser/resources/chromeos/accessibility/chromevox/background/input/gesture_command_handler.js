@@ -16,8 +16,8 @@ import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {PointerHandler} from '../event/pointer_handler.js';
 import {EventSource} from '../event_source.js';
+import {ForcedActionPath} from '../forced_action_path.js';
 import {Output} from '../output/output.js';
-import {UserActionMonitor} from '../user_action_monitor.js';
 
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {GestureInterface} from './gesture_interface.js';
@@ -85,10 +85,10 @@ export class GestureCommandHandler {
 
     EventSource.set(EventSourceType.TOUCH_GESTURE);
 
-    const monitor = UserActionMonitor.instance;
-    if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&
-        !monitor.onGesture(gesture)) {
-      // UserActionMonitor returns true if this gesture should propagate.
+    const actionPath = ForcedActionPath.instance;
+    if (gesture !== Gesture.SWIPE_LEFT2 && actionPath &&
+        !actionPath.onGesture(gesture)) {
+      // ForcedActionPath returns true if this gesture should propagate.
       // Prevent this gesture from propagating if it returns false.
       // Always allow SWIPE_LEFT2 to propagate, since it simulates the escape
       // key.

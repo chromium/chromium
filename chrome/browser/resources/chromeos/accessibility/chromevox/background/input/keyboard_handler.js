@@ -14,10 +14,10 @@ import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {EventSource} from '../event_source.js';
+import {ForcedActionPath} from '../forced_action_path.js';
 import {MathHandler} from '../math_handler.js';
 import {Output} from '../output/output.js';
 import {ChromeVoxPrefs} from '../prefs.js';
-import {UserActionMonitor} from '../user_action_monitor.js';
 
 /**
  * @enum {string}
@@ -126,8 +126,8 @@ export class BackgroundKeyboardHandler {
       return false;
     }
 
-    const userActionMonitor = UserActionMonitor.instance;
-    if (userActionMonitor && !userActionMonitor.onKeyDown(evt)) {
+    const forcedActionPath = ForcedActionPath.instance;
+    if (forcedActionPath && !forcedActionPath.onKeyDown(evt)) {
       return false;
     }
 
