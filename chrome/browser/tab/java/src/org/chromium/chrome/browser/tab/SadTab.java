@@ -75,8 +75,13 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     public void show(Context context, Runnable suggestionAction, Runnable buttonAction) {
         if (mTab.getWebContents() == null) return;
 
-        // Make sure we are not adding the "Aw, snap" view over an existing one.
-        assert mView == null;
+        if (mView != null) {
+            assert !mTab.getTabViewManager().isShowing(this);
+            // SadTab was requested to show but TabContentManager may have queued it in favor
+            // of a tab view of other type such as |TabViewProvider.Type.SUSPENDED_TAB| or
+            // |PAINT_PREVIEW}|. Just return and wait for the SadTab's turn to show up.
+            return;
+        }
         mSadTabSuccessiveRefreshCounter++;
         mView = createView(context, suggestionAction, buttonAction, showSendFeedbackView(),
                 mTab.isIncognito());
