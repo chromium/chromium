@@ -262,8 +262,8 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertTrue(mBaseView.getClipToOutline());
         // Expect the RoundedCornerOutlineProvider. Fail if it's anything else.
         var provider = (RoundedCornerOutlineProvider) mBaseView.getOutlineProvider();
-        Assert.assertTrue(provider.isTopEdgeRoundedForTesting());
-        Assert.assertFalse(provider.isBottomEdgeRoundedForTesting());
+        Assert.assertTrue(provider.isTopEdgeRounded());
+        Assert.assertFalse(provider.isBottomEdgeRounded());
     }
 
     @Test
@@ -274,8 +274,8 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertTrue(mBaseView.getClipToOutline());
         // Expect the RoundedCornerOutlineProvider. Fail if it's anything else.
         var provider = (RoundedCornerOutlineProvider) mBaseView.getOutlineProvider();
-        Assert.assertTrue(provider.isTopEdgeRoundedForTesting());
-        Assert.assertTrue(provider.isBottomEdgeRoundedForTesting());
+        Assert.assertTrue(provider.isTopEdgeRounded());
+        Assert.assertTrue(provider.isBottomEdgeRounded());
     }
 
     @Test

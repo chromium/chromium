@@ -104,14 +104,12 @@ public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
     }
 
     /** Returns whether the corners around the top edge are rounded. */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public boolean isTopEdgeRoundedForTesting() {
+    public boolean isTopEdgeRounded() {
         return mRoundTopEdge;
     }
 
     /** Returns whether the corners around the bottom edge are rounded. */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public boolean isBottomEdgeRoundedForTesting() {
+    public boolean isBottomEdgeRounded() {
         return mRoundBottomEdge;
     }
 }

@@ -32,9 +32,9 @@ class SuggestionLayout extends ViewGroup {
     @VisibleForTesting public final @Px int mDecorationIconWidthPx;
     @VisibleForTesting public final @Px int mContentHeightPx;
     @VisibleForTesting public final @Px int mCompactContentHeightPx;
+    @VisibleForTesting public final @NonNull RoundedCornerOutlineProvider mOutlineProvider;
     private final @Px int mActionButtonWidthPx;
     private final @Px int mContentPaddingPx;
-    private final @NonNull RoundedCornerOutlineProvider mOutlineProvider;
 
     /**
      * SuggestionLayout's LayoutParams.
@@ -168,11 +168,21 @@ class SuggestionLayout extends ViewGroup {
                                 .getDimensionPixelSize(
                                         R.dimen.omnibox_suggestion_bg_round_corner_radius));
         setOutlineProvider(mOutlineProvider);
+        setRoundingEdges(false, false);
     }
 
     public void setRoundingEdges(boolean roundTopEdge, boolean roundBottomEdge) {
+        boolean needUpdate =
+                mOutlineProvider.isTopEdgeRounded() != roundTopEdge
+                        || mOutlineProvider.isBottomEdgeRounded() != roundBottomEdge;
+
+        if (!needUpdate) return;
+
         mOutlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
         setClipToOutline(roundTopEdge || roundBottomEdge);
+        // Make sure the view redraws. Otherwise, the on-screen visuals may not reflect our desired
+        // rounding effect.
+        invalidate();
     }
 
     @Override
