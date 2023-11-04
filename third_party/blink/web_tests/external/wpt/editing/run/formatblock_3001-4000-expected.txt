@@ -1,5 +1,11 @@
 This is a testharness.js-based test.
 Found 1000 tests; 913 PASS, 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandState("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("defaultparagraphseparator") after
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandIndeterm("formatblock") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandState("formatblock") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("formatblock") before
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandIndeterm("formatblock") after
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandState("formatblock") after
 [FAIL] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("formatblock") after
   assert_equals: Wrong result returned expected "h5" but got "p"
@@ -1081,11 +1087,5 @@ Found 1000 tests; 913 PASS, 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("formatblock") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>": execCommand("formatblock", false, "<p>") return value
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" checks for modifications to non-editable content
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" compare innerHTML
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandIndeterm("defaultparagraphseparator") after
 Harness: the test ran to completion.
 

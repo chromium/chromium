@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 542 tests; 518 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in hsl, hsl(120deg 10% 20%), hsl(30deg 30% 40%))'
 [PASS] Property color value 'color-mix(in hsl, hsl(120deg 10% 20%) 25%, hsl(30deg 30% 40%))'
 [PASS] Property color value 'color-mix(in hsl, 25% hsl(120deg 10% 20%), hsl(30deg 30% 40%))'
@@ -62,6 +62,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40%))'
 [PASS] Property color value 'color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40% / 0.5))'
 [PASS] Property color value 'color-mix(in hsl, hsl(120deg 40% 40% / none), hsl(0deg 40% 40% / none))'
+[PASS] Property color value 'color-mix(in hsl, hsl(30deg 40% 80% / 25%) 0%, hsl(90deg none none / none))'
+[PASS] Property color value 'color-mix(in hsl, hsl(30deg 40% 80% / 25%) 0%, hsl(none 50% none / none))'
+[PASS] Property color value 'color-mix(in hsl, hsl(30deg 40% 80% / 25%) 0%, hsl(none none 50% / none))'
+[PASS] Property color value 'color-mix(in hsl, hsl(30deg 40% 80% / 25%) 0%, hsl(90deg 50% none / none))'
+[FAIL] Property color value 'color-mix(in hsl, hsl(30deg 40% 80% / 25%) 0%, hsl(none none none / 0.5))'
+  Colors do not match.\nActual:   color(srgb 0.48 0.4 0.32 / 0.5)\nExpected: color(srgb 0.88 0.8 0.72 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.88 +/- 0.01, expected 0.88 but got 0.48
+[FAIL] Property color value 'color-mix(in hsl, hsl(30deg 40% 80% / 25%) 0%, hsl(90deg none none / 0.5))'
+  Colors do not match.\nActual:   color(srgb 0.4 0.48 0.32 / 0.5)\nExpected: color(srgb 0.8 0.88 0.72 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.8 +/- 0.01, expected 0.8 but got 0.4
 [PASS] Property color value 'color-mix(in hwb, hwb(120deg 10% 20%), hwb(30deg 30% 40%))'
 [PASS] Property color value 'color-mix(in hwb, hwb(120deg 10% 20%) 25%, hwb(30deg 30% 40%))'
 [PASS] Property color value 'color-mix(in hwb, 25% hwb(120deg 10% 20%), hwb(30deg 30% 40%))'
@@ -124,6 +132,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40%))'
 [PASS] Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40% / 0.5))'
 [PASS] Property color value 'color-mix(in hwb, hwb(120deg 10% 20% / none), hwb(30deg 30% 40% / none))'
+[PASS] Property color value 'color-mix(in hwb, hwb(30deg 30% 40% / 25%) 0%, hwb(90deg none none / none))'
+[PASS] Property color value 'color-mix(in hwb, hwb(30deg 30% 40% / 25%) 0%, hwb(none 50% none / none))'
+[PASS] Property color value 'color-mix(in hwb, hwb(30deg 30% 40% / 25%) 0%, hwb(none none 50% / none))'
+[PASS] Property color value 'color-mix(in hwb, hwb(30deg 30% 40% / 25%) 0%, hwb(90deg 50% none / none))'
+[FAIL] Property color value 'color-mix(in hwb, hwb(30deg 30% 40% / 25%) 0%, hwb(none none none / 0.5))'
+  Colors do not match.\nActual:   color(srgb 0.8 0.475 0.15 / 0.5)\nExpected: color(srgb 0.6 0.45 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.6 +/- 0.01, expected 0.6 but got 0.8
+[FAIL] Property color value 'color-mix(in hwb, hwb(30deg 30% 40% / 25%) 0%, hwb(90deg none none / 0.5))'
+  Colors do not match.\nActual:   color(srgb 0.475 0.8 0.15 / 0.5)\nExpected: color(srgb 0.45 0.6 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.45 +/- 0.01, expected 0.45 but got 0.475
 [PASS] Property color value 'color-mix(in lch, lch(10 20 30deg), lch(50 60 70deg))'
 [PASS] Property color value 'color-mix(in lch, lch(10 20 30deg) 25%, lch(50 60 70deg))'
 [PASS] Property color value 'color-mix(in lch, 25% lch(10 20 30deg), lch(50 60 70deg))'
@@ -185,6 +201,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in lch, lch(10 20 30deg / none), lch(50 60 70deg))'
 [PASS] Property color value 'color-mix(in lch, lch(10 20 30deg / none), lch(50 60 70deg / 0.5))'
 [PASS] Property color value 'color-mix(in lch, lch(10 20 30deg / none), lch(50 60 70deg / none))'
+[PASS] Property color value 'color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(0.5 none none / none))'
+[PASS] Property color value 'color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(none none 90deg / none))'
+[PASS] Property color value 'color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(none none none / 0.5))'
+  Colors do not match.\nActual:   lch(0.05 0.1 30 / 0.5)\nExpected: lch(0.1 0.2 30 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in lch, lch(0.1 0.2 30deg / 25%) 0%, lch(0.5 none none / 0.5))'
+  Colors do not match.\nActual:   lch(0.5 0.1 30 / 0.5)\nExpected: lch(0.5 0.2 30 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg), oklch(0.5 0.6 70deg))'
 [PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg) 25%, oklch(0.5 0.6 70deg))'
 [PASS] Property color value 'color-mix(in oklch, 25% oklch(0.1 0.2 30deg), oklch(0.5 0.6 70deg))'
@@ -246,6 +270,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / none), oklch(0.5 0.6 70deg))'
 [PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / none), oklch(0.5 0.6 70deg / 0.5))'
 [PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / none), oklch(0.5 0.6 70deg / none))'
+[PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(0.5 none none / none))'
+[PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(none none 90deg / none))'
+[PASS] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(none none none / 0.5))'
+  Colors do not match.\nActual:   oklch(0.05 0.1 30 / 0.5)\nExpected: oklch(0.1 0.2 30 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in oklch, oklch(0.1 0.2 30deg / 25%) 0%, oklch(0.5 none none / 0.5))'
+  Colors do not match.\nActual:   oklch(0.5 0.1 30 / 0.5)\nExpected: oklch(0.5 0.2 30 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in lab, lab(10 20 30), lab(50 60 70))'
 [PASS] Property color value 'color-mix(in lab, lab(10 20 30) 25%, lab(50 60 70))'
 [PASS] Property color value 'color-mix(in lab, 25% lab(10 20 30), lab(50 60 70))'
@@ -277,6 +309,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in lab, lab(10 20 30 / none), lab(50 60 70))'
 [PASS] Property color value 'color-mix(in lab, lab(10 20 30 / none), lab(50 60 70 / 0.5))'
 [PASS] Property color value 'color-mix(in lab, lab(10 20 30 / none), lab(50 60 70 / none))'
+[PASS] Property color value 'color-mix(in lab, lab(10 20 30 / 25%) 0%, lab(50 none none / none))'
+[PASS] Property color value 'color-mix(in lab, lab(10 20 30 / 25%) 0%, lab(none 50 none / none))'
+[PASS] Property color value 'color-mix(in lab, lab(10 20 30 / 25%) 0%, lab(none none 90 / none))'
+[PASS] Property color value 'color-mix(in lab, lab(10 20 30 / 25%) 0%, lab(50 50 none / none))'
+[FAIL] Property color value 'color-mix(in lab, lab(10 20 30 / 25%) 0%, lab(none none none / 0.5))'
+  Colors do not match.\nActual:   lab(5 10 15 / 0.5)\nExpected: lab(10 20 30 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 10 +/- 0.01, expected 10 but got 5
+[FAIL] Property color value 'color-mix(in lab, lab(10 20 30 / 25%) 0%, lab(50 none none / 0.5))'
+  Colors do not match.\nActual:   lab(50 10 15 / 0.5)\nExpected: lab(50 20 30 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 20 +/- 0.01, expected 20 but got 10
 [PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7))'
 [PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3) 25%, oklab(0.5 0.6 0.7))'
 [PASS] Property color value 'color-mix(in oklab, 25% oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7))'
@@ -308,6 +348,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7))'
 [PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7 / 0.5))'
 [PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7 / none))'
+[PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 none none / none))'
+[PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none none 0.5 / none))'
+[PASS] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none none none / 0.5))'
+  Colors do not match.\nActual:   oklab(0.05 0.1 0.15 / 0.5)\nExpected: oklab(0.1 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in oklab, oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 none none / 0.5))'
+  Colors do not match.\nActual:   oklab(0.5 0.1 0.15 / 0.5)\nExpected: oklab(0.5 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3), color(srgb .5 .6 .7))'
 [PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3) 25%, color(srgb .5 .6 .7))'
 [PASS] Property color value 'color-mix(in srgb, 25% color(srgb .1 .2 .3), color(srgb .5 .6 .7))'
@@ -342,6 +390,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / none), color(srgb .5 .6 .7))'
 [PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / none), color(srgb .5 .6 .7 / 0.5))'
 [PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / none), color(srgb .5 .6 .7 / none))'
+[PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / 25%) 0%, color(srgb 0.5 none none / none))'
+[PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / 25%) 0%, color(srgb none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / 25%) 0%, color(srgb none none 0.5 / none))'
+[PASS] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / 25%) 0%, color(srgb 0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / 25%) 0%, color(srgb none none none / 50%))'
+  Colors do not match.\nActual:   color(srgb 0.05 0.1 0.15 / 0.5)\nExpected: color(srgb 0.1 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in srgb, color(srgb .1 .2 .3 / 25%) 0%, color(srgb 0.5 none none / 50%))'
+  Colors do not match.\nActual:   color(srgb 0.5 0.1 0.15 / 0.5)\nExpected: color(srgb 0.5 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3), color(srgb-linear .5 .6 .7))'
 [PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3) 25%, color(srgb-linear .5 .6 .7))'
 [PASS] Property color value 'color-mix(in srgb-linear, 25% color(srgb-linear .1 .2 .3), color(srgb-linear .5 .6 .7))'
@@ -376,6 +432,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / none), color(srgb-linear .5 .6 .7))'
 [PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / none), color(srgb-linear .5 .6 .7 / 0.5))'
 [PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / none), color(srgb-linear .5 .6 .7 / none))'
+[PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / 25%) 0%, color(srgb-linear 0.5 none none / none))'
+[PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / 25%) 0%, color(srgb-linear none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / 25%) 0%, color(srgb-linear none none 0.5 / none))'
+[PASS] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / 25%) 0%, color(srgb-linear 0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / 25%) 0%, color(srgb-linear none none none / 50%))'
+  Colors do not match.\nActual:   color(srgb-linear 0.05 0.1 0.15 / 0.5)\nExpected: color(srgb-linear 0.1 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in srgb-linear, color(srgb-linear .1 .2 .3 / 25%) 0%, color(srgb-linear 0.5 none none / 50%))'
+  Colors do not match.\nActual:   color(srgb-linear 0.5 0.1 0.15 / 0.5)\nExpected: color(srgb-linear 0.5 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3), color(xyz .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3) 25%, color(xyz .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz, 25% color(xyz .1 .2 .3), color(xyz .5 .6 .7))'
@@ -410,6 +474,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / none), color(xyz .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / none), color(xyz .5 .6 .7 / 0.5))'
 [PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / none), color(xyz .5 .6 .7 / none))'
+[PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / 25%) 0%, color(xyz 0.5 none none / none))'
+[PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / 25%) 0%, color(xyz none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / 25%) 0%, color(xyz none none 0.5 / none))'
+[PASS] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / 25%) 0%, color(xyz 0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / 25%) 0%, color(xyz none none none / 50%))'
+  Colors do not match.\nActual:   color(xyz-d65 0.05 0.1 0.15 / 0.5)\nExpected: color(xyz-d65 0.1 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in xyz, color(xyz .1 .2 .3 / 25%) 0%, color(xyz 0.5 none none / 50%))'
+  Colors do not match.\nActual:   color(xyz-d65 0.5 0.1 0.15 / 0.5)\nExpected: color(xyz-d65 0.5 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3), color(xyz-d50 .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3) 25%, color(xyz-d50 .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz-d50, 25% color(xyz-d50 .1 .2 .3), color(xyz-d50 .5 .6 .7))'
@@ -444,6 +516,14 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / none), color(xyz-d50 .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / none), color(xyz-d50 .5 .6 .7 / 0.5))'
 [PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / none), color(xyz-d50 .5 .6 .7 / none))'
+[PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / 25%) 0%, color(xyz-d50 0.5 none none / none))'
+[PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / 25%) 0%, color(xyz-d50 none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / 25%) 0%, color(xyz-d50 none none 0.5 / none))'
+[PASS] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / 25%) 0%, color(xyz-d50 0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / 25%) 0%, color(xyz-d50 none none none / 50%))'
+  Colors do not match.\nActual:   color(xyz-d50 0.05 0.1 0.15 / 0.5)\nExpected: color(xyz-d50 0.1 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in xyz-d50, color(xyz-d50 .1 .2 .3 / 25%) 0%, color(xyz-d50 0.5 none none / 50%))'
+  Colors do not match.\nActual:   color(xyz-d50 0.5 0.1 0.15 / 0.5)\nExpected: color(xyz-d50 0.5 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 [PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3), color(xyz-d65 .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3) 25%, color(xyz-d65 .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz-d65, 25% color(xyz-d65 .1 .2 .3), color(xyz-d65 .5 .6 .7))'
@@ -478,5 +558,13 @@ Found 476 tests; 474 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / none), color(xyz-d65 .5 .6 .7))'
 [PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / none), color(xyz-d65 .5 .6 .7 / 0.5))'
 [PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / none), color(xyz-d65 .5 .6 .7 / none))'
+[PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / 25%) 0%, color(xyz-d65 0.5 none none / none))'
+[PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / 25%) 0%, color(xyz-d65 none 0.5 none / none))'
+[PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / 25%) 0%, color(xyz-d65 none none 0.5 / none))'
+[PASS] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / 25%) 0%, color(xyz-d65 0.5 0.5 none / none))'
+[FAIL] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / 25%) 0%, color(xyz-d65 none none none / 50%))'
+  Colors do not match.\nActual:   color(xyz-d65 0.05 0.1 0.15 / 0.5)\nExpected: color(xyz-d65 0.1 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.1 +/- 0.01, expected 0.1 but got 0.05
+[FAIL] Property color value 'color-mix(in xyz-d65, color(xyz-d65 .1 .2 .3 / 25%) 0%, color(xyz-d65 0.5 none none / 50%))'
+  Colors do not match.\nActual:   color(xyz-d65 0.5 0.1 0.15 / 0.5)\nExpected: color(xyz-d65 0.5 0.2 0.3 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.2 +/- 0.01, expected 0.2 but got 0.1
 Harness: the test ran to completion.
 

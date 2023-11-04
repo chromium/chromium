@@ -1,5 +1,12 @@
 This is a testharness.js-based test.
-Found 1028 tests; 949 PASS, 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1034 tests; 954 PASS, 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" checks for modifications to non-editable content
+[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<h1>foo<br>bar</h1>"
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandIndeterm("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandState("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("defaultparagraphseparator") before
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandIndeterm("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandState("defaultparagraphseparator") after
 [FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("defaultparagraphseparator") after
   assert_equals: Wrong result returned expected "p" but got "div"

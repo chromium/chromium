@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 981 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 983 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<listing>[foobar]</listing>" queryCommandState("formatblock") after
 [FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<listing>[foobar]</listing>" queryCommandValue("formatblock") after
   assert_equals: Wrong result returned expected "p" but got ""
@@ -223,11 +223,15 @@ Found 1000 tests; 981 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["formatblock","<blockquote>"]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandIndeterm("formatblock") after
 [PASS] [["formatblock","<blockquote>"]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandState("formatblock") after
 [PASS] [["formatblock","<blockquote>"]] "[foo]<blockquote>bar</blockquote><p>extra" queryCommandValue("formatblock") after
-[FAIL] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz": execCommand("formatblock", false, "<blockquote>") return value
-  assert_equals: expected (undefined) undefined but got (boolean) true
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz": execCommand("formatblock", false, "<blockquote>") return value
 [PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" checks for modifications to non-editable content
-[FAIL] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" compare innerHTML
-  Cannot read properties of undefined (reading 'replace')
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" compare innerHTML
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" queryCommandIndeterm("formatblock") before
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" queryCommandState("formatblock") before
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" queryCommandValue("formatblock") before
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" queryCommandIndeterm("formatblock") after
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" queryCommandState("formatblock") after
+[PASS] [["formatblock","<blockquote>"]] "<p>[foo<p>bar]<p>baz" queryCommandValue("formatblock") after
 [PASS] [["formatblock","<blockquote>"]] "<section>[foo]</section>": execCommand("formatblock", false, "<blockquote>") return value
 [PASS] [["formatblock","<blockquote>"]] "<section>[foo]</section>" checks for modifications to non-editable content
 [PASS] [["formatblock","<blockquote>"]] "<section>[foo]</section>" compare innerHTML
@@ -1013,11 +1017,5 @@ Found 1000 tests; 981 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandIndeterm("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandState("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("defaultparagraphseparator") after
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandIndeterm("formatblock") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandState("formatblock") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandValue("formatblock") before
-[PASS] [["defaultparagraphseparator","div"],["formatblock","<h5>"]] "<p>[foobar]</p>" queryCommandIndeterm("formatblock") after
 Harness: the test ran to completion.
 

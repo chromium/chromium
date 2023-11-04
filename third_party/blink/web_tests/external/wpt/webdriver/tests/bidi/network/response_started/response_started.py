@@ -16,8 +16,8 @@ RESPONSE_STARTED_EVENT = "network.responseStarted"
 
 
 @pytest.mark.asyncio
-async def test_subscribe_status(bidi_session, top_context, wait_for_event, url, fetch):
-    await bidi_session.session.subscribe(events=[RESPONSE_STARTED_EVENT])
+async def test_subscribe_status(bidi_session, subscribe_events, top_context, wait_for_event, url, fetch):
+    await subscribe_events(events=[RESPONSE_STARTED_EVENT])
 
     await bidi_session.browsing_context.navigate(
         context=top_context["context"],
