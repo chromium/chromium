@@ -68,6 +68,8 @@ ShillConnectResult ShillErrorToConnectResult(const std::string& error_name) {
     return ShillConnectResult::kErrorInvalidAPN;
   } else if (error_name == shill::kErrorSimCarrierLocked) {
     return ShillConnectResult::kErrorSimCarrierLocked;
+  } else if (error_name == shill::kErrorDelayedConnectSetup) {
+    return ShillConnectResult::kErrorDelayedConnectSetup;
   }
 
   // Flimflam error result codes.
@@ -232,8 +234,9 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
       return UserInitiatedConnectResult::kErrorEapRemoteTlsFailed;
     } else if (shill_error == shill::kErrorResultWepNotSupported) {
       return UserInitiatedConnectResult::kErrorResultWepNotSupported;
+    } else if (shill_error == shill::kErrorDelayedConnectSetup) {
+      return UserInitiatedConnectResult::kErrorDelayedConnectSetup;
     }
-
     return UserInitiatedConnectResult::kErrorConnectFailed;
   } else if (error_name == NetworkConnectionHandler::kErrorDisconnectFailed) {
     return UserInitiatedConnectResult::kErrorDisconnectFailed;

@@ -88,8 +88,9 @@ enum class ShillConnectResult {
   // Flimflam error options.
   kErrorInvalidAPN = 59,
   kErrorSimCarrierLocked = 60,
+  kErrorDelayedConnectSetup = 61,
 
-  kMaxValue = kErrorSimCarrierLocked,
+  kMaxValue = kErrorDelayedConnectSetup,
 };
 
 // This enum is used to track user-initiated connection results from
@@ -157,8 +158,9 @@ enum class UserInitiatedConnectResult {
   kErrorEapLocalTlsFailed = 53,
   kErrorEapRemoteTlsFailed = 54,
   kErrorResultWepNotSupported = 55,
+  kErrorDelayedConnectSetup = 56,
 
-  kMaxValue = kErrorResultWepNotSupported,
+  kMaxValue = kErrorDelayedConnectSetup,
 };
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
