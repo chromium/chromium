@@ -284,21 +284,29 @@ class OverloadGroup(WithIdentifier):
         def is_sequence_like(idl_type):
             return idl_type.is_sequence or idl_type.is_frozen_array
 
-        if not (type2.is_boolean or type2.is_numeric or type2.is_string
-                or type2.is_object or type2.is_symbol
-                or is_interface_like(type2) or type2.is_callback_function
-                or is_dictionary_like(type2) or is_sequence_like(type2)):
+        if not (type2.is_undefined or type2.is_boolean or type2.is_numeric
+                or type2.is_bigint or type2.is_string or type2.is_object
+                or type2.is_symbol or is_interface_like(type2)
+                or type2.is_callback_function or is_dictionary_like(type2)
+                or is_sequence_like(type2)):
             return False  # Out of the table
 
+        if type1.is_undefined:
+            return not (type2.is_undefined or is_dictionary_like(type2))
         if type1.is_boolean:
             return not type2.is_boolean
-        if type1.is_numeric:
-            return not type2.is_numeric
+        if type1.is_numeric or type1.is_bigint:
+            # The spec distinguishes numeric types from bigint, but there is no
+            # good use case yet. Also note that it's quite confusing and
+            # problematic to abuse this distinguishment. Thus, we don't
+            # distinguish them for now.
+            return not (type2.is_numeric or type2.is_bigint)
         if is_string_type(type1):
             return not is_string_type(type2)
         if type1.is_object:
-            return (type2.is_boolean or type2.is_numeric
-                    or is_string_type(type2) or type2.is_symbol)
+            return (type2.is_undefined or type2.is_boolean or type2.is_numeric
+                    or type2.is_bigint or is_string_type(type2)
+                    or type2.is_symbol)
         if type1.is_symbol:
             return not type2.is_symbol
         if is_interface_like(type1):
@@ -309,7 +317,7 @@ class OverloadGroup(WithIdentifier):
             # Additional requirements: The two identified interface-like types
             # are not the same, and no single platform object implements both
             # interface-like types.
-            if type1.keyword_typename or type2.keyword_typename:
+            if type1.is_buffer_source_type or type2.is_buffer_source_type:
                 return type1.keyword_typename != type2.keyword_typename
             interface1 = type1.type_definition_object
             interface2 = type2.type_definition_object
@@ -327,7 +335,8 @@ class OverloadGroup(WithIdentifier):
             return ("LegacyTreatNonObjectAsNull"
                     not in type1.type_definition_object.extended_attributes)
         if is_dictionary_like(type1):
-            if type2.is_object or is_dictionary_like(type2):
+            if (type2.is_undefined or type2.is_object
+                    or is_dictionary_like(type2)):
                 return False
             if not type2.is_callback_function:
                 return True
