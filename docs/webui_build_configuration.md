@@ -661,6 +661,11 @@ ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
+
+Grit (generate_grd()) related params:
+resource_path_prefix: See |resource_path_prefix| in generate_grd(). Optional
+                      parameter. Only specify it for targets residing outside of
+                      //chrome/test/data/webui.
 ```
 
 #### **Example**
