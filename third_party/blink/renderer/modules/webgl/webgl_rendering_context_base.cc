@@ -30,6 +30,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -168,6 +169,43 @@ unsigned WebGLRenderingContextBase::max_active_webgl_contexts_ = 0;
 unsigned WebGLRenderingContextBase::max_active_webgl_contexts_on_worker_ = 0;
 
 namespace {
+
+enum class WebGLANGLEImplementation {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+
+  // vWebGL = 0 (for WebGL1) or 2 (for WebGL2).
+  // vWebGLANGLEImplementation = vWebGL * 10 + vANGLEImplementation
+  // where vANGLEImplementation is aligned with ANGLEImplementation enum
+  // values defined in ui/gl/gl_implementation.h.
+
+  kWebGL1_None = 0,
+  kWebGL1_D3D9 = 1,
+  kWebGL1_D3D11 = 2,
+  kWebGL1_OpenGL = 3,
+  kWebGL1_OpenGLES = 4,
+  kWebGL1_Null = 5,
+  kWebGL1_Vulkan = 6,
+  kWebGL1_SwiftShader = 7,
+  kWebGL1_Metal = 8,
+  kWebGL1_Default = 9,
+
+  // Leave some space between WebGL1 and WebGL2 enums in case ANGLE has
+  // new implementations, say ANGLE/Dawn.
+
+  kWebGL2_None = 20,
+  kWebGL2_D3D9 = 21,  // Should never happen
+  kWebGL2_D3D11 = 22,
+  kWebGL2_OpenGL = 23,
+  kWebGL2_OpenGLES = 24,
+  kWebGL2_Null = 25,
+  kWebGL2_Vulkan = 26,
+  kWebGL2_SwiftShader = 27,
+  kWebGL2_Metal = 28,
+  kWebGL2_Default = 29,
+
+  kMaxValue = kWebGL2_Default,
+};
 
 constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
@@ -3575,11 +3613,19 @@ void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
       .Record(ukm_params.ukm_recorder);
 }
 
-void WebGLRenderingContextBase::RecordUKMCanvasDrawnToAtFirstDrawCall() {
-  if (!has_been_drawn_to_) {
-    has_been_drawn_to_ = true;
-    RecordUKMCanvasDrawnToRenderingAPI();
-  }
+void WebGLRenderingContextBase::RecordANGLEImplementation() {
+  DCHECK(drawing_buffer_.get());
+  const Platform::GraphicsInfo& graphics_info =
+      drawing_buffer_->GetGraphicsInfo();
+  // For mapping mathematics, see WebGLANGLEImplementation definition above.
+  int webgl_version_multiplier =
+      (context_type_ == Platform::kWebGL2ContextType ? 2 : 0);
+  WebGLANGLEImplementation webgl_angle_implementation =
+      static_cast<WebGLANGLEImplementation>(
+          webgl_version_multiplier * 10 +
+          static_cast<int>(graphics_info.angle_implementation));
+  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.WebGLANGLEImplementation",
+                            webgl_angle_implementation);
 }
 
 ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,

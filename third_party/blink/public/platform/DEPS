@@ -90,6 +90,7 @@ include_rules = [
     "+ui/color",
     "+ui/events/types",
     "+ui/gfx",
+    "+ui/gl/angle_implementation.h",
     "+url",
     "-web",
 

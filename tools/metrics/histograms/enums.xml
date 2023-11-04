@@ -81491,6 +81491,29 @@ This is true even if the type has been removed from the mojom file.
   <int value="7" label="Success COLRv1 color font"/>
 </enum>
 
+<enum name="WebGLANGLEImplementation">
+  <int value="0" label="WebGL1, None"/>
+  <int value="1" label="WebGL1, D3D9"/>
+  <int value="2" label="WebGL1, D3D11"/>
+  <int value="3" label="WebGL1, OpenGL"/>
+  <int value="4" label="WebGL1, OpenGLES"/>
+  <int value="5" label="WebGL1, Null"/>
+  <int value="6" label="WebGL1, Vulkan"/>
+  <int value="7" label="WebGL1, SwiftShader"/>
+  <int value="8" label="WebGL1, Metal"/>
+  <int value="9" label="WebGL1, Default"/>
+  <int value="20" label="WebGL2, None"/>
+  <int value="21" label="WebGL2, D3D9 (should never happen)"/>
+  <int value="22" label="WebGL2, D3D11"/>
+  <int value="23" label="WebGL2, OpenGL"/>
+  <int value="24" label="WebGL2, OpenGLES"/>
+  <int value="25" label="WebGL2, Null"/>
+  <int value="26" label="WebGL2, Vulkan"/>
+  <int value="27" label="WebGL2, SwiftShader"/>
+  <int value="28" label="WebGL2, Metal"/>
+  <int value="29" label="WebGL2, Default"/>
+</enum>
+
 <enum name="WebGPUSupport">
   <int value="0" label="None"/>
   <int value="1" label="Core None, Compat Blocklisted"/>

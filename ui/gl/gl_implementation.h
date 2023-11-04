@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
+#include "ui/gl/angle_implementation.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_switches.h"
@@ -43,20 +44,6 @@ enum GLImplementation {
   kGLImplementationDisabled = 8,
   kGLImplementationEGLANGLE = 9,  // EGL/GL implemented using ANGLE
   kMaxValue = kGLImplementationEGLANGLE,
-};
-
-enum class ANGLEImplementation {
-  kNone = 0,
-  kD3D9 = 1,
-  kD3D11 = 2,
-  kOpenGL = 3,
-  kOpenGLES = 4,
-  kNull = 5,
-  kVulkan = 6,
-  kSwiftShader = 7,
-  kMetal = 8,
-  kDefault = 9,
-  kMaxValue = kDefault,
 };
 
 struct GL_EXPORT GLImplementationParts {

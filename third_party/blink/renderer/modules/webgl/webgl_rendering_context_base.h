@@ -795,7 +795,14 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                                      drawing_buffer_.get());
     OnBeforeDrawCall(draw_type);
     draw_func();
-    RecordUKMCanvasDrawnToAtFirstDrawCall();
+    if (!has_been_drawn_to_) {
+      // At first draw call, record
+      // Canvas/OffscreenCanvas.RenderingContextDrawnTo and what the ANGLE
+      // implementation is.
+      has_been_drawn_to_ = true;
+      RecordUKMCanvasDrawnToRenderingAPI();
+      RecordANGLEImplementation();
+    }
   }
 
   virtual void DestroyContext();
@@ -1944,9 +1951,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                         DOMArrayBufferView* pixels,
                         int64_t offset);
 
-  // Record Canvas/OffscreenCanvas.RenderingContextDrawnTo at the first draw
-  // call.
-  void RecordUKMCanvasDrawnToAtFirstDrawCall();
+  void RecordANGLEImplementation();
 
  private:
   WebGLRenderingContextBase(CanvasRenderingContextHost*,

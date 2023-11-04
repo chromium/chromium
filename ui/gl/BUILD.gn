@@ -50,6 +50,7 @@ component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
   sources = [
+    "angle_implementation.h",
     "dual_gpu_state.cc",
     "dual_gpu_state.h",
     "egl_timestamps.h",

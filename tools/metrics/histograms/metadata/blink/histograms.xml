@@ -640,6 +640,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.WebGLANGLEImplementation"
+    enum="WebGLANGLEImplementation" expires_after="2024-05-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>webgl-team@google.com</owner>
+  <summary>
+    Distribution of WebGL1 and WebGL2 contexts and their ANGLE implementation.
+    Recorded at first draw call time for each context.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesCount"
     units="Recyclable resources" expires_after="2024-03-17">
   <owner>magchen@chromium.org</owner>

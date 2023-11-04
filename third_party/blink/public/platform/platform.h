@@ -62,6 +62,7 @@
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gl/angle_implementation.h"
 #include "v8/include/v8-local-handle.h"
 
 class SkCanvas;
@@ -458,6 +459,8 @@ class BLINK_PLATFORM_EXPORT Platform {
     bool optimus = false;
     bool using_gpu_compositing = false;
     bool using_passthrough_command_decoder = false;
+    gl::ANGLEImplementation angle_implementation =
+        gl::ANGLEImplementation::kNone;
     WebString vendor_info;
     WebString renderer_info;
     WebString driver_version;

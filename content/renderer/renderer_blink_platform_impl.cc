@@ -632,6 +632,7 @@ void RendererBlinkPlatformImpl::Collect3DContextInformation(
   gl_info->optimus = gpu_info.optimus;
   gl_info->using_gpu_compositing = !IsGpuCompositingDisabled();
   gl_info->using_passthrough_command_decoder = gpu_info.passthrough_cmd_decoder;
+  gl_info->angle_implementation = gpu_info.gl_implementation_parts.angle;
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
