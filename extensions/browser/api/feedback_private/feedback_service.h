@@ -34,6 +34,8 @@ struct FeedbackParams {
   bool send_histograms = false;
   // If true, include bluetooth logs in the feedback.
   bool send_bluetooth_logs = false;
+  // If true, include wifi debug logs in the feedback.
+  bool send_wifi_debug_logs = false;
   // If true, include autofill metadata in the feedback.
   bool send_autofill_metadata = false;
   // The time when the feedback form submission was received by the backend.

@@ -489,6 +489,9 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       report.feedbackContext.autofillMetadata = '';
     }
 
+    report.sendWifiDebugLogs = this.shouldShowWifiDebugLogsCheckbox &&
+        this.getElement_('#wifiDebugLogsCheckbox').checked;
+
     if (this.getElement_('#performanceTraceCheckbox').checked) {
       report.feedbackContext.traceId = this.feedbackContext.traceId;
     } else {

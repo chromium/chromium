@@ -241,6 +241,8 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
           EXPECT_EQ(expected_params.send_histograms, params.send_histograms);
           EXPECT_EQ(expected_params.send_bluetooth_logs,
                     params.send_bluetooth_logs);
+          EXPECT_EQ(expected_params.send_wifi_debug_logs,
+                    params.send_wifi_debug_logs);
           EXPECT_EQ(expected_params.send_autofill_metadata,
                     params.send_autofill_metadata);
 
@@ -468,6 +470,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/true,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -529,6 +532,7 @@ IN_PROC_BROWSER_TEST_F(
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -591,6 +595,7 @@ IN_PROC_BROWSER_TEST_F(
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -655,6 +660,7 @@ IN_PROC_BROWSER_TEST_F(
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -721,6 +727,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/true};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -782,6 +789,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -998,6 +1006,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -1031,6 +1040,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;
@@ -1042,6 +1052,93 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(1u, feedback_data->sys_info()->size());
   EXPECT_EQ("false",
             feedback_data->sys_info()->find(kFeedbackUserConsentKey)->second);
+}
+
+// Test that when send_wifi_debug_logs is true:
+// - Case 1: UserFeedbackWithLowLevelDebugDataAllowed is true.
+//   The flag passed to FeedbackParams is true.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       SendWifiDebugLogs_True_WhenAllowed) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
+      base::Value::List().Append("all"));
+  ReportPtr report = Report::New();
+  report->description = kDescription;
+  report->feedback_context = FeedbackContext::New();
+  // System logs are not needed.
+  report->include_system_logs_and_histograms = false;
+  report->send_wifi_debug_logs = true;
+  // FeedbackParams.load_system_info should be false so that system logs will
+  // not be loaded by feedback service.
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/true,
+                                       /*send_autofill_metadata=*/false};
+
+  scoped_refptr<FeedbackData> feedback_data;
+  RunSendReport(std::move(report), expected_params, feedback_data,
+                /*preload=*/true);
+  // TODO(b/308196190): Verify log file was attached.
+}
+
+// Test that when send_wifi_debug_logs is true:
+// - Case 2: UserFeedbackWithLowLevelDebugDataAllowed is false.
+//   The flag passed to FeedbackParams is false.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       SendWifiDebugLogs_True_WhenNotAllowed) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed, base::Value::List());
+  ReportPtr report = Report::New();
+  report->description = kDescription;
+  report->feedback_context = FeedbackContext::New();
+  // System logs are not needed.
+  report->include_system_logs_and_histograms = false;
+  report->send_wifi_debug_logs = true;
+  // FeedbackParams.load_system_info should be false so that system logs will
+  // not be loaded by feedback service.
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
+
+  scoped_refptr<FeedbackData> feedback_data;
+  RunSendReport(std::move(report), expected_params, feedback_data,
+                /*preload=*/true);
+  // TODO(b/308196190): Verify log file was attached.
+}
+
+// Test that when send_wifi_debug_logs is false:
+//   The flag passed to FeedbackParams is false.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, SendWifiDebugLogs_False) {
+  browser()->profile()->GetPrefs()->SetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
+      base::Value::List().Append("all"));
+  ReportPtr report = Report::New();
+  report->description = kDescription;
+  report->feedback_context = FeedbackContext::New();
+  // System logs are not needed.
+  report->include_system_logs_and_histograms = false;
+  report->send_wifi_debug_logs = false;
+  // FeedbackParams.load_system_info should be false so that system logs will
+  // not be loaded by feedback service.
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
+
+  scoped_refptr<FeedbackData> feedback_data;
+  RunSendReport(std::move(report), expected_params, feedback_data,
+                /*preload=*/true);
+  // TODO(b/308196190): Verify log file was not attached.
 }
 
 // Test that preloading did not finish when the report is being sent.
@@ -1059,6 +1156,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
 
   scoped_refptr<FeedbackData> feedback_data;

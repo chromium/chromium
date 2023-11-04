@@ -435,6 +435,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
     "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": true,
+    "sendWifiDebugLogs": false,
     "sendHistograms": true,
     "sendTabTitles": true,
     "systemInformation": [
@@ -450,6 +451,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/true,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
@@ -493,6 +495,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
     "screenshotBlobUuid": "",
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": false,
+    "sendWifiDebugLogs": false,
     "sendHistograms": false,
     "sendTabTitles": false,
     "systemInformation": [],
@@ -505,6 +508,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
@@ -548,6 +552,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
     "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": true,
+    "sendWifiDebugLogs": false,
     "sendHistograms": true,
     "sendTabTitles": true,
     "systemInformation": [],
@@ -563,6 +568,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/true,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
@@ -606,6 +612,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
     "screenshotBlobUuid": "",
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": false,
+    "sendWifiDebugLogs": false,
     "sendHistograms": false,
     "sendTabTitles": false,
     "systemInformation": [],
@@ -620,6 +627,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
                                        /*send_bluetooth_logs=*/false,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
@@ -663,6 +671,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
     "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
     "sendAutofillMetadata": true,
     "sendBluetoothLogs": true,
+    "sendWifiDebugLogs": false,
     "sendHistograms": true,
     "sendTabTitles": true,
     "systemInformation": [],
@@ -676,6 +685,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/true,
+                                       /*send_wifi_debug_logs=*/false,
                                        /*send_autofill_metadata=*/true};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 

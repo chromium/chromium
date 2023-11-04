@@ -601,6 +601,42 @@ export function shareDataPageTestSuite() {
     assertFalse(request.includeAutofillMetadata);
   });
 
+
+  /**
+   * Test that the sendWifiDebugLogs flag of the report is set to true when
+   * - shouldShowWifiDebugLogsCheckbox = true
+   * - wifiDebugLogsCheckbox is checked.
+   */
+  test('SendWifiDebugLogs_If_Checked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.shouldShowWifiDebugLogsCheckbox = true;
+    assertTrue(isVisible(getElement('#wifiDebugLogsCheckboxContainer')));
+    getElement('#wifiDebugLogsCheckbox').checked = true;
+
+    const report = (await clickSendAndWait(page)).report;
+
+    assertTrue(report.sendWifiDebugLogs);
+  });
+
+
+  /**
+   * Test that the sendWifiDebugLogs flag of the report is set to false when
+   * - shouldShowWifiDebugLogsCheckbox = true
+   * - wifiDebugLogsCheckbox is unchecked.
+   */
+  test('SendWifiDebugLogs_If_Not_Checked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.shouldShowWifiDebugLogsCheckbox = true;
+    assertTrue(isVisible(getElement('#wifiDebugLogsCheckboxContainer')));
+    getElement('#wifiDebugLogsCheckbox').checked = false;
+
+    const report = (await clickSendAndWait(page)).report;
+
+    assertFalse(report.sendWifiDebugLogs);
+  });
+
   // Test that the send button will be disabled once clicked.
   test('DisableSendButtonAfterClick', async () => {
     await initializePage();
@@ -832,7 +868,7 @@ export function shareDataPageTestSuite() {
         page.shouldShowWifiDebugLogsCheckbox = true;
 
         assertTrue(isVisible(getElement('#wifiDebugLogsCheckboxContainer')));
-        assertTrue(getElement('#wifiDubugLogsCheckbox').checked);
+        assertTrue(getElement('#wifiDebugLogsCheckbox').checked);
       });
 
   test(
