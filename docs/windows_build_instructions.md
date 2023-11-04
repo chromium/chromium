@@ -241,7 +241,9 @@ In addition, Google employees should use reclient, a distributed compilation sys
 Detailed information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
-Google employees can visit go/building-chrome-win#setup-reclient for more information.
+Google employees can visit
+[go/building-chrome-win#setup-remote-execution](http://go/building-chrome-win#setup-remote-execution)
+for more information.
 
 When invoking ninja, specify 'chrome' as the target to avoid building all test
 binaries as well.
