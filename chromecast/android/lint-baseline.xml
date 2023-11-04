@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha11" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha11">
+<issues format="6" by="lint 8.3.0-alpha12" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha12">
 
     <issue
         id="UnspecifiedRegisterReceiverFlag"
@@ -10,6 +10,17 @@
             file="../../chromecast/browser/android/apk/src/org/chromium/chromecast/shell/BroadcastReceiverScope.java"
             line="37"
             column="9"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
+        errorLine1="    &lt;activity android:name=&quot;org.chromium.chromecast.shell.CastWebContentsActivity&quot; android:theme=&quot;@style/CastShellTheme&quot; android:exported=&quot;true&quot; android:hardwareAccelerated=&quot;true&quot; android:launchMode=&quot;singleInstance&quot; android:screenOrientation=&quot;landscape&quot; android:taskAffinity=&quot;.CastWebContentsActivity&quot; android:supportsPictureInPicture=&quot;true&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|screenLayout|smallestScreenSize|uiMode&quot; android:excludeFromRecents=&quot;false&quot; android:noHistory=&quot;false&quot; android:showWhenLocked=&quot;true&quot;>"
+        errorLine2="                                                                                                                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
+            line="71"
+            column="217"/>
     </issue>
 
     <issue

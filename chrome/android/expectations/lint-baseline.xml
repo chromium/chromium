@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha11" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha11">
+<issues format="6" by="lint 8.3.0-alpha12" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha12">
 
     <issue
         id="WrongCommentType"
@@ -30,7 +30,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="57"
+            line="58"
             column="12"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="66"
+            line="67"
             column="12"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="68"
+            line="69"
             column="12"/>
     </issue>
 
@@ -349,7 +349,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabDragSource.java"
-            line="296"
+            line="297"
             column="8"/>
     </issue>
 
@@ -1822,6 +1822,28 @@
     </issue>
 
     <issue
+        id="DiscouragedApi"
+        message="Activity should not be non-resizable. With this setting, apps cannot be used in multi-window or free form mode."
+        errorLine1="    &lt;activity android:name=&quot;org.chromium.components.webxr.XrHostActivity&quot; android:windowSoftInputMode=&quot;adjustResize&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation&quot; android:hardwareAccelerated=&quot;false&quot; android:excludeFromRecents=&quot;true&quot; android:noHistory=&quot;true&quot; android:launchMode=&quot;singleTask&quot; android:exported=&quot;false&quot; android:resizeableActivity=&quot;false&quot; android:screenOrientation=&quot;landscape&quot; android:label=&quot;WebXR&quot; android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot; tools:ignore=&quot;NonResizeableActivity&quot;>"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
+            line="2321"
+            column="399"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
+        errorLine1="    &lt;activity android:name=&quot;org.chromium.components.webxr.XrHostActivity&quot; android:windowSoftInputMode=&quot;adjustResize&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation&quot; android:hardwareAccelerated=&quot;false&quot; android:excludeFromRecents=&quot;true&quot; android:noHistory=&quot;true&quot; android:launchMode=&quot;singleTask&quot; android:exported=&quot;false&quot; android:resizeableActivity=&quot;false&quot; android:screenOrientation=&quot;landscape&quot; android:label=&quot;WebXR&quot; android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot; tools:ignore=&quot;NonResizeableActivity&quot;>"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
+            line="2321"
+            column="434"/>
+    </issue>
+
+    <issue
         id="SupportAnnotationUsage"
         message="Top level class can&apos;t have private or protected access level"
         errorLine1="@VisibleForTesting"
@@ -2587,7 +2609,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java"
-            line="403"
+            line="404"
             column="20"/>
     </issue>
 
