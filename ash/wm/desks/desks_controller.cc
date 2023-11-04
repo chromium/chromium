@@ -1223,7 +1223,8 @@ void DesksController::CaptureActiveDeskAsSavedDesk(
 
   restore_data_collector_.CaptureActiveDeskAsSavedDesk(
       std::move(callback), template_type,
-      base::UTF16ToUTF8(active_desk_->name()), root_window_to_show);
+      base::UTF16ToUTF8(active_desk_->name()), root_window_to_show,
+      current_account_id_);
 }
 
 const Desk* DesksController::CreateNewDeskForSavedDesk(

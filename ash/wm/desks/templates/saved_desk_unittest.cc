@@ -10,6 +10,9 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/public/cpp/multi_user_window_manager_delegate.h"
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/shelf/shelf.h"
@@ -62,6 +65,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
@@ -82,7 +86,8 @@
 
 namespace ash {
 
-class SavedDeskTest : public OverviewTestBase {
+class SavedDeskTest : public OverviewTestBase,
+                      public MultiUserWindowManagerDelegate {
  public:
   SavedDeskTest() = default;
   SavedDeskTest(const SavedDeskTest&) = delete;
@@ -408,6 +413,10 @@ class SavedDeskTest : public OverviewTestBase {
         Shell::Get()->saved_desk_delegate());
   }
 
+  MultiUserWindowManager* multi_user_window_manager() {
+    return multi_user_window_manager_.get();
+  }
+
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({features::kDesksTemplates}, {});
@@ -422,12 +431,23 @@ class SavedDeskTest : public OverviewTestBase {
     // Wait for the desk model to have completed its initialization. Not doing
     // this would lead to flaky tests.
     saved_desk_test_helper()->WaitForDeskModels();
+    account_id_test_ = AccountId::FromUserEmail("test_user");
+    multi_user_window_manager_ =
+        MultiUserWindowManager::Create(this, account_id_test_);
   }
 
   void TearDown() override {
     SetDisableAppIdCheckForSavedDesks(false);
+    multi_user_window_manager_.reset();
     OverviewTestBase::TearDown();
   }
+
+  // MultiUserWindowManagerDelegate:
+  void OnWindowOwnerEntryChanged(aura::Window* window,
+                                 const AccountId& account_id,
+                                 bool was_minimized,
+                                 bool teleported) override {}
+  void OnTransitionUserShelfToNewAccount() override {}
 
  protected:
   // Tests should normally create a local `ScopedAnimationDurationScaleMode`.
@@ -437,6 +457,8 @@ class SavedDeskTest : public OverviewTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
+  AccountId account_id_test_;
 };
 
 // Tests the helpers `AddEntry()` and `DeleteEntry()`, which will be used in
@@ -4611,5 +4633,29 @@ TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
   const std::vector<SavedDeskItemView*> grid_items2 =
       GetItemViewsFromDeskLibrary(overview_grid2);
   EXPECT_EQ(2u, GetItemViewsFromDeskLibrary(overview_grid2).size());
+}
+
+// Tests that when saving a desk with windows owned by other user accounts, we
+// only save the windows that are owned by the current active user.
+TEST_F(SavedDeskTest, SaveDeskFilterByAccountID) {
+  DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  auto test_window_1 = CreateAppWindow();
+  auto test_window_2 = CreateAppWindow();
+  const int win_2_id = test_window_2->GetId();
+  // Change the owner of `test_window_2` to be another user and set the
+  // visibility so that the current user can see the window.
+  AccountId account_id_A = AccountId::FromUserEmail("a");
+  multi_user_window_manager()->SetWindowOwner(test_window_2.get(),
+                                              account_id_A);
+  multi_user_window_manager()->ShowWindowForUser(
+      test_window_2.get(), multi_user_window_manager()->CurrentAccountId());
+  //  Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+  const auto* app_restore_data =
+      QueryRestoreData(*GetAllEntries()[0], {}, win_2_id);
+  EXPECT_FALSE(app_restore_data);
 }
 }  // namespace ash
