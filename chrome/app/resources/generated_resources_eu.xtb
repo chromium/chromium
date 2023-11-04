@@ -3613,7 +3613,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3834728400518755610">Mikrofonoaren ezarpenean egindako aldaketa aplikatzeko, itxi egin behar da Linux. Aurrera egiteko, itxi Linux.</translation>
 <translation id="3834775135533257713">Ezin izan da gehitu "<ph name="TO_INSTALL_APP_NAME" />" aplikazioa, "<ph name="INSTALLED_APP_NAME" />" aplikazioarekin gatazkan dagoelako.</translation>
 <translation id="3835904559946595746">Ezin izan da leheneratu Linux-en babeskopia</translation>
-<translation id="383669374481694771">Gailu honi eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
+<translation id="383669374481694771">Gailu honi eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, datu bateratu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
 <translation id="3837569373891539515">Dagozkion guztiak hauta ditzakezu. <ph name="DEVICE_TYPE" /> gailua konfiguratzen amaitzean, Ezarpenak atalean aurkituko dituzu aukera hauek.</translation>
 <translation id="3838085852053358637">Ezin izan da kargatu luzapena</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> orriaren jarraipena</translation>
@@ -5718,7 +5718,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5584088138253955452">Erabiltzaile-izena gorde nahi duzu?</translation>
 <translation id="5584091888252706332">Abioan</translation>
-<translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.<ph name="END_PARAGRAPH1" />
+<translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, datu bateratu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Eginbidea desaktibatuta ere, gailuak beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasun-neurriak.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jabeak kontrolatu nahi badu, atal honetara joan beharko du: Ezarpenak &gt; Aurreratuak &gt; Bidali Google-ri diagnostiko- eta erabilera-datuak automatikoki.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea. Zure datuak ikusi edo ezabatzeko eta kontuaren ezarpenak aldatzeko, joan account.google.com helbidera.<ph name="END_PARAGRAPH4" /></translation>
@@ -5848,7 +5848,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5696679855467848181">Oraingo PPD fitxategia: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emoji-hautatzailea</translation>
 <translation id="5698462638680260399">Hasi saioa pasahitzak erabiltzeko</translation>
-<translation id="570043786759263127">Google Play aplikazioak eta zerbitzuak</translation>
+<translation id="570043786759263127">Google Play-ko aplikazioak eta zerbitzuak</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
 <translation id="5700836101007545240">Administratzaileak desgaitu du konexioak gehitzeko aukera</translation>
 <translation id="5701080607174488915">Errore bat gertatu da gidalerroa eskuratzean zerbitzaritik.</translation>
@@ -9027,7 +9027,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8265671588726449108">{COUNT,plural, =1{Berriro exekutatu ondoren, ezkutuko moduko leihoa ez da irekiko}other{Berriro exekutatu ondoren, ezkutuko moduko {COUNT} leihoak ez dira irekiko}}</translation>
 <translation id="8266947622852630193">Idazketa-metodo guztiak</translation>
 <translation id="8267539814046467575">Gehitu inprimagailu bat</translation>
-<translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.<ph name="END_PARAGRAPH1" />
+<translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, datu bateratu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Eginbidea desaktibatuta ere, gailuak beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasun-neurriak.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jabeak kontrolatu nahi badu, atal honetara joan beharko du: Ezarpenak &gt; Aurreratuak &gt; Bidali Google-ri diagnostiko- eta erabilera-datuak automatikoki.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago haurrarentzat, baliteke datu horiek haren Google-ko kontuan gordetzea. Lortu informazio gehiago ezarpenei eta haiek doitzeko moduari buruz families.google.com helbidean.<ph name="END_PARAGRAPH4" /></translation>
@@ -9624,7 +9624,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8740672167979365981">ChromeOS Flex eguneratu egin behar da</translation>
 <translation id="8741944563400125534">Erabilerraztasun-osagarria konfiguratzeko gida</translation>
 <translation id="8742395827132970586">Instalazioak huts egin du, garbitzen</translation>
-<translation id="8742998548129056176">Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
+<translation id="8742998548129056176">Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, datu bateratu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
 <translation id="8743357966416354615">Garapen-ingurune kudeatua (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">Ez du gailu honetan datuak gordetzeko baimenik</translation>
