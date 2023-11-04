@@ -378,6 +378,9 @@ public class PageInsightsMediatorTest {
                 ((FrameLayout) mMediator.getSheetContent().getContentView().findViewById(
                          R.id.page_insights_feed_content))
                         .getChildAt(0));
+        assertNotEquals(
+                PageInsightsSheetContent.HeightMode.DISABLED,
+                mMediator.getSheetContent().getPeekHeight());
         verify(mBottomSheetController, never()).expandSheet();
     }
 
@@ -549,6 +552,9 @@ public class PageInsightsMediatorTest {
                 ((FrameLayout) mMediator.getSheetContent().getContentView().findViewById(
                          R.id.page_insights_feed_content))
                         .getChildAt(0));
+        assertEquals(
+                PageInsightsSheetContent.HeightMode.DISABLED,
+                mMediator.getSheetContent().getPeekHeight());
         verify(mBottomSheetController).expandSheet();
     }
 
@@ -1003,8 +1009,26 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void handleBackPress_fullState_notChildPage_hidesContent() {
+    public void handleBackPress_fullState_notChildPage_canCollapseToPeek_collapses() {
         when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        when(mBottomSheetController.collapseSheet(true)).thenReturn(true);
+        createMediator();
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        assertTrue(mMediator.getSheetContent().getBackPressStateChangedSupplier().get());
+
+        boolean handled = mMediator.getSheetContent().handleBackPress();
+
+        assertTrue(handled);
+        verify(mBottomSheetController).collapseSheet(true);
+        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
+    }
+
+    @Test
+    @MediumTest
+    public void handleBackPress_fullState_notChildPage_cannotCollapseToPeek_hidesContent() {
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        when(mBottomSheetController.collapseSheet(true)).thenReturn(false);
         createMediator();
         mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
 
