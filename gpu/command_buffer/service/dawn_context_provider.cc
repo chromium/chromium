@@ -31,6 +31,8 @@
 #include "ui/gl/gl_implementation.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <d3d11_4.h>
+
 #include "third_party/dawn/include/dawn/native/D3D11Backend.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -119,7 +121,6 @@ const char* HRESULTToString(HRESULT result) {
       return nullptr;
   }
 }
-
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -283,10 +284,34 @@ bool DawnContextProvider::Initialize(
     features.push_back(wgpu::FeatureName::D3D11MultithreadProtected);
   }
 
-  // Request the GPU that ANGLE is using if possible.
   dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid;
   if (GetANGLED3D11DeviceLUID(&adapter_options_luid.adapterLUID)) {
+    // Request the GPU that ANGLE is using if possible.
     adapter_options.nextInChain = &adapter_options_luid;
+  }
+
+  dawn::native::d3d11::RequestAdapterOptionsD3D11Device
+      adapter_options_d3d11_device;
+  bool share_d3d11_device =
+      adapter_options.backendType == wgpu::BackendType::D3D11 &&
+      features::kSkiaGraphiteDawnShareDevice.Get();
+  if (share_d3d11_device) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device =
+        gl::QueryD3D11DeviceObjectFromANGLE();
+    CHECK(d3d11Device) << "Query d3d11 device from ANGLE failed.";
+
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11DeviceContext;
+    d3d11Device->GetImmediateContext(&d3d11DeviceContext);
+
+    Microsoft::WRL::ComPtr<ID3D11Multithread> d3d11Multithread;
+    CHECK(SUCCEEDED(d3d11DeviceContext.As(&d3d11Multithread)))
+        << "Query ID3D11Multithread interface failed.";
+
+    // Dawn requires enable multithread protection for d3d11 device.
+    d3d11Multithread->SetMultithreadProtected(TRUE);
+    adapter_options_d3d11_device.device = std::move(d3d11Device);
+    adapter_options_d3d11_device.nextInChain = adapter_options.nextInChain;
+    adapter_options.nextInChain = &adapter_options_d3d11_device;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -363,9 +388,11 @@ bool DawnContextProvider::Initialize(
   // initializing GL. So we need to shutdown it and re-initialize it here with
   // the D3D11 device from dawn device.
   // TODO(crbug.com/1469283): avoid initializing DirectComposition twice.
-  gl::ShutdownDirectComposition();
-  if (auto d3d11_device = GetD3D11Device()) {
-    gl::InitializeDirectComposition(std::move(d3d11_device));
+  if (!share_d3d11_device) {
+    gl::ShutdownDirectComposition();
+    if (auto d3d11_device = GetD3D11Device()) {
+      gl::InitializeDirectComposition(std::move(d3d11_device));
+    }
   }
 #endif  // BUILDFLAG(IS_WIN)
 
