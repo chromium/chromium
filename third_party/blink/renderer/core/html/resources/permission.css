@@ -31,11 +31,9 @@ permission::-internal-permission-text {
   font-style: normal;
   font-weight: 400;
   height: 100%;
-  letter-spacing: -0.02em;
-  line-height: 100%;
+  line-height: inherit;
   opacity: 1 !important;
   outline: none;
-  padding: 2px 4px 2px 4px;
   user-select:none !important;
   vertical-align: inherit;
   white-space:nowrap !important;

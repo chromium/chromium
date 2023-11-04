@@ -36,6 +36,7 @@ const ComputedStyle* PermissionShadowElement::CustomStyleForLayoutObject(
   // override `AdjustStyle`
   style_builder.SetDisplay(parent_style.Display());
   style_builder.SetHeight(parent_style.UsedHeight());
+  style_builder.SetLineHeight(parent_style.UsedHeight());
   style_builder.SetWidth(parent_style.UsedWidth());
   style_builder.SetVerticalAlign(parent_style.VerticalAlign());
   return style_builder.TakeStyle();
