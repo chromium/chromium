@@ -290,8 +290,7 @@ DCLayerResult ValidateTextureQuad(
   }
 
   if (quad->is_video_frame) {
-    auto color_space =
-        resource_provider->GetOverlayColorSpace(quad->resource_id());
+    auto color_space = resource_provider->GetColorSpace(quad->resource_id());
     auto buffer_format =
         resource_provider->GetBufferFormat(quad->resource_id());
     auto result = ValidateYUVOverlay(
@@ -338,8 +337,7 @@ void FromTextureQuad(const TextureDrawQuad* quad,
         quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
   }
 
-  dc_layer->color_space =
-      resource_provider->GetOverlayColorSpace(quad->resource_id());
+  dc_layer->color_space = resource_provider->GetColorSpace(quad->resource_id());
   dc_layer->hdr_metadata = quad->hdr_metadata;
   // Both color space and protected_video_type are hard-coded for stream video.
   // TODO(crbug.com/1384544): Consider using quad->protected_video_type.

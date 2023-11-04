@@ -932,7 +932,6 @@ VideoResourceUpdater::PlaneResource* VideoResourceUpdater::AllocateResource(
 
 void VideoResourceUpdater::CopyHardwarePlane(
     VideoFrame* video_frame,
-    const gfx::ColorSpace& resource_color_space,
     const gpu::MailboxHolder& mailbox_holder,
     VideoFrameExternalResources* external_resources) {
   const gfx::Size output_plane_resource_size = video_frame->coded_size();
@@ -941,11 +940,14 @@ void VideoResourceUpdater::CopyHardwarePlane(
   constexpr viz::SharedImageFormat copy_si_format =
       viz::SinglePlaneFormat::kRGBA_8888;
 
+  // We copy to RGBA image, so we need only RGBA portion of the color space.
+  const auto copy_color_space = video_frame->ColorSpace().GetAsFullRangeRGB();
+
   const VideoFrame::ID no_unique_id;
   const int no_plane_index = -1;  // Do not recycle referenced textures.
-  PlaneResource* plane_resource = RecycleOrAllocateResource(
-      output_plane_resource_size, copy_si_format, resource_color_space,
-      no_unique_id, no_plane_index);
+  PlaneResource* plane_resource =
+      RecycleOrAllocateResource(output_plane_resource_size, copy_si_format,
+                                copy_color_space, no_unique_id, no_plane_index);
   HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
   hardware_resource->add_ref();
 
@@ -1003,7 +1005,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
       output_plane_resource_size, copy_si_format,
       false /* is_overlay_candidate */,
       viz::TransferableResource::ResourceSource::kVideo);
-  transferable_resource.color_space = resource_color_space;
+  transferable_resource.color_space = copy_color_space;
   external_resources->resources.push_back(std::move(transferable_resource));
 
   external_resources->release_callbacks.push_back(base::BindOnce(
@@ -1020,7 +1022,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   }
 
   VideoFrameExternalResources external_resources;
-  gfx::ColorSpace resource_color_space = video_frame->ColorSpace();
 
   const bool copy_required = video_frame->metadata().copy_required;
 
@@ -1039,13 +1040,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
                 << VideoPixelFormatToString(video_frame->format());
     return external_resources;
   }
-  absl::optional<gfx::ColorSpace> resource_color_space_when_sampled;
-  if (external_resources.type == VideoFrameResourceType::RGB ||
-      external_resources.type == VideoFrameResourceType::RGBA ||
-      external_resources.type == VideoFrameResourceType::RGBA_PREMULTIPLIED) {
-    resource_color_space_when_sampled =
-        resource_color_space.GetAsFullRangeRGB();
-  }
 
   const size_t num_textures = video_frame->NumTextures();
   if (video_frame->shared_image_format_type() !=
@@ -1063,10 +1057,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       break;
 
     if (copy_required) {
-      CopyHardwarePlane(
-          video_frame.get(),
-          resource_color_space_when_sampled.value_or(resource_color_space),
-          mailbox_holder, &external_resources);
+      CopyHardwarePlane(video_frame.get(), mailbox_holder, &external_resources);
     } else {
       const size_t width = video_frame->columns(i);
       const size_t height = video_frame->rows(i);
@@ -1076,9 +1067,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
           mailbox_holder.sync_token, plane_size, si_formats[i],
           video_frame->metadata().allow_overlay,
           viz::TransferableResource::ResourceSource::kVideo);
-      transfer_resource.color_space = resource_color_space;
-      transfer_resource.color_space_when_sampled =
-          resource_color_space_when_sampled;
+      transfer_resource.color_space = video_frame->ColorSpace();
       transfer_resource.hdr_metadata =
           video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
       if (video_frame->metadata().read_lock_fences_enabled) {

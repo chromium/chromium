@@ -172,7 +172,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   // and the source video frame texture can't be used on the output GL context.
   // https://crbug.com/582170
   void CopyHardwarePlane(VideoFrame* video_frame,
-                         const gfx::ColorSpace& resource_color_space,
                          const gpu::MailboxHolder& mailbox_holder,
                          VideoFrameExternalResources* external_resources);
 

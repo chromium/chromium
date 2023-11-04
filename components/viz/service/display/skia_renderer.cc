@@ -595,7 +595,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   // We need the original TransferableResource.color_space for YUV => RGB
   // conversion.
   skia_renderer->skia_output_surface_->MakePromiseSkImage(
-      image_context, resource_provider->GetOverlayColorSpace(resource_id));
+      image_context, resource_provider->GetColorSpace(resource_id));
   paint_op_buffer_ = image_context->paint_op_buffer();
   clear_color_ = image_context->clear_color();
   sk_image_ = image_context->image();
@@ -2466,8 +2466,13 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
                                    const DrawRPDQParams* rpdq_params,
                                    DrawQuadParams* params) {
   TRACE_EVENT0("viz", "SkiaRenderer::DrawTextureQuad");
+
+  // We need only RGB portion of the color space, YUV conversion handled in
+  // skia.
   const gfx::ColorSpace& src_color_space =
-      resource_provider()->GetSamplerColorSpace(quad->resource_id());
+      resource_provider()
+          ->GetColorSpace(quad->resource_id())
+          .GetAsFullRangeRGB();
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
