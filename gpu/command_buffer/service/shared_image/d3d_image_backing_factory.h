@@ -44,7 +44,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   static bool IsD3DSharedImageSupported(const GpuPreferences& gpu_preferences);
 
   // Returns true if DXGI swap chain shared images for overlays are supported.
-  static bool IsSwapChainSupported();
+  static bool IsSwapChainSupported(const GpuPreferences& gpu_preferences);
 
   // Clears the current back buffer to |color| on the immediate context.
   static bool ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
