@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -583,6 +584,9 @@ void MediaDrmBridge::Provision(
 
 void MediaDrmBridge::Unprovision() {
   DVLOG(1) << __func__;
+
+  base::UmaHistogramBoolean("Media.EME.MediaDrmAvailableOnUnprovision",
+                            !j_media_drm_.is_null());
 
   JNIEnv* env = AttachCurrentThread();
   Java_MediaDrmBridge_unprovision(env, j_media_drm_);

@@ -2798,6 +2798,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.MediaDrmAvailableOnUnprovision"
+    enum="BooleanAvailable" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether MediaDrm is available MediaDrm-based CDM. Reported once per call to
+    unprovision. In normal cases it should always be available.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaDrmBridge.KeySystemSupport"
     enum="BooleanSupported" expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>
