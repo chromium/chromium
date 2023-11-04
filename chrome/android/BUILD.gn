@@ -1675,6 +1675,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/device_lock:java",
       "//chrome/browser/ui/android/device_lock:java_resources",
       "//chrome/browser/ui/android/device_lock:javatests",
+      "//chrome/browser/ui/android/edge_to_edge:java",
+      "//chrome/browser/ui/android/edge_to_edge/internal:java",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/hats:java",
       "//chrome/browser/ui/android/hats/test:test_support_java",

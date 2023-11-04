@@ -46,11 +46,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
 
     private final @NonNull Activity mActivity;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
-    private final @NonNull EdgeToEdgeOSWrapper mEdgeToEdgeOSWrapper;
     private final @NonNull TabObserver mTabObserver;
 
     /** Multiplier to convert from pixels to DPs. */
     private final float mPxToDp;
+
+    private @NonNull EdgeToEdgeOSWrapper mEdgeToEdgeOSWrapper;
 
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
@@ -163,7 +164,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         }
 
         mIsActivityToEdge = toEdge;
-        Log.i(TAG, "Switching " + (toEdge ? "ToEdge" : "ToNormal"));
+        Log.i(TAG, "Switching %s", (toEdge ? "ToEdge" : "ToNormal"));
         View rootView = mActivity.findViewById(viewId);
         assert rootView != null : "Root view for Edge To Edge not found!";
 
@@ -181,10 +182,10 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                                                 + WindowInsets.Type.statusBars());
                         if (!newInsets.equals(mSystemInsets)) {
                             mSystemInsets = newInsets;
-                            Log.w(TAG, "System Bar insets changed to %s", mSystemInsets);
+                            Log.w(TAG, "System Bar insets changed to: %s", mSystemInsets);
                             // Note that we cannot adjustEdges earlier since we need the system
                             // insets.
-                            adjustEdges(toEdge, viewId, webContents);
+                            adjustEdges(mIsActivityToEdge, viewId, webContents);
                         }
                         return windowInsets;
                     });
@@ -309,14 +310,18 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     }
 
     @VisibleForTesting
-    @Nullable
-    WebContentsObserver getWebContentsObserver() {
-        return mWebContentsObserver;
+    public boolean isToEdge() {
+        return mIsActivityToEdge;
+    }
+
+    public void setOsWrapperForTesting(EdgeToEdgeOSWrapper testOsWrapper) {
+        mEdgeToEdgeOSWrapper = testOsWrapper;
     }
 
     @VisibleForTesting
-    boolean isToEdge() {
-        return mIsActivityToEdge;
+    @Nullable
+    WebContentsObserver getWebContentsObserver() {
+        return mWebContentsObserver;
     }
 
     void setToEdgeForTesting(boolean toEdge) {

@@ -1801,8 +1801,8 @@ public class RootUiCoordinator
         return mScrimCoordinator;
     }
 
-    public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderForTesting() {
-        return mLayoutStateProviderOneShotSupplier;
+    public EdgeToEdgeController getEdgeToEdgeControllerForTesting() {
+        return mE2eController;
     }
 
     public void destroyActivityForTesting() {
