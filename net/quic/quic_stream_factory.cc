@@ -345,7 +345,6 @@ class QuicStreamFactory::Job {
   int DoCreateSession();
   int DoCreateSessionComplete(int rv);
   int DoConnect(int rv);
-  int DoConnectComplete(int rv);
   int DoConfirmConnection(int rv);
 
   void OnCreateSessionComplete(int rv);
