@@ -561,9 +561,8 @@ TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
 
   for (auto attribution_support : {network::mojom::AttributionSupport::kNone,
                                    network::mojom::AttributionSupport::kOs}) {
-    GetPage().SetAttributionSupport(attribution_support);
-
     ResourceRequest request(test_url);
+    request.SetAttributionReportingSupport(attribution_support);
     auto* resource = MakeGarbageCollected<MockResource>(test_url);
     ResourceResponse response(test_url);
     response.SetHttpStatusCode(200);
@@ -697,12 +696,11 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 }
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
-  GetPage().SetAttributionSupport(
-      network::mojom::AttributionSupport::kWebAndOs);
-
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
+  request.SetAttributionReportingSupport(
+      network::mojom::AttributionSupport::kWebAndOs);
   auto* resource = MakeGarbageCollected<MockResource>(test_url);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
