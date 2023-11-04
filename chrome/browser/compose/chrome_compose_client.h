@@ -64,8 +64,8 @@ class ChromeComposeClient
   // triggered the close.
   void CloseUI(compose::mojom::CloseReason reason) override;
 
-  bool ShouldTriggerPopup(std::string autocomplete_attribute,
-                          autofill::FieldGlobalId field_id) override;
+  bool ShouldTriggerPopup(
+      const autofill::FormFieldData& trigger_field) override;
   virtual bool ShouldTriggerContextMenu(content::RenderFrameHost* rfh,
                                         content::ContextMenuParams& params);
 

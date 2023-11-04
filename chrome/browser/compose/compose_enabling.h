@@ -25,18 +25,21 @@ class ComposeEnabling {
   bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
                           Profile* profile,
                           translate::TranslateManager* translate_manager,
-                          bool has_saved_state);
+                          bool has_saved_state,
+                          const url::Origin& top_level_frame_origin,
+                          const url::Origin& element_frame_origin);
   bool ShouldTriggerContextMenu(Profile* profile,
                                 translate::TranslateManager* translate_manager,
                                 content::RenderFrameHost* rfh,
                                 content::ContextMenuParams& params);
-
  private:
   raw_ptr<TranslateLanguageProvider> translate_language_provider_;
   bool enabled_for_testing_;
 
   bool PageLevelChecks(Profile* profile,
-                       translate::TranslateManager* translate_manager);
+                       translate::TranslateManager* translate_manager,
+                       const url::Origin& top_level_frame_origin,
+                       const url::Origin& element_frame_origin);
 };
 
 #endif  // CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_

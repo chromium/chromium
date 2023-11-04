@@ -196,16 +196,21 @@ ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
   return compose_enabling_;
 }
 
-bool ChromeComposeClient::ShouldTriggerPopup(std::string autocomplete_attribute,
-                                             autofill::FieldGlobalId field_id) {
+bool ChromeComposeClient::ShouldTriggerPopup(
+    const autofill::FormFieldData& form_field_data) {
   // TODO(b/303502029): When we make an enum for return state, check to see if
   // we have saved state for the current field, and offer the saved state
   // bubble.
   bool saved_state = !sessions_.empty();
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  return compose_enabling_.ShouldTriggerPopup(autocomplete_attribute, profile_,
-                                              translate_manager, saved_state);
+  content::RenderFrameHost* top_level_frame =
+      GetWebContents().GetPrimaryMainFrame();
+
+  return compose_enabling_.ShouldTriggerPopup(
+      form_field_data.autocomplete_attribute, profile_, translate_manager,
+      saved_state, top_level_frame->GetLastCommittedOrigin(),
+      form_field_data.origin);
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(

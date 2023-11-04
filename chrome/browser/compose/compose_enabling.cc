@@ -96,12 +96,15 @@ bool ComposeEnabling::ShouldTriggerPopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
     translate::TranslateManager* translate_manager,
-    bool has_saved_state) {
+    bool has_saved_state,
+    const url::Origin& top_level_frame_origin,
+    const url::Origin& element_frame_origin) {
   if (!base::FeatureList::IsEnabled(compose::features::kEnableComposeNudge)) {
     return false;
   }
 
-  if (!PageLevelChecks(profile, translate_manager)) {
+  if (!PageLevelChecks(profile, translate_manager, top_level_frame_origin,
+                       element_frame_origin)) {
     return false;
   }
 
@@ -132,14 +135,28 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
              blink::mojom::FormControlType::kTextArea))) {
     return false;
   }
-  return PageLevelChecks(profile, translate_manager);
+
+  return PageLevelChecks(profile, translate_manager,
+                         rfh->GetMainFrame()->GetLastCommittedOrigin(),
+                         params.frame_origin);
 }
 
 bool ComposeEnabling::PageLevelChecks(
     Profile* profile,
-    translate::TranslateManager* translate_manager) {
+    translate::TranslateManager* translate_manager,
+    const url::Origin& top_level_frame_origin,
+    const url::Origin& element_frame_origin) {
   if (!IsEnabledForProfile(profile)) {
     DVLOG(2) << "not enabled";
+    return false;
+  }
+
+  // Note: This does not check frames between the current and the top level
+  // frame. Because all our metadata for compose is either based on the origin
+  // of the top level frame or actually part of the top level frame, this is
+  // sufficient for now. TODO(b/309162238) follow up on whether this is
+  // sufficient long-term.
+  if (top_level_frame_origin != element_frame_origin) {
     return false;
   }
 
