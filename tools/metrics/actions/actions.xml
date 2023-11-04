@@ -2899,6 +2899,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.DarkTheme.Preference">
+  <obsolete>Removed in M121.</obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
@@ -40245,14 +40246,6 @@ should be able to be added at any place in this file.
       label="Users tapped the currently selected tab in tab group bottom
              sheet."/>
   <affected-action name="MobileTabReturnedToCurrentTab"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
-  <suffix name="Dark" label="Users selected dark theme preference."/>
-  <suffix name="Light" label="Users selected light theme preference."/>
-  <suffix name="SystemDefault"
-      label="Users selected system default theme preference."/>
-  <affected-action name="Android.DarkTheme.Preference"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

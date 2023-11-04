@@ -150,9 +150,5 @@ class GlobalNightModeStateController implements NightModeStateProvider,
         for (Observer observer : mObservers) observer.onNightModeStateChanged();
 
         NightModeMetrics.recordNightModeState(mNightModeOn);
-        NightModeMetrics.recordThemePreferencesState(theme);
-        if (mNightModeOn) {
-            NightModeMetrics.recordNightModeEnabledReason(theme, powerSaveModeOn);
-        }
     }
 }

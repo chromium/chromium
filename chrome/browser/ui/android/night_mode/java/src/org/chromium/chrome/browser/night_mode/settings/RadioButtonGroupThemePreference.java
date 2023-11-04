@@ -17,7 +17,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -122,7 +121,6 @@ public class RadioButtonGroupThemePreference
 
         positionCheckbox();
         callChangeListener(mSetting);
-        NightModeMetrics.recordThemePreferencesChanged(mSetting);
     }
 
     public boolean isDarkenWebsitesEnabled() {
