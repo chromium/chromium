@@ -530,6 +530,26 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
+    public void testWebContentResizeByBottomSheetInset() {
+        var bottomSheetInsetSupplier = new ObservableSupplierImpl<Integer>();
+        mViewportInsets.setBottomSheetInsetSupplier(bottomSheetInsetSupplier);
+        reset(mWebContents);
+
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
+        int bottomSheetOffset = 420;
+
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        bottomSheetInsetSupplier.set(bottomSheetOffset);
+
+        // adjustedHeight is height of the CompositorViewHolder from Android View layout. This
+        // simulates a reduced layout height from bottom sheet taking up the space at the bottom.
+        int adjustedHeight = fullViewportHeight - bottomSheetOffset;
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, adjustedHeight - TOOLBAR_HEIGHT);
+    }
+
+    @Test
     public void testOverlayGeometryWhenViewNotAttachedToWindow() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
         reset(mWebContents);
