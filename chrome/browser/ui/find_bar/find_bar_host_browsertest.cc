@@ -35,8 +35,6 @@
 #include "components/find_in_page/find_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -1393,12 +1391,10 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   Browser* incognito_browser =
       Browser::Create(Browser::CreateParams(incognito_profile, true));
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
   chrome::AddSelectedTabWithURL(incognito_browser, url,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  observer.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(
+      incognito_browser->tab_strip_model()->GetActiveWebContents()));
   incognito_browser->window()->Show();
 
   // Open the find box and make sure that it is prepopulated with "page".
@@ -1453,13 +1449,11 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
   Browser::CreateParams params(Browser::TYPE_POPUP, browser()->profile(), true);
   params.initial_bounds = gfx::Rect(0, 0, 100, 500);
   Browser* popup = Browser::Create(params);
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::NotificationService::AllSources());
   chrome::AddSelectedTabWithURL(popup, GURL(url::kAboutBlankURL),
                                 ui::PAGE_TRANSITION_LINK);
   // Wait for the page to finish loading.
-  observer.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(
+      popup->tab_strip_model()->GetActiveWebContents()));
   popup->window()->Show();
 
   EnsureFindBoxOpenForBrowser(popup);
