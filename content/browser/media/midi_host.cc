@@ -282,7 +282,8 @@ void MidiHost::CallClient(Method method, Params... params) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&MidiHost::CallClient<Method, Params...>,
-                                  AsWeakPtr(), method, std::move(params)...));
+                                  weak_ptr_factory_.GetWeakPtr(), method,
+                                  std::move(params)...));
     return;
   }
   (midi_client_.get()->*method)(std::move(params)...);
