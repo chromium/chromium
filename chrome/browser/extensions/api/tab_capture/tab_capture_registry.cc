@@ -94,8 +94,9 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
     is_fullscreened_ = entered_fullscreen;
-    if (capture_state_ == tab_capture::TAB_CAPTURE_STATE_ACTIVE)
+    if (capture_state_ == tab_capture::TabCaptureState::kActive) {
       registry_->DispatchStatusChangeEvent(this);
+    }
   }
 
   void WebContentsDestroyed() override {
@@ -106,7 +107,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   const ExtensionId extension_id_;
   const bool is_anonymous_;
   const raw_ptr<TabCaptureRegistry> registry_;
-  TabCaptureState capture_state_ = tab_capture::TAB_CAPTURE_STATE_NONE;
+  TabCaptureState capture_state_ = tab_capture::TabCaptureState::kNone;
   bool is_verified_ = false;
   bool is_fullscreened_ = false;
 
@@ -185,8 +186,8 @@ std::string TabCaptureRegistry::AddRequest(
 
   // Currently, we do not allow multiple active captures for same tab.
   if (request != nullptr) {
-    if (request->capture_state() == tab_capture::TAB_CAPTURE_STATE_PENDING ||
-        request->capture_state() == tab_capture::TAB_CAPTURE_STATE_ACTIVE) {
+    if (request->capture_state() == tab_capture::TabCaptureState::kPending ||
+        request->capture_state() == tab_capture::TabCaptureState::kActive) {
       return device_id;
     } else {
       // Delete the request before creating its replacement (below).
@@ -215,9 +216,10 @@ bool TabCaptureRegistry::VerifyRequest(int render_process_id,
   }
 
   if (request->is_verified() ||
-      (request->capture_state() != tab_capture::TAB_CAPTURE_STATE_NONE &&
-       request->capture_state() != tab_capture::TAB_CAPTURE_STATE_PENDING))
+      (request->capture_state() != tab_capture::TabCaptureState::kNone &&
+       request->capture_state() != tab_capture::TabCaptureState::kPending)) {
     return false;
+  }
 
   request->SetIsVerified();
   return true;
@@ -240,19 +242,19 @@ void TabCaptureRegistry::OnRequestUpdate(
     return;  // Stale or invalid request update.
   }
 
-  TabCaptureState next_state = tab_capture::TAB_CAPTURE_STATE_NONE;
+  TabCaptureState next_state = tab_capture::TabCaptureState::kNone;
   switch (new_state) {
     case content::MEDIA_REQUEST_STATE_PENDING_APPROVAL:
-      next_state = tab_capture::TAB_CAPTURE_STATE_PENDING;
+      next_state = tab_capture::TabCaptureState::kPending;
       break;
     case content::MEDIA_REQUEST_STATE_DONE:
-      next_state = tab_capture::TAB_CAPTURE_STATE_ACTIVE;
+      next_state = tab_capture::TabCaptureState::kActive;
       break;
     case content::MEDIA_REQUEST_STATE_CLOSING:
-      next_state = tab_capture::TAB_CAPTURE_STATE_STOPPED;
+      next_state = tab_capture::TabCaptureState::kStopped;
       break;
     case content::MEDIA_REQUEST_STATE_ERROR:
-      next_state = tab_capture::TAB_CAPTURE_STATE_ERROR;
+      next_state = tab_capture::TabCaptureState::kError;
       break;
     case content::MEDIA_REQUEST_STATE_OPENING:
       return;
@@ -262,11 +264,11 @@ void TabCaptureRegistry::OnRequestUpdate(
       return;
   }
 
-  if (next_state == tab_capture::TAB_CAPTURE_STATE_PENDING &&
-      request->capture_state() != tab_capture::TAB_CAPTURE_STATE_PENDING &&
-      request->capture_state() != tab_capture::TAB_CAPTURE_STATE_NONE &&
-      request->capture_state() != tab_capture::TAB_CAPTURE_STATE_STOPPED &&
-      request->capture_state() != tab_capture::TAB_CAPTURE_STATE_ERROR) {
+  if (next_state == tab_capture::TabCaptureState::kPending &&
+      request->capture_state() != tab_capture::TabCaptureState::kPending &&
+      request->capture_state() != tab_capture::TabCaptureState::kNone &&
+      request->capture_state() != tab_capture::TabCaptureState::kStopped &&
+      request->capture_state() != tab_capture::TabCaptureState::kError) {
     // Despite other code preventing multiple captures of the same tab, we can
     // reach this case due to a race condition (see crbug.com/1370338).
     // TODO(crbug.com/1377780): Handle status updates for multiple capturers.
