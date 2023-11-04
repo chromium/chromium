@@ -229,7 +229,7 @@ BASE_FEATURE(kNewWebstoreURL,
 // limit.
 BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables declarative net request rules to specify response headers as a
 // matching condition.

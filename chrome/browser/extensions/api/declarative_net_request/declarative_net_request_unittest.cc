@@ -1489,90 +1489,9 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
   CheckExtensionAllocationInPrefs(extension()->id(), absl::nullopt);
 }
 
-// TODO(crbug.com/1485747): This is just a sanity check that rule counts work as
-// intended when the safe rules feature flag is turned off. Remove this test
-// once feature is enabled.
-TEST_P(SingleRulesetTest, DynamicAndSessionRuleLimits) {
-  // With `kDeclarativeNetRequestSafeRuleLimits` disabled, the dynamic/session
-  // rule limits are equal to their unsafe rule limit versions.
-  ASSERT_EQ(100, GetDynamicRuleLimit());
-  ASSERT_EQ(100, GetUnsafeDynamicRuleLimit());
-  ASSERT_EQ(100, GetSessionRuleLimit());
-  ASSERT_EQ(100, GetUnsafeSessionRuleLimit());
-
-  RulesetManagerObserver ruleset_waiter(manager());
-  LoadAndExpectSuccess();
-  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
-
-  std::vector<TestRule> rules;
-  int rule_id = kMinValidID;
-  for (size_t i = 0; i < 100; ++i) {
-    // Redirect rules are considered "unsafe" in this context.
-    TestRule rule = CreateGenericRule(rule_id++);
-    rule.action->type = std::string("redirect");
-    rule.action->redirect.emplace();
-    rule.action->redirect->url = std::string("https://google.com");
-    rules.push_back(rule);
-  }
-
-  // Run the same test for both dynamic and session rulesets. Note that rule
-  // counts are separately tracked for each ruleset.
-  struct {
-    RulesetScope ruleset_type;
-    std::string rule_count_exceeded_error;
-    std::string unsafe_rule_count_exceeded_error;
-  } test_cases[] = {
-      {RulesetScope::kDynamic, kDynamicRuleCountExceeded},
-      {RulesetScope::kSession, kSessionRuleCountExceeded},
-  };
-
-  const RulesMonitorService* service =
-      RulesMonitorService::Get(browser_context());
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(base::StringPrintf(
-        "Testing %s ruleset:", test_case.ruleset_type == RulesetScope::kDynamic
-                                   ? "dynamic"
-                                   : "session"));
-    RulesetID ruleset_id = test_case.ruleset_type == RulesetScope::kDynamic
-                               ? kDynamicRulesetID
-                               : kSessionRulesetID;
-
-    // Add rules up to the rule limit.
-    ASSERT_NO_FATAL_FAILURE(
-        RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{}, rules,
-                               test_case.ruleset_type));
-    RuleCounts expected_rule_counts(/*rule_count=*/100,
-                                    /*unsafe_rule_count=*/100,
-                                    /*regex_rule_count=*/0);
-    EXPECT_EQ(expected_rule_counts,
-              service->GetRuleCounts(extension()->id(), ruleset_id));
-
-    // Adding any more rules should result in an error. Note that since the
-    // `kDeclarativeNetRequestSafeRuleLimits` feature is disabled for this test,
-    // the error returned should only mention that the rule count has been
-    // exceeded (see `test_cases`).
-    std::string expected_error = test_case.rule_count_exceeded_error;
-    ASSERT_NO_FATAL_FAILURE(
-        RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
-                               {CreateGenericRule(rule_id++)},
-                               test_case.ruleset_type, &expected_error));
-  }
-}
-
-class SingleRulesetSafeRulesTest : public SingleRulesetTest {
- public:
-  SingleRulesetSafeRulesTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kDeclarativeNetRequestSafeRuleLimits);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that rule limits for both rule count and unsafe rule count are enforced
 // for the dynamic and session rulesets of an extension.
-TEST_P(SingleRulesetSafeRulesTest, DynamicAndSessionRuleLimits) {
+TEST_P(SingleRulesetTest, DynamicAndSessionRuleLimits) {
   ASSERT_EQ(200, GetDynamicRuleLimit());
   ASSERT_EQ(100, GetUnsafeDynamicRuleLimit());
   ASSERT_EQ(200, GetSessionRuleLimit());
@@ -1671,6 +1590,87 @@ TEST_P(SingleRulesetSafeRulesTest, DynamicAndSessionRuleLimits) {
 
     // Adding any more ordinary rules should result in an error.
     expected_error = test_case.rule_count_exceeded_error;
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                               {CreateGenericRule(rule_id++)},
+                               test_case.ruleset_type, &expected_error));
+  }
+}
+
+class SingleRulesetWithoutSafeRulesTest : public SingleRulesetTest {
+ public:
+  SingleRulesetWithoutSafeRulesTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kDeclarativeNetRequestSafeRuleLimits);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1485747): This is just a sanity check that rule counts work as
+// intended when the safe rules feature flag is turned off. Remove this test
+// once feature is enabled and the feature flag is removed.
+TEST_P(SingleRulesetWithoutSafeRulesTest, DynamicAndSessionRuleLimits) {
+  // With `kDeclarativeNetRequestSafeRuleLimits` disabled, the dynamic/session
+  // rule limits are equal to their unsafe rule limit versions.
+  ASSERT_EQ(100, GetDynamicRuleLimit());
+  ASSERT_EQ(100, GetUnsafeDynamicRuleLimit());
+  ASSERT_EQ(100, GetSessionRuleLimit());
+  ASSERT_EQ(100, GetUnsafeSessionRuleLimit());
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  std::vector<TestRule> rules;
+  int rule_id = kMinValidID;
+  for (size_t i = 0; i < 100; ++i) {
+    // Redirect rules are considered "unsafe" in this context.
+    TestRule rule = CreateGenericRule(rule_id++);
+    rule.action->type = std::string("redirect");
+    rule.action->redirect.emplace();
+    rule.action->redirect->url = std::string("https://google.com");
+    rules.push_back(rule);
+  }
+
+  // Run the same test for both dynamic and session rulesets. Note that rule
+  // counts are separately tracked for each ruleset.
+  struct {
+    RulesetScope ruleset_type;
+    std::string rule_count_exceeded_error;
+    std::string unsafe_rule_count_exceeded_error;
+  } test_cases[] = {
+      {RulesetScope::kDynamic, kDynamicRuleCountExceeded},
+      {RulesetScope::kSession, kSessionRuleCountExceeded},
+  };
+
+  const RulesMonitorService* service =
+      RulesMonitorService::Get(browser_context());
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "Testing %s ruleset:", test_case.ruleset_type == RulesetScope::kDynamic
+                                   ? "dynamic"
+                                   : "session"));
+    RulesetID ruleset_id = test_case.ruleset_type == RulesetScope::kDynamic
+                               ? kDynamicRulesetID
+                               : kSessionRulesetID;
+
+    // Add rules up to the rule limit.
+    ASSERT_NO_FATAL_FAILURE(
+        RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{}, rules,
+                               test_case.ruleset_type));
+    RuleCounts expected_rule_counts(/*rule_count=*/100,
+                                    /*unsafe_rule_count=*/100,
+                                    /*regex_rule_count=*/0);
+    EXPECT_EQ(expected_rule_counts,
+              service->GetRuleCounts(extension()->id(), ruleset_id));
+
+    // Adding any more rules should result in an error. Note that since the
+    // `kDeclarativeNetRequestSafeRuleLimits` feature is disabled for this test,
+    // the error returned should only mention that the rule count has been
+    // exceeded (see `test_cases`).
+    std::string expected_error = test_case.rule_count_exceeded_error;
     ASSERT_NO_FATAL_FAILURE(
         RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
                                {CreateGenericRule(rule_id++)},
@@ -3086,7 +3086,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            ExtensionLoadType::UNPACKED));
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         SingleRulesetSafeRulesTest,
+                         SingleRulesetWithoutSafeRulesTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 
