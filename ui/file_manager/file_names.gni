@@ -170,8 +170,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/position_util.js",
   "file_manager/foreground/js/ui/progress_center_panel.js",
   "file_manager/foreground/js/ui/providers_menu.js",
-  "file_manager/foreground/js/ui/splitter.js",
-  "file_manager/foreground/js/ui/table/table_splitter.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
 
@@ -260,11 +258,13 @@ ts_files = [
   "file_manager/foreground/js/ui/list.ts",
   "file_manager/foreground/js/ui/list_item.ts",
   "file_manager/foreground/js/ui/list_selection_controller.ts",
+  "file_manager/foreground/js/ui/splitter.ts",
   "file_manager/foreground/js/ui/table/table_column.ts",
   "file_manager/foreground/js/ui/table/table_column_model.ts",
   "file_manager/foreground/js/ui/table/table_header.ts",
   "file_manager/foreground/js/ui/table/table_list.ts",
   "file_manager/foreground/js/ui/table/table.ts",
+  "file_manager/foreground/js/ui/table/table_splitter.ts",
 
   # Banners.
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.ts",

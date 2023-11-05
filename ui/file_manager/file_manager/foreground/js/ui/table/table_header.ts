@@ -12,7 +12,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {jsSetter} from '../../../../common/js/cr_ui.js';
 
 import {type Table} from './table.js';
-import {TableSplitter} from './table_splitter.js';
+import {createTableSplitter, type TableSplitter} from './table_splitter.js';
 
 /**
  * Rectangular area around the splitters sensitive to touch events
@@ -136,11 +136,9 @@ export class TableHeader extends HTMLDivElement {
     const splitters = [];
     for (let i = 0; i < cm.size; i++) {
       // splitter should use CSS for background image.
-      const splitter = new TableSplitter({table: this.table_});
+      const splitter = createTableSplitter(this.table_);
       splitter.columnIndex = i;
-      // TODO: Remove cast once TableSplitter is converted to TS.
-      (splitter as unknown as HTMLElement)
-          .addEventListener('dblclick', this.handleDblClick_.bind(this, i));
+      splitter.addEventListener('dblclick', this.handleDblClick_.bind(this, i));
       // Don't display splitters for hidden columns.  Don't omit the splitter
       // completely, as it's much simpler if the number of splitter elements
       // and columns are in sync.
@@ -215,7 +213,7 @@ export class TableHeader extends HTMLDivElement {
     let candidate;
 
     const splitters = Array.from(
-        this.querySelectorAll<HTMLElement>('.table-header-splitter'));
+        this.querySelectorAll<TableSplitter>('.table-header-splitter'));
     for (const splitter of splitters) {
       const r = splitter.getBoundingClientRect();
       if (clientX <= r.left && r.left - clientX <= minDistance) {
@@ -228,8 +226,7 @@ export class TableHeader extends HTMLDivElement {
       }
     }
     if (candidate) {
-      // TODO: Remove cast once TableSplitter is converted to tS.
-      (candidate as any).startDrag(clientX, true);
+      candidate.startDrag(clientX, true);
     }
     // Splitter itself shouldn't handle this event.
     e.stopPropagation();

@@ -10,7 +10,7 @@ import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {isDlpEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
-import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
+import {decorate} from '../../../common/js/ui.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js';
@@ -51,8 +51,6 @@ import {MultiMenu} from './multi_menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 import {ProgressCenterPanel} from './progress_center_panel.js';
 import {ProvidersMenu} from './providers_menu.js';
-import {Splitter} from './splitter.js';
-
 
 /**
  * The root of the file manager's view managing the DOM of the Files app.
@@ -545,8 +543,6 @@ export class FileManagerUI {
       splitterWidget.appendChild(dialogMain);
       splitterWidget.addEventListener(
           XfSplitter.events.SPLITTER_DRAGMOVE, this.relayout.bind(this));
-    } else {
-      this.decorateSplitter_(splitterContainer);
     }
 
     /**
@@ -858,56 +854,6 @@ export class FileManagerUI {
     if (this.dialogType_ != DialogType.FULL_PAGE) {
       this.dialogFooter.cancelButton.click();
     }
-  }
-
-  /**
-   * Decorates the given splitter element.
-   * @param {!HTMLElement} splitterElement
-   * @param {boolean=} opt_resizeNextElement
-   * @private
-   */
-  decorateSplitter_(splitterElement, opt_resizeNextElement) {
-    const self = this;
-    const FileSplitter = Splitter;
-    const customSplitter = crUiDefine('div');
-
-    customSplitter.prototype = {
-      __proto__: FileSplitter.prototype,
-
-      // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-      handleSplitterDragStart: function(e) {
-        FileSplitter.prototype.handleSplitterDragStart.apply(this, arguments);
-        // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
-        // type '{ __proto__: any; handleSplitterDragStart: (e: any, ...args:
-        // any[]) => void; handleSplitterDragMove: (deltaX: any, ...args: any[])
-        // => void; handleSplitterDragEnd: (e: any, ...args: any[]) => void; }'.
-        this.ownerDocument.documentElement.classList.add('col-resize');
-      },
-
-      // @ts-ignore: error TS7006: Parameter 'deltaX' implicitly has an 'any'
-      // type.
-      handleSplitterDragMove: function(deltaX) {
-        FileSplitter.prototype.handleSplitterDragMove.apply(this, arguments);
-        self.relayout();
-      },
-
-      // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-      handleSplitterDragEnd: function(e) {
-        FileSplitter.prototype.handleSplitterDragEnd.apply(this, arguments);
-        // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
-        // type '{ __proto__: any; handleSplitterDragStart: (e: any, ...args:
-        // any[]) => void; handleSplitterDragMove: (deltaX: any, ...args: any[])
-        // => void; handleSplitterDragEnd: (e: any, ...args: any[]) => void; }'.
-        this.ownerDocument.documentElement.classList.remove('col-resize');
-      },
-    };
-
-    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-    // 'Object'.
-    /** @type Object */ (customSplitter).decorate(splitterElement);
-    // @ts-ignore: error TS2339: Property 'resizeNextElement' does not exist on
-    // type 'HTMLElement'.
-    splitterElement.resizeNextElement = !!opt_resizeNextElement;
   }
 
   /**
