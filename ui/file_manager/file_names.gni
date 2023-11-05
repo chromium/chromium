@@ -434,6 +434,7 @@ ts_test_files = [
   "file_manager/background/js/drive_sync_handler_unittest.ts",
 
   # Foreground:
+  "file_manager/foreground/elements/files_tooltip_unittest.ts",
   "file_manager/foreground/js/banner_controller_unittest.ts",
   "file_manager/foreground/js/banner_util_unittest.ts",
   "file_manager/foreground/js/directory_contents_unittest.ts",
@@ -527,7 +528,6 @@ unittest_files = [
   # Foreground:
   "file_manager/foreground/elements/files_xf_elements_unittest.js",
   "file_manager/foreground/elements/files_toast_unittest.js",
-  "file_manager/foreground/elements/files_tooltip_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
   "file_manager/foreground/js/metadata/exif_parser_unittest.js",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
