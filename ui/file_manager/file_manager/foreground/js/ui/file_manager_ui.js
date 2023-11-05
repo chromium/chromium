@@ -8,7 +8,7 @@ import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
+import {isDlpEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
 import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
@@ -560,16 +560,11 @@ export class FileManagerUI {
         queryRequiredElement('#path-display-container', this.element),
         /*a11y=*/ this);
 
-    if (isDriveFsBulkPinningEnabled()) {
-      /**
-       * @type {!CloudPanelContainer}
-       * @const
-       */
-      this.cloudPanelContainer_ = new CloudPanelContainer(
-          // @ts-ignore: error TS2345: Argument of type 'HTMLElement' is not
-          // assignable to parameter of type 'XfCloudPanel'.
-          queryRequiredElement('xf-cloud-panel', this.element));
-    }
+    /** @const {!CloudPanelContainer} */
+    this.cloudPanelContainer_ = new CloudPanelContainer(
+        // @ts-ignore: error TS2345: Argument of type 'HTMLElement' is not
+        // assignable to parameter of type 'XfCloudPanel'.
+        queryRequiredElement('xf-cloud-panel', this.element));
 
     // Init context menus.
     // @ts-ignore: error TS2345: Argument of type 'MultiMenu' is not assignable

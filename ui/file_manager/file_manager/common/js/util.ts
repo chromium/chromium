@@ -9,7 +9,6 @@
  */
 
 import {promisify} from './api.js';
-import {isDriveFsBulkPinningEnabled} from './flags.js';
 
 export function iconSetToCSSBackgroundImageValue(
     iconSet: chrome.fileManagerPrivate.IconSet): string {
@@ -264,15 +263,11 @@ export const isNullOrUndefined = <T>(value: T): boolean =>
  */
 export function canBulkPinningCloudPanelShow(
     stage: chrome.fileManagerPrivate.BulkPinStage|undefined,
-    pref: boolean|undefined): boolean {
-  if (!isDriveFsBulkPinningEnabled()) {
-    return false;
-  }
-
+    enabled: boolean): boolean {
   const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
   // If the stage is in progress and the bulk pinning preference is enabled,
   // then the cloud panel should not be visible.
-  if (pref &&
+  if (enabled &&
       (stage === BulkPinStage.GETTING_FREE_SPACE ||
        stage === BulkPinStage.LISTING_FILES ||
        stage === BulkPinStage.SYNCING)) {
@@ -281,8 +276,8 @@ export function canBulkPinningCloudPanelShow(
 
   // For the PAUSED... states the preference should still be enabled, however,
   // for the latter the preference will have been disabled.
-  if ((stage === BulkPinStage.PAUSED_OFFLINE && pref) ||
-      (stage === BulkPinStage.PAUSED_BATTERY_SAVER && pref) ||
+  if ((stage === BulkPinStage.PAUSED_OFFLINE && enabled) ||
+      (stage === BulkPinStage.PAUSED_BATTERY_SAVER && enabled) ||
       stage === BulkPinStage.NOT_ENOUGH_SPACE) {
     return true;
   }
