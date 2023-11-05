@@ -140,6 +140,7 @@
 <translation id="1750259112639922169">ടാബ് ഗ്രൂപ്പ് - <ph name="TAB_COUNT" /> ടാബുകൾ</translation>
 <translation id="17513872634828108">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="1757620656501361327">Google Password Manager അപ്ഡേറ്റ്</translation>
+<translation id="1760873718737761808">{FILE_COUNT,plural, =1{പേജുകൾ, ലിസ്റ്റിൽ ഒരു പേജ്}other{പേജുകൾ, ലിസ്റ്റിൽ # പേജുകൾ}}</translation>
 <translation id="1778457539567749232">വായിച്ചിട്ടില്ലെന്ന് അടയാളപ്പെടുത്തുക</translation>
 <translation id="1779766957982586368">വിന്‍‌ഡോ അടയ്‌ക്കുക</translation>
 <translation id="1791662854739702043">ഇന്‍സ്റ്റാളുചെയ്തു</translation>
@@ -249,6 +250,7 @@
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
 <translation id="2421705177906985956">ഇപ്പോൾ കാണിക്കാൻ സൈറ്റുകളൊന്നുമില്ല</translation>
 <translation id="2426805022920575512">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
+<translation id="2427025860753516072">{FILE_COUNT,plural, =1{വീഡിയോകൾ, ലിസ്റ്റിൽ ഒരു വീഡിയോ}other{വീഡിയോകൾ, ലിസ്റ്റിൽ # വീഡിയോകൾ}}</translation>
 <translation id="2433507940547922241">കാഴ്ച്ച</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> പ്രിവ്യൂ</translation>
@@ -724,6 +726,7 @@
 <translation id="4864369630010738180">സൈൻ ഇൻ ചെയ്യുന്നു...</translation>
 <translation id="4866368707455379617">Chrome-നായി <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല</translation>
 <translation id="4871568871368204250">സമന്വയിപ്പിക്കൽ ഓഫാക്കുക</translation>
+<translation id="4874961007154620743">ഓഫായിരിക്കുമ്പോൾ, Chrome ലോക്കലായി നൽകുന്ന നിർദ്ദേശങ്ങൾ നിങ്ങൾ തുടർന്നും കാണും</translation>
 <translation id="4875775213178255010">ഉള്ളടക്ക നിർദ്ദേശങ്ങൾ</translation>
 <translation id="4877678010818027629">അദൃശ്യ മോഡിലേക്ക് പോകുക</translation>
 <translation id="4878404682131129617">പ്രോക്‌സി സെർവർ മുഖേന ഒരു ടണൽ രൂപപ്പെടുത്താനായില്ല</translation>
@@ -878,6 +881,7 @@
 <translation id="5696597120588531049">ഡാറ്റാ ലംഘനങ്ങൾ, സുരക്ഷിതമല്ലാത്ത വെബ്‌സൈറ്റുകൾ എന്നിവയിൽ നിന്നും മറ്റും നിങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താൻ Chrome സഹായിക്കും</translation>
 <translation id="5698878456427040674">തിരഞ്ഞെടുത്ത അക്കൗണ്ട് പിന്തുണയ്ക്കുന്നുണ്ടോയെന്ന് പരിശോധിക്കുക.</translation>
 <translation id="570347048394355941">ടാബിലേക്ക് മാറുക</translation>
+<translation id="5715150588940290235">സംരക്ഷിച്ച സുരക്ഷാ കോഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="572328651809341494">അടുത്തിടെയുള്ള ടാബുകൾ</translation>
 <translation id="5726692708398506830">പേജിൽ എല്ലാം വലുതായി നൽകുക</translation>
 <translation id="5748802427693696783">സ്റ്റാൻഡേർഡ് ടാബുകളിലേക്ക് മാറി</translation>
@@ -1099,6 +1103,7 @@
 <translation id="6795633245022906657">പുതിയ ടാബ് വേഗത്തിൽ തുറക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
 <translation id="6802555630140434547">വിൻഡോ അടയ്ക്കും</translation>
 <translation id="6811034713472274749">പേജ്, കാണാൻ തയ്യാറാണ്</translation>
+<translation id="6813359536773993594">{FILE_COUNT,plural, =1{ചിത്രങ്ങൾ, ലിസ്റ്റിൽ ഒരു ചിത്രം}other{ചിത്രങ്ങൾ, ലിസ്റ്റിൽ # ചിത്രങ്ങൾ}}</translation>
 <translation id="6813446258015311409">Chrome-ലേക്ക് സെെൻ ഇൻ ചെയ്യുക, തുറന്നു.</translation>
 <translation id="6817747507826986771">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="6819199143469632133">Google-ലുള്ള നിങ്ങളുടെ കാര്യങ്ങളെല്ലാം ഉപകരണങ്ങളിൽ ഉടനീളം ലഭ്യമാകാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6846298663435243399">ലോഡുചെയ്യുന്നു...</translation>
 <translation id="6850409657436465440">നിങ്ങളുടെ ഡൗൺലോഡ് ഇപ്പോഴും പുരോഗതിയിലാണ്</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ടാബുകൾ അടച്ചു</translation>
+<translation id="685340923442249391">{FILE_COUNT,plural, =1{ഓഡിയോ ഫയലുകൾ, ലിസ്റ്റിൽ ഒരു ഓഡിയോ ഫയൽ}other{ഓഡിയോ ഫയലുകൾ, ലിസ്റ്റിൽ # ഓഡിയോ ഫയലുകൾ}}</translation>
 <translation id="685850645784703949">Google-ന്റെ Discover - ഓഫാണ്</translation>
 <translation id="686366188661646310">പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="6864459304226931083">ചിത്രം ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1129,6 +1135,7 @@
 <translation id="6909589135458168665">പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യുക</translation>
 <translation id="6910211073230771657">ഇല്ലാതാക്കി</translation>
 <translation id="6918398787259831832">ഈ പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ നിന്ന് <ph name="BEGIN_LINK" />കൂടുതൽ വിവരങ്ങൾ നേടുക<ph name="END_LINK" />.</translation>
+<translation id="6929224077895306814">നിങ്ങളുടെ ഉപകരണത്തിലും Google Account-ലും സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ സുരക്ഷാ കോഡുകളും ഇല്ലാതാക്കും</translation>
 <translation id="6942665639005891494">ക്രമീകരണ മെനു ഓപ്‌ഷൻ ഉപയോഗിച്ച്, ഏതുസമയത്തും ഡിഫോൾട്ട് ഡൗൺലോഡ് ലൊക്കേഷൻ മാറ്റുക.</translation>
 <translation id="694267552845942083">നിങ്ങൾ നിലവിൽ നിങ്ങളുടെ സമന്വയ ക്രമീകരണം ഇഷ്ടാനുസൃതമാക്കുകയാണ്. സമന്വയിപ്പിക്കൽ ഓണാക്കുന്നത് പൂർത്തിയാക്കാൻ, സ്‌ക്രീനിന്റെ ചുവടുഭാഗത്തിന് സമീപമുള്ള 'സ്ഥിരീകരിക്കുക' ബട്ടൺ ടാപ്പ് ചെയ്യുക. മുകളിലേക്ക് പോകുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
@@ -1216,6 +1223,7 @@
 <translation id="7379900596734708416">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീം ലഭ്യമാണ്</translation>
 <translation id="7388615499319468910">പരസ്യങ്ങളുടെ പ്രകടനം എങ്ങനെയുണ്ടെന്ന് സൈറ്റുകൾക്കും പരസ്യദാതാക്കൾക്കും മനസ്സിലാക്കാനാകും. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
 <translation id="7397416715506917976">പേജ് ഉൾക്കാഴ്ചകൾ കാണുക</translation>
+<translation id="7400003506822844357">{FILE_COUNT,plural, =1{മറ്റുള്ളവ, ലിസ്റ്റിൽ ഒരു ഫയൽ}other{മറ്റുള്ളവ, ലിസ്റ്റിൽ # ഫയലുകൾ}}</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome ആദ്യ പ്രവർത്തന അനുഭവം</translation>
 <translation id="7411224099004328643">Google Account ഉപയോക്താവ്</translation>
@@ -1309,6 +1317,7 @@
 <translation id="780301667611848630">വേണ്ട നന്ദി</translation>
 <translation id="7808889146555843082">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="SITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല. നിങ്ങളുടെ <ph name="SITE" /> -ലെ അക്കൗണ്ട് മറ്റുള്ളവരിൽ നിന്ന് സുരക്ഷിതമായി സൂക്ഷിക്കാൻ അതിന്റെ പാസ്‌വേഡ് മാറ്റുകയോ അത് ഇല്ലാതാക്കുകയോ ചെയ്യുക.</translation>
 <translation id="7810647596859435254">ഇത് ഉപയോഗിച്ച് തുറക്കുക...</translation>
+<translation id="7814066895362068701">{FILE_COUNT,plural, =1{എല്ലാ ഫയലുകളും, ലിസ്റ്റിൽ ഒരു ഫയൽ}other{എല്ലാ ഫയലുകളും, ലിസ്റ്റിൽ # ഫയലുകൾ}}</translation>
 <translation id="7815484226266492798">നീളത്തിലുള്ള സ്ക്രീന്‍ഷോട്ട്</translation>
 <translation id="7822705602465980873">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നതിന് ഈ ഡാറ്റ നിങ്ങളുടെ Google Account-മായി ലിങ്ക് ചെയ്യും, ഉദാഹരണത്തിന് സുരക്ഷാ വീഴ്ചയ്ക്ക് ശേഷം Gmail-ൽ പരിരക്ഷ വർദ്ധിപ്പിക്കുക.</translation>
 <translation id="782705168687182233">നിങ്ങളുടെ ആക്‌റ്റിവിറ്റി നിങ്ങളുടെ <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />-ൽ സംരക്ഷിച്ചു.</translation>
@@ -1533,6 +1542,7 @@
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> തയ്യാറാണ്</translation>
 <translation id="8937772741022875483">ഡിജിറ്റൽ ആരോഗ്യത്തിൽ നിന്ന് നിങ്ങളുടെ Chrome ആക്റ്റിവിറ്റി നീക്കം ചെയ്യണോ?</translation>
+<translation id="893938492099608175">നിങ്ങളുടെ ക്രമീകരണം അനുസരിച്ച്, കുക്കികളും നിങ്ങളുടെ നിലവിലെ URL-ഉം ലൊക്കേഷനും Chrome അയച്ചേക്കാം</translation>
 <translation id="8942627711005830162">മറ്റൊരു വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ഈ ഭാഷ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8955719471735800169">മുകളിലേക്ക് മടങ്ങുക</translation>

@@ -349,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटको गृहपृष्ठमा गई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1641976391427233992">आउटपुट यति समयसम्म विलम्बित गर्नुहोस्:</translation>
 <translation id="164212631332220697">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्।</translation>
+<translation id="1643651787397909318">"Chrome को सुरक्षा जाँचमा जानुहोस्" बटन, सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जान एक्टिभेट गर्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645368109819982629">असमर्थित प्रोटोकल</translation>
 <translation id="1650602712345345441">Chrome मा आफूले तय गरेका सेटिङ मिलाउनुहोस्</translation>
@@ -2046,6 +2047,8 @@
 <translation id="5137761395480718572">यो एपले Wi-Fi क्रिडेन्सियलहरू इन्स्टल गर्ने अनुमति माग्दै छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> उपलब्ध Wi-Fi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। यी क्रिडेन्सियलहरू हटाउन यो एप अनइन्स्टल गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">भर्चुअल कार्ड हाल उपलब्ध छैन। कृपया आफ्नो बैंकमा सम्पर्क गर्नुहोस्</translation>
 <translation id="5138227688689900538">कम देखाउनुहोस्</translation>
+<translation id="5143309888746105072">Chromium ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।
+            <ph name="NEW_LINE" />साइटका सुविधाहरूले काम गरिरहेका छैनन् भने <ph name="START_LINK" />केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="5145883236150621069">नीति प्रतिक्रियामा त्रुटि कोड समावेश छ</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> का सूचनाहरूलाई रोक लगाइएको छ</translation>
 <translation id="514704532284964975"><ph name="URL" /> ले तपाईंले आफ्नो फोनमार्फत ट्याप गर्ने NFC डिभाइसमा भएका जानकारी हेर्ने तथा परिवर्तन गर्ने अनुमति माग्दै छ</translation>
@@ -2391,6 +2394,7 @@
 <translation id="5873297634595728366">डिजेलबाट चल्ने गाडी</translation>
 <translation id="5877831137320480913">सौन्दर्य तथा तन्दुरुस्ती</translation>
 <translation id="5879989559903563723">गेस्ट मोडमा अनुमति दिइएको छैन</translation>
+<translation id="5880050725127890683">Chrome को सुरक्षा जाँचमा जानुहोस्</translation>
 <translation id="5883861433316751031">MIDI डिभाइसहरू नियन्त्रण र रिप्रोग्राम गर्ने हो?</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
@@ -2572,6 +2576,7 @@
 <translation id="6251906504834538140">{0,plural, =1{फाइल सार्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल सार्न रोक लगाइएको छ}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
+<translation id="625463612687472648">अनुमति रद्द गर्नुहोस्</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
@@ -2747,6 +2752,8 @@
 <translation id="6596325263575161958">गुप्तीकरण विकल्पहरू</translation>
 <translation id="6597665340361269064">९० डिग्री</translation>
 <translation id="6599642189720630047">ट्र्याक गरिएका उत्पादनहरू</translation>
+<translation id="6606309334576464871">Chrome ले साइटहरूलाई तपाईंले ब्राउज गरिरहेका बेला तपाईंलाई ट्र्याक गर्ने प्रयोजनका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिँदैन।
+            <ph name="NEW_LINE" />साइटका सुविधाहरूले काम गरिरहेका छैनन् भने <ph name="START_LINK" />केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="6611723696964473273">आर्थिक समाचार</translation>
 <translation id="6612010098632894193">अनलाइन भिडियो</translation>
 <translation id="6613866251791999074">Chrome मा प्रयोग गरिने सर्च इन्जिनका बारेमा थप जान्नुहोस्</translation>
@@ -3421,6 +3428,7 @@
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जान ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
 <translation id="7927971017714848357">प्लट तथा जग्गा</translation>
 <translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>
@@ -3716,6 +3724,7 @@
 <translation id="8460854335417802511">यो सुविधा अन गर्नुहोस्</translation>
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{१ क्रेडिट कार्ड}other{# क्रेडिट कार्डहरू}}</translation>
+<translation id="8467494337615822642">सेटिङमा रहेको Chrome को सुरक्षा जाँच पेजमा जानुहोस्</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8473626140772740486">३०० x ४५० मिलिमिटर</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>

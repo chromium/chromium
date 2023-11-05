@@ -134,6 +134,7 @@
 <translation id="1852934301711881861">Install Chrome OS Flex</translation>
 <translation id="1856388568474281774">Down arrow</translation>
 <translation id="1858620243986915808">Attach screenshot</translation>
+<translation id="1871413952174074704">APN can’t have more than <ph name="CHAR_LIMIT" /> characters</translation>
 <translation id="1871569928317311284">Turn Dark theme off</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Turn dark mode off</translation>
@@ -1103,4 +1104,5 @@
 <translation id="979450713603643090">Light pink</translation>
 <translation id="982713511914535780">Run discharge test</translation>
 <translation id="987264212798334818">General</translation>
+<translation id="995062385528875723">Can’t use accented letters, non-Latin alphabet or symbols</translation>
 </translationbundle>

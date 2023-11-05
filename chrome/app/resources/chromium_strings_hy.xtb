@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1001716830750249114">Անցնել Chromium-ի տարբերակի կարգավորումներ</translation>
 <translation id="1026101648481255140">Վերսկսել տեղադրումը</translation>
 <translation id="1029669172902658969">Վերագործարկել՝ &amp;ChromiumOS-ը թարմացնելու համար</translation>
 <translation id="1040916596585577953">Chromium-ը խորհուրդ է տալիս ստուգել այս ընդլայնումը</translation>
@@ -23,6 +24,7 @@
 <translation id="1342274909142618978">Նաև հեռացնել տվյալները Chromium-ից (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Դուք մուտք եք գործել Chromium:</translation>
 <translation id="1478370723027452770">Ստանալ օգնություն Chrome for Testing-ի միջոցով</translation>
+<translation id="1497802159252041924">Տեղադրման սխալ՝ <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Կիսվեք Chromium-ի ներդիրով</translation>
 <translation id="1553461853655228091">Chromium-ին անհրաժեշտ է տեսախցիկն օգտագործելու թույլտվություն՝ ձեր շրջակայքի եռաչափ քարտեզը ստեղծելու համար։</translation>
 <translation id="1574377791422810894">Chromium-ի անվտանգության գործիքներ</translation>
@@ -33,6 +35,7 @@
 Թույլտվությունները, որոնք տրամադրել եք կայքերին և հավելվածներին, կարող են կիրառվել այս հաշվի նկատմամբ։ Ձեր Google հաշիվները կարող եք կառավարել <ph name="SETTINGS_LINK_BEGIN" />Կարգավորումներում<ph name="SETTINGS_LINK_END" />։</translation>
 <translation id="1640672724030957280">Ներբեռնում…</translation>
 <translation id="1708666629004767631">Մատչելի է Chromium-ի նոր, ավելի ապահով տարբերակ:</translation>
+<translation id="1715127912119967311">Chromium-ը Google-ին ուղարկում է ձեր փոխազդեցությունների մասին տվյալները, որպեսզի օգնի բարելավել այս գործառույթերը։ Այդ տվյալները կարող են ընթերցվել, մշակվել և մեկնաբանվել մասնագետների կողմից։</translation>
 <translation id="17264556997921157">Դուք կարող եք տեսնել և հեռացնել հետաքրքրությունները, որոնք կայքերն օգտագործում են՝ ձեզ գովազդ ցուցադրելու համար։ Chromium-ը որոշում է ձեր հետաքրքրությունները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
 <translation id="1733725117201708356">Chromium-ը շուտով կջնջի դիտարկման տվյալները</translation>
 <translation id="1745121272106313518">Chromium-ը կվերագործարկվի <ph name="REMAINING_TIME" />ից</translation>
@@ -157,11 +160,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" />-ն արդեն մուտք է գործել Chromium-ի այս պրոֆիլը։ Ձեր դիտարկումների պատմությունն առանձին պահելու համար կարող եք Chromium-ի առանձին պրոֆիլ ստեղծել։</translation>
 <translation id="3909353120217047026">Այս ընդլայնումը խախտում է Chrome Web Store-ի քաղաքականությունը և կարող է վտանգավոր լինել։ Հեռացրեք ընդլայնումը Chromium-ից, որպեսզի այն այլևս չկարողանա տեսնել և փոփոխել ձեր տվյալները, այդ թվում՝ անձնական տեղեկությունները, ձեր այցելած կայքերում։</translation>
 <translation id="391789666908693569">Ձեր հաշիվը պատկանում է <ph name="MANAGER_NAME" /> տիրույթին: Ձեր ադմինիստրատորը կարող է տեսնել և խմբագրել Chromium դիտարկիչի այս պրոֆիլը և դրա տվյալները, օրինակ՝ էջանիշները, պատմությունը և գաղտնաբառերը։</translation>
+<translation id="3922825997980843979">Երբ դուք հարցում եք մուտքագրում, Chromium-ն ուղարկում է հասցեագոտու կամ որոնման դաշտի բովանդակությունը ձեր կանխադրված որոնողական համակարգին</translation>
 <translation id="3945058413678539331">Chromium-ը փորձում է պատճենել գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
 <translation id="3962647064319009959">Ինչպես է Chromium-ն ապահով պահում ձեր տվյալները</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing-ի մասին</translation>
 <translation id="3997429360543082038">ChromiumOS-ի մասին</translation>
 <translation id="4019629340646866719">ChromiumOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
+<translation id="4028143804911941282">Այս պարամետրը անջատելու դեպքում էլ կտեսնեք լոկալ հուշումներ Chromium-ից</translation>
 <translation id="4036079820698952681">Օգնեք կատարելագործել Chromium-ը՝ հաղորդելով <ph name="BEGIN_LINK" />ընթացիկ կարգավորումների<ph name="END_LINK" /> մասին</translation>
 <translation id="4050175100176540509">Վերջին տարբերակում առկա են անվտանգության կարևոր բարելավումներ և նոր գործառույթներ:</translation>
 <translation id="4055805654398742145">Գ&amp;աղտնաբառերի կառավարիչ</translation>
@@ -253,6 +258,7 @@
 <translation id="6003112304606738118">Ներբեռնում… Մնաց <ph name="HOURS" /> ժամ</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6055895534982063517">Մատչելի է Chromium-ի նոր տարբերակ, որը շատ ավելի արագ է:</translation>
+<translation id="6058380562449900225">Ձեր տվյալները պաշտպանելու համար թույլ տվեք Chromium-ին հեռացնել թույլտվություններն այն կայքերից, որոնք վերջերս չեք այցելել։ Ընդ որում՝ ծանուցումները չեն անջատվի։</translation>
 <translation id="6063093106622310249">&amp;Բացել Chromium-ում</translation>
 <translation id="6072279588547424923">«<ph name="EXTENSION_NAME" />» ընդլայնումն ավելացվել է Chromium-ին</translation>
 <translation id="6072463441809498330">Արագացրեք Chromium-ի աշխատանքը</translation>

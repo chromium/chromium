@@ -98,6 +98,7 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1178821169867863726">12 x 16 英寸</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1181381397492575884">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="LINK" />。</translation>
 <translation id="1186201132766001848">检查密码</translation>
 <translation id="1190491977647722791">纸（重磅纸）</translation>
 <translation id="1195073053842921378">该地址将从此设备中删除</translation>
@@ -118,6 +119,7 @@
 <translation id="1225570101506606926">台球</translation>
 <translation id="1225607422885279949">Google 将会为您查找折扣信息</translation>
 <translation id="1227224963052638717">未知政策。</translation>
+<translation id="1227677022489889280">请提供迁移原因（必填）</translation>
 <translation id="1228893227497259893">实体标识符有误</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" />（自动检测）</translation>
 <translation id="1232569758102978740">无标题</translation>
@@ -1042,6 +1044,7 @@
 <translation id="3140646734028448730">商业服务</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141641372357166056">尚无决定意见</translation>
+<translation id="3142736425087361223">Chrome 需要您授予<ph name="PERMISSION" />权限，才能在 <ph name="ORIGIN" /> 上使用它</translation>
 <translation id="3144458715650412431">测试政策已被应用。如需查看和重置这些政策，请访问 chrome://policy/test。管理员政策不会被应用。</translation>
 <translation id="3145945101586104090">无法对响应解码</translation>
 <translation id="3150653042067488994">服务器临时错误</translation>
@@ -1203,6 +1206,7 @@
 <translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
+<translation id="3450323514459570273">可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
 <translation id="3453962258458347894">重试次数</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 想查看复制到剪贴板的文字和图片</translation>
@@ -1996,6 +2000,7 @@
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5051305769747448211">相声/小品</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
+<translation id="505757197798929356">请提供打开原因（必填）</translation>
 <translation id="5060419232449737386">字幕设置</translation>
 <translation id="5060483733937416656">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过 Windows Hello 来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
@@ -2115,6 +2120,7 @@
 <translation id="5288393065350884210">会计与审计</translation>
 <translation id="5289384342738547352">多文档处理</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{必须在今天更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
+<translation id="5292714443869769806">前往 <ph name="OPERATING_SYSTEM" /> 的设置部分</translation>
 <translation id="5293919335876685914">轿跑车</translation>
 <translation id="5296589789433599000">烹饪与食谱</translation>
 <translation id="5299298092464848405">解析策略时出错</translation>
@@ -2423,6 +2429,7 @@
 <translation id="5951495562196540101">无法通过消费者账号注册（有封装的许可）。</translation>
 <translation id="5953516610448771166">此媒体无法使用实时字幕功能。如需获取字幕，请屏蔽该网站的<ph name="CONTENT_SETTINGS" />。</translation>
 <translation id="5955063559762970069">酒店与住宿</translation>
+<translation id="595873925609605681">如果网站功能无法正常运行，请<ph name="BEGIN_LINK" />尝试暂时允许使用第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="5963413905009737549">章节标记</translation>
 <translation id="5964247741333118902">嵌入式内容</translation>
 <translation id="5967260682280773804">36 x 48 英寸</translation>
@@ -2726,6 +2733,7 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6557715786897013164">14 x 17 英寸</translation>
 <translation id="6560786330438719938">已安装或卸载的应用及其使用频率</translation>
+<translation id="6567084950885568327">MIDI 设备控制和重新编程</translation>
 <translation id="6568793038316600992">“管理付款方式”按钮，激活它即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6569366777234823130">剧情片</translation>
@@ -2894,6 +2902,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">下载多个文件</translation>
 <translation id="6915804003454593391">用户：</translation>
+<translation id="6916193791494646625">请提供下载原因（必填）</translation>
 <translation id="6916954549222464607">财务规划与管理</translation>
 <translation id="6917795328362592458">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，密码管理工具建议您检查已保存的所有密码。</translation>
 <translation id="6925267999184670015">北美洲 B+</translation>
@@ -3095,6 +3104,7 @@
 <translation id="7308436126008021607">后台同步</translation>
 <translation id="7310392214323165548">设备很快就会重启</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
+<translation id="7311837626618954149">Chromium 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
 <translation id="7323804146520582233">隐藏“<ph name="SECTION" />”部分</translation>
@@ -3186,6 +3196,8 @@
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 会知道您访问过 <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 英寸</translation>
 <translation id="7469935732330206581">表单不安全</translation>
+<translation id="7470854469646445678">请提供复制原因（必填）</translation>
+<translation id="7471007961486718967">请提供转移原因（必填）</translation>
 <translation id="7473891865547856676">不，谢谢</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481603210197454575">意式信封</translation>
@@ -3232,6 +3244,7 @@
 <translation id="7550637293666041147">您的设备用户名和 Chrome 用户名</translation>
 <translation id="7551484245293639699">旅行保险</translation>
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
+<translation id="7554242657529665960">来自您的管理员：“<ph name="ADMIN_MESSAGE" />”</translation>
 <translation id="7554475479213504905">仍然重新加载并显示</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7555777498260651025">面向家庭的电视节目</translation>
@@ -3348,6 +3361,7 @@
 <translation id="7744505202669469867">“已保存的地址”表格</translation>
 <translation id="774634243536837715">危险内容已被拦截。</translation>
 <translation id="7748758200357401411">高性能汽车售后改装配件</translation>
+<translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
 <translation id="7754587126786572336">开始更新时，您的 Chrome 标签页和应用会关闭</translation>
@@ -3429,6 +3443,7 @@
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943397946612013052">禁止下载</translation>
 <translation id="7943893128817522649">可以询问能否自动下载多个文件</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7946724693008564269">检测到的语言</translation>
 <translation id="7947285636476623132">请检查您的信用卡到期年份，然后重试</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可了解各项 Chrome 功能</translation>
@@ -3687,6 +3702,7 @@
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
+<translation id="8432419784006585012">可以请求使用您的 MIDI 设备</translation>
 <translation id="8433057134996913067">这将使您退出大多数网站。</translation>
 <translation id="8434014327286137412">如果想在下次购物时更快捷地付款，请将您的 IBAN 保存到您的 Google 账号中</translation>
 <translation id="8434840396568290395">宠物</translation>
@@ -3735,6 +3751,7 @@
 <translation id="853246364274116957">百老汇与音乐剧</translation>
 <translation id="853332391023689529">皮卡</translation>
 <translation id="8533619373899488139">请访问 &lt;strong&gt;chrome://policy&lt;/strong&gt;，查看被屏蔽的网址列表以及您的系统管理员强制执行的其他政策。</translation>
+<translation id="8534934518812659742">您已为 Chrome 关闭<ph name="PERMISSION" />权限。</translation>
 <translation id="8536234749087605613">信封（开窗）</translation>
 <translation id="8539500321752640291">授予 2 项权限？</translation>
 <translation id="8541158209346794904">蓝牙设备</translation>
@@ -3745,6 +3762,7 @@
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />报告检测问题<ph name="END_ERROR_LINK" />；或者，如果您了解自己将面临的安全风险，则可以<ph name="BEGIN_LINK" />访问这个不安全的网站<ph name="END_LINK" />。</translation>
 <translation id="8544303911974837265">聚酯纤维</translation>
 <translation id="854548366864113872">高价选项</translation>
+<translation id="8546254312340305428">请提供上传原因（必填）</translation>
 <translation id="8546350655047701518">将日志导出为 JSON 文件</translation>
 <translation id="8546667245446052521">纸（存档用）</translation>
 <translation id="854892890027593466">C6/C5 信封</translation>
@@ -4074,6 +4092,7 @@
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940053046584497293">旅行与交通</translation>
 <translation id="944540589955480312">使用保存在您 Google 账号中的密码和通行密钥</translation>
+<translation id="945646848072568856">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。</translation>
 <translation id="945855313015696284">请查看下面的信息，并删除所有无效卡片</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 协作平台中快速创建新网站</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome 将于今天再次限制 Cookie}=1{Chrome 将于明天再次限制 Cookie}other{Chrome 将于 # 天后再次限制 Cookie}}</translation>

@@ -1197,6 +1197,7 @@
 <translation id="5788127256798019331">Play ಫೈಲ್‌ಗಳು</translation>
 <translation id="5788535737706478207">ಮುಚ್ಚಿದ ಕೊನೆಯ ಟ್ಯಾಬ್‌ ಅಥವಾ ವಿಂಡೋವನ್ನು ಪುನಃ ತೆರೆಯಿರಿ</translation>
 <translation id="5790085346892983794">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
+<translation id="5802516411616338943">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5804651031882187592">"SIM ಅನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5823239091726045201">ವೆಬ್‌ನಲ್ಲಿ Google ಕಾರ್ಯಗಳು</translation>
@@ -1214,7 +1215,6 @@
 <translation id="5876535466645959772">ಆಯ್ಕೆಮಾಡಿದ ಪಟ್ಟಿ ಖಾಲಿಯಾಗಿದೆ, ಹೊಸ ಕಾರ್ಯವನ್ನು ಸೇರಿಸಲು ಕೆಳಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="5876666360658629066">ಪೋಷಕ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5881540930187678962">ಫೋನ್ ಹಬ್ ಅನ್ನು ನಂತರ ಸೆಟಪ್ ಮಾಡಿ</translation>
-<translation id="5881663018261910378">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5887954372087850114">ವಿಂಡೋ <ph name="WINDOW_TITLE" /> ಅನ್ನು <ph name="DESK_TITLE" /> ಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ ಹಾಗೂ ಎಲ್ಲಾ ಇತರ ಡೆಸ್ಕ್‌ಗಳಿಂದ ನಿಯೋಜನೆಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="588817334757907802">Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಫೈಲ್ ತೆರೆಯಿರಿ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -1223,6 +1223,7 @@
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5911231045062997865">Lacros ವಿಂಡೋಗಳಿಗೆ ಪ್ರಸ್ತುತ ಬೆಂಬಲ ಲಭ್ಯವಿಲ್ಲ. ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">ಹೊಸ ನೋಟಿಫಿಕೇಶನ್, ಒಟ್ಟು <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5920710855273935292">ಮೈಕ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ಆನ್ ಆಗಿದೆ.</translation>

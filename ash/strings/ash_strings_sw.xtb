@@ -564,6 +564,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3340978935015468852">mipangilio</translation>
 <translation id="3341303451326249809">Picha ya skrini imepigwa</translation>
 <translation id="334252345105450327">Piga picha ya skrini</translation>
+<translation id="3346728094401457853">Weka nenosiri la kifaa katika <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Tafuta maandishi kuanzia kwenye kiteuzi hadi mwisho wa mstari</translation>
 <translation id="3349345708646875009">Fungua kidhibiti cha shughuli kwenye Chrome</translation>
 <translation id="3364721542077212959">Zana za stylus</translation>
@@ -1213,7 +1214,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5876535466645959772">Orodha iliyochaguliwa ni tupu, sogeza chini ili uweke jukumu jipya</translation>
 <translation id="5876666360658629066">Weka msimbo wa mzazi</translation>
 <translation id="5881540930187678962">Weka mipangillio ya Kituo cha Kudhibiti Simu baadaye</translation>
-<translation id="5881663018261910378">Umezimwa</translation>
 <translation id="5887954372087850114">Dirisha la <ph name="WINDOW_TITLE" /> limewekwa kwenye <ph name="DESK_TITLE" /> na limeondolewa kwenye maeneokazi mengine yote</translation>
 <translation id="588817334757907802">Fungua faili katika kivinjari cha Chrome</translation>
 <translation id="5895138241574237353">Zima na uwashe</translation>
@@ -1584,6 +1584,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7489261257412536105">Weka au funga skrini nzima</translation>
 <translation id="7490360161041035804">Unaweza kubandika faili muhimu, ikiwa ni pamoja na faili za Hifadhi ya Google. Ili ubandike, elea juu ya kipengee au fungua Faili na ubofye kulia kwenye kipengee.</translation>
 <translation id="7497767806359279797">Chagua lugha na kibodi</translation>
+<translation id="7507162824403726948">Kumaliza kuthibitisha utambulisho wako</translation>
 <translation id="7508690557411636492">Ilifunguliwa mwezi uliopita</translation>
 <translation id="7509246181739783082">Thibitisha utambulisho wako</translation>
 <translation id="7512509370370076552">Njia ya mkato ya bofya kulia imesasishwa na kuwa kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na click kutoka alt pamoja na click</translation>

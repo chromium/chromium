@@ -349,6 +349,7 @@
 <translation id="1640244768702815859">Опитайте да <ph name="BEGIN_LINK" />отворите началната страница на сайта<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Отлагане на отпечатването до</translation>
 <translation id="164212631332220697">Плащане с <ph name="CARD_DETAIL" />.</translation>
+<translation id="1643651787397909318">Бутон „Проверка на безопасността в Chrome“. Натиснете го, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1645368109819982629">Неподдържан протокол</translation>
 <translation id="1650602712345345441">Управление на настройките ви за Chrome</translation>
@@ -2048,6 +2049,8 @@
 <translation id="5137761395480718572">Това приложение иска разрешение да инсталира идентификационните данни за Wi-Fi. След настройването устройството ви <ph name="DEVICE_TYPE" /> ще се свързва автоматично с участващите Wi-Fi мрежи. За да премахнете тези идентификационни данни, деинсталирайте приложението. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">В момента няма достъп до виртуалната карта. Свържете се с банката си</translation>
 <translation id="5138227688689900538">Показване на по-малко</translation>
+<translation id="5143309888746105072">Chromium блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.
+            <ph name="NEW_LINE" />Ако функциите на сайта не работят, <ph name="START_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">В отговора за правилото присъства код на грешка</translation>
 <translation id="5146995429444047494">Известията за <ph name="ORIGIN" /> са блокирани</translation>
 <translation id="514704532284964975"><ph name="URL" /> иска да чете и променя информацията на устройствата с NFC, които докосвате с телефона си</translation>
@@ -2393,6 +2396,7 @@
 <translation id="5873297634595728366">Дизелови превозни средства</translation>
 <translation id="5877831137320480913">Козметика и фитнес</translation>
 <translation id="5879989559903563723">Не е разрешено в режим на гост</translation>
+<translation id="5880050725127890683">Проверка на безопасността в Chrome</translation>
 <translation id="5883861433316751031">Да се контролират и препрограмират ли MIDI устройствата?</translation>
 <translation id="5884465125445718607">Плик, китайски №6</translation>
 <translation id="5887400589839399685">Картата бе запазена</translation>
@@ -2574,6 +2578,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Преместването на файла е блокирано}other{Преместването на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6254436959401408446">Няма достатъчно памет за отваряне на тази страница</translation>
+<translation id="625463612687472648">Оттегляне на разрешението</translation>
 <translation id="6259156558325130047">&amp;Възстановяване на пренареждането</translation>
 <translation id="6263376278284652872">Отметки от <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
@@ -2749,6 +2754,8 @@
 <translation id="6596325263575161958">Опции за шифроване</translation>
 <translation id="6597665340361269064">90 градуса</translation>
 <translation id="6599642189720630047">Проследявани продукти</translation>
+<translation id="6606309334576464871">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.
+            <ph name="NEW_LINE" />Ако функциите на сайта не работят, <ph name="START_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Икономически новини</translation>
 <translation id="6612010098632894193">Онлайн видео</translation>
 <translation id="6613866251791999074">Научете повече за търсещата си машина в Chrome</translation>
@@ -3423,6 +3430,7 @@
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 инча</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да отворите страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="7916162853251942238">Флексопечат</translation>
 <translation id="7927971017714848357">Парцели и земя</translation>
 <translation id="793209273132572360">Да се актуализира ли адресът?</translation>
@@ -3718,6 +3726,7 @@
 <translation id="8460854335417802511">Включване</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна карта}other{# кредитни карти}}</translation>
+<translation id="8467494337615822642">Отваряне на страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="8468358362970107653">Плик C3</translation>
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>

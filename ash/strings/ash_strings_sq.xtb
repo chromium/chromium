@@ -564,6 +564,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3341303451326249809">Pamja e ekranit u regjistrua</translation>
 <translation id="334252345105450327">Nxirr një pamje të ekranit</translation>
+<translation id="3346728094401457853">Fut fjalëkalimin e pajisjes për <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Zgjidh tekstin nga kursori deri në fund të rreshtit</translation>
 <translation id="3349345708646875009">Hap menaxherin e detyrave</translation>
 <translation id="3364721542077212959">Veglat e stilolapsit</translation>
@@ -1213,7 +1214,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5876535466645959772">Lista e zgjedhur është bosh, navigo poshtë për të shtuar një detyrë të re</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
 <translation id="5881540930187678962">Konfiguroje Phone Hub më vonë</translation>
-<translation id="5881663018261910378">Joaktiv</translation>
 <translation id="5887954372087850114">Dritarja <ph name="WINDOW_TITLE" /> u caktua në <ph name="DESK_TITLE" /> dhe u hoq nga të gjitha tavolinat e tjera të punës</translation>
 <translation id="588817334757907802">Hape skedarin në shfletuesin Chrome</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -1584,6 +1584,7 @@ Instalim i ri</translation>
 <translation id="7489261257412536105">Hyr ose dil nga ekrani i plotë</translation>
 <translation id="7490360161041035804">Mund t'i gozhdosh skedarët e rëndësishëm, duke përfshirë skedarët e "Diskut të Google". Për ta gozhduar një artikull, mbaje kursorin mbi artikull ose hap Files dhe kliko me butonin djathtas tek artikulli.</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
+<translation id="7507162824403726948">Përfundo verifikimin e identitetit tënd</translation>
 <translation id="7508690557411636492">Hapur muajin e kaluar</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7512509370370076552">Shkurtorja e klikimit me butonin djathtas përditësohet në tastin <ph name="LAUNCHER_KEY_NAME" /> + klikim nga Alt + klikim</translation>

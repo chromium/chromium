@@ -564,6 +564,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
 <translation id="3341303451326249809">Ekrānuzņēmums ir uzņemts</translation>
 <translation id="334252345105450327">Iegūt ekrānuzņēmumu</translation>
+<translation id="3346728094401457853">Ievadiet ierīces paroli kontam <ph name="EMAIL" />.</translation>
 <translation id="334927402682780278">Atlasīt tekstu no kursora līdz rindas beigām</translation>
 <translation id="3349345708646875009">Atvērt uzdevumu pārvaldnieku</translation>
 <translation id="3364721542077212959">Skārienekrāna pildspalvas rīki</translation>
@@ -1213,7 +1214,6 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5876535466645959772">Atlasītais saraksts ir tukšs. Pārejiet uz leju, lai pievienotu jaunu uzdevumu.</translation>
 <translation id="5876666360658629066">Ievadiet vecāku kodu</translation>
 <translation id="5881540930187678962">Tālruņa centrmezgla iestatīšana vēlāk</translation>
-<translation id="5881663018261910378">Izslēgts</translation>
 <translation id="5887954372087850114">Logs <ph name="WINDOW_TITLE" /> ir piešķirts darbvietai <ph name="DESK_TITLE" /> un ir atsaistīts no citām darbvietām.</translation>
 <translation id="588817334757907802">Atvērt failu pārlūkā Chrome</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -1584,6 +1584,7 @@ Jauna instalācija</translation>
 <translation id="7489261257412536105">Atvērt pilnekrāna režīmu vai iziet no tā</translation>
 <translation id="7490360161041035804">Varat piespraust svarīgus failus, tostarp Google diska failus. Lai piespraustu failu, virziet kursoru virs tā vai atveriet lietotni Faili un noklikšķiniet uz vienuma ar labo pogu.</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
+<translation id="7507162824403726948">Pabeidziet identitātes verifikāciju</translation>
 <translation id="7508690557411636492">Atvērts pagājušajā mēnesī</translation>
 <translation id="7509246181739783082">Identitātes apstiprināšana</translation>
 <translation id="7512509370370076552">Īsinājumtaustiņi noklikšķināšanai ar peles labo pogu turpmāk būs taustiņš <ph name="LAUNCHER_KEY_NAME" /> + klikšķis, nevis Alt + klikšķis.</translation>

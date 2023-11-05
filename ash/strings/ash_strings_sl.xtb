@@ -116,6 +116,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1391102559483454063">Vklopljeno</translation>
 <translation id="1407069428457324124">Temna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Za pomikanje med datumi uporabite puščične tipke.</translation>
+<translation id="141170878022560212">Srednji gumb</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplikacija je že nameščena</translation>
 <translation id="1414919006379339073">Zapiranje trenutnega okna</translation>
 <translation id="1415846719612499304">Prikaz seznama omrežij. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2086334242442703436">Odpiranje izbirnika emodžijev</translation>
 <translation id="2088116547584365419">tekme</translation>
 <translation id="209965399369889474">Ni povezave z omrežjem</translation>
+<translation id="2107581415810719320">Drug gumb <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Kabel USB-C ne podpira protokola Thunderbolt. Delovanje naprave bo morda omejeno.</translation>
 <translation id="2108303511227308752">Bližnjica na tipkovnici alt + preslednica je spremenjena. Če želite uporabiti tipko za brisanje, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in vračalko.</translation>
 <translation id="2126242104232412123">Novo namizje</translation>
@@ -1212,7 +1214,6 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5876535466645959772">Izbrani seznam je prazen, pomaknite se navzdol, če želite dodati novo opravilo</translation>
 <translation id="5876666360658629066">Vnos kode starša</translation>
 <translation id="5881540930187678962">Nastavitve telefonsko središče pozneje</translation>
-<translation id="5881663018261910378">Izklopljeno</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> je dodeljeno namizju <ph name="DESK_TITLE" /> in njegova dodelitev je preklicana za vsa druga namizja.</translation>
 <translation id="588817334757907802">Odpiranje datoteke v brskalniku Chrome</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>

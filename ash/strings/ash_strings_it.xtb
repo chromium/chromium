@@ -564,6 +564,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3341303451326249809">Screenshot acquisito</translation>
 <translation id="334252345105450327">Fai uno screenshot</translation>
+<translation id="3346728094401457853">Inserisci la password del dispositivo per <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Seleziona il testo dal cursore alla fine della riga</translation>
 <translation id="3349345708646875009">Apri Task Manager</translation>
 <translation id="3364721542077212959">Strumenti per stilo</translation>
@@ -1210,7 +1211,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5876535466645959772">Elenco selezionato vuoto; spostati verso il basso per aggiungere una nuova attività</translation>
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
 <translation id="5881540930187678962">Configura Phone Hub in un secondo momento</translation>
-<translation id="5881663018261910378">Off</translation>
 <translation id="5887954372087850114">Finestra <ph name="WINDOW_TITLE" /> assegnata a <ph name="DESK_TITLE" />; assegnazione della finestra a tutte le altre scrivanie annullata</translation>
 <translation id="588817334757907802">Apri un file nel browser Chrome</translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -1581,6 +1581,7 @@ Nuova installazione</translation>
 <translation id="7489261257412536105">Attiva o esci da schermo intero</translation>
 <translation id="7490360161041035804">Puoi bloccare i file importanti, inclusi i file di Google Drive. Per bloccare l'elemento, passa il mouse sopra un elemento o apri File e fai clic con il tasto destro del mouse su un elemento.</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
+<translation id="7507162824403726948">Completa la verifica dell'identità</translation>
 <translation id="7508690557411636492">Aperto il mese scorso</translation>
 <translation id="7509246181739783082">Verifica la tua identità</translation>
 <translation id="7512509370370076552">La scorciatoia per il clic con il tasto destro del mouse Alt + clic viene aggiornata a tasto <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>

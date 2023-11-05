@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">已開啟</translation>
 <translation id="1407069428457324124">深色主題背景</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。用方向鍵就可以喺日期之間移動。</translation>
+<translation id="141170878022560212">中間按鈕</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已經安裝嘅應用程式</translation>
 <translation id="1414919006379339073">關閉目前的視窗</translation>
 <translation id="1415846719612499304">顯示網絡清單。<ph name="STATE_TEXT" />。</translation>
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">開啟 Emoji 點選器</translation>
 <translation id="2088116547584365419">遊戲</translation>
 <translation id="209965399369889474">未連接網絡</translation>
+<translation id="2107581415810719320">其他按鈕：<ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C 連接線不支援 Thunderbolt。裝置效能可能受到限制。</translation>
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
@@ -562,7 +564,7 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">擷取咗螢幕畫面</translation>
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
-<translation id="3346728094401457853">輸入「<ph name="EMAIL" />」的裝置密碼</translation>
+<translation id="3346728094401457853">輸入 <ph name="EMAIL" /> 的裝置密碼</translation>
 <translation id="334927402682780278">選取從游標到該行末之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
@@ -1211,7 +1213,6 @@
 <translation id="5876535466645959772">揀咗嘅清單冇內容，向下導覽就可以加新工作</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
-<translation id="5881663018261910378">已停用</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
 <translation id="588817334757907802">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5895138241574237353">重新啟動</translation>

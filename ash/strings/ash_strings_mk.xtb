@@ -564,6 +564,7 @@
 <translation id="3340978935015468852">поставки</translation>
 <translation id="3341303451326249809">Направена е слика од екранот</translation>
 <translation id="334252345105450327">Направи слика од екранот</translation>
+<translation id="3346728094401457853">Внесете ја лозинката за уредот за <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Го избира текстот од курсорот до крајот на линијата</translation>
 <translation id="3349345708646875009">Отворете „Управник со задачи“</translation>
 <translation id="3364721542077212959">Алатки за пенкало</translation>
@@ -1214,7 +1215,6 @@
 <translation id="5876535466645959772">Избраниот список е празен, одете надолу за да додадете нова задача</translation>
 <translation id="5876666360658629066">Внесете го кодот на родител</translation>
 <translation id="5881540930187678962">Поставете ја Phone Hub подоцна</translation>
-<translation id="5881663018261910378">Исклучено</translation>
 <translation id="5887954372087850114">Прозорецот <ph name="WINDOW_TITLE" /> е доделен на <ph name="DESK_TITLE" /> и отстранет од сите други работни површини</translation>
 <translation id="588817334757907802">Отворете датотека во прелистувачот Chrome</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -1585,6 +1585,7 @@
 <translation id="7489261257412536105">Влезете во или излезете од цел екран</translation>
 <translation id="7490360161041035804">Може да закачувате важни датотеки, вклучително и датотеки на Google Drive. За да закачите, наместете го курсорот врз ставка или отворете ја Files и кликнете со десното копче на ставка.</translation>
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
+<translation id="7507162824403726948">Довршете го потврдувањето на вашиот идентитет</translation>
 <translation id="7508690557411636492">Отворено во изминатиот месец</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7512509370370076552">Кратенката со кликнување со десно копче е променето во копчето <ph name="LAUNCHER_KEY_NAME" /> + клик од Alt + клик</translation>

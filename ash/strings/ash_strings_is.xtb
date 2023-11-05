@@ -564,6 +564,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3340978935015468852">stillingar</translation>
 <translation id="3341303451326249809">Skjámynd var tekin</translation>
 <translation id="334252345105450327">Taka skjámynd</translation>
+<translation id="3346728094401457853">Sláðu inn aðgangsorð tækis fyrir <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Velja texta frá bendli að enda línu</translation>
 <translation id="3349345708646875009">Opna verkstjórn</translation>
 <translation id="3364721542077212959">Pennaverkfæri</translation>
@@ -1213,7 +1214,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5876535466645959772">Valinn listi tómur, flettu niður til að bæta við nýju verkefni</translation>
 <translation id="5876666360658629066">Sláðu inn kóða foreldris</translation>
 <translation id="5881540930187678962">Setja Símstöð upp seinna</translation>
-<translation id="5881663018261910378">Slökkt</translation>
 <translation id="5887954372087850114">Glugganum <ph name="WINDOW_TITLE" /> er úthlutað á <ph name="DESK_TITLE" /> og er ekki úthlutað á önnur skrifborð</translation>
 <translation id="588817334757907802">Opna skrá í Chrome-vafra</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
@@ -1584,6 +1584,7 @@ Ný uppsetning</translation>
 <translation id="7489261257412536105">Opna eða loka öllum skjánum</translation>
 <translation id="7490360161041035804">Þú getur fest mikilvægar skrár, þ.m.t. skrár á Google Drive. Til að festa skaltu halda bendlinum yfir atriði eða opna Files og hægrismella á atriði.</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
+<translation id="7507162824403726948">Ljúktu við að staðfesta auðkenni þitt</translation>
 <translation id="7508690557411636492">Opnað í liðnum mánuði</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
 <translation id="7512509370370076552">Hægrismellsflýtileiðin var uppfærð í <ph name="LAUNCHER_KEY_NAME" />-lykill + smella úr Alt + smella</translation>

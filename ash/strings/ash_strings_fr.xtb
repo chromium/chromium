@@ -116,6 +116,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1391102559483454063">Activé</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilisez les touches fléchées pour passer d'une date à l'autre.</translation>
+<translation id="141170878022560212">Bouton du milieu</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, application installée</translation>
 <translation id="1414919006379339073">Fermer la fenêtre actuelle</translation>
 <translation id="1415846719612499304">Afficher la liste des réseaux. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2086334242442703436">Ouvrir le sélecteur d'emoji</translation>
 <translation id="2088116547584365419">jeux</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
+<translation id="2107581415810719320">Autre bouton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Votre câble USB-C n'est pas compatible Thunderbolt. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="2108303511227308752">Le raccourci clavier Alt+Retour arrière a été modifié. Pour utiliser la touche Supprimer, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
@@ -562,6 +564,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Faire une capture d'écran</translation>
+<translation id="3346728094401457853">Saisissez le mot de passe de l'appareil pour <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Sélectionner le texte entre le curseur et la fin de la ligne</translation>
 <translation id="3349345708646875009">Ouvrir le gestionnaire de tâches</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
@@ -1211,7 +1214,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5876535466645959772">La liste sélectionnée est vide. Faites défiler l'écran vers le bas pour ajouter une tâche.</translation>
 <translation id="5876666360658629066">Saisir le code parental</translation>
 <translation id="5881540930187678962">Configurer Phone Hub plus tard</translation>
-<translation id="5881663018261910378">Désactivé</translation>
 <translation id="5887954372087850114">La fenêtre <ph name="WINDOW_TITLE" /> est associée à <ph name="DESK_TITLE" /> et dissociée de tous les autres bureaux</translation>
 <translation id="588817334757907802">Ouvrir le fichier dans le navigateur Chrome</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -1583,6 +1585,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7489261257412536105">Activer ou désactiver le mode plein écran</translation>
 <translation id="7490360161041035804">Vous pouvez épingler des fichiers importants, y compris des fichiers Google Drive. Pour épingler un élément, pointez dessus ou ouvrez Fichiers et faites un clic droit sur l'élément.</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
+<translation id="7507162824403726948">Terminer la validation de votre identité</translation>
 <translation id="7508690557411636492">Ouvert le mois dernier</translation>
 <translation id="7509246181739783082">Valider votre identité</translation>
 <translation id="7512509370370076552">Le raccourci par clic droit est passé de Alt+clic à touche <ph name="LAUNCHER_KEY_NAME" />+clic</translation>

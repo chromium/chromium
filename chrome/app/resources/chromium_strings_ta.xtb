@@ -22,6 +22,7 @@
 <translation id="1342274909142618978">Chromium தரவையும் நீக்கு (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium இல் உள்நுழைந்துள்ளீர்கள்!</translation>
 <translation id="1478370723027452770">Chrome for Testing தொடர்பான உதவியைப் பெறுங்கள்</translation>
+<translation id="1497802159252041924">நிறுவல் பிழை: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium தாவலைப் பகிர்தல்</translation>
 <translation id="1553461853655228091">உங்களைச் சுற்றியுள்ள இடங்களின் 3D வரைபடத்தை உருவாக்க, Chromiumமுக்கு உங்கள் கேமராவை அணுக அனுமதி தேவை</translation>
 <translation id="1574377791422810894">Chromiumமின் பாதுகாப்புக் கருவிகள்</translation>
@@ -157,11 +158,13 @@
 <translation id="390528597099634151">இந்த Chromium சுயவிவரத்தில் ஏற்கெனவே <ph name="EXISTING_USER" /> உள்நுழைந்துள்ளார். நீங்கள் உலாவுவதைத் தனிப்பட்டதாக வைத்திருக்க உங்களுக்கு ஒரு புதிய சுயவிவரத்தை Chromium உருவாக்க முடியும்.</translation>
 <translation id="3909353120217047026">Chrome ஆன்லைன் ஸ்டோர் கொள்கையை இந்த நீட்டிப்பு மீறுகிறது, மேலும் இது பாதுகாப்பற்றதாக இருக்கக்கூடும். நீங்கள் பார்க்கும் தளங்கள் குறித்த தரவை (உங்கள் தனிப்பட்ட தகவலும் இதில் அடங்கும்) இந்த நீட்டிப்பு அணுகாமலும், மாற்றங்கள் செய்யாமலும் இருக்க இதை Chromiumமில் இருந்து அகற்றவும்.</translation>
 <translation id="391789666908693569">உங்கள் கணக்கை <ph name="MANAGER_NAME" /> நிர்வகிக்கிறது. இந்த Chromium உலாவியின் சுயவிவரத்தையும் புக்மார்க்குகள், பதிவுகள், கடவுச்சொற்கள் போன்ற அதன் தரவையும் உங்கள் நிர்வாகி பார்க்கலாம் திருத்தலாம்.</translation>
+<translation id="3922825997980843979">முகவரிப் பட்டி அல்லது தேடல் பெட்டியில் நீங்கள் டைப் செய்பவற்றை உங்களின் இயல்புத் தேடல் இன்ஜினுக்கு Chromium உடனடியாக அனுப்பும்</translation>
 <translation id="3945058413678539331">Chromium கடவுச்சொற்களை நகலெடுக்க முயல்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="3962647064319009959">Chromium எப்படி உங்களைப் பாதுகாப்பாக வைக்கிறது என்பது பற்றித் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing - ஓர் அறிமுகம்</translation>
 <translation id="3997429360543082038">ChromiumOS - ஓர் அறிமுகம்</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromiumOS உருவாக்கப்பட்டுள்ளது.</translation>
+<translation id="4028143804911941282">முடக்கப்பட்டிருக்கும்போது, Chromium வழங்கும் சாதன அளவிலான பரிந்துரைகளை நீங்கள் தொடர்ந்து பார்க்கலாம்</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />தற்போதைய அமைப்புகளைப்<ph name="END_LINK" /> பற்றிய அறிக்கையை அனுப்பி, Chromiumஐ இன்னும் சிறந்ததாக்க உதவவும்</translation>
 <translation id="4050175100176540509">முக்கியப் பாதுகாப்பு மேம்பாடுகளும், புதிய அம்சங்களும் சமீபத்திய பதிப்பில் கிடைக்கின்றன.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -253,6 +256,7 @@
 <translation id="6003112304606738118">பதிவிறக்குகிறது... <ph name="HOURS" /> மணிநேரம் மீதமுள்ளது</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6055895534982063517">Chromium இன் புதிய பதிப்பு கிடைக்கிறது, அது முன்பு இருந்ததை விடவும் வேகமானது.</translation>
+<translation id="6058380562449900225">உங்கள் தரவைப் பாதுகாக்க, நீங்கள் சமீபத்தில் பார்வையிடாத தளங்களில் உள்ள அனுமதிகளை அகற்ற Chromiumமை அனுமதியுங்கள். இது அறிவிப்புகளை நிறுத்தாது.</translation>
 <translation id="6063093106622310249">Chromium இல் &amp;திற</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> என்ற நீட்டிப்பு Chromium இல் சேர்க்கப்பட்டது</translation>
 <translation id="6072463441809498330">Chromium வேகத்தை அதிகரியுங்கள்</translation>

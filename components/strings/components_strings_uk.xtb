@@ -349,6 +349,7 @@
 <translation id="1640244768702815859">Спробуйте <ph name="BEGIN_LINK" />відкрити головну сторінку цього сайту<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Відкласти виведення до</translation>
 <translation id="164212631332220697">Оплатіть за допомогою <ph name="CARD_DETAIL" />.</translation>
+<translation id="1643651787397909318">Перейдіть до кнопки "Перевірка безпеки Chrome" і натисніть її, щоб перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="1645368109819982629">Протокол не підтримується</translation>
 <translation id="1650602712345345441">Керувати налаштуваннями Chrome</translation>
@@ -2048,6 +2049,8 @@
 <translation id="5137761395480718572">Цей додаток запитує дозвіл установити облікові дані Wi-Fi. Після налаштування ваш пристрій <ph name="DEVICE_TYPE" /> автоматично підключатиметься до відповідних мереж Wi-Fi. Щоб вилучити ці облікові дані, видаліть додаток. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Віртуальна картка недоступна. Зв’яжіться зі своїм банком.</translation>
 <translation id="5138227688689900538">Показати менше</translation>
+<translation id="5143309888746105072">Chromium забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті.
+            <ph name="NEW_LINE" />Якщо функції сайту не працюють належним чином, <ph name="START_LINK" />спробуйте тимчасово дозволити сторонні файли cookie<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">Відповідь правила містить код помилки</translation>
 <translation id="5146995429444047494">Сповіщення сайту <ph name="ORIGIN" /> заблоковано</translation>
 <translation id="514704532284964975">Сайт <ph name="URL" /> хоче переглядати й змінювати інформацію на пристроях NFC, яких ви торкаєтеся телефоном</translation>
@@ -2393,6 +2396,7 @@
 <translation id="5873297634595728366">Дизельні автомобілі</translation>
 <translation id="5877831137320480913">Краса й фітнес</translation>
 <translation id="5879989559903563723">Заборонено в режимі гостя</translation>
+<translation id="5880050725127890683">Перейти на сторінку "Перевірка безпеки Chrome"</translation>
 <translation id="5883861433316751031">Дозволити керувати пристроями MIDI і перепрограмовувати їх?</translation>
 <translation id="5884465125445718607">Конверт Chinese № 6</translation>
 <translation id="5887400589839399685">Картку збережено</translation>
@@ -2574,6 +2578,7 @@
 <translation id="6251906504834538140">{0,plural, =1{Файл заборонено переміщувати}one{<ph name="FILE_COUNT" /> файл заборонено переміщувати}few{<ph name="FILE_COUNT" /> файли заборонено переміщувати}many{<ph name="FILE_COUNT" /> файлів заборонено переміщувати}other{<ph name="FILE_COUNT" /> файлу заборонено переміщувати}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати завантаженими файлами в Chrome</translation>
 <translation id="6254436959401408446">Недостатньо пам’яті, щоб відкрити цю сторінку</translation>
+<translation id="625463612687472648">Відкликати дозвіл</translation>
 <translation id="6259156558325130047">&amp;Повторити перевпорядкування</translation>
 <translation id="6263376278284652872">Закладки <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
@@ -2749,6 +2754,8 @@
 <translation id="6596325263575161958">Параметри шифрування</translation>
 <translation id="6597665340361269064">90 градусів</translation>
 <translation id="6599642189720630047">Відстежувані товари</translation>
+<translation id="6606309334576464871">Chrome забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті.
+            <ph name="NEW_LINE" />Якщо функції сайту не працюють належним чином, <ph name="START_LINK" />спробуйте тимчасово дозволити сторонні файли cookie<ph name="END_LINK" />.</translation>
 <translation id="6611723696964473273">Новини економіки</translation>
 <translation id="6612010098632894193">Відео в Інтернеті</translation>
 <translation id="6613866251791999074">Докладніше про пошукову систему в Chrome</translation>
@@ -3423,6 +3430,7 @@
 <translation id="7888575728750733395">Команда обробки друку</translation>
 <translation id="7894280532028510793">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику мережі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюймів</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, натисніть клавішу Tab, а потім – Enter, щоб перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
 <translation id="7916162853251942238">Флексографічна основа</translation>
 <translation id="7927971017714848357">Земельні ділянки</translation>
 <translation id="793209273132572360">Оновити адресу?</translation>
@@ -3718,6 +3726,7 @@
 <translation id="8460854335417802511">Увімкнути</translation>
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картка}one{# кредитна картка}few{# кредитні картки}many{# кредитних карток}other{# кредитної картки}}</translation>
+<translation id="8467494337615822642">Перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
 <translation id="8468358362970107653">Конверт C3</translation>
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>

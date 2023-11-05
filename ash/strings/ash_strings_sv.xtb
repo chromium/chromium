@@ -116,6 +116,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Navigera mellan datum med piltangenterna.</translation>
+<translation id="141170878022560212">Mittenknappen</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installerad app</translation>
 <translation id="1414919006379339073">Stäng aktuellt fönster</translation>
 <translation id="1415846719612499304">Visa nätverkslista. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2086334242442703436">Öppna emojiväljaren</translation>
 <translation id="2088116547584365419">spel</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
+<translation id="2107581415810719320">Övrigt-knappen <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C-kabeln har inte stöd för Thunderbolt. Enhetens prestanda kan försämras.</translation>
 <translation id="2108303511227308752">Kortkommandot Alt + backsteg har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + backsteg för att använda Delete-tangenten.</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
@@ -1212,7 +1214,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5876535466645959772">Den valda listan är tom, navigera nedåt för att lägga till en ny uppgift</translation>
 <translation id="5876666360658629066">Ange föräldrakod</translation>
 <translation id="5881540930187678962">Konfigurera Phone Hub senare</translation>
-<translation id="5881663018261910378">Av</translation>
 <translation id="5887954372087850114">Fönstret <ph name="WINDOW_TITLE" /> tilldelades <ph name="DESK_TITLE" /> och tilldelningen har tagits bort från alla andra skrivbord</translation>
 <translation id="588817334757907802">Öppna filen i webbläsaren Chrome</translation>
 <translation id="5895138241574237353">Starta om</translation>

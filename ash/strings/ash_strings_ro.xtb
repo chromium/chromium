@@ -116,6 +116,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1391102559483454063">Activată</translation>
 <translation id="1407069428457324124">Temă întunecată</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Folosește tastele săgeți ca să navighezi între date.</translation>
+<translation id="141170878022560212">Butonul din mijloc</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicație instalată</translation>
 <translation id="1414919006379339073">Închide fereastra actuală</translation>
 <translation id="1415846719612499304">Afișează lista de rețele. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2086334242442703436">Deschide selectorul de emoji</translation>
 <translation id="2088116547584365419">jocuri</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
+<translation id="2107581415810719320">Alt buton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Cablul USB-C nu acceptă Thunderbolt. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="2108303511227308752">Comanda rapidă de la tastatură Alt + Backspace s-a schimbat. Pentru a folosi tasta Delete, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
 <translation id="2126242104232412123">Birou nou</translation>
@@ -562,6 +564,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3340978935015468852">setări</translation>
 <translation id="3341303451326249809">Captură de ecran realizată</translation>
 <translation id="334252345105450327">Fă o captură de ecran</translation>
+<translation id="3346728094401457853">Introdu parola dispozitivului pentru <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Selectează textul începând de la cursor până la capătul rândului</translation>
 <translation id="3349345708646875009">Deschide managerul de activități</translation>
 <translation id="3364721542077212959">Instrumente pentru creion</translation>
@@ -1211,7 +1214,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5876535466645959772">Lista selectată este goală. Navighează în jos pentru a adăuga o activitate nouă</translation>
 <translation id="5876666360658629066">Introdu codul pentru părinte</translation>
 <translation id="5881540930187678962">Configurează mai târziu Phone Hub</translation>
-<translation id="5881663018261910378">Dezactivat</translation>
 <translation id="5887954372087850114">Fereastra <ph name="WINDOW_TITLE" /> a fost atribuită către <ph name="DESK_TITLE" /> și s-a anulat atribuirea către toate celelalte desktopuri</translation>
 <translation id="588817334757907802">Deschide fișierul în browserul Chrome</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -1582,6 +1584,7 @@ Instalare nouă</translation>
 <translation id="7489261257412536105">Intră sau ieși din ecranul complet</translation>
 <translation id="7490360161041035804">Poți fixa fișiere importante, inclusiv fișiere Google Drive. Pentru a fixa un element, plasează cursorul pe el sau deschide Fișiere și dă clic dreapta pe un element.</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
+<translation id="7507162824403726948">Finalizează confirmarea identității</translation>
 <translation id="7508690557411636492">Deschis în ultima lună</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
 <translation id="7512509370370076552">Comanda rapidă pentru clic dreapta se actualizează la tasta <ph name="LAUNCHER_KEY_NAME" /> + clic din alt + clic</translation>

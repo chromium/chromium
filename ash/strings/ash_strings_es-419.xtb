@@ -116,6 +116,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1391102559483454063">Sí</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utiliza las teclas de flecha para navegar por las fechas.</translation>
+<translation id="141170878022560212">Botón central</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app instalada</translation>
 <translation id="1414919006379339073">Cerrar la ventana actual</translation>
 <translation id="1415846719612499304">Mostrar la lista de redes. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2086334242442703436">Abrir el selector de emojis</translation>
 <translation id="2088116547584365419">juegos</translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
+<translation id="2107581415810719320">Otro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Tu cable USB-C no admite Thunderbolt. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="2108303511227308752">Se modificó la combinación de teclas Alt + retroceso. Para usar la tecla de retroceso, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + retroceso.</translation>
 <translation id="2126242104232412123">Nuevo escritorio</translation>
@@ -1213,7 +1215,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5876535466645959772">La lista seleccionada está vacía, navega hacia abajo para agregar una tarea nueva</translation>
 <translation id="5876666360658629066">Ingresa el código parental</translation>
 <translation id="5881540930187678962">Configura Phone Hub más tarde</translation>
-<translation id="5881663018261910378">Desactivado</translation>
 <translation id="5887954372087850114">Se asignó la ventana <ph name="WINDOW_TITLE" /> al escritorio <ph name="DESK_TITLE" /> y se anuló la asignación al resto de los escritorios</translation>
 <translation id="588817334757907802">Abrir el archivo en el navegador Chrome</translation>
 <translation id="5895138241574237353">Reiniciar</translation>

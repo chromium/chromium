@@ -116,6 +116,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1391102559483454063">Açık</translation>
 <translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Tarihler arasında gezinmek için ok tuşlarını kullanın.</translation>
+<translation id="141170878022560212">Ortadaki Düğme</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Yüklü Uygulama</translation>
 <translation id="1414919006379339073">Geçerli pencereyi kapat</translation>
 <translation id="1415846719612499304">Ağ listesini göster. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2086334242442703436">Emoji Seçiciyi Aç</translation>
 <translation id="2088116547584365419">oyunlar</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
+<translation id="2107581415810719320">Diğer Düğme <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">USB-C kablonuz Thunderbolt'u desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="2108303511227308752">Alt + Geri tuşu klavye kısayolu değişti. Delete tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + geri tuşlarına basın.</translation>
 <translation id="2126242104232412123">Yeni masa</translation>
@@ -1212,7 +1214,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5876535466645959772">Seçili liste boş. Yeni bir görev eklemek için aşağı kaydırın</translation>
 <translation id="5876666360658629066">Ebeveyn kodunu girin</translation>
 <translation id="5881540930187678962">Telefon Merkezi'ni sonra kurun</translation>
-<translation id="5881663018261910378">Kapalı</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> penceresi <ph name="DESK_TITLE" /> masasına atandı ve diğer tüm masalardaki ataması kaldırıldı</translation>
 <translation id="588817334757907802">Dosyayı Chrome tarayıcıda aç</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>

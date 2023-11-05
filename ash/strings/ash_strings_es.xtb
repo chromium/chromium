@@ -116,6 +116,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa la teclas de flecha para desplazarte entre fechas.</translation>
+<translation id="141170878022560212">Botón central</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicación instalada</translation>
 <translation id="1414919006379339073">Cerrar ventana actual</translation>
 <translation id="1415846719612499304">Mostrar lista de redes. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2086334242442703436">Abrir el selector de emojis</translation>
 <translation id="2088116547584365419">juegos</translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
+<translation id="2107581415810719320">Otro botón <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Tu cable USB‑C no es compatible con Thunderbolt. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="2108303511227308752">La combinación de teclas Alt + Retroceso ha cambiado Para usar la tecla Eliminar, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + Retroceso.</translation>
 <translation id="2126242104232412123">Nuevo escritorio</translation>
@@ -562,6 +564,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3341303451326249809">Captura de pantalla guardada</translation>
 <translation id="334252345105450327">Haz una captura de pantalla</translation>
+<translation id="3346728094401457853">Introduce la contraseña del dispositivo de <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Seleccionar el texto desde el cursor hasta el final de la línea</translation>
 <translation id="3349345708646875009">Abrir administrador de tareas</translation>
 <translation id="3364721542077212959">Herramientas del lápiz óptico</translation>
@@ -1212,7 +1215,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5876535466645959772">Lista seleccionada vacía; desplázate hacia abajo para añadir una tarea nueva</translation>
 <translation id="5876666360658629066">Introduce el código parental</translation>
 <translation id="5881540930187678962">Configurar Mi teléfono más tarde</translation>
-<translation id="5881663018261910378">Desactivada</translation>
 <translation id="5887954372087850114">Ventana <ph name="WINDOW_TITLE" /> asignada a <ph name="DESK_TITLE" /> y desasignada de todos los demás escritorios</translation>
 <translation id="588817334757907802">Abrir archivo en el navegador Chrome</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -1583,6 +1585,7 @@ Nueva instalación</translation>
 <translation id="7489261257412536105">Entrar o salir de la pantalla completa</translation>
 <translation id="7490360161041035804">Puedes fijar archivos importantes, incluidos los de Google Drive. Para fijar un elemento, coloca el cursor sobre él o abre la aplicación Archivos y haz clic con el botón derecho en el elemento.</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
+<translation id="7507162824403726948">Termina de verificar tu identidad</translation>
 <translation id="7508690557411636492">Abierto hace menos de un mes</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7512509370370076552">La combinación de teclas para hacer clic con el botón derecho ha pasado de ser Alt + hacer clic a pulsar la tecla <ph name="LAUNCHER_KEY_NAME" /> + hacer clic.</translation>

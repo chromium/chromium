@@ -1197,6 +1197,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5788127256798019331">Ficheiros do Google Play</translation>
 <translation id="5788535737706478207">Reabrir o último separador ou janela fechados</translation>
 <translation id="5790085346892983794">Sucesso</translation>
+<translation id="5802516411616338943">Abrir Definições rápidas</translation>
 <translation id="5804651031882187592">Desative a definição "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Clicar para ativar <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Tasks na Web</translation>
@@ -1214,7 +1215,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5876535466645959772">Lista selecionada vazia; navegue para baixo para adicionar uma nova tarefa</translation>
 <translation id="5876666360658629066">Introduza o código parental</translation>
 <translation id="5881540930187678962">Configure o Phone Hub mais tarde</translation>
-<translation id="5881663018261910378">Desativada</translation>
 <translation id="5887954372087850114">Janela <ph name="WINDOW_TITLE" /> atribuída a <ph name="DESK_TITLE" /> e não atribuída a mais nenhum espaço de trabalho</translation>
 <translation id="588817334757907802">Abrir ficheiro no navegador Chrome</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -1223,6 +1223,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5911231045062997865">De momento, as janelas do Lacros não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Nova notificação, <ph name="NOTIFICATION_COUNT" /> no total</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O som do microfone está desativado.</translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>

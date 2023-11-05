@@ -1197,6 +1197,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5788127256798019331">Play files</translation>
 <translation id="5788535737706478207">Reopen the last tab or window closed</translation>
 <translation id="5790085346892983794">Success</translation>
+<translation id="5802516411616338943">Open Quick Settings</translation>
 <translation id="5804651031882187592">Turn off 'Lock SIM' setting</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google tasks on web</translation>
@@ -1214,7 +1215,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="5876535466645959772">Selected list empty, navigate down to add a new task</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
 <translation id="5881540930187678962">Set up Phone Hub later</translation>
-<translation id="5881663018261910378">Off</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> assigned to <ph name="DESK_TITLE" /> and unassigned from all other desks</translation>
 <translation id="588817334757907802">Open file in Chrome browser</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -1223,6 +1223,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5911231045062997865">Lacros windows aren't currently supported. Other apps will be saved.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">New notification, <ph name="NOTIFICATION_COUNT" /> total</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is on.</translation>

@@ -240,6 +240,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
 <translation id="5643865575100044307">Always delete site data from your device when you close Chromium</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
+<translation id="5675598751761067447">This file may be dangerous<ph name="LINE_BREAK" />Chromium can check this download for you if you provide the password – your password stays on your device</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>

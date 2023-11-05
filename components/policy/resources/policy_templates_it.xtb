@@ -4343,6 +4343,17 @@ L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto
       Se questo criterio non viene impostato, il filtro viene omesso e vengono presi in considerazione tutti i server di stampa.
 
       Questo criterio è deprecato, al suo posto utilizza <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
+<translation id="4667462525936265103">Questo criterio consente di stabilire se gli utenti possono importare i dati di navigazione esistenti in un profilo gestito creato dopo che un account gestito ha eseguito l'accesso all'area dei contenuti.
+
+Se questo criterio non viene impostato o se viene impostato su <ph name="USER_OPTIN_DATA_ENUM_NAME" /> (valore 1), l'utente può scegliere se importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo sarà visibile e deselezionata per impostazione predefinita.
+
+Se questo criterio viene impostato su <ph name="USER_OPTOUT_DATA_ENUM_NAME" /> (valore 2), l'utente può scegliere se importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo sarà visibile e selezionata per impostazione predefinita. Questa opzione è consentita solo sui dispositivi gestiti.
+
+Se questo criterio viene impostato su <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME" /> (valore 3), l'utente non può importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo non sarà visibile.
+
+Se aggiungi i dati di navigazione esistenti nel profilo gestito, il profilo corrente diventerà gestito. Non verrà creato un nuovo profilo.
+
+Il mancato trasferimento dei dati di navigazione esistenti nel profilo gestito comporta la creazione di un nuovo profilo pulito. I dati di navigazione esistenti rimarranno in un profilo non gestito, che sarà comunque accessibile all'utente tramite il selettore del profilo.</translation>
 <translation id="4668325077104657568">Impostazione immagini predefinite</translation>
 <translation id="4669083178278833688">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria e Terminale da disattivare</translation>
 <translation id="4669292863736266737">A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i servizi di geolocalizzazione rimangono disattivati durante la configurazione.
@@ -7027,6 +7038,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 
       Le lingue attualmente supportate sono: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Attiva la stampa fronte/retro su lato lungo</translation>
+<translation id="6929639826067341257">Suggerisci agli utenti di importare i loro dati esistenti nel profilo gestito e dai la possibilità di scegliere di non farlo</translation>
 <translation id="6929746927224321095">Disattiva la compilazione automatica</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
 <translation id="6932282102911647185">Colore della retroilluminazione della tastiera viola</translation>

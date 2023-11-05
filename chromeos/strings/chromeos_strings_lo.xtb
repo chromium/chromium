@@ -134,6 +134,7 @@
 <translation id="1852934301711881861">ຕິດຕັ້ງ ChromeOS Flex</translation>
 <translation id="1856388568474281774">ລູກສອນລົງ</translation>
 <translation id="1858620243986915808">ແນບຮູບໜ້າຈໍ</translation>
+<translation id="1871413952174074704">APN ຕ້ອງມີຕົວອັກສອນບໍ່ເກີນ <ph name="CHAR_LIMIT" /> ຕົວ</translation>
 <translation id="1871569928317311284">ປິດຮູບແບບສີສັນມືດ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">ປິດໂໝດມືດ</translation>
@@ -189,6 +190,7 @@
 <translation id="2236746079896696523">ປຸ່ມສະຫຼັບໄຟແປ້ນພິມ</translation>
 <translation id="2240366984605217732">ສະວິດໂຄງຮ່າງ</translation>
 <translation id="225692081236532131">ສະຖານະການເປີດນຳໃຊ້</translation>
+<translation id="2267285889943769271">ເພີ່ມຮູບໜ້າຈໍ</translation>
 <translation id="2271469253353559191">ກຳນົດເວລາໂໝດມືດ</translation>
 <translation id="2276999893457278469">ເນື້ອຫາຊ່ວຍເຫຼືອຍອດນິຍົມ</translation>
 <translation id="2279051792571591988">ໃຊ້ການຕັ້ງຄ່າເລີ່ມຕົ້ນ</translation>
@@ -432,6 +434,7 @@
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4333390807948134856">ກົດປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
+<translation id="4354430579665871434">ປຸ່ມ</translation>
 <translation id="435692326371619097">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">ຣີເຊັດທາງລັດທັງໝົດ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
@@ -1102,4 +1105,5 @@
 <translation id="979450713603643090">ສີບົວອ່ອນ</translation>
 <translation id="982713511914535780">ດຳເນີນການທົດສອບການຄາຍປະຈຸຂອງແບັດເຕີຣີ</translation>
 <translation id="987264212798334818">ທົ່ວໄປ</translation>
+<translation id="995062385528875723">ບໍ່ສາມາດໃຊ້ຕົວອັກສອນເນັ້ນສຽງ, ຕົວອັກສອນທີ່ບໍ່ແມ່ນພາສາລາຕິນ ຫຼື ສັນຍະລັກໄດ້</translation>
 </translationbundle>

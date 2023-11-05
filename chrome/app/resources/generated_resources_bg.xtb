@@ -3969,7 +3969,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4057896668975954729">Преглед в магазина</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4058793769387728514">Проверка на документа сега</translation>
-<translation id="4060694827320515971">За работа или училище</translation>
 <translation id="4061374428807229313">За да споделите папка, кликнете с десния бутон на мишката върху нея в приложението „Файлове“ и изберете „Споделяне с Parallels Desktop“.</translation>
 <translation id="406213378265872299">Персонализирано поведение</translation>
 <translation id="4062561150282203854">Синхронизиране на приложенията, настройките и др. на вашия <ph name="DEVICE_TYPE" /></translation>
@@ -6579,6 +6578,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6194333736420234626">&amp;Начини на плащане</translation>
 <translation id="6195005504600220730">Да има достъп до информация за браузъра, операционната система и устройството ви</translation>
 <translation id="6195155925303302899">Подравняване в средата</translation>
+<translation id="6195163219142236913">„Бисквитките“ на трети страни са ограничени</translation>
 <translation id="6195693561221576702">Това устройство не може да бъде настроено в офлайн демонстрационен режим.</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6196854373336333322">Разширението „<ph name="EXTENSION_NAME" />“ е поело контрол над настройките ви за прокси сървър. Това означава, че то може да променя, прекъсва или следи всичко, което правите онлайн. Ако не сте сигурни какво е причинило тази промяна, вероятно не искате тя да остава в сила.</translation>
@@ -9024,6 +9024,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="81238879832906896">Жълто-бяло цвете</translation>
 <translation id="8123975449645947908">Превъртане назад</translation>
 <translation id="8124313775439841391">Управлявано ONC</translation>
+<translation id="8125651784723647184">Споделянето на паролите се управлява от администратора ви</translation>
 <translation id="8129265306888404830">За да ползвате имейл адреса от организацията си (<ph name="EMAIL_DOMAIN" />), трябва да използвате корпоративното регистриране. Ако това устройство е за лична употреба, влезте с личния си профил в Google.</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>

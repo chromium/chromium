@@ -564,6 +564,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3340978935015468852">gosodiadau</translation>
 <translation id="3341303451326249809">Wedi tynnu sgrinlun</translation>
 <translation id="334252345105450327">Tynnu sgrinlun</translation>
+<translation id="3346728094401457853">Rhowch gyfrinair dyfais ar gyfer <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Dewis testun o'r cyrchwr i ddiwedd y llinell</translation>
 <translation id="3349345708646875009">Agor y rheolwr tasgau</translation>
 <translation id="3364721542077212959">Offer Pwyntil</translation>
@@ -1213,7 +1214,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5876535466645959772">Mae'r rhestr a ddewiswyd yn wag, llywiwch i lawr er mwyn ychwanegu tasg newydd</translation>
 <translation id="5876666360658629066">Rhowch y cod rhiant</translation>
 <translation id="5881540930187678962">Gosod Phone Hub yn nes ymlaen</translation>
-<translation id="5881663018261910378">Diffodd</translation>
 <translation id="5887954372087850114">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i haseinio i <ph name="DESK_TITLE" /> a'i ddadaseinio o bob tasg arall.</translation>
 <translation id="588817334757907802">Agor y ffeil yn y porwr Chrome</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
@@ -1584,6 +1584,7 @@ Gosodiad newydd</translation>
 <translation id="7489261257412536105">Agor neu gau sgrîn lawn</translation>
 <translation id="7490360161041035804">Gallwch binio ffeiliau pwysig, gan gynnwys ffeiliau Google Drive. I binio, hofran dros eitem neu agor Ffeiliau a de-glicio ar eitem.</translation>
 <translation id="7497767806359279797">Dewis iaith a bysellfwrdd</translation>
+<translation id="7507162824403726948">Gorffen dilysu eich hunaniaeth</translation>
 <translation id="7508690557411636492">Agorwyd yn y mis diwethaf</translation>
 <translation id="7509246181739783082">Cadarnhewch eich hunaniaeth</translation>
 <translation id="7512509370370076552">Mae'r llwybr byr de-glicio yn cael ei ddiweddaru i'r fysell <ph name="LAUNCHER_KEY_NAME" /> + clic o alt + clic</translation>

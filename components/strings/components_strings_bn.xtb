@@ -98,6 +98,7 @@
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1178821169867863726">১২ x ১৬ ইঞ্চি</translation>
 <translation id="1181037720776840403">সরান</translation>
+<translation id="1181381397492575884">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়। <ph name="LINK" />-এ ক্লিক করে সেটিংসে যান।</translation>
 <translation id="1186201132766001848">পাসওয়ার্ড চেক করুন</translation>
 <translation id="1190491977647722791">পেপার (হেভিওয়েট)</translation>
 <translation id="1195073053842921378">এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে</translation>
@@ -118,6 +119,7 @@
 <translation id="1225570101506606926">বিলিয়ার্ড</translation>
 <translation id="1225607422885279949">Google আপনার জন্য ডিসকাউন্ট খুঁজবে</translation>
 <translation id="1227224963052638717">অজানা নীতি৷</translation>
+<translation id="1227677022489889280">সরিয়ে নেওয়ার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="1228893227497259893">ভুল সত্তা সনাক্তকারী</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (অটোমেটিক শনাক্ত হয়েছে)</translation>
 <translation id="1232569758102978740">শিরোনামহীন</translation>
@@ -347,6 +349,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />এই সাইটের হোমপেজটি ঘুরে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="1641976391427233992">ডিলে আউটপুট</translation>
 <translation id="164212631332220697">চেক-আউট করার সময় <ph name="CARD_DETAIL" /> দিয়ে পেমেন্ট করুন।</translation>
+<translation id="1643651787397909318">Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা পেজে ভিজিট করতে, সেটিংসের মধ্যে Chrome 'নিরাপত্তা সংক্রান্ত পরীক্ষা' বোতামে গিয়ে সেটি চালু করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645368109819982629">অসমর্থিত প্রোটোকল</translation>
 <translation id="1650602712345345441">আপনার Chrome সেটিংস ম্যানেজ করুন</translation>
@@ -1042,6 +1045,7 @@
 <translation id="3140646734028448730">ব্যবসায়িক পরিষেবা</translation>
 <translation id="3141093262818886744">যাই হোক, খুলতে চাই</translation>
 <translation id="3141641372357166056">সম্মতি সংক্রান্ত কোনও সিদ্ধান্ত নেই</translation>
+<translation id="3142736425087361223"><ph name="ORIGIN" />-এ এটি ব্যবহার করতে Chrome আপনার <ph name="PERMISSION" /> চায়</translation>
 <translation id="3144458715650412431">পরীক্ষা সম্পর্কিত নীতি প্রয়োগ করা হয়েছে। সেগুলি chrome://policy/test থেকে পর্যালোচনা ও রিসেট করুন। অ্যাডমিন সম্পর্কিত নীতি প্রয়োগ করা হবে না।</translation>
 <translation id="3145945101586104090">প্রতিক্রিয়া ডিকোড করতে ব্যর্থ হয়েছে</translation>
 <translation id="3150653042067488994">সাময়িক সার্ভার ত্রুটি</translation>
@@ -1205,6 +1209,7 @@
 <translation id="3447644283769633681">সমস্ত তৃতীয়-পক্ষ কুকি অবরোধ করুন</translation>
 <translation id="3447661539832366887">এই ডিভাইসের মালিক ডাইনোসর গেমটি বন্ধ করেছেন৷</translation>
 <translation id="3447884698081792621">সার্টিফিকেট দেখান (<ph name="ISSUER" /> এর দ্বারা জারি করা)</translation>
+<translation id="3450323514459570273">আপনার MIDI ডিভাইসকে নিয়ন্ত্রণ ও রিপ্রোগ্র্যাম করার জন্য অনুমতি চাইতে পারে</translation>
 <translation id="3452404311384756672">বিরামকাল প্রাপ্ত করুন:</translation>
 <translation id="3453962258458347894">কতবার চেষ্টা করা যাবে</translation>
 <translation id="3461266716147554923"><ph name="URL" /> আপনার ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখতে চায়</translation>
@@ -2000,6 +2005,7 @@
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="5051305769747448211">লাইভ কমেডি</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
+<translation id="505757197798929356">খোলার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> ব্যবহার করে এমন ওয়েবসাইটে Windows Hello ব্যবহার করে যাচাই করার বিকল্প বেছে নিয়েছেন। এই পরিষেবা প্রদানকারী আপনার পেমেন্ট পদ্ধতি সম্পর্কে তথ্য স্টোর করে থাকতে পারে যা আপনি <ph name="LINK_TEXT" /> পারেন।</translation>
 <translation id="5061227663725596739">আপনি কি <ph name="LOOKALIKE_DOMAIN" /> ডোমেনের কথা বলছেন?</translation>
@@ -2044,6 +2050,8 @@
 <translation id="5137761395480718572">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ভার্চুয়াল কার্ড এই মুহূর্তে উপলভ্য নেই, আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন</translation>
 <translation id="5138227688689900538">কম দেখুন</translation>
+<translation id="5143309888746105072">আপনি ব্রাউজ করাকালীন আপনার অ্যাক্টিভিটি ট্র্যাক করার জন্য সাইটগুলি যে থার্ড-পার্টি কুকি ব্যবহার করে, Chromium তা ব্লক করে দেয়।
+            <ph name="NEW_LINE" />সাইটের ফিচার কাজ না করলে <ph name="START_LINK" />সাময়িকভাবে থার্ড-পার্টি কুকি ব্যবহারের অনুমতি দিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="514704532284964975"><ph name="URL" /> আপনার ফোনে ট্যাপ করেন এমন NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করতে চায়</translation>
@@ -2117,6 +2125,7 @@
 <translation id="5288393065350884210">অ্যাকাউন্টিং ও অডিটিং</translation>
 <translation id="5289384342738547352">মাল্টিপল ডকুমেন্ট ম্যানেজ করা</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{আজ আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
+<translation id="5292714443869769806"><ph name="OPERATING_SYSTEM" /> সেটিংস দেখুন</translation>
 <translation id="5293919335876685914">কুপে</translation>
 <translation id="5296589789433599000">রান্না ও রেসিপি</translation>
 <translation id="5299298092464848405">নীতি বিশ্লেষণ করার সময় ত্রুটি</translation>
@@ -2388,6 +2397,7 @@
 <translation id="5873297634595728366">ডিজেলে চলা গাড়ি</translation>
 <translation id="5877831137320480913">রূপচর্চা ও ফিটনেস</translation>
 <translation id="5879989559903563723">গেস্ট মোডে অনুমোদিত নয়</translation>
+<translation id="5880050725127890683">Chrome-এর 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচারে যান</translation>
 <translation id="5883861433316751031">MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্রাম করতে চান?</translation>
 <translation id="5884465125445718607">এনভেলপ চিনা #৬</translation>
 <translation id="5887400589839399685">কার্ড সেভ করা হয়েছে</translation>
@@ -2424,6 +2434,7 @@
 <translation id="5951495562196540101">ক্রেতার অ্যাকাউন্টের মাধ্যমে এনরোল করা যাচ্ছে না (প্যাকেজ লাইসেন্স পাওয়া যাবে)৷</translation>
 <translation id="5953516610448771166">এই মিডিয়ার জন্য লাইভ ক্যাপশন উপলভ্য নেই। ক্যাপশন পাওয়ার জন্য, এই সাইটের জন্য <ph name="CONTENT_SETTINGS" /> ব্লক করুন।</translation>
 <translation id="5955063559762970069">হোটেল ও থাকার ব্যবস্থা</translation>
+<translation id="595873925609605681">সাইটের ফিচার কাজ না করলে, <ph name="BEGIN_LINK" />সাময়িক কালের জন্য থার্ড-পার্টি কুকিকে সাইট ব্যবহার করার অনুমতি দিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="5963413905009737549">বিভাগ</translation>
 <translation id="5964247741333118902">এম্বেড করা কন্টেন্ট</translation>
 <translation id="5967260682280773804">৩৬ x ৪৮ ইঞ্চি</translation>
@@ -2567,6 +2578,7 @@
 <translation id="6251906504834538140">{0,plural, =1{ফাইল সরানো যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল সরানো যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল সরানো যাবে না}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ ডাউনলোড করা ফাইল ম্যানেজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="6254436959401408446">এই পৃষ্ঠাটি খোলার জন্য পর্যাপ্ত মেমরি নেই</translation>
+<translation id="625463612687472648">অনুমতি বন্ধ করুন</translation>
 <translation id="6259156558325130047">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> বুকমার্কগুলি</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
@@ -2726,6 +2738,7 @@
 <translation id="6556866813142980365">আবার করুন</translation>
 <translation id="6557715786897013164">১৪ x ১৭ ইঞ্চি</translation>
 <translation id="6560786330438719938">কোন কোন অ্যাপ ইনস্টল বা আনইনস্টল করা হয়েছে এবং কত ঘন ঘন সেগুলি ব্যবহৃত হয়েছে</translation>
+<translation id="6567084950885568327">MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্র্যামিং</translation>
 <translation id="6568793038316600992">'পেমেন্ট পদ্ধতি ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="6569060085658103619">আপনি একটি এক্সটেনশন পৃষ্ঠা দেখছেন</translation>
 <translation id="6569366777234823130">ড্রামা সিনেমা</translation>
@@ -2741,6 +2754,8 @@
 <translation id="6596325263575161958">এনক্রিপশন বিকল্পগুলি</translation>
 <translation id="6597665340361269064">৯০ ডিগ্রী</translation>
 <translation id="6599642189720630047">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
+<translation id="6606309334576464871">আপনি ব্রাউজ করাকালীন আপনার অ্যাক্টিভিটি ট্র্যাক করার জন্য সাইটগুলি যে থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়।
+            <ph name="NEW_LINE" />সাইটের ফিচার কাজ না করলে <ph name="START_LINK" />সাময়িকভাবে থার্ড-পার্টি কুকি ব্যবহারের অনুমতি দিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="6611723696964473273">অর্থনীতির খবর</translation>
 <translation id="6612010098632894193">অনলাইন ভিডিও</translation>
 <translation id="6613866251791999074">Chrome-এ ব্যবহৃত সার্চ ইঞ্জিন সম্পর্কে আরও জানুন</translation>
@@ -2892,6 +2907,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="691024665142758461">একাধিক ফাইল ডাউনলোড করুন</translation>
 <translation id="6915804003454593391">ব্যবহারকারী:</translation>
+<translation id="6916193791494646625">ডাউনলোড করার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="6916954549222464607">আর্থিক পরিকল্পনা ও ব্যবস্থাপনা</translation>
 <translation id="6917795328362592458">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Password Manager আপনার সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
 <translation id="6925267999184670015">নর্থ আমেরিকান B+</translation>
@@ -3093,6 +3109,7 @@
 <translation id="7308436126008021607">ব্যাকগ্রাউন্ড সিঙ্ক</translation>
 <translation id="7310392214323165548">ডিভাইস খুব শীঘ্রই রিস্টার্ট হবে</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
+<translation id="7311837626618954149">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chromium তা ব্লক করে দেয়।</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">কানেকশন সহায়তা</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" বিভাগ লুকান</translation>
@@ -3184,6 +3201,8 @@
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> জানবে যে আপনি <ph name="TOP_LEVEL_URL" /> ভিজিট করেছেন</translation>
 <translation id="7465963048299965912">১০ x ১৩ ইঞ্চি</translation>
 <translation id="7469935732330206581">ফর্ম নিরাপদ নয়</translation>
+<translation id="7470854469646445678">কপি করার কারণ লিখুন (খালি রাখা যাবে না)</translation>
+<translation id="7471007961486718967">ট্রান্সফার করার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="7473891865547856676">না থাক</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
 <translation id="7481603210197454575">এনভেলপ ইতালিয়ান</translation>
@@ -3230,6 +3249,7 @@
 <translation id="7550637293666041147">আপনার ডিভাইসের ব্যবহারকারীর নাম এবং Chrome-এর ব্যবহারকারীর নাম</translation>
 <translation id="7551484245293639699">ট্রাভেল ইন্স্যুরেন্স</translation>
 <translation id="7552846755917812628">নিম্নোল্লিখিত টিপ্স ব্যবহার করে দেখুন:</translation>
+<translation id="7554242657529665960">আপনার অ্যাডমিনিস্ট্রেটরের কাছ থেকে: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="7554475479213504905">ঠিক আছে, আবার লোড করে দেখান</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
 <translation id="7555777498260651025">টিভিতে পরিবারিক অনুষ্ঠান</translation>
@@ -3346,6 +3366,7 @@
 <translation id="7744505202669469867">সেভ করা ঠিকানার সারণী</translation>
 <translation id="774634243536837715">বিপজ্জনক কন্টেন্ট ব্লক করা হয়েছে।</translation>
 <translation id="7748758200357401411">হাই পারফর্ম্যান্স ও আফটারমার্কেট অটো পার্টস</translation>
+<translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করুন</translation>
 <translation id="7752995774971033316">অপরিচালিত</translation>
 <translation id="7754587126786572336">আপডেট শুরু হলে আপনার Chrome ট্যাব এবং অ্যাপ বন্ধ হয়ে যাবে</translation>
@@ -3409,6 +3430,7 @@
 <translation id="7888575728750733395">প্রিন্ট রেন্ডারিং ইনটেন্ট</translation>
 <translation id="7894280532028510793">বানান সঠিক হলে, <ph name="BEGIN_LINK" />'নেটওয়ার্ক ডায়াগনস্টিক' টুল চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">এনভেলপ ৭ x ৯ ইঞ্চি</translation>
+<translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, প্রথমে Tab, তারপরে Enter প্রেস করে সেটিংসে Chrome-এর 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচারে যান</translation>
 <translation id="7916162853251942238">ফ্লেক্সো বেস</translation>
 <translation id="7927971017714848357">প্রচুর এবং জমি</translation>
 <translation id="793209273132572360">ঠিকানা আপডেট করবেন?</translation>
@@ -3426,6 +3448,7 @@
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943397946612013052">ব্লক করা ডাউনলোড</translation>
 <translation id="7943893128817522649">একাধিক ফাইল অটোমেটিক ডাউনলোড করতে অনুমতি চাইতে পারে</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7946724693008564269">শনাক্ত করা ভাষা</translation>
 <translation id="7947285636476623132">আপনার মেয়াদ শেষের বছর পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এর ফিচার সম্পর্কে জানতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -3684,6 +3707,7 @@
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8428634594422941299">বুঝেছি</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার কুকির অগ্রাধিকার ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="8432419784006585012">সাইট আপনার MIDI ডিভাইস ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="8433057134996913067">এটি বেশিরভাগ ওয়েবসাইট থেকে আপনাকে প্রস্থান করুন করবে।</translation>
 <translation id="8434014327286137412">পরের বার আরও দ্রুত পেমেন্ট করতে, আপনার Google অ্যাকাউন্টে IBAN সেভ করে রাখুন</translation>
 <translation id="8434840396568290395">পোষ্য</translation>
@@ -3702,6 +3726,7 @@
 <translation id="8460854335417802511">এটি চালু করুন</translation>
 <translation id="8461694314515752532">আপনার নিজস্ব সিঙ্ক পাসফ্রেজ দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{১টি ক্রেডিট কার্ড}one{#টি ক্রেডিট কার্ড}other{#টি ক্রেডিট কার্ড}}</translation>
+<translation id="8467494337615822642">সেটিংসে Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা পেজে যান</translation>
 <translation id="8468358362970107653">এনভেলপ C3</translation>
 <translation id="8473626140772740486">৩০০ x ৪৫০ মিমি</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
@@ -3731,6 +3756,7 @@
 <translation id="853246364274116957">ব্রডওয়ে ও মিউজিকাল থিয়েটার</translation>
 <translation id="853332391023689529">পিক-আপ ট্রাক</translation>
 <translation id="8533619373899488139">ব্লক করা ইউআরএলের তালিকা এবং আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের প্রয়োগ করা অন্যান্য নীতিগুলি দেখার জন্য &lt;strong&gt;chrome://policy&lt;/strong&gt;-এ যান।</translation>
+<translation id="8534934518812659742">আপনি Chrome-এর জন্য <ph name="PERMISSION" /> বন্ধ করেছেন।</translation>
 <translation id="8536234749087605613">এনভেলপ (উইন্ডো)</translation>
 <translation id="8539500321752640291">২টি অনুমতি দেবেন?</translation>
 <translation id="8541158209346794904">ব্লুটুথ ডিভাইস</translation>
@@ -3741,6 +3767,7 @@
 <translation id="8543181531796978784">আপনি <ph name="BEGIN_ERROR_LINK" />একটি শনাক্তকরণ সমস্যা রিপোর্ট করতে পারেন<ph name="END_ERROR_LINK" /> অথবা, আপনি আপনার নিরাপত্তা ঝুঁকি বুঝতে পারলে, <ph name="BEGIN_LINK" />এই অনিরাপদ সাইটটি ঘুরে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="8544303911974837265">পলিয়েস্টার</translation>
 <translation id="854548366864113872">বেশি দাম সম্পর্কিত বিকল্প</translation>
+<translation id="8546254312340305428">আপলোড করার কারণ লিখুন (খালি রাখা যাবে না)</translation>
 <translation id="8546350655047701518">JSON-এ লগ এক্সপোর্ট করুন</translation>
 <translation id="8546667245446052521">পেপার (আর্কাইভাল)</translation>
 <translation id="854892890027593466">এনভেলপ C6/C5</translation>
@@ -4069,6 +4096,7 @@
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
 <translation id="940053046584497293">ভ্রমণ ও পরিবহন</translation>
 <translation id="944540589955480312">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ও পাসকী ব্যবহার করুন</translation>
+<translation id="945646848072568856">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chrome তা ব্লক করে দেয়।</translation>
 <translation id="945855313015696284">নিচে দেওয়া তথ্য পরীক্ষা করুন এবং কোনও ভুল কার্ড থাকলে তা মুছে ফেলুন</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-এ চটপট নতুন সাইট তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome আজ আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}=1{Chrome আগামীকাল কাল আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}one{Chrome # দিন পরে আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}other{Chrome # দিন পরে আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}}</translation>

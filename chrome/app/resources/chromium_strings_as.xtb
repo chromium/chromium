@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
+<translation id="1001716830750249114">Chromiumৰ সংস্কৰণলৈ যাওক</translation>
 <translation id="1026101648481255140">ইনষ্টল কৰাটো পুনৰ আৰম্ভ কৰক</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS আপডে’ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="1040916596585577953">Chromiumএ আপোনাক এই এক্সটেনশ্বনটো পৰ্যালোচনা কৰিবলৈ চুপাৰিছ কৰে</translation>
@@ -34,6 +35,7 @@
 আপুনি ইতিমধ্যে ৱেবছাইট আৰু এপক দিয়া অনুমতি এই একাউণ্টটোত প্ৰযোজ্য হ’ব পাৰে। আপুনি <ph name="SETTINGS_LINK_BEGIN" />ছেটিঙ<ph name="SETTINGS_LINK_END" />ত আপোনাৰ Google একাউণ্ট পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="1640672724030957280">ডাউনল’ড হৈ আছে...</translation>
 <translation id="1708666629004767631">Chromiumৰ এটা নতুন আৰু সুৰক্ষিত সংস্কৰণ উপলব্ধ।</translation>
+<translation id="1715127912119967311">এই সুবিধাসমূহ উন্নত কৰাত সহায় কৰিবলৈ, আপুনি Chromiumৰ সৈতে কৰা ভাব-বিনিময় Googleলৈ পঠিয়ায়। এই ডেটাখিনি মানৱ পৰ্যালোচকে পঢ়িব, প্ৰক্ৰিয়াকৰণ কৰিব আৰু এন’টেট কৰিব পাৰে।</translation>
 <translation id="17264556997921157">আপোনাক বিজ্ঞাপন দেখুৱাবলৈ ছাইটসমূহে ব্যৱহাৰ কৰা আগ্ৰহৰ বিষয়বোৰ আপুনি চাব আৰু আঁতৰাব পাৰে। আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Chromiumএ আপোনাৰ আগ্ৰহ থকা বিষয়বোৰ অনুমান কৰে।</translation>
 <translation id="1733725117201708356">Chromiumএ শীঘ্ৰেই ব্ৰাউজিঙৰ ডেটা মচি পেলাব</translation>
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />ত ৰিষ্টাৰ্ট হ’ব</translation>

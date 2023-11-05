@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Қосулы</translation>
 <translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндер арасында жылжу үшін бағыттауыш пернелерді пайдаланыңыз.</translation>
+<translation id="141170878022560212">Ортаңғы түйме</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, орнатылған қолданба</translation>
 <translation id="1414919006379339073">Ағымдағы терезені жабу</translation>
 <translation id="1415846719612499304">Желі тізімін көрсету. <ph name="STATE_TEXT" />.</translation>
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">Эмоджи таңдағышты ашу</translation>
 <translation id="2088116547584365419">ойындар</translation>
 <translation id="209965399369889474">Желіге жалғанбаған.</translation>
+<translation id="2107581415810719320">Басқа <ph name="BUTTON_NUMBER" />-түйме</translation>
 <translation id="2107914222138020205">USB-C кабелі Thunderbolt стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
 <translation id="2108303511227308752">Alt + Backspace пернелер тіркесімінің функциясы өзгерді. Delete пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + Backspace пернесі тіркесімін басыңыз.</translation>
 <translation id="2126242104232412123">Жаңа жұмыс үстелі</translation>
@@ -1212,7 +1214,6 @@
 <translation id="5876535466645959772">Таңдалған тізім бос, жаңа тапсырма қосу үшін төмен жылжу</translation>
 <translation id="5876666360658629066">Ата-ана кодын енгізіңіз</translation>
 <translation id="5881540930187678962">Phone Hub кейін орнату</translation>
-<translation id="5881663018261910378">Өшіру</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
 <translation id="588817334757907802">Файлды Chrome браузерінде ашу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>

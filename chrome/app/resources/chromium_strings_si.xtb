@@ -24,6 +24,7 @@
 <translation id="1342274909142618978">Chromium වෙතින් ද දත්ත මකන්න (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">ඔබ Chromium වෙත ප්‍රවිෂ්ට වී ඇත!</translation>
 <translation id="1478370723027452770">පරීක්ෂා කිරීම සඳහා Chrome සමග උදවු ලබා ගන්න</translation>
+<translation id="1497802159252041924">ස්ථාපනය කිරීමේ දෝෂයක්: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium පටිත්තක් බෙදා ගන්න</translation>
 <translation id="1553461853655228091">Chromium හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
 <translation id="1574377791422810894">Chromium හි සුරක්ෂිතතා මෙවලම්</translation>
@@ -159,11 +160,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> දැනටමත් මෙම Chromium පැතිකඩට පුරා ඇත. ඔබගේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, Chromium හට ඔබ සඳහා ඔබගේම පැතිකඩක් තැනිය හැකිය.</translation>
 <translation id="3909353120217047026">මෙම දිගුව Chrome Web Store ප්‍රතිපත්තිය උල්ලංඝනය කරන අතර, අනාරක්ෂිත විය හැක. එයට ඔබේ පුද්ගලික තතු ඇතුළුව, ඔබ පිවිසෙන අඩවිවල ඔබේ දත්ත තවදුරටත් දැකීමට සහ වෙනස් කිරීමට නොහැකි වන පරිදි එය Chromium වෙතින් ඉවත් කරන්න.</translation>
 <translation id="391789666908693569">ඔබගේ ගිණුම <ph name="MANAGER_NAME" /> විසින් කළමනාකරණය කෙරේ. ඔබගේ පරිපාලකට මෙම Chromium බ්‍රවුසර පැතිකඩ සහ පිටුසන්, ඉතිහාසය සහ මුරපද වැනි එහි දත්ත බැලීමට සහ සංස්කරණය කිරීමට හැකිය.</translation>
+<translation id="3922825997980843979">ඔබ ටයිප් කරන විට, Chromium ලිපින තීරුවේ හෝ සෙවීම් කොටුවේ අන්තර්ගතය ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රයට යවයි</translation>
 <translation id="3945058413678539331">Chromium මුරපද පිටපත් කිරීමට උත්සාහ කරයි. මීට ඉඩ දීමට ඔබේ Windows මුරපදය ටයිප් කරන්න.</translation>
 <translation id="3962647064319009959">Chromium ඔබව සුරක්ෂිතව තබන ආකාරය ඉගෙන ගන්න</translation>
 <translation id="3975724895399328945">&amp;පරීක්ෂා කිරීම සඳහා Google Chrome ගැන</translation>
 <translation id="3997429360543082038">ChromiumOS ගැන</translation>
 <translation id="4019629340646866719">ChromiumOS හට අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_CROS_OSS" /> මගින්, <ph name="BEGIN_LINK_LINUX_OSS" />Linux සංවර්ධන පරිසරය<ph name="END_LINK_LINUX_OSS" /> ලෙස හැකියාව ලබා දී ඇත.</translation>
+<translation id="4028143804911941282">ක්‍රියාවිරහිත වූ විට, ඔබ තවමත් Chromium ස්ථානිකව සපයන යෝජනා දකිනු ඇත</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />වත්මන් සැකසීම්<ph name="END_LINK" /> වාර්තා කිරීමෙන් Chromium වඩා යහපත් කිරීමට උදවු වන්න</translation>
 <translation id="4050175100176540509">වැදගත් ආරක්ෂක වැඩිදියුණු කිරීම් සහ නව විශේෂාංග නවතම අනුවාදය තුළ ලද හැකිය.</translation>
 <translation id="4055805654398742145">මුරපද කළමනාකරු</translation>
@@ -255,6 +258,7 @@
 <translation id="6003112304606738118">බාගනිමින්... පැය <ph name="HOURS" />ක් ඉතිරිව ඇත</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6055895534982063517">Chromium හි නව සංස්කරණයක් පවතී, එය සැමදාටම වඩා වේගවත්.</translation>
+<translation id="6058380562449900225">ඔබේ දත්ත ආරක්ෂා කිරීම සඳහා, ඔබ මෑතක දී නොපැමිණි අඩවිවලින් අවසර ඉවත් කිරීමට Chromium හට ඉඩ දෙන්න. දැනුම්දීම් නවත්වන්නේ නැත.</translation>
 <translation id="6063093106622310249">&amp;Chromium තුළ විවෘත කරන්න</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium වෙත එක් කර ඇත</translation>
 <translation id="6072463441809498330">Chromium වේගවත් කරන්න</translation>

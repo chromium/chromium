@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">চালু করা আছে</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। এক তারিখ থেকে অন্য তারিখে যাওয়ার জন্য তীরচিহ্ন ব্যবহার করুন।</translation>
+<translation id="141170878022560212">মধ্যবর্তী বোতাম</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ</translation>
 <translation id="1414919006379339073">বর্তমান উইন্ডো বন্ধ করুন</translation>
 <translation id="1415846719612499304">নেটওয়ার্ক তালিকা দেখান। <ph name="STATE_TEXT" />।</translation>
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">ইমোজি পিকার খুলুন</translation>
 <translation id="2088116547584365419">গেমস</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
+<translation id="2107581415810719320">অন্য বোতাম <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">আপনার USB-C কেবল Thunderbolt-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
 <translation id="2108303511227308752">Alt + Backspace কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Delete কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Backspace কী প্রেস করুন।</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -562,6 +564,7 @@
 <translation id="3340978935015468852">সেটিংস</translation>
 <translation id="3341303451326249809">স্ক্রিনশট ক্যাপচার করা হয়েছে</translation>
 <translation id="334252345105450327">একটি স্ক্রিনশট নিন</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> আইডির জন্য ডিভাইসের পাসওয়ার্ড লিখুন</translation>
 <translation id="334927402682780278">কার্সার থেকে লাইনের শেষে টেক্সট বেছে নিন</translation>
 <translation id="3349345708646875009">টাস্ক ম্যানেজার খুলুন</translation>
 <translation id="3364721542077212959">স্টাইলাস টুল</translation>
@@ -1211,7 +1214,6 @@
 <translation id="5876535466645959772">বেছে নেওয়া তালিকা ফাঁকা, নতুন টাস্ক যোগ করতে নিচের দিকে নেভিগেট করুন</translation>
 <translation id="5876666360658629066">অভিভাবকীয় কোডটি লিখুন</translation>
 <translation id="5881540930187678962">পরে ফোন হাব সেট আপ করুন</translation>
-<translation id="5881663018261910378">বন্ধ আছে</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> উইন্ডো <ph name="DESK_TITLE" /> ডেস্কে অ্যাসাইন এবং অন্যান্য সব ডেস্ক থেকে আনঅ্যাসাইন করা হয়েছে</translation>
 <translation id="588817334757907802">Chrome ব্রাউজারে ফাইল খুলুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
@@ -1583,6 +1585,7 @@
 <translation id="7489261257412536105">ফুল স্ক্রিন করুন বা বেরিয়ে আসুন</translation>
 <translation id="7490360161041035804">আপনি Google Drive ফাইল সহ গুরুত্বপূর্ণ ফাইলগুলি পিন করতে পারেন। পিন করার জন্য, আইটেমের উপর নিয়ে যান বা ফাইল খুলে আইটেমের উপর ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="7497767806359279797">ভাষা এবং কীবোর্ড বেছে নিন</translation>
+<translation id="7507162824403726948">আপনার পরিচয় যাচাই করার প্রক্রিয়া শেষ করুন</translation>
 <translation id="7508690557411636492">গত মাসে খোলা হয়েছে</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7512509370370076552">'ডানদিকের বোতামে ক্লিক করুন' শর্টকার্ট alt + click থেকে <ph name="LAUNCHER_KEY_NAME" /> কী + click-এ আপডেট করা হয়েছে</translation>

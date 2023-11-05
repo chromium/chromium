@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
+<translation id="141170878022560212">鼠标中键</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已安装的应用</translation>
 <translation id="1414919006379339073">关闭当前窗口</translation>
 <translation id="1415846719612499304">显示网络列表。<ph name="STATE_TEXT" />。</translation>
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2088116547584365419">游戏</translation>
 <translation id="209965399369889474">未连接到网络</translation>
+<translation id="2107581415810719320">其他按钮 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
 <translation id="2126242104232412123">新建桌面</translation>
@@ -1210,7 +1212,6 @@
 <translation id="5876535466645959772">所选列表为空，向下导航即可添加新任务</translation>
 <translation id="5876666360658629066">输入家长访问码</translation>
 <translation id="5881540930187678962">需要时再设置 Phone Hub</translation>
-<translation id="5881663018261910378">已停用</translation>
 <translation id="5887954372087850114">已将窗口“<ph name="WINDOW_TITLE" />”分配至“<ph name="DESK_TITLE" />”，并已取消此窗口与所有其他桌面的分配关系</translation>
 <translation id="588817334757907802">在 Chrome 浏览器中打开文件</translation>
 <translation id="5895138241574237353">重新启动</translation>
