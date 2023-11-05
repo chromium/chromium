@@ -884,8 +884,11 @@ class AvdConfig:
       with ini.update_ini_file(config_path) as config_contents:
         config_contents.update(properties)
 
-    # Create qt config file to disable adb warning when launched in window mode.
+    # Create qt config file to disable certain warnings when launched in window.
     with ini.update_ini_file(self._qt_config_path) as config_contents:
+      # Disable nested virtualization warning.
+      config_contents['General'] = {'showNestedWarning': 'false'}
+      # Disable adb warning.
       config_contents['set'] = {'autoFindAdb': 'false'}
 
   def _Initialize(self):
