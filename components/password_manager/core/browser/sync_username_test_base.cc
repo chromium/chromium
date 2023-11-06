@@ -46,13 +46,15 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
   signin::IdentityManager* identity_manager =
       identity_test_env_.identity_manager();
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(
+    CHECK_EQ(
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email,
         email);
+    CHECK_EQ(sync_service_.GetAccountInfo().email, email);
   } else {
-    identity_test_env_.MakePrimaryAccountAvailable(email,
-                                                   signin::ConsentLevel::kSync);
+    CoreAccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSync);
+    sync_service_.SetAccountInfo(account);
   }
 }
 
