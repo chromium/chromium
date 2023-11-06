@@ -304,8 +304,11 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
     return absl::nullopt;
   }
 
-  int max_event_level_reports =
-      read_only_source_data_msg->max_event_level_reports();
+  attribution_reporting::MaxEventLevelReports max_event_level_reports;
+  if (!max_event_level_reports.SetIfValid(
+          read_only_source_data_msg->max_event_level_reports())) {
+    return absl::nullopt;
+  }
 
   absl::optional<EventReportWindows> event_report_windows =
       DeserializeEventReportWindows(*read_only_source_data_msg);
@@ -758,11 +761,9 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReportResult
 AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
     const AttributionReport& report,
     int num_conversions,
-    int max_event_level_reports,
     int64_t conversion_priority,
     absl::optional<AttributionReport>& replaced_report) {
   DCHECK_GE(num_conversions, 0);
-  DCHECK_GE(max_event_level_reports, 0);
 
   const auto* data =
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
@@ -771,7 +772,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   const StoredSource& source = data->source;
 
   // If there's already capacity for the new report, there's nothing to do.
-  if (num_conversions < max_event_level_reports) {
+  if (num_conversions < source.max_event_level_reports()) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kAddNewReport;
   }
 
@@ -1374,8 +1375,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
 
   const auto maybe_replace_lower_priority_report_result =
       MaybeReplaceLowerPriorityEventLevelReport(
-          report, num_conversions, source.max_event_level_reports(),
-          event_level_data->priority, replaced_report);
+          report, num_conversions, event_level_data->priority, replaced_report);
   if (maybe_replace_lower_priority_report_result ==
       MaybeReplaceLowerPriorityEventLevelReportResult::kError) {
     return EventLevelResult::kInternalError;

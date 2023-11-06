@@ -15,6 +15,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
@@ -44,6 +45,7 @@ class CONTENT_EXPORT StoredSource {
     kReachedEventLevelAttributionLimit = 2,
     kMaxValue = kReachedEventLevelAttributionLimit,
   };
+
   static absl::optional<StoredSource> Create(
       CommonSourceInfo common_info,
       uint64_t source_event_id,
@@ -52,7 +54,7 @@ class CONTENT_EXPORT StoredSource {
       base::Time expiry_time,
       attribution_reporting::EventReportWindows,
       base::Time aggregatable_report_window_time,
-      int max_event_level_reports,
+      attribution_reporting::MaxEventLevelReports,
       int64_t priority,
       attribution_reporting::FilterData,
       absl::optional<uint64_t> debug_key,
@@ -94,7 +96,9 @@ class CONTENT_EXPORT StoredSource {
     return event_report_windows_;
   }
 
-  int max_event_level_reports() const { return max_event_level_reports_; }
+  attribution_reporting::MaxEventLevelReports max_event_level_reports() const {
+    return max_event_level_reports_;
+  }
 
   int64_t priority() const { return priority_; }
 
@@ -148,7 +152,7 @@ class CONTENT_EXPORT StoredSource {
                base::Time expiry_time,
                attribution_reporting::EventReportWindows,
                base::Time aggregatable_report_window_time,
-               int max_event_level_reports,
+               attribution_reporting::MaxEventLevelReports,
                int64_t priority,
                attribution_reporting::FilterData,
                absl::optional<uint64_t> debug_key,
@@ -169,7 +173,7 @@ class CONTENT_EXPORT StoredSource {
   base::Time expiry_time_;
   attribution_reporting::EventReportWindows event_report_windows_;
   base::Time aggregatable_report_window_time_;
-  int max_event_level_reports_;
+  attribution_reporting::MaxEventLevelReports max_event_level_reports_;
   int64_t priority_;
   attribution_reporting::FilterData filter_data_;
   absl::optional<uint64_t> debug_key_;

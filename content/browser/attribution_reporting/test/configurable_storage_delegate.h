@@ -38,11 +38,11 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports) const override;
+      attribution_reporting::MaxEventLevelReports) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
+      attribution_reporting::MaxEventLevelReports,
       base::Time source_time) const override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,

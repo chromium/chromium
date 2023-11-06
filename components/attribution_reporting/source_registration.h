@@ -17,6 +17,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -63,9 +64,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   base::TimeDelta expiry = kMaxSourceExpiry;
   EventReportWindows event_report_windows;
   base::TimeDelta aggregatable_report_window = expiry;
-  // Must be non-negative and <= `kMaxSettableEventLevelAttributions`.
-  // This is verified by the `Parse()` and `IsValid()` methods.
-  int max_event_level_reports = 0;
+  MaxEventLevelReports max_event_level_reports;
   int64_t priority = 0;
   FilterData filter_data;
   absl::optional<uint64_t> debug_key;

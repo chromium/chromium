@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -198,7 +199,7 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
-    int max_event_level_reports) const {
+    attribution_reporting::MaxEventLevelReports max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content::GetRandomizedResponseRate(
       GetNumStates(attribution_reporting::TriggerSpecs::Default(
@@ -211,7 +212,7 @@ AttributionStorageDelegate::GetRandomizedResponseResult
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RandomizedResponseData response = DoRandomizedResponse(

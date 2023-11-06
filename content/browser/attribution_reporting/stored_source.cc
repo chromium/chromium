@@ -16,6 +16,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,15 +34,14 @@ bool IsExpiryOrReportWindowTimeValid(base::Time expiry_or_report_window_time,
 }
 
 bool AreFieldsValid(int64_t aggregatable_budget_consumed,
-                    int max_event_level_reports,
                     double randomized_response_rate,
                     base::Time source_time,
                     base::Time expiry_time,
                     base::Time aggregatable_report_window_time,
                     absl::optional<uint64_t> debug_key,
                     bool debug_cookie_set) {
-  return aggregatable_budget_consumed >= 0 && max_event_level_reports >= 0 &&
-         randomized_response_rate >= 0 && randomized_response_rate <= 1 &&
+  return aggregatable_budget_consumed >= 0 && randomized_response_rate >= 0 &&
+         randomized_response_rate <= 1 &&
          IsExpiryOrReportWindowTimeValid(expiry_time, source_time) &&
          IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time,
                                          source_time) &&
@@ -59,7 +59,7 @@ absl::optional<StoredSource> StoredSource::Create(
     base::Time expiry_time,
     attribution_reporting::EventReportWindows event_report_windows,
     base::Time aggregatable_report_window_time,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
     absl::optional<uint64_t> debug_key,
@@ -71,10 +71,9 @@ absl::optional<StoredSource> StoredSource::Create(
     double randomized_response_rate,
     attribution_reporting::TriggerConfig trigger_config,
     bool debug_cookie_set) {
-  if (!AreFieldsValid(aggregatable_budget_consumed, max_event_level_reports,
-                      randomized_response_rate, source_time, expiry_time,
-                      aggregatable_report_window_time, debug_key,
-                      debug_cookie_set)) {
+  if (!AreFieldsValid(aggregatable_budget_consumed, randomized_response_rate,
+                      source_time, expiry_time, aggregatable_report_window_time,
+                      debug_key, debug_cookie_set)) {
     return absl::nullopt;
   }
 
@@ -95,7 +94,7 @@ StoredSource::StoredSource(
     base::Time expiry_time,
     attribution_reporting::EventReportWindows event_report_windows,
     base::Time aggregatable_report_window_time,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
     absl::optional<uint64_t> debug_key,
@@ -126,7 +125,7 @@ StoredSource::StoredSource(
       randomized_response_rate_(randomized_response_rate),
       trigger_config_(std::move(trigger_config)),
       debug_cookie_set_(debug_cookie_set) {
-  DCHECK(AreFieldsValid(aggregatable_budget_consumed_, max_event_level_reports_,
+  DCHECK(AreFieldsValid(aggregatable_budget_consumed_,
                         randomized_response_rate_, source_time_, expiry_time_,
                         aggregatable_report_window_time_, debug_key_,
                         debug_cookie_set_));

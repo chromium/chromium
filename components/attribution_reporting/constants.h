@@ -26,8 +26,6 @@ constexpr size_t kMaxAggregationKeysPerSource = 20;
 
 constexpr int kMaxAggregatableValue = 65536;
 
-constexpr int kMaxSettableEventLevelAttributions = 20;
-
 constexpr base::TimeDelta kMinSourceExpiry = base::Days(1);
 constexpr base::TimeDelta kMaxSourceExpiry = base::Days(30);
 

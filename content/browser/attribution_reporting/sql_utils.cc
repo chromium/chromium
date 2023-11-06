@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/features.h"
@@ -19,6 +18,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -130,10 +130,8 @@ absl::optional<SourceType> DeserializeSourceType(int val) {
 
 void SetReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     proto::AttributionReadOnlySourceData& msg) {
-  DCHECK_GE(max_event_level_reports, 0);
-
   msg.set_max_event_level_reports(max_event_level_reports);
   msg.set_event_level_report_window_start_time(
       event_report_windows.start_time().InMicroseconds());
@@ -145,7 +143,7 @@ void SetReadOnlySourceData(
 
 std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
     const attribution_reporting::TriggerConfig& trigger_config,
     bool debug_cookie_set) {

@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -239,15 +240,16 @@ double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon) {
   return num_states_double / (num_states_double - 1 + std::exp(epsilon));
 }
 
-absl::uint128 GetNumStates(const attribution_reporting::TriggerSpecs& specs,
-                           int max_reports) {
+absl::uint128 GetNumStates(
+    const attribution_reporting::TriggerSpecs& specs,
+    attribution_reporting::MaxEventLevelReports max_reports) {
   internal::StateMap map;
   return GetNumStatesCached(specs, max_reports, map);
 }
 
 RandomizedResponseData DoRandomizedResponse(
     const attribution_reporting::TriggerSpecs& specs,
-    int max_reports,
+    attribution_reporting::MaxEventLevelReports max_reports,
     double epsilon) {
   internal::StateMap map;
   return internal::DoRandomizedResponseWithCache(specs, max_reports, epsilon,

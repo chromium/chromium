@@ -248,8 +248,12 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
+  if (!out->max_event_level_reports.SetIfValid(
+          data.max_event_level_reports())) {
+    return false;
+  }
+
   out->source_event_id = data.source_event_id();
-  out->max_event_level_reports = data.max_event_level_reports();
   out->priority = data.priority();
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();

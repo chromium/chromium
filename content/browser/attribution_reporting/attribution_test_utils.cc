@@ -16,11 +16,11 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -73,7 +73,7 @@ SourceBuilder::SourceBuilder(base::Time time)
       reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {
   registration_.source_event_id = 123;
   registration_.max_event_level_reports =
-      attribution_reporting::kMaxSettableEventLevelAttributions;
+      attribution_reporting::MaxEventLevelReports::Max();
 }
 
 SourceBuilder::~SourceBuilder() = default;
@@ -205,7 +205,8 @@ SourceBuilder& SourceBuilder::SetEventReportWindows(
 
 SourceBuilder& SourceBuilder::SetMaxEventLevelReports(
     int max_event_level_reports) {
-  registration_.max_event_level_reports = max_event_level_reports;
+  registration_.max_event_level_reports =
+      attribution_reporting::MaxEventLevelReports(max_event_level_reports);
   return *this;
 }
 

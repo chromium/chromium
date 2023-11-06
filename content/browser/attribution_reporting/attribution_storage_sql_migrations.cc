@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
@@ -306,16 +307,6 @@ bool To56(sql::Database& db) {
       continue;
     }
 
-    int max_event_level_reports;
-    switch (source_type.value()) {
-      case attribution_reporting::mojom::SourceType::kNavigation:
-        max_event_level_reports = 3;
-        break;
-      case attribution_reporting::mojom::SourceType::kEvent:
-        max_event_level_reports = 1;
-        break;
-    }
-
     auto event_report_windows =
         attribution_reporting::EventReportWindows::FromDefaults(
             event_report_window_time - source_time, *source_type);
@@ -324,7 +315,9 @@ bool To56(sql::Database& db) {
     }
 
     proto::AttributionReadOnlySourceData msg;
-    SetReadOnlySourceData(*event_report_windows, max_event_level_reports, msg);
+    SetReadOnlySourceData(
+        *event_report_windows,
+        attribution_reporting::MaxEventLevelReports(*source_type), msg);
 
     set_statement.Reset(/*clear_bound_vars=*/true);
     set_statement.BindBlob(0, msg.SerializeAsString());

@@ -17,6 +17,7 @@
 
 namespace attribution_reporting {
 class EventReportWindows;
+class MaxEventLevelReports;
 class TriggerSpecs;
 }
 
@@ -68,7 +69,7 @@ CONTENT_EXPORT double GetRandomizedResponseRate(absl::uint128 num_states,
 // Returns the number of possible output states for the given API configuration.
 CONTENT_EXPORT absl::uint128 GetNumStates(
     const attribution_reporting::TriggerSpecs& specs,
-    int max_reports);
+    attribution_reporting::MaxEventLevelReports);
 
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that otutput space.
@@ -77,7 +78,7 @@ CONTENT_EXPORT absl::uint128 GetNumStates(
 // Otherwise will return a vector of fake reports.
 CONTENT_EXPORT RandomizedResponseData
 DoRandomizedResponse(const attribution_reporting::TriggerSpecs& specs,
-                     int max_reports,
+                     attribution_reporting::MaxEventLevelReports,
                      double epsilon);
 
 // Exposed for testing purposes.

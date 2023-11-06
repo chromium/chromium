@@ -18,6 +18,7 @@ namespace attribution_reporting {
 class AggregationKeys;
 class EventReportWindows;
 class FilterData;
+class MaxEventLevelReports;
 class TriggerConfig;
 }  // namespace attribution_reporting
 
@@ -43,12 +44,12 @@ absl::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
 // Exposed for use with earlier DB migrations that only contained a subset of
 // fields.
 void SetReadOnlySourceData(const attribution_reporting::EventReportWindows&,
-                           int max_event_level_reports,
+                           attribution_reporting::MaxEventLevelReports,
                            proto::AttributionReadOnlySourceData&);
 
 std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows&,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
     const attribution_reporting::TriggerConfig&,
     bool debug_cookie_set);

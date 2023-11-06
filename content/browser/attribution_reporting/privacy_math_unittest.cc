@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -25,6 +26,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::EventReportWindows;
+using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::mojom::SourceType;
 
 TEST(PrivacyMathTest, BinomialCoefficient) {
@@ -379,7 +381,7 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
 }
 
 void RunRandomFakeReportsTest(const attribution_reporting::TriggerSpecs& specs,
-                              const int max_reports,
+                              const MaxEventLevelReports max_reports,
                               const int num_samples,
                               const double tolerance) {
   base::flat_map<std::vector<FakeEventLevelReport>, int> output_counts;
@@ -444,7 +446,7 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Event_MatchesExpectedDistribution) {
       attribution_reporting::TriggerSpecs::Default(
           SourceType::kEvent, *EventReportWindows::FromDefaults(
                                   base::Days(30), SourceType::kEvent)),
-      /*max_reports=*/1,
+      MaxEventLevelReports(1),
       /*num_samples=*/100'000,
       /*tolerance=*/0.03);
 }
@@ -461,7 +463,7 @@ TEST(PrivacyMathTest,
                                SourceType::kNavigation,
                                *EventReportWindows::FromDefaults(
                                    base::Days(30), SourceType::kNavigation)),
-                           /*max_reports=*/3,
+                           MaxEventLevelReports(3),
                            /*num_samples=*/150'000,
                            /*tolerance=*/0.9);
 }
@@ -491,7 +493,7 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
       },
       kSpecList);
 
-  int kMaxReports = 2;
+  MaxEventLevelReports kMaxReports(2);
 
   // The distribution check will fail with probability 6e-7.
   EXPECT_EQ(28, GetNumStates(kSpecs, kMaxReports));
@@ -502,24 +504,24 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
 
 TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
   const struct {
-    int max_reports;
+    MaxEventLevelReports max_reports;
     std::vector<int> windows_per_type;
     absl::uint128 expected_num_states;
   } kTestCases[] = {
-      {3, {3, 3, 3, 3, 3, 3, 3, 3}, 2925},
-      {1, {1, 1}, 3},
+      {MaxEventLevelReports(3), {3, 3, 3, 3, 3, 3, 3, 3}, 2925},
+      {MaxEventLevelReports(1), {1, 1}, 3},
 
-      {1, {1}, 2},
-      {5, {1}, 6},
-      {2, {1, 1, 2, 2}, 28},
-      {3, {1, 1, 2, 2, 3, 3}, 455},
+      {MaxEventLevelReports(1), {1}, 2},
+      {MaxEventLevelReports(5), {1}, 6},
+      {MaxEventLevelReports(2), {1, 1, 2, 2}, 28},
+      {MaxEventLevelReports(3), {1, 1, 2, 2, 3, 3}, 455},
 
       // Cases for # of states > 10000 will skip the unique check, otherwise the
       // tests won't ever finish.
-      {20, {5, 5, 5, 5, 5, 5, 5, 5}, 4191844505805495},
+      {MaxEventLevelReports(20), {5, 5, 5, 5, 5, 5, 5, 5}, 4191844505805495},
 
       // This input would overflow any 64 bit integer.
-      {20,
+      {MaxEventLevelReports(20),
        {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
         5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
        absl::MakeUint128(/*high=*/9494472u, /*low=*/10758590974061625903u)},

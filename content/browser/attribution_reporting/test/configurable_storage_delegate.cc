@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -117,7 +118,7 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::EventReportWindows&,
-    int max_event_level_reports) const {
+    attribution_reporting::MaxEventLevelReports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
 }
@@ -126,7 +127,7 @@ AttributionStorageDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::EventReportWindows&,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {

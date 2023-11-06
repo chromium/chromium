@@ -21,6 +21,7 @@
 
 namespace attribution_reporting {
 class EventReportWindows;
+class MaxEventLevelReports;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -141,7 +142,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports) const = 0;
+      attribution_reporting::MaxEventLevelReports) const = 0;
 
   using GetRandomizedResponseResult =
       base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
@@ -152,7 +153,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
+      attribution_reporting::MaxEventLevelReports,
       base::Time source_time) const = 0;
 
   int GetMaxAggregatableReportsPerSource() const;

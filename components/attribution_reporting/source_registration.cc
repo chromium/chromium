@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -43,32 +44,7 @@ constexpr char kAggregationKeys[] = "aggregation_keys";
 constexpr char kDestination[] = "destination";
 constexpr char kExpiry[] = "expiry";
 constexpr char kFilterData[] = "filter_data";
-constexpr char kMaxEventLevelReports[] = "max_event_level_reports";
 constexpr char kSourceEventId[] = "source_event_id";
-
-bool IsMaxEventLevelReportsValid(int i) {
-  return i >= 0 && i <= kMaxSettableEventLevelAttributions;
-}
-
-base::expected<int, SourceRegistrationError> ParseMaxEventLevelReports(
-    const base::Value& value) {
-  absl::optional<int> i = value.GetIfInt();
-  if (!i.has_value() || !IsMaxEventLevelReportsValid(*i)) {
-    return base::unexpected(
-        SourceRegistrationError::kMaxEventLevelReportsValueInvalid);
-  }
-
-  return *i;
-}
-
-int DefaultMaxEventLevelReports(SourceType source_type) {
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return 3;
-    case SourceType::kEvent:
-      return 1;
-  }
-}
 
 base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
   switch (source_type) {
@@ -163,12 +139,8 @@ SourceRegistration::Parse(base::Value::Dict registration,
       result.event_report_windows,
       EventReportWindows::FromJSON(registration, result.expiry, source_type));
 
-  if (const base::Value* value = registration.Find(kMaxEventLevelReports)) {
-    ASSIGN_OR_RETURN(result.max_event_level_reports,
-                     ParseMaxEventLevelReports(*value));
-  } else {
-    result.max_event_level_reports = DefaultMaxEventLevelReports(source_type);
-  }
+  ASSIGN_OR_RETURN(result.max_event_level_reports,
+                   MaxEventLevelReports::Parse(registration, source_type));
 
   ASSIGN_OR_RETURN(result.trigger_config, TriggerConfig::Parse(registration));
 
@@ -231,7 +203,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
   SerializeDebugKey(dict, debug_key);
   SerializeDebugReporting(dict, debug_reporting);
 
-  dict.Set(kMaxEventLevelReports, max_event_level_reports);
+  max_event_level_reports.Serialize(dict);
 
   trigger_config.Serialize(dict);
 
@@ -249,10 +221,6 @@ bool SourceRegistration::IsValid() const {
 
   if (aggregatable_report_window < kMinReportWindow ||
       aggregatable_report_window > expiry) {
-    return false;
-  }
-
-  if (!IsMaxEventLevelReportsValid(max_event_level_reports)) {
     return false;
   }
 
