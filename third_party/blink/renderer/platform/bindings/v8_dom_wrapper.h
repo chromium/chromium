@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_DOM_WRAPPER_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
 #include "third_party/blink/renderer/platform/bindings/custom_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -148,28 +149,31 @@ inline void V8DOMWrapper::AssociateObjectWithWrapper(
   SECURITY_CHECK(ToCustomWrappable(wrapper) == impl);
 }
 
-class V8WrapperInstantiationScope {
+class V8WrapperInstantiationScope final {
   STACK_ALLOCATED();
 
  public:
-  // This is an overload of constructor for CreateWrapperV2.
   V8WrapperInstantiationScope(ScriptState* script_state,
                               const WrapperTypeInfo* type)
       : context_(script_state->GetIsolate()->GetCurrentContext()),
-        try_catch_(script_state->GetIsolate()),
         type_(type) {
     v8::Local<v8::Context> context_for_wrapper = script_state->GetContext();
 
     // For performance, we enter the context only if the currently running
     // context is different from the context that we are about to enter.
-    if (context_for_wrapper == context_)
+    if (LIKELY(context_for_wrapper == context_)) {
       return;
+    }
 
-    if (!BindingSecurityForPlatform::ShouldAllowWrapperCreationOrThrowException(
-            script_state->GetIsolate()->GetCurrentContext(),
-            context_for_wrapper, type_)) {
-      DCHECK(try_catch_.HasCaught());
-      try_catch_.ReThrow();
+    // Slow path checks that require try/catch to catch cross-context access
+    // exceptions.
+    try_catch_.emplace(script_state->GetIsolate());
+
+    if (UNLIKELY(!BindingSecurityForPlatform::
+                     ShouldAllowWrapperCreationOrThrowException(
+                         context_, context_for_wrapper, type_))) {
+      DCHECK(try_catch_->HasCaught());
+      try_catch_->ReThrow();
       access_check_failed_ = true;
       return;
     }
@@ -180,25 +184,30 @@ class V8WrapperInstantiationScope {
   }
 
   ~V8WrapperInstantiationScope() {
-    if (!did_enter_context_) {
-      try_catch_.ReThrow();
+    if (LIKELY(!did_enter_context_)) {
+      if (UNLIKELY(try_catch_.has_value())) {
+        try_catch_->ReThrow();
+      }
       return;
     }
     context_->Exit();
 
-    if (access_check_failed_ || !try_catch_.HasCaught())
+    DCHECK(!access_check_failed_);
+    DCHECK(try_catch_.has_value());
+    if (LIKELY(!try_catch_->HasCaught())) {
       return;
+    }
 
     // Any exception caught here is a cross context exception and it may not be
     // safe to directly rethrow the exception in the current context (without
-    // converting it). rethrowCrossContextException converts the exception in
+    // converting it). RethrowWrapperCreationException converts the exception in
     // such a scenario.
-    v8::Local<v8::Value> caught_exception = try_catch_.Exception();
-    try_catch_.Reset();
+    v8::Local<v8::Value> caught_exception = try_catch_->Exception();
+    try_catch_->Reset();
     BindingSecurityForPlatform::RethrowWrapperCreationException(
         context_->GetIsolate()->GetCurrentContext(), context_, type_,
         caught_exception);
-    try_catch_.ReThrow();
+    try_catch_->ReThrow();
   }
 
   v8::Local<v8::Context> GetContext() const { return context_; }
@@ -206,10 +215,10 @@ class V8WrapperInstantiationScope {
 
  private:
   bool did_enter_context_ = false;
-  v8::Local<v8::Context> context_;
-  v8::TryCatch try_catch_;
-  const WrapperTypeInfo* type_;
   bool access_check_failed_ = false;
+  v8::Local<v8::Context> context_;
+  const WrapperTypeInfo* type_;
+  absl::optional<v8::TryCatch> try_catch_;
 };
 
 }  // namespace blink
