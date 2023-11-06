@@ -2342,6 +2342,8 @@ component("ash") {
     "wallpaper/wallpaper_metrics_manager.h",
     "wallpaper/wallpaper_pref_manager.cc",
     "wallpaper/wallpaper_pref_manager.h",
+    "wallpaper/wallpaper_time_of_day_scheduler.cc",
+    "wallpaper/wallpaper_time_of_day_scheduler.h",
     "wallpaper/wallpaper_utils/scored_sample.cc",
     "wallpaper/wallpaper_utils/scored_sample.h",
     "wallpaper/wallpaper_utils/wallpaper_calculated_colors.cc",

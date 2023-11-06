@@ -24,9 +24,9 @@ ASH_EXPORT const OnlineWallpaperVariant* FirstValidVariant(
     const std::vector<OnlineWallpaperVariant>& variants,
     ScheduleCheckpoint checkpoint);
 
-// Returns whether the given |wallpaper_info| stores the info of a Time of Day
-// wallpaper.
-ASH_EXPORT bool IsTimeOfDayWallpaper(const WallpaperInfo& wallpaper_info);
+// Returns whether the given |collection_id| matches the Time of Day wallpaper
+// collection.
+ASH_EXPORT bool IsTimeOfDayWallpaper(const std::string& collection_id);
 
 }  // namespace ash
 

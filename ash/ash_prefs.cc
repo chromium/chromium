@@ -73,6 +73,7 @@
 #include "ash/user_education/user_education_controller.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
+#include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
@@ -156,6 +157,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
   VpnDetailedView::RegisterProfilePrefs(registry);
   WallpaperDailyRefreshScheduler::RegisterProfilePrefs(registry);
+  WallpaperTimeOfDayScheduler::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
 

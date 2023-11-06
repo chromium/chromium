@@ -1117,6 +1117,15 @@ inline constexpr char kWallpaperDailyRefreshFirstCheckTime[] =
 inline constexpr char kWallpaperDailyRefreshSecondCheckTime[] =
     "ash.wallpaper_daily_refresh.second_check_time";
 
+// Prefs required by `ScheduledFeature` for the time of day wallpaper to follow
+// a sunset-to-sunrise schedule. Nothing in the system ultimately uses them.
+// TODO(b/309020921): Remove these once ScheduledFeature doesn't require prefs
+// to operate.
+inline constexpr char kWallpaperTimeOfDayStatus[] =
+    "ash.wallpaper_time_of_day.status";
+inline constexpr char kWallpaperTimeOfDayScheduleType[] =
+    "ash.wallpaper_time_of_day.schedule_type";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 inline constexpr char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";

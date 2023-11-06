@@ -41,6 +41,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
+#include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -48,6 +49,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -90,6 +92,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -158,6 +161,18 @@ const uint64_t kUnitId2 = 2;
 
 const std::string kFakeGooglePhotosAlbumId = "fake_album";
 const std::string kFakeGooglePhotosPhotoId = "fake_photo";
+
+// For checking that the wallpaper changes at approximately the correct time
+// when the "auto" schedule is enabled. The sunrise/set times specified in
+// `WallpaperControllerAutoScheduleTest` are just approximate and do not occur
+// exactly on the hour specified.
+MATCHER_P(WallpaperChangeTimeNear, hours_elapsed_since_test_start, "") {
+  static constexpr base::TimeDelta kTolerance = base::Minutes(5);
+  base::TimeDelta expected_duration_since_test_start =
+      base::Hours(hours_elapsed_since_test_start);
+  return expected_duration_since_test_start - kTolerance <= arg &&
+         arg <= expected_duration_since_test_start + kTolerance;
+}
 
 // Creates an image of size |size|.
 gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
@@ -392,6 +407,58 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   int daily_refresh_checkpoint_count_ = 0;
   bool is_in_wallpaper_preview_ = false;
 };
+
+// Runs until the next time the wallpaper changes.
+class WallpaperChangedBarrier : public WallpaperControllerObserver {
+ public:
+  WallpaperChangedBarrier(WallpaperController* controller,
+                          base::test::TaskEnvironment* task_environment)
+      : task_environment_(task_environment) {
+    CHECK(task_environment_);
+    controller_observation_.Observe(controller);
+  }
+  WallpaperChangedBarrier(const WallpaperChangedBarrier&) = delete;
+  WallpaperChangedBarrier& operator=(const WallpaperChangedBarrier&) = delete;
+  ~WallpaperChangedBarrier() override = default;
+
+  // WallpaperControllerObserver:
+  void OnWallpaperChanged() override { wallpaper_changed_ = true; }
+
+  bool RunUntilNextWallpaperChange() {
+    wallpaper_changed_ = false;
+    while (!wallpaper_changed_) {
+      RunAllTasksUntilIdle();
+      base::TimeDelta delay_until_next_task =
+          task_environment_->NextMainThreadPendingTaskDelay();
+      if (delay_until_next_task == base::TimeDelta::Max()) {
+        // Technically, a delayed task on a different thread than "main" could
+        // trigger a wallpaper change but that is currently not the case.
+        return false;
+      }
+      task_environment_->FastForwardBy(delay_until_next_task);
+    }
+    return true;
+  }
+
+ private:
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      controller_observation_{this};
+  const raw_ptr<base::test::TaskEnvironment> task_environment_;
+  bool wallpaper_changed_ = false;
+};
+
+// Returns the image in `backdrop_image_data` whose `image_url` matches `url`,
+// or nullptr if no match is found.
+const backdrop::Image* GetImageMatchingUrl(
+    const GURL& url,
+    const std::vector<backdrop::Image>& backdrop_image_data) {
+  for (const backdrop::Image& image : backdrop_image_data) {
+    if (image.image_url() == url.spec()) {
+      return &image;
+    }
+  }
+  return nullptr;
+}
 
 // Returns the time of day wallpapers in order of light, morning, late
 // afternoon, and dark.
@@ -941,14 +1008,22 @@ class WallpaperControllerAutoScheduleTest : public WallpaperControllerTest,
   }
 
   void SetSimulatedStartTime(base::Time simulated_start_time) {
-    // Turn "auto" schedule off first to kill any internal timers within
-    // `dark_light_mode_controller` or `geolocation_controller` before passing
-    // them a new clock.
+    // Turn "auto" schedule off first to kill any internal timers within these
+    // objects before passing them a new clock.
+    WallpaperTimeOfDayScheduler& time_of_day_scheduler =
+        *Shell::Get()
+             ->wallpaper_controller()
+             ->time_of_day_scheduler_for_testing();
     Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(false);
+    time_of_day_scheduler.SetScheduleType(ScheduleType::kNone);
+
     simulated_start_time_ = simulated_start_time;
     Shell::Get()->geolocation_controller()->SetClockForTesting(this);
     Shell::Get()->dark_light_mode_controller()->SetClockForTesting(this);
+    time_of_day_scheduler.SetClockForTesting(this);
+
     Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(true);
+    time_of_day_scheduler.SetScheduleType(ScheduleType::kSunsetToSunrise);
   }
 
   const raw_ptr<base::test::TaskEnvironment> task_environment_;
@@ -4697,6 +4772,86 @@ TEST_P(WallpaperControllerAutoScheduleTest, UpdateWallpaperOnAutoColorMode) {
   EXPECT_EQ(actual.date, original_timestamp);
 }
 
+TEST_P(WallpaperControllerAutoScheduleTest,
+       UpdateTimeOfDayWallpaperWithAutoColorModeOff) {
+  static constexpr gfx::Size kTestImageSize = gfx::Size(100, 100);
+  static constexpr SkColor kSunriseImageColor = SK_ColorRED;
+  static constexpr SkColor kMorningImageColor = SK_ColorGREEN;
+  static constexpr SkColor kLateAfternoonImageColor = SK_ColorBLUE;
+  static constexpr SkColor kSunsetImageColor = SK_ColorYELLOW;
+
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
+  const auto backdrop_image_data = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        backdrop_image_data);
+  const base::flat_map<backdrop::Image_ImageType, gfx::ImageSkia> test_images =
+      {{backdrop::Image::IMAGE_TYPE_LIGHT_MODE,
+        CreateSolidColorTestImage(kTestImageSize, kSunriseImageColor)},
+       {backdrop::Image::IMAGE_TYPE_MORNING_MODE,
+        CreateSolidColorTestImage(kTestImageSize, kMorningImageColor)},
+       {backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE,
+        CreateSolidColorTestImage(kTestImageSize, kLateAfternoonImageColor)},
+       {backdrop::Image::IMAGE_TYPE_DARK_MODE,
+        CreateSolidColorTestImage(kTestImageSize, kSunsetImageColor)}};
+  test_wallpaper_image_downloader()->set_image_generator(
+      base::BindLambdaForTesting([backdrop_image_data,
+                                  test_images](const GURL& url) {
+        const backdrop::Image* match_found =
+            GetImageMatchingUrl(url, backdrop_image_data);
+        return match_found
+                   ? test_images.at(match_found->image_type())
+                   : CreateSolidColorTestImage(kTestImageSize, SK_ColorBLACK);
+      }));
+
+  SimulateUserLogin(kAccountId1);
+  Shell::Get()->dark_light_mode_controller()->SetAutoScheduleEnabled(false);
+
+  OnlineWallpaperParams params(
+      kAccountId1, wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, /*from_user=*/true,
+      /*daily_refresh_enabled=*/false,
+      wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId, /*variants=*/{});
+  for (const backdrop::Image& backdrop_image : backdrop_image_data) {
+    params.variants.emplace_back(backdrop_image.asset_id(),
+                                 GURL(backdrop_image.image_url()),
+                                 backdrop_image.image_type());
+  }
+
+  const auto wallpaper_has_color = [this](SkColor color) {
+    return gfx::test::AreImagesClose(
+        gfx::Image(controller_->GetWallpaper()),
+        gfx::Image(CreateSolidColorTestImage(controller_->GetWallpaper().size(),
+                                             color)),
+        /*max_deviation=*/1);
+  };
+  // Midnight
+  base::test::TestFuture<bool> future;
+  controller_->SetOnlineWallpaper(params, future.GetCallback());
+  ASSERT_TRUE(future.Get());
+  EXPECT_TRUE(wallpaper_has_color(kSunsetImageColor));
+
+  WallpaperChangedBarrier barrier(controller_, task_environment());
+  // Sunrise. 7 AM.
+  ASSERT_TRUE(barrier.RunUntilNextWallpaperChange());
+  EXPECT_THAT(Now() - simulated_start_time_, WallpaperChangeTimeNear(7));
+  EXPECT_TRUE(wallpaper_has_color(kSunriseImageColor));
+  // Morning. 11 AM.
+  ASSERT_TRUE(barrier.RunUntilNextWallpaperChange());
+  EXPECT_THAT(Now() - simulated_start_time_, WallpaperChangeTimeNear(11));
+  EXPECT_TRUE(wallpaper_has_color(kMorningImageColor));
+  // Sunrise. 5 PM.
+  ASSERT_TRUE(barrier.RunUntilNextWallpaperChange());
+  EXPECT_THAT(Now() - simulated_start_time_, WallpaperChangeTimeNear(17));
+  EXPECT_TRUE(wallpaper_has_color(kLateAfternoonImageColor));
+  // Sunrise. 7 PM.
+  ASSERT_TRUE(barrier.RunUntilNextWallpaperChange());
+  EXPECT_THAT(Now() - simulated_start_time_, WallpaperChangeTimeNear(19));
+  EXPECT_TRUE(wallpaper_has_color(kSunsetImageColor));
+}
+
 TEST_P(WallpaperControllerTest,
        UpdateWallpaperOnScheduleCheckpointChanged_WithReplacedAsset) {
   SimulateUserLogin(kAccountId1);
@@ -4806,7 +4961,7 @@ TEST_P(WallpaperControllerTest,
   EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(kAccountId1, local_info));
   // Simulate a failure in image downloading.
   test_wallpaper_image_downloader()->set_image_generator(
-      base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
+      base::BindLambdaForTesting([](const GURL&) { return gfx::ImageSkia(); }));
 
   // Switch to light mode and simulate schedule checkpoint change to reflect
   // light mode.
@@ -4914,7 +5069,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperWithoutInternet) {
   // still succeeds because the previous call to |SetOnlineWallpaper()| has
   // saved the file.
   test_wallpaper_image_downloader()->set_image_generator(
-      base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
+      base::BindLambdaForTesting([](const GURL&) { return gfx::ImageSkia(); }));
   ClearWallpaperCount();
   base::RunLoop run_loop;
   controller_->SetOnlineWallpaper(
@@ -5101,7 +5256,7 @@ TEST_P(WallpaperControllerTest, TimeOfDayWallpapers_NotSyncedOut) {
   variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
                         backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
   const OnlineWallpaperParams& params = OnlineWallpaperParams(
-      kAccountId1, TestWallpaperControllerClient::kDummyCollectionId,
+      kAccountId1, wallpaper_constants::kTimeOfDayWallpaperCollectionId,
       WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false, /*from_user=*/true,
       /*daily_refresh_enabled=*/false, kUnitId, variants);

@@ -13,6 +13,7 @@
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -518,6 +519,7 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncOut) {
                         backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
   WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
   info.variants = variants;
+  info.collection_id = wallpaper_constants::kTimeOfDayWallpaperCollectionId;
   EXPECT_FALSE(WallpaperPrefManager::ShouldSyncOut(info));
 }
 
@@ -537,6 +539,8 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
   variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
                         backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
   local_info.variants = variants;
+  local_info.collection_id =
+      wallpaper_constants::kTimeOfDayWallpaperCollectionId;
   EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
                                                   /*is_oobe=*/false));
   EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,

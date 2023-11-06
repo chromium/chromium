@@ -276,10 +276,10 @@ scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
 // returned `WallpaperInfo`. Returns nullptr on failure.
 std::unique_ptr<WallpaperInfo> CreateOnlineWallpaperInfo(
     const OnlineWallpaperParams& params,
+    const ScheduledFeature& scheduled_feature,
     const char* source) {
   const OnlineWallpaperVariant* selected_variant = FirstValidVariant(
-      params.variants,
-      Shell::Get()->dark_light_mode_controller()->current_checkpoint());
+      params.variants, scheduled_feature.current_checkpoint());
   if (!selected_variant) {
     LOG(ERROR) << "Failed to select online wallpaper variant from " << source;
     return nullptr;
@@ -764,8 +764,8 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
     return;
   }
 
-  std::unique_ptr<WallpaperInfo> new_info =
-      CreateOnlineWallpaperInfo(params, __func__);
+  std::unique_ptr<WallpaperInfo> new_info = CreateOnlineWallpaperInfo(
+      params, GetScheduleForOnlineWallpaper(params.collection_id), __func__);
   if (!new_info) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -908,8 +908,8 @@ void WallpaperControllerImpl::SetTimeOfDayWallpaper(
 
 bool WallpaperControllerImpl::IsTimeOfDayWallpaper() const {
   return current_wallpaper_ &&
-         current_wallpaper_->wallpaper_info().collection_id ==
-             wallpaper_constants::kTimeOfDayWallpaperCollectionId;
+         ::ash::IsTimeOfDayWallpaper(
+             current_wallpaper_->wallpaper_info().collection_id);
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(
@@ -1471,6 +1471,10 @@ void WallpaperControllerImpl::OnShellInitialized() {
   shell->overview_controller()->AddObserver(this);
   shell->dark_light_mode_controller()->AddCheckpointObserver(this);
   daily_refresh_scheduler_ = std::make_unique<WallpaperDailyRefreshScheduler>();
+  time_of_day_scheduler_ = std::make_unique<WallpaperTimeOfDayScheduler>();
+  if (!time_of_day_scheduler_observation_.IsObserving()) {
+    time_of_day_scheduler_observation_.Observe(time_of_day_scheduler_.get());
+  }
   if (!daily_refresh_observation_.IsObserving()) {
     daily_refresh_observation_.Observe(daily_refresh_scheduler_.get());
   }
@@ -1482,6 +1486,7 @@ void WallpaperControllerImpl::OnShellDestroying() {
   shell->overview_controller()->RemoveObserver(this);
   shell->dark_light_mode_controller()->RemoveCheckpointObserver(this);
   daily_refresh_observation_.Reset();
+  time_of_day_scheduler_observation_.Reset();
 }
 
 void WallpaperControllerImpl::OnWallpaperResized() {
@@ -1601,7 +1606,8 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     return;
   }
 
-  if (!IsOnlineWallpaper(info.type)) {
+  if (!IsOnlineWallpaper(info.type) ||
+      src != &GetScheduleForOnlineWallpaper(info.collection_id)) {
     return;
   }
 
@@ -1909,8 +1915,8 @@ void WallpaperControllerImpl::RepaintOnlineWallpaper(
     return;
   }
 
-  std::unique_ptr<WallpaperInfo> new_info =
-      CreateOnlineWallpaperInfo(*params, __func__);
+  std::unique_ptr<WallpaperInfo> new_info = CreateOnlineWallpaperInfo(
+      *params, GetScheduleForOnlineWallpaper(params->collection_id), __func__);
   if (!new_info) {
     return;
   }
@@ -2986,6 +2992,15 @@ bool WallpaperControllerImpl::IsOobeState() const {
   DVLOG(1) << __func__ << " is_default_oobe_flow=" << is_default_oobe_flow
            << " is_add_person_flow=" << is_add_person_flow;
   return is_default_oobe_flow || is_add_person_flow;
+}
+
+const ScheduledFeature& WallpaperControllerImpl::GetScheduleForOnlineWallpaper(
+    const std::string& collection_id) const {
+  if (::ash::IsTimeOfDayWallpaper(collection_id)) {
+    return *time_of_day_scheduler_;
+  } else {
+    return *Shell::Get()->dark_light_mode_controller();
+  }
 }
 
 }  // namespace ash

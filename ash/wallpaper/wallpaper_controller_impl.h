@@ -31,6 +31,7 @@
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
+#include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -407,6 +408,10 @@ class ASH_EXPORT WallpaperControllerImpl
     return daily_refresh_scheduler_.get();
   }
 
+  raw_ptr<WallpaperTimeOfDayScheduler> time_of_day_scheduler_for_testing() {
+    return time_of_day_scheduler_.get();
+  }
+
  private:
   friend class WallpaperControllerTestBase;
   friend class WallpaperControllerTestApi;
@@ -731,6 +736,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // Returns whether session state is oobe or the oobe ui dialog is visible.
   bool IsOobeState() const;
 
+  const ScheduledFeature& GetScheduleForOnlineWallpaper(
+      const std::string& collection_id) const;
+
   bool is_session_active_ = false;
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
@@ -827,6 +835,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // Provides signals to trigger wallpaper daily refresh.
   std::unique_ptr<WallpaperDailyRefreshScheduler> daily_refresh_scheduler_;
 
+  // Provides signal for when time-of-day wallpapers should change. Ignored if
+  // any other wallpaper collection is active.
+  std::unique_ptr<WallpaperTimeOfDayScheduler> time_of_day_scheduler_;
+
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   ScopedSessionObserver scoped_session_observer_{this};
@@ -837,6 +849,10 @@ class ASH_EXPORT WallpaperControllerImpl
   base::ScopedObservation<ScheduledFeature,
                           ScheduledFeature::CheckpointObserver>
       daily_refresh_observation_{this};
+
+  base::ScopedObservation<ScheduledFeature,
+                          ScheduledFeature::CheckpointObserver>
+      time_of_day_scheduler_observation_{this};
 
   std::unique_ptr<ui::CompositorLock> compositor_lock_;
 
