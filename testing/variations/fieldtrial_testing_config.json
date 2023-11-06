@@ -910,7 +910,7 @@
                 {
                     "name": "EnabledVmMemSize-500_20231031",
                     "params": {
-                        "shift_mib": "-200"
+                        "shift_mib": "-500"
                     },
                     "enable_features": [
                         "ArcVmMemorySize"
