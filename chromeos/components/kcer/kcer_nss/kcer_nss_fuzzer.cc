@@ -27,6 +27,9 @@
 #include "net/test/cert_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "url/gurl.h"
 
 using testing::UnorderedElementsAreArray;
@@ -364,8 +367,8 @@ void CertGenerator::GenerateCert() {
                                                              issuer_.get());
   // Set some default values to increases the chances for a correct cert.
   cert_builder_->SetSignatureAlgorithm(
-      issuer_uses_rsa_key ? net::SignatureAlgorithm::kRsaPkcs1Sha256
-                          : net::SignatureAlgorithm::kEcdsaSha256);
+      issuer_uses_rsa_key ? bssl::SignatureAlgorithm::kRsaPkcs1Sha256
+                          : bssl::SignatureAlgorithm::kEcdsaSha256);
   auto now = base::Time::Now();
   cert_builder_->SetValidity(now, now + base::Days(30));
   cert_builder_->SetSubjectCommonName("SubjectCommonName");
@@ -379,7 +382,7 @@ void CertGenerator::GenerateCert() {
     // RFC 5280 guarantees that these values are from [0,2].
     int version = data_provider_.ConsumeIntegralInRange(0, 2);
     cert_builder_->SetCertificateVersion(
-        static_cast<net::CertificateVersion>(version));
+        static_cast<bssl::CertificateVersion>(version));
   }
   if (GetBool()) {
     cert_builder_->ClearExtensions();
@@ -389,7 +392,7 @@ void CertGenerator::GenerateCert() {
     std::string oid_str = GetString();
     std::string value = GetString();
     bool critical = GetBool();
-    cert_builder_->SetExtension(net::der::Input(oid_str), std::move(value),
+    cert_builder_->SetExtension(bssl::der::Input(oid_str), std::move(value),
                                 critical);
   }
   if (GetBool()) {
@@ -454,7 +457,7 @@ void CertGenerator::GenerateCert() {
   }
   if (GetBool()) {
     std::vector<std::string> memory_holder;
-    std::vector<net::der::Input> purpose_oids;
+    std::vector<bssl::der::Input> purpose_oids;
     while (GetBool()) {
       memory_holder.push_back(GetString());
       purpose_oids.emplace_back(memory_holder.back());
@@ -505,7 +508,7 @@ void CertGenerator::GenerateCert() {
   }
   if (GetBool()) {
     cert_builder_->SetSignatureAlgorithm(
-        data_provider_.ConsumeEnum<net::SignatureAlgorithm>());
+        data_provider_.ConsumeEnum<bssl::SignatureAlgorithm>());
   }
   if (GetBool()) {
     cert_builder_->SetSignatureAlgorithmTLV(GetString());
