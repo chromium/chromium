@@ -36,13 +36,11 @@ class AmbientVideoUiLauncher : public AmbientUiLauncher {
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
   AmbientPhotoController* GetAmbientPhotoController() override;
-  bool IsActive() override;
 
  private:
   void SetVideoHtmlPath(InitializationCallback on_done,
                         base::FilePath video_html_path);
 
-  bool is_active_ = false;
   AmbientVideo current_video_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<AmbientViewDelegate> view_delegate_;
