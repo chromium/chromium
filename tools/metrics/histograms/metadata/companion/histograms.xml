@@ -148,6 +148,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.VisualQuery.Agent.DomImageCount" units="images"
+    expires_after="2024-03-31">
+  <owner>srna@google.com</owner>
+  <owner>pstjuste@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the number of images on the page found by DOM traversal. Recorded
+    during classification start for VisualQuerySuggestions in CSC.
+  </summary>
+</histogram>
+
 <histogram name="Companion.VisualQuery.Agent.StartClassification"
     enum="Boolean" expires_after="2024-04-28">
   <owner>srna@google.com</owner>
@@ -217,17 +228,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the classifier model is available and valid. Recorded as
     soon as classification with model has started.
-  </summary>
-</histogram>
-
-<histogram name="Companion.VisualQuery.DomImageCount" units="images"
-    expires_after="2024-03-31">
-  <owner>srna@google.com</owner>
-  <owner>pstjuste@google.com</owner>
-  <owner>src/chrome/browser/companion/OWNERS</owner>
-  <summary>
-    Records the number of images on the page found by DOM traversal. Recorded
-    during classification start for VisualQuerySuggestions in CSC.
   </summary>
 </histogram>
 
