@@ -306,8 +306,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
       ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
-  shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
-  app_stub_icon_loader.timelines_by_app_id_[app_constants::kChromeAppId] = 1;
+  shortcut_stub_icon_loader.update_version_by_app_id_[shortcut_id.value()] = 1;
+  app_stub_icon_loader.update_version_by_app_id_[app_constants::kChromeAppId] =
+      1;
 
   menu_model->ActivatedAt(uninstall_command_index.value());
 
@@ -411,8 +412,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, LoadIcon) {
       ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
-  shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
-  app_stub_icon_loader.timelines_by_app_id_[app_constants::kChromeAppId] = 1;
+  shortcut_stub_icon_loader.update_version_by_app_id_[shortcut_id.value()] = 1;
+  app_stub_icon_loader.update_version_by_app_id_[app_constants::kChromeAppId] =
+      1;
 
   EXPECT_EQ(0, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(0, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
@@ -453,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, IconVersionUpdated) {
   apps::ShortcutPtr delta =
       std::make_unique<Shortcut>(cache()->GetShortcutHostAppId(shortcut_id),
                                  cache()->GetShortcutLocalId(shortcut_id));
-  delta->icon_key = IconKey(100, 0, 0);
+  delta->icon_key = IconKey();
+  delta->icon_key->update_version = 100;
   cache()->UpdateShortcut(std::move(delta));
 
   EXPECT_EQ(app_list_item->CloneMetadata()->icon_version, 1);

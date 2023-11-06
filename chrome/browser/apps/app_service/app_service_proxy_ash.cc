@@ -285,9 +285,12 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
   for (const auto& delta : deltas) {
     if ((delta->readiness != Readiness::kUnknown &&
          !apps_util::IsInstalled(delta->readiness)) ||
-        (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated)) {
+        (delta->icon_key.has_value() && delta->icon_key->HasUpdatedVersion())) {
       // If there's already a deletion in progress, skip the deletion request.
-      if (base::Contains(pending_read_icon_requests_, delta->app_id)) {
+      // For app types, not using AppService icon cache, e.g. remote apps, skip
+      // the deletion request.
+      if (base::Contains(pending_read_icon_requests_, delta->app_id) ||
+          !ShouldReadIcons(app_type)) {
         continue;
       }
 
@@ -522,7 +525,7 @@ apps::ShortcutRegistryCache* AppServiceProxyAsh::ShortcutRegistryCache() {
 }
 
 void AppServiceProxyAsh::PublishShortcut(ShortcutPtr delta) {
-  if (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated) {
+  if (delta->icon_key.has_value() && delta->icon_key->HasUpdatedVersion()) {
     MaybeScheduleIconFolderDeletionForShortcut(delta->shortcut_id);
   }
 

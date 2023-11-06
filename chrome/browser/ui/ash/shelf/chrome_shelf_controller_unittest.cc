@@ -6688,7 +6688,8 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   apps::ShortcutPtr shortcut =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
-  shortcut->icon_key = apps::IconKey(100, 0, 0);
+  shortcut->icon_key = apps::IconKey();
+  shortcut->icon_key->update_version = 100;
 
   apps::StubIconLoader shortcut_stub_icon_loader;
   apps::StubIconLoader app_stub_icon_loader;
@@ -6696,8 +6697,8 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
       ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
-  shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
-  app_stub_icon_loader.timelines_by_app_id_["app_id"] = 1;
+  shortcut_stub_icon_loader.update_version_by_app_id_[shortcut_id.value()] = 1;
+  app_stub_icon_loader.update_version_by_app_id_["app_id"] = 1;
   EXPECT_EQ(0, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(0, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
@@ -6725,7 +6726,8 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   // Verify icon update loads icon again.
   apps::ShortcutPtr delta =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
-  delta->icon_key = apps::IconKey(101, 1, 1);
+  delta->icon_key = apps::IconKey(1, 1);
+  delta->icon_key->update_version = 101;
   cache()->UpdateShortcut(std::move(delta));
 
   EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
@@ -6780,7 +6782,8 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   cache()->RemoveShortcut(shortcut_id);
   apps::ShortcutPtr same_shortcut =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
-  same_shortcut->icon_key = apps::IconKey(100, 0, 0);
+  same_shortcut->icon_key = apps::IconKey();
+  same_shortcut->icon_key->update_version = 100;
   cache()->UpdateShortcut(std::move(same_shortcut));
   // In this case icon loaded on shortcut creation.
   EXPECT_EQ(4, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());

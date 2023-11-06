@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -63,8 +62,6 @@ class LacrosBrowserShortcutsController : public WebAppInstallManagerObserver {
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   base::WeakPtrFactory<LacrosBrowserShortcutsController> weak_ptr_factory_{
       this};

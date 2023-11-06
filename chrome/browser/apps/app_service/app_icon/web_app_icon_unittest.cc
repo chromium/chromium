@@ -825,7 +825,6 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
     std::vector<AppPtr> apps;
     AppPtr app = std::make_unique<App>(AppType::kWeb, app_id);
     app->icon_key = std::move(*icon_key.Clone());
-    app->icon_key->raw_icon_updated = true;
     apps.push_back(std::move(app));
     app_service_proxy().OnApps(std::move(apps), AppType::kWeb,
                                /*should_notify_initialized=*/false);
@@ -1298,8 +1297,7 @@ TEST_F(AppServiceWebAppIconTest, IconUpdate) {
   gfx::ImageSkia src_image_skia2 = test_helper().GenerateWebAppIcon(
       app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
-  IconKey icon_key;
-  icon_key.icon_effects = icon_effects;
+  IconKey icon_key(/*raw_icon_updated=*/true, icon_effects);
   UpdateIcon(app_id, icon_key);
 
   // Load the kStandard icon again after updating the icon.

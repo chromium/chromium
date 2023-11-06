@@ -115,8 +115,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->version = "version";
     app2->additional_search_terms = {"item1", "item2"};
     app2->icon_key =
-        apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                      /*resource_id=*/65535, apps::IconEffects::kNone);
+        apps::IconKey(/*resource_id=*/65535, apps::IconEffects::kNone);
     app2->last_launch_time = base::Time() + base::Days(2);
     app2->install_time = base::Time() + base::Days(1);
 

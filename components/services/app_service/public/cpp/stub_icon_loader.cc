@@ -17,12 +17,14 @@ StubIconLoader::StubIconLoader() = default;
 StubIconLoader::~StubIconLoader() = default;
 
 absl::optional<IconKey> StubIconLoader::GetIconKey(const std::string& id) {
-  uint64_t timeline = 0;
-  auto iter = timelines_by_app_id_.find(id);
-  if (iter != timelines_by_app_id_.end()) {
-    timeline = iter->second;
+  int32_t update_version = IconKey::kInitVersion;
+  auto iter = update_version_by_app_id_.find(id);
+  if (iter != update_version_by_app_id_.end()) {
+    update_version = iter->second;
   }
-  return absl::make_optional<IconKey>(timeline, 0, 0);
+  auto icon_key = absl::make_optional<IconKey>();
+  icon_key->update_version = update_version;
+  return icon_key;
 }
 
 std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
@@ -33,7 +35,7 @@ std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
   num_load_calls_++;
-  if (base::Contains(timelines_by_app_id_, id)) {
+  if (base::Contains(update_version_by_app_id_, id)) {
     auto icon_value = std::make_unique<IconValue>();
     icon_value->icon_type = icon_type;
     icon_value->uncompressed =

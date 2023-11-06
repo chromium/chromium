@@ -24,7 +24,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/arc_activity_adaptive_icon_impl.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
@@ -223,8 +222,6 @@ class ArcApps : public KeyedService,
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   PausedApps paused_apps_;
 

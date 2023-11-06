@@ -4,14 +4,19 @@
 
 #include "components/services/app_service/public/cpp/app_update.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
+#include "components/services/app_service/public/cpp/types_util.h"
+
+namespace apps {
 
 namespace {
 
@@ -33,15 +38,101 @@ std::string FormatBytes(absl::optional<uint64_t> bytes) {
   return bytes.has_value() ? base::NumberToString(bytes.value()) : "null";
 }
 
-}  // namespace
+// Merges `delta`'s `icon_key` to `new_delta`'s `icon_key`.
+void MergeIconKeyDelta(App* new_delta, App* delta) {
+  CHECK(new_delta);
 
-namespace apps {
+  // `new_delta` should hold a bool icon version only.
+  CHECK(!new_delta->icon_key.has_value() ||
+        absl::holds_alternative<bool>(new_delta->icon_key->update_version));
 
-// static
-void AppUpdate::Merge(App* state, const App* delta) {
-  DCHECK(state);
-  if (!delta) {
+  // `delta` should hold a bool icon version only.
+  CHECK(!delta || !delta->icon_key.has_value() ||
+        absl::holds_alternative<bool>(delta->icon_key->update_version));
+
+  if (delta && delta->readiness != Readiness::kUnknown &&
+      !apps_util::IsInstalled(delta->readiness)) {
+    // When the app is uninstalled, reset `icon_key` to clear the icon key, to
+    // refresh the icon for AppService clients, and reload the icon when the app
+    // is installed back again.
+    new_delta->icon_key.reset();
     return;
+  }
+
+  if (!delta || !delta->icon_key.has_value()) {
+    return;
+  }
+
+  if (new_delta->icon_key.has_value()) {
+    // If `new_delta`'s `update_version` is true, or `delta`'s `update_version`
+    // is true, the new `update_version` should be true.
+    delta->icon_key->update_version =
+        absl::get<bool>(new_delta->icon_key->update_version) ||
+        absl::get<bool>(delta->icon_key->update_version);
+  }
+
+  new_delta->icon_key = std::move(delta->icon_key);
+  return;
+}
+
+// Merges `delta`'s `icon_key` to `state`'s `icon_key`, and  returns's the
+// merge result.
+//
+// For `icon_key`, if `delta`'s `update_version` is true, increase `state`'s
+// `update_version`.
+absl::optional<apps::IconKey> MergeIconKey(const App* state, const App* delta) {
+  //`state` should have int32_t `update_version` only.
+  CHECK(!state || !state->icon_key.has_value() ||
+        absl::holds_alternative<int32_t>(state->icon_key->update_version));
+
+  // `delta` should hold a bool icon version only.
+  CHECK(!delta || !delta->icon_key.has_value() ||
+        absl::holds_alternative<bool>(delta->icon_key->update_version));
+
+  if (delta && delta->readiness != Readiness::kUnknown &&
+      !apps_util::IsInstalled(delta->readiness)) {
+    // When the app is uninstalled, reset `icon_key` to clear the icon key, to
+    // refresh the icon for AppService clients, and reload the icon when the app
+    // is installed back again.
+    IconKey icon_key;
+    icon_key.update_version = IconKey::kInvalidVersion;
+    return icon_key;
+  }
+
+  if (!delta || !delta->icon_key.has_value()) {
+    if (state && state->icon_key.has_value()) {
+      return std::move(*state->icon_key->Clone());
+    }
+    return absl::nullopt;
+  }
+
+  IconKey icon_key =
+      IconKey(delta->icon_key->resource_id, delta->icon_key->icon_effects);
+
+  if (delta->icon_key->resource_id != IconKey::kInvalidResourceId) {
+    icon_key.update_version = IconKey::kInvalidVersion;
+    return icon_key;
+  }
+
+  if (!state || !state->icon_key.has_value()) {
+    icon_key.update_version = IconKey::kInitVersion;
+    return icon_key;
+  }
+
+  icon_key.update_version = absl::get<int32_t>(state->icon_key->update_version);
+
+  // The icon is updated by the app, so increase `update_version`.
+  if (delta->icon_key->HasUpdatedVersion()) {
+    icon_key.update_version = absl::get<int32_t>(icon_key.update_version) + 1;
+  }
+  return icon_key;
+}
+
+bool MergeWithoutIconKey(App* state, const App* delta) {
+  CHECK(state);
+
+  if (!delta) {
+    return false;
   }
 
   if ((delta->app_type != state->app_type) ||
@@ -50,14 +141,14 @@ void AppUpdate::Merge(App* state, const App* delta) {
                << EnumToString(delta->app_type) << ", " << delta->app_id
                << ") vs (" << EnumToString(state->app_type) << ", "
                << state->app_id << ") ";
-    return;
+    return false;
   }
 
   // You can not merge removed states.
   DCHECK_NE(state->readiness, Readiness::kRemoved);
   DCHECK_NE(delta->readiness, Readiness::kRemoved);
 
-  SET_ENUM_VALUE(readiness, apps::Readiness::kUnknown);
+  SET_ENUM_VALUE(readiness, Readiness::kUnknown);
   SET_OPTIONAL_VALUE(name)
   SET_OPTIONAL_VALUE(short_name)
   SET_OPTIONAL_VALUE(publisher_id)
@@ -67,10 +158,6 @@ void AppUpdate::Merge(App* state, const App* delta) {
   if (!delta->additional_search_terms.empty()) {
     state->additional_search_terms.clear();
     state->additional_search_terms = delta->additional_search_terms;
-  }
-
-  if (delta->icon_key.has_value()) {
-    state->icon_key = std::move(*delta->icon_key->Clone());
   }
 
   SET_OPTIONAL_VALUE(last_launch_time);
@@ -124,6 +211,28 @@ void AppUpdate::Merge(App* state, const App* delta) {
 
   // When adding new fields to the App type, this function should also be
   // updated.
+
+  return true;
+}
+
+}  // namespace
+
+// static
+void AppUpdate::MergeDelta(App* new_delta, App* delta) {
+  if (!MergeWithoutIconKey(new_delta, delta)) {
+    return;
+  }
+
+  MergeIconKeyDelta(new_delta, delta);
+}
+
+// static
+void AppUpdate::Merge(App* state, const App* delta) {
+  if (!MergeWithoutIconKey(state, delta)) {
+    return;
+  }
+
+  state->icon_key = MergeIconKey(state, delta);
 }
 
 // static
@@ -248,17 +357,12 @@ bool AppUpdate::AdditionalSearchTermsChanged() const {
 }
 
 absl::optional<apps::IconKey> AppUpdate::IconKey() const {
-  if (delta_ && delta_->icon_key.has_value()) {
-    return std::move(*delta_->icon_key->Clone());
-  }
-  if (state_ && state_->icon_key.has_value()) {
-    return std::move(*state_->icon_key->Clone());
-  }
-  return absl::nullopt;
+  return MergeIconKey(state_, delta_);
 }
 
 bool AppUpdate::IconKeyChanged() const {
-  RETURN_OPTIONAL_VALUE_CHANGED(icon_key);
+  return delta_ && delta_->icon_key.has_value() &&
+         (!state_ || (MergeIconKey(state_, delta_) != state_->icon_key));
 }
 
 base::Time AppUpdate::LastLaunchTime() const {

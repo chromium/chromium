@@ -66,7 +66,13 @@ std::vector<AppPtr> AppRegistryCache::GetAllApps() {
   }
   for (const auto& d_iter : deltas_in_progress_) {
     if (!base::Contains(states_, d_iter.first)) {
-      apps.push_back(d_iter.second->Clone());
+      // Call AppUpdate::Merge to set the init value for the icon key's
+      // `update_version` to keep the consistency as AppRegistryCache's
+      // `states_`.
+      auto app =
+          std::make_unique<App>(d_iter.second->app_type, d_iter.second->app_id);
+      AppUpdate::Merge(app.get(), d_iter.second);
+      apps.push_back(std::move(app));
     }
   }
   return apps;
@@ -175,7 +181,8 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
         // before the merge is sent separately.
         deltas_pending_.push_back(std::move(delta));
       } else {
-        AppUpdate::Merge(d_iter->second, delta.get());
+        // Call AppUpdate::MergeDelta to merge the icon key's `update_version`.
+        AppUpdate::MergeDelta(d_iter->second, delta.get());
       }
     } else {
       deltas_in_progress_[delta->app_id] = delta.get();
@@ -217,7 +224,11 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
       if (state) {
         AppUpdate::Merge(state, delta);
       } else {
-        states_.insert(std::make_pair(delta->app_id, delta->Clone()));
+        // Call AppUpdate::Merge to set the init value for the icon key's
+        // `update_version`.
+        auto app = std::make_unique<App>(delta->app_type, delta->app_id);
+        AppUpdate::Merge(app.get(), delta);
+        states_.insert(std::make_pair(delta->app_id, std::move(app)));
       }
     } else {
       DCHECK(!state || state->readiness != Readiness::kReady);

@@ -701,8 +701,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();
 
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+  app->icon_key = apps::IconKey(GetIconEffects(web_app));
 
   app->last_launch_time = web_app->last_launch_time();
   app->install_time = web_app->first_install_time();
@@ -861,8 +860,7 @@ void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
   }
 
   auto app = std::make_unique<apps::App>(app_type(), app_id);
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+  app->icon_key = apps::IconKey(GetIconEffects(web_app));
   delegate_->PublishWebApp(std::move(app));
 }
 
@@ -1382,7 +1380,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
     // a new `raw_icon_data_version`, to remove the icon files saved in the
     // AppService icon directory, to get the new raw icon files of the web app
     // for AppService.
-    app->icon_key->raw_icon_updated = true;
+    app->icon_key->update_version = true;
     delegate_->PublishWebApp(std::move(app));
   }
 }
@@ -1470,9 +1468,7 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
 
   DCHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled);
   apps::AppPtr app = CreateWebApp(web_app);
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
-  ;
+  app->icon_key = apps::IconKey(GetIconEffects(web_app));
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.

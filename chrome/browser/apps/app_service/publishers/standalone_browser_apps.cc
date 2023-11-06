@@ -46,8 +46,7 @@ std::unique_ptr<apps::IconKey> CreateIconKey(bool is_browser_load_success) {
   }
 #endif
 
-  auto icon_key = std::make_unique<apps::IconKey>(
-      apps::IconKey::kDoesNotChangeOverTime, resource_id, icon_effects);
+  auto icon_key = std::make_unique<apps::IconKey>(resource_id, icon_effects);
   return icon_key;
 }
 

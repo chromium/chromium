@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -88,7 +87,6 @@ class StandaloneBrowserApps : public AppPublisher,
   bool is_browser_load_success_ = true;
   const raw_ptr<BrowserAppInstanceRegistry, DanglingUntriaged | ExperimentalAsh>
       browser_app_instance_registry_;
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Receives Lacros app publisher events from Lacros.
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};

@@ -97,9 +97,8 @@ void BrowserShortcuts::MaybePublishBrowserShortcut(const webapps::AppId& app_id,
       provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
   shortcut->shortcut_source = apps::ShortcutSource::kUser;
   // TODO(crbug.com/1412708): Add shortcut specific icon masking.
-  shortcut->icon_key = std::move(
-      *icon_key_factory_.CreateIconKey(apps::IconEffects::kCrOsStandardMask));
-  shortcut->icon_key->raw_icon_updated = raw_icon_updated;
+  shortcut->icon_key =
+      apps::IconKey(raw_icon_updated, apps::IconEffects::kCrOsStandardMask);
   apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
 }
 

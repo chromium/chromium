@@ -48,7 +48,14 @@ namespace mojo {
 
 apps::IconKeyPtr StructTraits<crosapi::mojom::AppDataView,
                               apps::AppPtr>::icon_key(const apps::AppPtr& r) {
-  return ConvertOptionalIconKeyToIconKeyPtr(r->icon_key);
+  if (!r->icon_key.has_value()) {
+    return nullptr;
+  }
+
+  auto icon_key = std::make_unique<apps::IconKey>(r->icon_key->resource_id,
+                                                  r->icon_key->icon_effects);
+  icon_key->update_version = r->icon_key->update_version;
+  return icon_key;
 }
 
 // static
@@ -443,12 +450,50 @@ bool EnumTraits<crosapi::mojom::Readiness, apps::Readiness>::FromMojom(
   return false;
 }
 
+crosapi::mojom::IconUpdateVersionDataView::Tag UnionTraits<
+    crosapi::mojom::IconUpdateVersionDataView,
+    apps::IconKey::UpdateVersion>::GetTag(const apps::IconKey::UpdateVersion&
+                                              r) {
+  if (absl::holds_alternative<bool>(r)) {
+    return crosapi::mojom::IconUpdateVersionDataView::Tag::kRawIconUpdated;
+  }
+  if (absl::holds_alternative<int32_t>(r)) {
+    return crosapi::mojom::IconUpdateVersionDataView::Tag::kTimeline;
+  }
+  NOTREACHED();
+  return crosapi::mojom::IconUpdateVersionDataView::Tag::kRawIconUpdated;
+}
+
+bool UnionTraits<crosapi::mojom::IconUpdateVersionDataView,
+                 apps::IconKey::UpdateVersion>::
+    Read(crosapi::mojom::IconUpdateVersionDataView data,
+         apps::IconKey::UpdateVersion* out) {
+  switch (data.tag()) {
+    case crosapi::mojom::IconUpdateVersionDataView::Tag::kRawIconUpdated: {
+      *out = data.raw_icon_updated();
+      return true;
+    }
+    case crosapi::mojom::IconUpdateVersionDataView::Tag::kTimeline: {
+      *out = data.timeline();
+      return true;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr>::Read(
     crosapi::mojom::IconKeyDataView data,
     apps::IconKeyPtr* out) {
-  *out = std::make_unique<apps::IconKey>(
-      data.timeline(), apps::IconKey::kInvalidResourceId, data.icon_effects());
-  (*out)->raw_icon_updated = data.raw_icon_updated();
+  apps::IconKey::UpdateVersion update_version;
+  if (!data.ReadUpdateVersion(&update_version)) {
+    return false;
+  }
+
+  *out = std::make_unique<apps::IconKey>(apps::IconKey::kInvalidResourceId,
+                                         data.icon_effects());
+  (*out)->update_version = std::move(update_version);
+
   return true;
 }
 

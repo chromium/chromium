@@ -1178,13 +1178,11 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
 
   void RemoveAppsFromIconLoader(std::vector<std::string>& app_ids) {
     // Update the icon key to fetch the new icon and avoid icon catch,
-    apps_util::IncrementingIconKeyFactory icon_key_factory;
     std::vector<apps::AppPtr> apps;
     for (const auto& app_id : app_ids) {
       auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
       app->icon_key =
-          std::move(*icon_key_factory.CreateIconKey(apps::IconEffects::kNone));
-      app->icon_key->raw_icon_updated = true;
+          apps::IconKey(/*raw_icon_updated=*/true, apps::IconEffects::kNone);
       apps.push_back(std::move(app));
     }
 

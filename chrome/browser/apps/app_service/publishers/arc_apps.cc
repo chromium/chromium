@@ -1317,11 +1317,7 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   app->policy_ids = {app_info.package_name};
 
   if (update_icon) {
-    app->icon_key = std::move(
-        *icon_key_factory_.CreateIconKey(GetIconEffects(app_id, app_info)));
-    if (raw_icon_updated) {
-      app->icon_key->raw_icon_updated = true;
-    }
+    app->icon_key = IconKey(raw_icon_updated, GetIconEffects(app_id, app_info));
   }
 
   app->version = app_info.version_name;
@@ -1439,8 +1435,7 @@ void ArcApps::SetIconEffect(const std::string& app_id) {
   }
 
   auto app = std::make_unique<App>(AppType::kArc, app_id);
-  app->icon_key = std::move(
-      *icon_key_factory_.CreateIconKey(GetIconEffects(app_id, *app_info)));
+  app->icon_key = IconKey(GetIconEffects(app_id, *app_info));
   AppPublisher::Publish(std::move(app));
 }
 

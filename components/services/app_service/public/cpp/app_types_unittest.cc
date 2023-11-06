@@ -157,7 +157,8 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
   // Verify the app is equal with the same `icon_key`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
-    app1->icon_key = IconKey(100, 0, 0);
+    app1->icon_key = IconKey();
+    app1->icon_key->update_version = 100;
     AppPtr app2 = app1->Clone();
     EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
   }
@@ -167,7 +168,8 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
-    app2->icon_key = IconKey(100, 0, 0);
+    app2->icon_key = IconKey();
+    app2->icon_key->update_version = 100;
     EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
   }
 
@@ -175,8 +177,10 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
     AppPtr app2 = app1->Clone();
-    app1->icon_key = IconKey(100, 0, 0);
-    app2->icon_key = IconKey(200, 0, 0);
+    app1->icon_key = IconKey();
+    app1->icon_key->update_version = 100;
+    app2->icon_key = IconKey();
+    app2->icon_key->update_version = 200;
     EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
   }
 }

@@ -26,12 +26,12 @@ apps::AppPtr MakeApp(const char* app_id,
                      const char* name,
                      apps::AppType app_type = apps::AppType::kArc,
                      apps::Readiness readiness = apps::Readiness::kUnknown,
-                     uint64_t timeline = 0) {
+                     bool should_update_icon_version = false) {
   auto app = std::make_unique<apps::App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
-  app->icon_key =
-      apps::IconKey(timeline, /*resource_id=*/0, /*icon_effects=*/0);
+  app->icon_key = apps::IconKey(/*resource_id=*/0, /*icon_effects=*/0);
+  app->icon_key->update_version = should_update_icon_version;
   return app;
 }
 
@@ -360,15 +360,16 @@ class AppRegistryCacheTest : public testing::Test,
                  const char* app_id,
                  const char* name,
                  Readiness readiness = Readiness::kUnknown,
-                 uint64_t timeline = 0) {
+                 int32_t icon_update_version = IconKey::kInitVersion) {
     ASSERT_NE(cache.states_.end(), cache.states_.find(app_id));
     ASSERT_TRUE(cache.states_[app_id]->name.has_value());
     EXPECT_EQ(name, GetName(cache, app_id));
     EXPECT_EQ(readiness, cache.states_[app_id]->readiness);
-    if (timeline != 0) {
-      ASSERT_TRUE(cache.states_[app_id]->icon_key.has_value());
-      EXPECT_EQ(timeline, cache.states_[app_id]->icon_key.value().timeline);
-    }
+    auto& icon_key = cache.states_[app_id]->icon_key;
+    ASSERT_TRUE(icon_key.has_value());
+    ASSERT_TRUE(absl::holds_alternative<int32_t>(icon_key->update_version));
+    EXPECT_EQ(icon_update_version,
+              absl::get<int32_t>(icon_key->update_version));
   }
 
   int AppCount(const AppRegistryCache& cache) { return cache.states_.size(); }
@@ -406,7 +407,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   deltas.push_back(MakeApp("b", "banana", AppType::kArc, Readiness::kReady));
   deltas.push_back(MakeApp("c", "cherry", AppType::kArc,
                            Readiness::kDisabledByPolicy,
-                           /*timeline=*/10));
+                           /*should_update_icon_version=*/true));
   OnApps(cache, std::move(deltas), AppType::kUnknown,
          false /* should_notify_initialized */);
 
@@ -414,7 +415,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   VerifyApp(cache, "a", "apple");
   VerifyApp(cache, "b", "banana", Readiness::kReady);
   VerifyApp(cache, "c", "cherry", Readiness::kDisabledByPolicy,
-            /*timeline=*/10);
+            /*icon_update_version=*/IconKey::kInitVersion);
 
   CallForEachApp(cache);
   EXPECT_EQ(2u, updated_ids_.size());
@@ -441,7 +442,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   VerifyApp(cache, "a", "apricot", Readiness::kReady);
   VerifyApp(cache, "b", "banana", Readiness::kReady);
   VerifyApp(cache, "c", "cherry", Readiness::kDisabledByPolicy,
-            /*timeline=*/10);
+            /*icon_update_version=*/IconKey::kInitVersion);
   VerifyApp(cache, "d", "durian");
 
   CallForEachApp(cache);

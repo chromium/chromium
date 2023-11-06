@@ -298,9 +298,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     // This bug is tracked at https://crbug.com/1248499, but given that Chrome
     // Apps is deprecated, it's unclear if we'll ever get around to implementing
     // this functionality.
-    app->icon_key =
-        apps::IconKey(/*timeline=*/0, apps::IconKey::kInvalidResourceId,
-                      apps::IconEffects::kCrOsStandardIcon);
+    app->icon_key = apps::IconKey(apps::IconEffects::kCrOsStandardIcon);
 
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs) {

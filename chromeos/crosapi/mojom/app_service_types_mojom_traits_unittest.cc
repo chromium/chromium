@@ -11,6 +11,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -31,9 +32,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->description = "description";
   input->version = "version";
   input->additional_search_terms = {"1", "2"};
-  input->icon_key = apps::IconKey(
-      /*timeline=*/1, apps::IconKey::kInvalidResourceId, /*icon_effects=*/2);
-  input->icon_key->raw_icon_updated = true;
+  input->icon_key =
+      apps::IconKey(/*raw_icon_updated=*/true,
+                    /*icon_effects=*/apps::IconEffects::kChromeBadge);
   input->last_launch_time = base::Time() + base::Days(1);
   input->install_time = base::Time() + base::Days(2);
   input->install_reason = apps::InstallReason::kUser;
@@ -84,9 +85,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(output->app_size_in_bytes, 1000000);
   EXPECT_EQ(output->data_size_in_bytes, 1000000);
 
-  EXPECT_EQ(output->icon_key->timeline, 1U);
+  EXPECT_TRUE(absl::holds_alternative<bool>(output->icon_key->update_version));
+  EXPECT_TRUE(absl::get<bool>(output->icon_key->update_version));
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
-  EXPECT_TRUE(output->icon_key->raw_icon_updated);
 
   EXPECT_EQ(output->last_launch_time, base::Time() + base::Days(1));
   EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
@@ -300,6 +301,43 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripReadiness) {
         input, output));
 
     EXPECT_EQ(output->readiness, apps::Readiness::kRemoved);
+  }
+}
+
+// Test that serialization and deserialization works with updating IconKey.
+TEST(AppServiceTypesMojomTraitsTest, RoundTripIconKey) {
+  {
+    auto icon_key = std::make_unique<apps::IconKey>(/*raw_icon_updated=*/true,
+                                                    apps::IconEffects::kNone);
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+  {
+    auto icon_key = std::make_unique<apps::IconKey>();
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+  {
+    auto icon_key =
+        std::make_unique<apps::IconKey>(apps::IconEffects::kBlocked);
+    icon_key->update_version = apps::IconKey::kInitVersion;
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
+  }
+  {
+    auto icon_key = std::make_unique<apps::IconKey>(
+        apps::IconEffects::kCrOsStandardBackground);
+    icon_key->update_version = 100;
+    apps::IconKeyPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconKey>(
+        icon_key, output));
+    EXPECT_EQ(*icon_key, *output);
   }
 }
 
@@ -1213,9 +1251,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripCapabilityAccess) {
 TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTrip) {
   auto input = std::make_unique<apps::Shortcut>("host_app_id", "local_id");
   input->name = "lacros test name";
-  input->icon_key = apps::IconKey(
-      /*timeline=*/1, apps::IconKey::kInvalidResourceId, /*icon_effects=*/2);
-  input->icon_key->raw_icon_updated = true;
+  input->icon_key =
+      apps::IconKey(/*raw_icon_updated=*/true,
+                    /*icon_effects=*/apps::IconEffects::kChromeBadge);
 
   apps::ShortcutPtr output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::AppShortcut>(
@@ -1228,9 +1266,9 @@ TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTrip) {
   EXPECT_EQ(output->name, "lacros test name");
   EXPECT_EQ(output->shortcut_source, apps::ShortcutSource::kUser);
 
-  EXPECT_EQ(output->icon_key->timeline, 1U);
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
-  EXPECT_TRUE(output->icon_key->raw_icon_updated);
+  EXPECT_TRUE(absl::holds_alternative<bool>(output->icon_key->update_version));
+  EXPECT_TRUE(absl::get<bool>(output->icon_key->update_version));
 }
 
 // Test that serialization and deserialization works with optional fields that

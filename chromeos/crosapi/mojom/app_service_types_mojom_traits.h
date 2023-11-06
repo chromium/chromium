@@ -141,19 +141,60 @@ struct EnumTraits<crosapi::mojom::Readiness, apps::Readiness> {
 };
 
 template <>
+struct UnionTraits<crosapi::mojom::IconUpdateVersionDataView,
+                   apps::IconKey::UpdateVersion> {
+  static crosapi::mojom::IconUpdateVersionDataView::Tag GetTag(
+      const apps::IconKey::UpdateVersion& r);
+
+  static bool IsNull(const apps::IconKey::UpdateVersion& r) { return false; }
+
+  static void SetToNull(apps::IconKey::UpdateVersion* out) {}
+
+  static bool raw_icon_updated(const apps::IconKey::UpdateVersion& r) {
+    if (absl::holds_alternative<bool>(r)) {
+      return absl::get<bool>(r);
+    }
+    return false;
+  }
+
+  static int32_t timeline(const apps::IconKey::UpdateVersion& r) {
+    if (absl::holds_alternative<int32_t>(r)) {
+      return absl::get<int32_t>(r);
+    }
+    return apps::IconKey::kInvalidVersion;
+  }
+
+  static bool Read(crosapi::mojom::IconUpdateVersionDataView data,
+                   apps::IconKey::UpdateVersion* out);
+};
+
+template <>
 struct StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr> {
   static bool IsNull(const apps::IconKeyPtr& r) { return !r; }
 
   static void SetToNull(apps::IconKeyPtr* r) { r->reset(); }
 
-  static uint64_t timeline(const apps::IconKeyPtr& r) { return r->timeline; }
+  // This method is required for Ash-Lacros backwards compatibility.
+  static uint64_t deprecated_timeline(const apps::IconKeyPtr& r) {
+    return absl::holds_alternative<int32_t>(r->update_version)
+               ? absl::get<int32_t>(r->update_version)
+               : apps::IconKey::kInvalidVersion;
+  }
 
   static uint32_t icon_effects(const apps::IconKeyPtr& r) {
     return r->icon_effects;
   }
 
-  static bool raw_icon_updated(const apps::IconKeyPtr& r) {
-    return r->raw_icon_updated;
+  // This method is required for Ash-Lacros backwards compatibility.
+  static bool deprecated_raw_icon_updated(const apps::IconKeyPtr& r) {
+    return absl::holds_alternative<bool>(r->update_version)
+               ? absl::get<bool>(r->update_version)
+               : false;
+  }
+
+  static apps::IconKey::UpdateVersion update_version(
+      const apps::IconKeyPtr& r) {
+    return r->update_version;
   }
 
   static bool Read(crosapi::mojom::IconKeyDataView, apps::IconKeyPtr* out);

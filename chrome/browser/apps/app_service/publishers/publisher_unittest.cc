@@ -140,9 +140,7 @@ apps::AppPtr MakeApp(apps::AppType app_type,
   app->short_name = name;
   app->install_reason = apps::InstallReason::kUser;
   app->install_source = apps::InstallSource::kSync;
-  app->icon_key = apps::IconKey(
-      /*timeline=*/1, apps::IconKey::kInvalidResourceId,
-      /*icon_effects=*/0);
+  app->icon_key = apps::IconKey();
   return app;
 }
 

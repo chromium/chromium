@@ -77,9 +77,10 @@ class ShortcutRemovalDialogViewBrowserTest
                           const std::string& host_app_id) {
     proxy()->OverrideShortcutInnerIconLoaderForTesting(
         &shortcut_stub_icon_loader_);
-    shortcut_stub_icon_loader_.timelines_by_app_id_[shortcut_id.value()] = 1;
+    shortcut_stub_icon_loader_.update_version_by_app_id_[shortcut_id.value()] =
+        1;
     proxy()->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader_);
-    app_stub_icon_loader_.timelines_by_app_id_[host_app_id] = 1;
+    app_stub_icon_loader_.update_version_by_app_id_[host_app_id] = 1;
   }
 
   int NumLoadShortcutIcon() {

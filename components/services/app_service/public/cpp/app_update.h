@@ -54,8 +54,18 @@ struct RunOnOsLogin;
 // See components/services/app_service/README.md for more details.
 class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
  public:
-  // Modifies |state| by copying over all of |delta|'s known fields: those
-  // fields whose values aren't "unknown". The |state| may not be nullptr.
+  // Modifies `new_delta` by copying over all of `delta`'s known fields: those
+  // fields whose values aren't "unknown". The `new_delta` may not be nullptr.
+  //
+  // For `icon_key`, if `new_delta`'s `update_version` is true, keep that as
+  // true. Otherwise, copying `delta`'s `icon_key` if it has a value.
+  static void MergeDelta(App* new_delta, App* delta);
+
+  // Modifies `state` by copying over all of `delta`'s known fields: those
+  // fields whose values aren't "unknown". The `state` may not be nullptr.
+  //
+  // For `icon_key`, if `delta`'s `update_version` is true, increase `state`'s
+  // `update_version`.
   static void Merge(App* state, const App* delta);
 
   // Returns true if there are some changed for `delta` compared with `state`.

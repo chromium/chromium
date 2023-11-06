@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -78,8 +77,6 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   const raw_ptr<WebAppProvider> provider_;
 
   raw_ptr<apps::AppServiceProxy> proxy_;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};

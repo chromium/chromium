@@ -21,8 +21,8 @@ import "url/mojom/url.mojom";
 // ash-chrome. It is intended to be the minimal subset of apps::mojom::App
 // required for this purpose, and exists to allow apps::mojom::App to not have
 // to be versioned.
-// See components/services/app_service/public/mojom/types.mojom for details
-// for the structs in this file.
+// See components/services/app_service/public/cpp/app_types.h for details for
+// the structs in this file.
 [Stable]
 struct App {
   AppType app_type@0;
@@ -169,11 +169,41 @@ enum OptionalBool {
   kTrue,
 };
 
+// `IconUpdateVersion` should hold a bool to specify whether the icon image is
+// updated by the app when the publisher publishes the app. `IconUpdateVersion`
+// should never hold a int32_t when calling OnApps to publish apps.
+//
+// AppRegistryCache generates an int32_t for `IconUpdateVersion` to notify
+// AppService clients whether reload the icon, when merging `deltas`.
+// `IconUpdateVersion` should never hold a bool in AppRegistryCache's `states_`.
+//
+// When the icon has a valid `resource_id`, IconUpdateVersion is
+// `kInitVersion`, and never changes.
+//
+// When an app is added, if the icon doesn't have a valid `resource_id`,
+// IconUpdateVersion is set as `kInitVersion`.
+//
+// If the app updates the icon image, IconUpdateVersion is set as true by a
+// Publisher, and AppService increases the saved IconUpdateVersion to notify
+// AppService clients to reload icons.
+//
+// When IconUpdateVersion is an int32_t, the exact value of the number isn't
+// important, only that newer IconKey's (those that were created more recently)
+// have a larger IconUpdateVersion than older IconKey's.
+//
+// IconUpdateVersion isn't changed if `icon_effects` is changed.
+// IconUpdateVersion is increased only when the app updates, or upgrades, and
+// publish a new icon image.
+//
+// See components/services/app_service/public/cpp/icon_types.h for details
+[Stable]
+union IconUpdateVersion {
+  bool raw_icon_updated;
+  int32 timeline;
+};
+
 [Stable]
 struct IconKey {
-  // A timeline value for icons that do not change.
-  const uint64 kDoesNotChangeOverTime = 0;
-
   // A monotonically increasing number so that, after an icon update, a new
   // IconKey, one that is different in terms of field-by-field equality, can be
   // broadcast by a Publisher.
@@ -186,10 +216,9 @@ struct IconKey {
   // "version", to avoid any possible confusion that it encodes *the* app's
   // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
   //
-  // For example, if an app is disabled for some reason (so that its icon is
-  // grayed out), this would result in a different timeline even though the
-  // app's version is unchanged.
-  uint64 timeline;
+  // DEPRECATED, replaced with `update_version` below.
+  [RenamedFrom="timeline"]
+  uint64 deprecated_timeline;
 
   // A bitmask of icon post-processing effects, such as desaturation to gray
   // and rounding the corners.
@@ -201,7 +230,22 @@ struct IconKey {
   // True when the raw icon is updated. After an icon update, a new IconKey can
   // be broadcast by a Publisher. Then the AppService icon directory should be
   // removed to fetch the new raw icon from the app.
-  [MinVersion=22] bool raw_icon_updated;
+  //
+  // DEPRECATED, replaced with `update_version` below.
+  [MinVersion=22, RenamedFrom="raw_icon_updated"]
+  bool deprecated_raw_icon_updated;
+
+  // The icon updated info to notify AppService clients to reload the icon.
+  //
+  // If the app updates the icon image, `update_version` is set as true by a
+  // Publisher, and AppService increases the saved `update_version` to notify
+  // AppService clients to reload icons.
+  //
+  // `update_version` isn't changed if `icon_effects` is changed.
+  // `update_version` is increased only when the app updates, or upgrades, and
+  // publish a new icon image.
+  [MinVersion=23]
+  IconUpdateVersion? update_version;
 };
 
 // The intent filter matching condition types.

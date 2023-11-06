@@ -298,8 +298,7 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     auto icon_resource_id = value->FindInt(kIconResourceIdKey);
     if (icon_resource_id.has_value()) {
       app->icon_key =
-          apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                        icon_resource_id.value(), apps::IconEffects::kNone);
+          apps::IconKey(icon_resource_id.value(), apps::IconEffects::kNone);
     }
 
     app->last_launch_time = base::ValueToTime(value->Find(kLastLaunchTimeKey));

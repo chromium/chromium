@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -96,10 +95,6 @@ class ExtensionAppsBase : public AppPublisher,
 
   base::WeakPtr<ExtensionAppsBase> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
-  }
-
-  apps_util::IncrementingIconKeyFactory& icon_key_factory() {
-    return icon_key_factory_;
   }
 
   AppType app_type() { return app_type_; }
@@ -191,8 +186,6 @@ class ExtensionAppsBase : public AppPublisher,
   // The app type published by this publisher. Must be either kChromeApp or
   // kExtension.
   AppType app_type_;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   base::ScopedObservation<extensions::ExtensionPrefs,
                           extensions::ExtensionPrefsObserver>

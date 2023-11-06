@@ -118,9 +118,8 @@ void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
         provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
     shortcut->shortcut_source = apps::ShortcutSource::kUser;
     // TODO(b/306295113): Add shortcut specific icon masking.
-    shortcut->icon_key = std::move(
-        *icon_key_factory_.CreateIconKey(apps::IconEffects::kCrOsStandardMask));
-    shortcut->icon_key->raw_icon_updated = raw_icon_updated;
+    shortcut->icon_key =
+        apps::IconKey(raw_icon_updated, apps::IconEffects::kCrOsStandardMask);
 
     shortcuts.push_back(std::move(shortcut));
   }

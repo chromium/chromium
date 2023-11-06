@@ -79,8 +79,7 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
       app_id, [&app_type, &icon_key](const apps::AppUpdate& update) {
         app_type = update.AppType();
         icon_key = std::make_unique<apps::IconKey>(
-            update.IconKey()->timeline + 1, update.IconKey()->resource_id,
-            update.IconKey()->icon_effects);
+            /*raw_icon_updated=*/true, update.IconKey()->icon_effects);
       });
 
   std::vector<apps::AppPtr> apps;
@@ -457,8 +456,8 @@ TEST_F(AppSearchProviderTest, AppServiceIconCache) {
       proxy->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
 
   // Insert dummy map values so that the stub_icon_loader knows of these apps.
-  stub_icon_loader.timelines_by_app_id_[kPackagedApp1Id] = 1;
-  stub_icon_loader.timelines_by_app_id_[kPackagedApp2Id] = 2;
+  stub_icon_loader.update_version_by_app_id_[kPackagedApp1Id] = 1;
+  stub_icon_loader.update_version_by_app_id_[kPackagedApp2Id] = 2;
 
   // The stub_icon_loader should start with no LoadIconFromIconKey calls.
   InitializeSearchProvider();

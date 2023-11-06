@@ -267,7 +267,8 @@ TEST_F(WebApkManagerTest, QueuesUpdatedApp) {
   auto updated_app_info = BuildDefaultWebAppInfo();
   updated_app_info->title = u"Some new title";
   auto updated_app_id =
-      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+      web_app::test::InstallWebApp(profile(), std::move(updated_app_info),
+                                   /*overwrite_existing_manifest_fields=*/true);
   EXPECT_EQ(app_id, updated_app_id);
 
   auto install_task =

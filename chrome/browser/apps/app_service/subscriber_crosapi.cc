@@ -84,6 +84,16 @@ void SubscriberCrosapi::InitializeApps() {
   base::flat_map<AppType, std::vector<AppPtr>> app_type_apps;
   for (AppPtr& app : all_apps) {
     if (Accepts(app->app_type)) {
+      // `update_version` holds an int value when get from AppRegistryCache.
+      // However, at the Lacros side, AppServiceProxyLacros calls OnApps to
+      // publish the app as `delta` to `app_registry_cache_` directly.
+      // `icon_key`'s `update_version` should never hold a int32_t as `delta`
+      // when calling OnApps to publish apps, and there is a bool checking for
+      // `update_version` of `delta`'s `icon_key` in AppUpdate::Merge at the
+      // Lacros side. So set `update_version` as false to prevent the crash from
+      // the bool checking when merging to AppRegistryCache's `states_` at the
+      // Lacros side .
+      app->icon_key->update_version = false;
       app_type_apps[app->app_type].push_back(std::move(app));
     }
   }

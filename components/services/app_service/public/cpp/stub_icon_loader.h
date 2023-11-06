@@ -35,7 +35,7 @@ class StubIconLoader : public IconLoader {
 
   int NumLoadIconFromIconKeyCalls();
 
-  std::map<std::string, uint64_t> timelines_by_app_id_;
+  std::map<std::string, int32_t> update_version_by_app_id_;
 
  private:
   int num_load_calls_ = 0;

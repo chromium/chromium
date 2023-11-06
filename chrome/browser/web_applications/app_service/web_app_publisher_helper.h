@@ -18,7 +18,6 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -442,8 +441,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       content_settings_observation_{this};
 
   bool is_shutting_down_ = false;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   apps::PausedApps paused_apps_;
