@@ -54,6 +54,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"
 
 namespace {
@@ -458,6 +459,11 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   // TODO: refactor the layers so each button doesn't require 3.
   // |icon_view_| needs its own layer so it can be scaled up independently of
   // the ink drop ripple.
+  icon_container_view_ = AddChildView(std::make_unique<views::View>());
+  icon_container_view_->SetPaintToLayer();
+  icon_container_view_->layer()->SetFillsBoundsOpaquely(false);
+  icon_container_view_->SetCanProcessEventsWithinSubtree(false);
+
   icon_view_->SetPaintToLayer();
   icon_view_->layer()->SetFillsBoundsOpaquely(false);
   icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
@@ -470,8 +476,27 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
 
   AddChildView(indicator_.get());
   AddChildView(icon_view_.get());
+
   notification_indicator_ =
       AddChildView(std::make_unique<DotIndicator>(kDefaultIndicatorColor));
+
+  host_badge_container_view_ = AddChildView(std::make_unique<views::View>());
+  host_badge_container_view_->SetPaintToLayer();
+  host_badge_container_view_->layer()->SetFillsBoundsOpaquely(false);
+  host_badge_container_view_->SetCanProcessEventsWithinSubtree(false);
+  auto* host_badge_container_view_layout =
+      host_badge_container_view_->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
+  host_badge_container_view_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  host_badge_container_view_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+
+  host_badge_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  host_badge_icon_view_->SetPaintToLayer();
+  host_badge_icon_view_->layer()->SetFillsBoundsOpaquely(false);
+  host_badge_icon_view_->SetCanProcessEventsWithinSubtree(false);
 
   views::InkDrop::Get(this)->GetInkDrop()->AddObserver(this);
 
@@ -511,11 +536,21 @@ void ShelfAppButton::SetImage(const gfx::ImageSkia& image) {
   icon_image_ = image;
 
   gfx::Size preferred_size = GetPreferredIconSize();
+
+  if (has_host_badge_) {
+    if (image.size() == preferred_size) {
+      icon_view_->SetImage(image);
+      return;
+    }
+    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_BEST, preferred_size));
+    return;
+  }
+
   if (image.size() == preferred_size) {
     SetShadowedImage(image);
     return;
   }
-
   SetShadowedImage(gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST, preferred_size));
 }
@@ -531,6 +566,31 @@ gfx::ImageSkia ShelfAppButton::GetIconImage() const {
 
   return gfx::ImageSkiaOperations::CreateResizedImage(
       icon_image_, skia::ImageOperations::RESIZE_BEST, GetPreferredIconSize());
+}
+
+void ShelfAppButton::SetHostBadgeImage(const gfx::ImageSkia& host_badge_image) {
+  const gfx::Size preferred_icon_size(
+      shelf_view_->GetShelfShortcutHostBadgeIconSize(),
+      shelf_view_->GetShelfShortcutHostBadgeIconSize());
+  if (host_badge_image.isNull()) {
+    host_badge_image_ = gfx::ImageSkia();
+    return;
+  }
+  host_badge_image_ = host_badge_image;
+  host_badge_icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+      host_badge_image, skia::ImageOperations::RESIZE_BEST,
+      preferred_icon_size));
+  host_badge_container_view_->AddChildView(host_badge_icon_view_);
+}
+
+void ShelfAppButton::SetMainAndMaybeHostBadgeImage(
+    const gfx::ImageSkia& image,
+    const gfx::ImageSkia& host_badge_image) {
+  // `has_host_badge_` needs to be set before SetImage(), since image size is
+  // set depending on the boolean logic.
+  has_host_badge_ = !host_badge_image.isNull();
+  SetImage(image);
+  SetHostBadgeImage(host_badge_image);
 }
 
 void ShelfAppButton::AddState(State state) {
@@ -847,10 +907,12 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
                                    ? gfx::Insets()
                                    : gfx::ShadowValue::GetMargin(icon_shadows_);
   // Center icon with respect to the secondary axis.
-  if (is_horizontal_shelf)
+  if (is_horizontal_shelf) {
     x_offset = std::max(0.0f, button_bounds.width() - icon_width + 1) / 2;
-  else
+
+  } else {
     y_offset = std::max(0.0f, button_bounds.height() - icon_height) / 2;
+  }
   gfx::RectF icon_view_bounds =
       gfx::RectF(button_bounds.x() + x_offset, button_bounds.y() + y_offset,
                  icon_width, icon_height);
@@ -862,6 +924,57 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
   DCHECK_LE(icon_width, icon_size);
   DCHECK_LE(icon_height, icon_size);
   return gfx::ToRoundedRect(icon_view_bounds);
+}
+
+gfx::Rect ShelfAppButton::GetShortcutViewBounds(const gfx::Rect& button_bounds,
+                                                float icon_scale,
+                                                const float icon_size) const {
+  const float shortcut_icon_size = icon_size * icon_scale;
+  const float shortcut_icon_padding =
+      (shelf_view_->GetButtonSize() - shortcut_icon_size) / 2;
+
+  const Shelf* shelf = shelf_view_->shelf();
+  const bool is_horizontal_shelf = shelf->IsHorizontalAlignment();
+  float shortcut_x_offset = is_horizontal_shelf ? 0 : shortcut_icon_padding;
+  float shortcut_y_offset = is_horizontal_shelf ? shortcut_icon_padding : 0;
+
+  const float shortcut_icon_width =
+      std::min(shortcut_icon_size, button_bounds.width() - shortcut_x_offset);
+  const float shortcut_icon_height =
+      std::min(shortcut_icon_size, button_bounds.height() - shortcut_y_offset);
+
+  if (shelf->alignment() == ShelfAlignment::kLeft) {
+    shortcut_x_offset =
+        button_bounds.width() - (shortcut_icon_size + shortcut_icon_padding);
+  }
+
+  if (is_horizontal_shelf) {
+    shortcut_x_offset =
+        std::max(0.0f, button_bounds.width() - shortcut_icon_width) / 2;
+  } else {
+    shortcut_y_offset =
+        std::max(0.0f, button_bounds.height() - shortcut_icon_height) / 2;
+  }
+
+  gfx::RectF shortcut_view_bounds =
+      gfx::RectF(button_bounds.x() + shortcut_x_offset,
+                 button_bounds.y() + shortcut_y_offset, shortcut_icon_width,
+                 shortcut_icon_height);
+
+  DCHECK_LE(shortcut_icon_width, shortcut_icon_size);
+  DCHECK_LE(shortcut_icon_height, shortcut_icon_size);
+
+  return gfx::ToRoundedRect(shortcut_view_bounds);
+}
+
+gfx::Rect ShelfAppButton::GetIdealHostBadgeContainerBounds() {
+  const gfx::Rect main_app_icon_bounds = icon_view_->bounds();
+  const gfx::Size host_badge_container_view_size(
+      shelf_view_->GetShelfShortcutHostBadgeContainerSize(),
+      shelf_view_->GetShelfShortcutHostBadgeContainerSize());
+  gfx::Rect rect(main_app_icon_bounds.CenterPoint(),
+                 host_badge_container_view_size);
+  return rect;
 }
 
 gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
@@ -878,13 +991,39 @@ gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
 
 void ShelfAppButton::Layout() {
   Shelf* shelf = shelf_view_->shelf();
-  gfx::Rect icon_view_bounds = GetIconViewBounds(
-      GetContentsBounds(), GetAdjustedIconScaleForProgressRing());
+  gfx::Rect icon_view_bounds =
+      has_host_badge_
+          ? GetShortcutViewBounds(GetContentsBounds(),
+                                  GetAdjustedIconScaleForProgressRing(),
+                                  shelf_view_->GetShortcutIconSize())
+          : GetIconViewBounds(GetContentsBounds(),
+                              GetAdjustedIconScaleForProgressRing());
   const gfx::Rect button_bounds(GetContentsBounds());
   const int status_indicator_offet_from_shelf_edge =
       ShelfConfig::Get()->status_indicator_offset_from_shelf_edge();
-
   icon_view_->SetBoundsRect(icon_view_bounds);
+
+  if (has_host_badge_) {
+    const int icon_container_size =
+        shelf_view_->GetShelfShortcutIconContainerSize();
+    const gfx::Size icon_container_view_size(icon_container_size,
+                                             icon_container_size);
+    const gfx::Rect icon_container_view_bounds = GetShortcutViewBounds(
+        GetContentsBounds(), GetAdjustedIconScaleForProgressRing(),
+        shelf_view_->GetShelfShortcutIconContainerSize());
+    icon_container_view_->SetBackground(
+        views::CreateThemedRoundedRectBackground(
+            cros_tokens::kCrosSysSystemOnBaseOpaque, (icon_container_size / 2),
+            0));
+    icon_container_view_->SetBoundsRect(icon_container_view_bounds);
+
+    host_badge_container_view_->SetBackground(
+        views::CreateThemedRoundedRectBackground(
+            cros_tokens::kCrosSysSystemOnBaseOpaque,
+            shelf_view_->GetShelfShortcutHostBadgeContainerSize() / 2, 0));
+    host_badge_container_view_->SetBoundsRect(
+        GetIdealHostBadgeContainerBounds());
+  }
 
   notification_indicator_->SetIndicatorBounds(
       GetNotificationIndicatorBounds(GetAdjustedIconScaleForProgressRing()));
@@ -1077,8 +1216,11 @@ gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
 }
 
 gfx::Size ShelfAppButton::GetPreferredIconSize() const {
-  const int icon_size =
-      shelf_view_->GetButtonIconSize() * GetAdjustedIconScaleForProgressRing();
+  const int icon_size = has_host_badge_
+                            ? shelf_view_->GetShortcutIconSize() *
+                                  GetAdjustedIconScaleForProgressRing()
+                            : shelf_view_->GetButtonIconSize() *
+                                  GetAdjustedIconScaleForProgressRing();
 
   // Resize the image maintaining our aspect ratio.
   float aspect_ratio = static_cast<float>(icon_image_.width()) /

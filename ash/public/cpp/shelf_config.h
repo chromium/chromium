@@ -99,6 +99,18 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Returns the optimal shelf icon size for the given hotseat density.
   int GetShelfButtonIconSize(HotseatDensity density) const;
 
+  // Returns the shelf shortuct icon size.
+  int GetShelfShortcutIconSize() const;
+
+  // Returns the shelf shortcut icon border size.
+  int GetShelfShortcutIconBorderSize() const;
+
+  // Returns the shelf shortcut host badge icon size.
+  int GetShelfShortcutHostBadgeIconSize() const;
+
+  // Returns the shelf shortcut host badge icon border size.
+  int GetShelfShortcutHostBadgeBorderSize() const;
+
   // Returns the hotseat height for the given hotseat density.
   // NOTE: This may not match the actual hotseat size, as hotseat may get scaled
   // down if it does not fit in available bounds within the shelf. Use
@@ -321,6 +333,18 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   const int shelf_button_icon_size_;
   const int shelf_button_icon_size_median_;
   const int shelf_button_icon_size_dense_;
+
+  // Size of the shortcut icon.
+  const int shelf_shortcut_icon_size_;
+
+  // Size of the shortcut icon border.
+  const int shelf_shortcut_icon_border_size_;
+
+  // Size of the shortcut host badge icon.
+  const int shelf_shortcut_host_badge_icon_size_;
+
+  // Size of the shortcut host badge border.
+  const int shelf_shortcut_host_badge_border_size_;
 
   // Size allocated for each app button on the shelf.
   const int shelf_button_size_;

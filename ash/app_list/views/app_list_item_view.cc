@@ -1380,7 +1380,7 @@ void AppListItemView::Layout() {
 
   const int shortcut_background_container_dimension =
       app_list_config_->GetShortcutBackgroundContainerDimension();
-  const int shotcut_host_badge_icon_container_dimension =
+  const int shortcut_host_badge_icon_container_dimension =
       app_list_config_->GetShortcutHostBadgeIconContainerDimension();
 
   const gfx::Size shortcut_background_container_size =
@@ -1388,8 +1388,8 @@ void AppListItemView::Layout() {
                 shortcut_background_container_dimension);
 
   const gfx::Size shotcut_host_badge_icon_container_size =
-      gfx::Size(shotcut_host_badge_icon_container_dimension,
-                shotcut_host_badge_icon_container_dimension);
+      gfx::Size(shortcut_host_badge_icon_container_dimension,
+                shortcut_host_badge_icon_container_dimension);
 
   if (shortcut_background_container_ && has_host_badge_) {
     shortcut_background_container_->SetBackground(
@@ -1442,7 +1442,7 @@ void AppListItemView::Layout() {
     host_badge_icon_container_->SetBackground(
         views::CreateThemedRoundedRectBackground(
             cros_tokens::kCrosSysSystemOnBaseOpaque,
-            shortcut_background_container_dimension / 2, 0));
+            shortcut_host_badge_icon_container_dimension / 2, 0));
 
     host_badge_icon_container_->SetBoundsRect(host_badge_icon_container_bounds);
   }

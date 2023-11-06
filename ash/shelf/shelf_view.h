@@ -287,6 +287,18 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Returns the size of a shelf button icon.
   int GetButtonIconSize() const;
 
+  // Returns the size of a shelf button shortcut icon.
+  int GetShortcutIconSize() const;
+
+  // Returns the size of a shelf button shortcut icon border.
+  int GetShelfShortcutIconContainerSize() const;
+
+  // Returns the size of a shelf button shortcut host badge icon.
+  int GetShelfShortcutHostBadgeIconSize() const;
+
+  // Returns the size of a shelf button shortcut host badge icon border.
+  int GetShelfShortcutHostBadgeContainerSize() const;
+
   // Returns the size of the shelf item ripple ring.
   int GetShelfItemRippleSize() const;
 
@@ -364,6 +376,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Minimum distance before drag starts.
   static const int kMinimumDragDistance;
+
+  // Updates relevant fields of the button and reflects the item status has
+  // changed.
+  void UpdateButton(ShelfAppButton* button, const ShelfItem& item);
 
   // Common setup done for all children views. |layer_type| specifies the type
   // of layer for the |view|. Use ui::LAYER_NOT_DRAWN if the content of the view

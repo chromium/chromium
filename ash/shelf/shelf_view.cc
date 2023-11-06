@@ -477,6 +477,24 @@ int ShelfView::GetButtonIconSize() const {
       shelf_->hotseat_widget()->target_hotseat_density());
 }
 
+int ShelfView::GetShortcutIconSize() const {
+  return ShelfConfig::Get()->GetShelfShortcutIconSize();
+}
+
+int ShelfView::GetShelfShortcutIconContainerSize() const {
+  return GetShortcutIconSize() +
+         ShelfConfig::Get()->GetShelfShortcutIconBorderSize() * 2;
+}
+
+int ShelfView::GetShelfShortcutHostBadgeIconSize() const {
+  return ShelfConfig::Get()->GetShelfShortcutHostBadgeIconSize();
+}
+
+int ShelfView::GetShelfShortcutHostBadgeContainerSize() const {
+  return GetShelfShortcutHostBadgeIconSize() +
+         ShelfConfig::Get()->GetShelfShortcutHostBadgeBorderSize() * 2;
+}
+
 int ShelfView::GetShelfItemRippleSize() const {
   return GetButtonSize() +
          2 * ShelfConfig::Get()->scrollable_shelf_ripple_padding();
@@ -1027,10 +1045,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
     case TYPE_DIALOG: {
       ShelfAppButton* button = new ShelfAppButton(
           this, shelf_button_delegate_ ? shelf_button_delegate_.get() : this);
-      button->SetImage(item.image);
-      button->SetNotificationBadgeColor(item.notification_badge_color);
-      button->ReflectItemStatus(item);
-      button->SetAccessibleName(item.accessible_name);
+      UpdateButton(button, item);
       view = button;
       break;
     }
@@ -1043,6 +1058,14 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
 
   ConfigureChildView(view, ui::LAYER_NOT_DRAWN);
   return view;
+}
+
+void ShelfView::UpdateButton(ShelfAppButton* button, const ShelfItem& item) {
+  button->ReflectItemStatus(item);
+  button->SetMainAndMaybeHostBadgeImage(item.image, item.badge_image);
+  button->SetNotificationBadgeColor(item.notification_badge_color);
+  button->SetAccessibleName(item.accessible_name);
+  button->SchedulePaint();
 }
 
 int ShelfView::GetAvailableSpaceForAppIcons() const {
@@ -2476,11 +2499,7 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     case TYPE_DIALOG: {
       CHECK_EQ(ShelfAppButton::kViewClassName, view->GetClassName());
       ShelfAppButton* button = static_cast<ShelfAppButton*>(view);
-      button->ReflectItemStatus(item);
-      button->SetImage(item.image);
-      button->SetNotificationBadgeColor(item.notification_badge_color);
-      button->SetAccessibleName(item.accessible_name);
-      button->SchedulePaint();
+      UpdateButton(button, item);
       break;
     }
     case TYPE_UNDEFINED:

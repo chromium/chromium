@@ -79,6 +79,10 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Gets the resized `icon_image_` without the shadow.
   gfx::ImageSkia GetIconImage() const;
 
+  // Calls SetImage(), and SetHostBadgeImage() depending on `has_host_badge`.
+  void SetMainAndMaybeHostBadgeImage(const gfx::ImageSkia& image,
+                                     const gfx::ImageSkia& host_badge_image);
+
   // |state| is or'd into the current state.
   void AddState(State state);
   void ClearState(State state);
@@ -95,6 +99,10 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // and with the provided icon scale.
   gfx::Rect GetIdealIconBounds(const gfx::Size& button_size,
                                float icon_scale) const;
+
+  // Returns the ideal host badge icon bounds within the button view of the
+  // provided size.
+  gfx::Rect GetIdealHostBadgeContainerBounds();
 
   views::InkDrop* GetInkDropForTesting();
 
@@ -188,6 +196,12 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   gfx::Rect GetIconViewBounds(const gfx::Rect& button_bounds,
                               float icon_scale) const;
 
+  // Calculates the bounds for either the shortcut icon container or shortcut
+  // icon scaled by `icon_scale`.
+  gfx::Rect GetShortcutViewBounds(const gfx::Rect& button_bounds,
+                                  float icon_scale,
+                                  const float icon_size) const;
+
   // Calculates the notification indicator bounds when scaled by |scale|.
   gfx::Rect GetNotificationIndicatorBounds(float scale);
 
@@ -205,12 +219,26 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // active.
   void UpdateProgressRingBounds();
 
+  // Sets the host badge image to display for this entry
+  void SetHostBadgeImage(const gfx::ImageSkia& host_badge_image);
+
   // Returns the icon scale adjusted to fit for the `progress_indicator_` if any
   // is currently active.
   float GetAdjustedIconScaleForProgressRing() const;
 
+  // The container for the icon, which looks like a halo around the icon.
+  raw_ptr<views::View, ExperimentalAsh> icon_container_view_ = nullptr;
+
   // The icon part of a button can be animated independently of the rest.
   const raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
+
+  // The container for the host badge icon, which looks like a halo around the
+  // host badge icon.
+  raw_ptr<views::View, ExperimentalAsh> host_badge_container_view_ = nullptr;
+
+  // The host badge icon part of a button, can be animated independently of the
+  // rest.
+  raw_ptr<views::ImageView, ExperimentalAsh> host_badge_icon_view_ = nullptr;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
   const raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
@@ -230,6 +258,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // The bitmap image for this app button.
   gfx::ImageSkia icon_image_;
+
+  // The bitmap image for the host badge icon if this is an App Shortcut.
+  gfx::ImageSkia host_badge_image_;
 
   // The scaling factor for displaying the app icon.
   float icon_scale_ = 1.0f;
@@ -267,6 +298,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // The package id that is associated with this shelf app.
   std::string package_id_;
+
+  // Whether the app has a host badge (i.e. an App Shortcut).
+  bool has_host_badge_ = false;
 
   // Used to track whether the menu was deleted while running. Must be last.
   base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};
