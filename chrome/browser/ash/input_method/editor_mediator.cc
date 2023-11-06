@@ -203,9 +203,6 @@ void EditorMediator::HandleTrigger(
       break;
     case EditorMode::kConsentNeeded:
       mako_bubble_coordinator_.LoadConsentUI(profile_);
-      // TODO: b:301518440: remove the following line once ShowUI method for the consent
-      // screen is implemented.
-      mako_bubble_coordinator_.ShowUI();
       break;
     case EditorMode::kBlocked:
       mako_bubble_coordinator_.CloseUI();
