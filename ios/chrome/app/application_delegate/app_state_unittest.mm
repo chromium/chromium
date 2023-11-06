@@ -251,36 +251,6 @@ class AppStateTest : public BlockCleanupTest {
         handle_startup_swizzle_block_));
   }
 
-  AppState* GetAppStateWithOpenNTP(BOOL shouldOpenNTP, UIWindow* window) {
-    AppState* appState = GetAppStateWithRealWindow(window);
-
-    id application = [OCMockObject mockForClass:[UIApplication class]];
-    id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
-    id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-    id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
-    Browser* browser = provider_interface_.currentBrowserProvider.browser;
-
-    [[metricsMediator stub] updateMetricsStateBasedOnPrefsUserTriggered:NO];
-    [[memoryHelper stub] resetForegroundMemoryWarningCount];
-    [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
-    [[[tabOpener stub] andReturnValue:@(shouldOpenNTP)]
-        shouldOpenNTPTabOnActivationOfBrowser:browser];
-
-    void (^swizzleBlock)() = ^{
-    };
-
-    ScopedBlockSwizzler swizzler(
-        [MetricsMediator class],
-        @selector(logLaunchMetricsWithStartupInformation:connectedScenes:),
-        swizzleBlock);
-
-    [appState applicationWillEnterForeground:application
-                             metricsMediator:metricsMediator
-                                memoryHelper:memoryHelper];
-
-    return appState;
-  }
-
   SafeModeAppAgent* GetSafeModeAppAgent() {
     if (!safe_mode_app_agent_) {
       safe_mode_app_agent_ = [[SafeModeAppAgent alloc] init];
