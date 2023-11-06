@@ -446,6 +446,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gl_display = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings*/ false, gl::GpuPreference::kDefault);
     if (!gl_display) {
+      // If GL initialization failed, GPU process will be teardown later, sp set
+      // gpu_preferences_.gr_context_type to kGL to avoid initializing
+      // DawnContextProvider later.
+      gpu_preferences_.gr_context_type = GrContextType::kGL;
       VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
       return false;
     }
