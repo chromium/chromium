@@ -3653,6 +3653,48 @@ const FeatureEntry::FeatureParam
              kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
          "30d"},
         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"}};
+const FeatureEntry::FeatureParam
+    kTpcdHeuristicsGrantsCurrentInteractionAndShortRedirect[] = {
+        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+        {tpcd::experiment::
+             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+         "30d"},
+        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         "true"}};
+const FeatureEntry::FeatureParam
+    kTpcdHeuristicsGrantsCurrentInteractionAndLongRedirect[] = {
+        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+        {tpcd::experiment::
+             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+         "30d"},
+        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         "true"}};
+const FeatureEntry::FeatureParam
+    kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndShortRedirect[] = {
+        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+        {tpcd::experiment::
+             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+         "30d"},
+        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         "true"}};
+const FeatureEntry::FeatureParam
+    kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndLongRedirect[] = {
+        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+        {tpcd::experiment::
+             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+         "30d"},
+        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         "true"}};
 
 const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {
     {"Control", kTpcdHeuristicsGrantsControl,
@@ -3661,7 +3703,25 @@ const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {
      std::size(kTpcdHeuristicsGrantsCurrentInteraction), nullptr},
     {"Current Interaction With Backfill",
      kTpcdHeuristicsGrantsCurrentInteractionWithBackfill,
-     std::size(kTpcdHeuristicsGrantsCurrentInteractionWithBackfill), nullptr}};
+     std::size(kTpcdHeuristicsGrantsCurrentInteractionWithBackfill), nullptr},
+    {"Current Interaction And Short Redirect",
+     kTpcdHeuristicsGrantsCurrentInteractionAndShortRedirect,
+     std::size(kTpcdHeuristicsGrantsCurrentInteractionAndShortRedirect),
+     nullptr},
+    {"Current Interaction And Long Redirect",
+     kTpcdHeuristicsGrantsCurrentInteractionAndLongRedirect,
+     std::size(kTpcdHeuristicsGrantsCurrentInteractionAndLongRedirect),
+     nullptr},
+    {"Current Interaction With Backfill And Short Redirect",
+     kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndShortRedirect,
+     std::size(
+         kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndShortRedirect),
+     nullptr},
+    {"Current Interaction With Backfill And Long Redirect",
+     kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndLongRedirect,
+     std::size(
+         kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndLongRedirect),
+     nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kVcSegmentationModelHighResolution[] = {

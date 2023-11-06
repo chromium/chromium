@@ -87,6 +87,12 @@ const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[] =
     "TpcdWritePopupPastInteractionHeuristicsGrants";
 const char kTpcdBackfillPopupHeuristicsGrantsName[] =
     "TpcdBackfillPopupHeuristicsGrants";
+const char kTpcdWriteRedirectHeuristicGrantsName[] =
+    "TpcdWriteRedirectHeuristicGrants";
+const char kTpcdRedirectHeuristicRequireABAFlowName[] =
+    "TpcdRedirectHeuristicRequireABAFlow";
+const char kTpcdRedirectHeuristicRequireCurrentInteractionName[] =
+    "TpcdRedirectHeuristicRequireCurrentInteraction";
 
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupCurrentInteractionHeuristicsGrants{
@@ -101,18 +107,18 @@ const base::FeatureParam<base::TimeDelta>
 
 const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdBackfillPopupHeuristicsGrants", base::TimeDelta()};
+    kTpcdBackfillPopupHeuristicsGrantsName, base::TimeDelta()};
 
 const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdWriteRedirectHeuristicGrants", base::TimeDelta()};
+    kTpcdWriteRedirectHeuristicGrantsName, base::TimeDelta()};
 
 const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdRedirectHeuristicRequireABAFlow", true};
+    kTpcdRedirectHeuristicRequireABAFlowName, true};
 
 const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireCurrentInteraction{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdRedirectHeuristicRequireCurrentInteraction", true};
+    kTpcdRedirectHeuristicRequireCurrentInteractionName, true};
 
 }  // namespace tpcd::experiment
