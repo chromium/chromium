@@ -35,9 +35,6 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurfaceDelegate {
   // Callback for GPU vsync signal.  May be called on a different thread.
   virtual viz::GpuVSyncCallback GetGpuVSyncCallback() = 0;
 
-  // Returns how long GpuThread was blocked since last swap. Used for metrics.
-  virtual base::TimeDelta GetGpuBlockedTimeSinceLastSwap() = 0;
-
  protected:
   virtual ~ImageTransportSurfaceDelegate() = default;
 };

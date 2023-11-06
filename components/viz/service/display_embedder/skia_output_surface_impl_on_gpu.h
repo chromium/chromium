@@ -241,7 +241,6 @@ class SkiaOutputSurfaceImplOnGpu
   const gpu::gles2::FeatureInfo* GetFeatureInfo() const override;
   const gpu::GpuPreferences& GetGpuPreferences() const override;
   GpuVSyncCallback GetGpuVSyncCallback() override;
-  base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
 
   void PostTaskToClientThread(base::OnceClosure closure) {
     dependency_->PostTaskToClientThread(std::move(closure));

@@ -103,7 +103,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   virtual void DidLoseContext(gpu::error::ContextLostReason reason,
                               const GURL& active_url) = 0;
 
-  virtual base::TimeDelta GetGpuBlockedTimeSinceLastSwap() = 0;
   virtual bool NeedsSupportForExternalStencil() = 0;
 
   // This returns true if CompositorGpuThread(aka DrDc thread) is enabled.

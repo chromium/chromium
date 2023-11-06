@@ -419,10 +419,6 @@ viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
   return viz::GpuVSyncCallback();
 }
 
-base::TimeDelta GLES2CommandBufferStub::GetGpuBlockedTimeSinceLastSwap() {
-  return channel_->scheduler()->TakeTotalBlockingTime();
-}
-
 MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {
   return context_group_->memory_tracker();
 }

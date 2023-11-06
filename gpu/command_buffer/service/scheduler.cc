@@ -403,12 +403,7 @@ void Scheduler::Sequence::RemoveClientWait(CommandBufferId command_buffer_id) {
 
 Scheduler::Scheduler(SyncPointManager* sync_point_manager,
                      const GpuPreferences& gpu_preferences)
-    : sync_point_manager_(sync_point_manager),
-      blocked_time_collection_enabled_(
-          gpu_preferences.enable_gpu_blocked_time_metric) {
-  if (blocked_time_collection_enabled_ && !base::ThreadTicks::IsSupported())
-    DLOG(ERROR) << "GPU Blocked time collection is enabled but not supported.";
-
+    : sync_point_manager_(sync_point_manager) {
   if (base::FeatureList::IsEnabled(features::kUseGpuSchedulerDfs)) {
     scheduler_dfs_ =
         std::make_unique<SchedulerDfs>(sync_point_manager, gpu_preferences);
@@ -767,33 +762,15 @@ void Scheduler::RunNextTask() {
   thread_state = nullptr;
   sequence = nullptr;
 
-  base::TimeDelta blocked_time;
   {
     base::AutoUnlock auto_unlock(lock_);
     order_data->BeginProcessingOrderNumber(order_num);
 
-    if (blocked_time_collection_enabled_ && base::ThreadTicks::IsSupported()) {
-      // We can't call base::ThreadTicks::Now() if it's not supported
-      base::ThreadTicks thread_time_start = base::ThreadTicks::Now();
-      base::TimeTicks wall_time_start = base::TimeTicks::Now();
-
-      std::move(closure).Run();
-
-      base::TimeDelta thread_time_elapsed =
-          base::ThreadTicks::Now() - thread_time_start;
-      base::TimeDelta wall_time_elapsed =
-          base::TimeTicks::Now() - wall_time_start;
-
-      blocked_time += (wall_time_elapsed - thread_time_elapsed);
-    } else {
-      std::move(closure).Run();
-    }
+    std::move(closure).Run();
 
     if (order_data->IsProcessingOrderNumber())
       order_data->FinishProcessingOrderNumber(order_num);
   }
-
-  total_blocked_time_ += blocked_time;
 
   // Reset pointers after reaquiring the lock.
   thread_state = &per_thread_state_map_[task_runner];
@@ -824,18 +801,6 @@ void Scheduler::RunNextTask() {
   thread_state->run_next_task_scheduled = base::TimeTicks::Now();
   task_runner->PostTask(FROM_HERE, base::BindOnce(&Scheduler::RunNextTask,
                                                   base::Unretained(this)));
-}
-
-base::TimeDelta Scheduler::TakeTotalBlockingTime() {
-  if (scheduler_dfs_)
-    return scheduler_dfs_->TakeTotalBlockingTime();
-
-  if (!blocked_time_collection_enabled_ || !base::ThreadTicks::IsSupported())
-    return base::TimeDelta::Min();
-  base::AutoLock auto_lock(lock_);
-  base::TimeDelta result;
-  std::swap(result, total_blocked_time_);
-  return result;
 }
 
 base::SingleThreadTaskRunner* Scheduler::GetTaskRunnerForTesting(
