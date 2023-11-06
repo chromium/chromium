@@ -231,6 +231,13 @@ class AutofillField : public FormFieldData {
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
   absl::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }
 
+  void set_initial_value_changed(std::optional<bool> initial_value_changed) {
+    initial_value_changed_ = initial_value_changed;
+  }
+  std::optional<bool> initial_value_changed() const {
+    return initial_value_changed_;
+  }
+
   void set_credit_card_number_offset(size_t position) {
     credit_card_number_offset_ = position;
   }
@@ -411,6 +418,13 @@ class AutofillField : public FormFieldData {
   // A low-entropy hash of the field's initial value before user-interactions or
   // automatic fillings. This field is used to detect static placeholders.
   absl::optional<uint32_t> initial_value_hash_;
+
+  // On form submission, set to `true` if the field had a value on page load and
+  // it was changed between page load and form submission. Set to `false` if the
+  // pre-filled value wasn't changed. Not set if the field didn't have a
+  // pre-filled value.
+  // Currently not implemented for <select> fields.
+  std::optional<bool> initial_value_changed_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.
