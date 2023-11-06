@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
@@ -40,9 +41,7 @@ bool ValidCatalogName(const message_center::NotifierId& notifier_id) {
   if (notifier_id.type != message_center::NotifierType::SYSTEM_COMPONENT)
     return false;
 
-  if (notifier_id.catalog_name == ash::NotificationCatalogName::kNone ||
-      notifier_id.catalog_name ==
-          ash::NotificationCatalogName::kTestCatalogName) {
+  if (notifier_id.catalog_name == ash::NotificationCatalogName::kNone) {
     return false;
   }
 
@@ -394,18 +393,34 @@ void LogClickedBody(const std::string& notification_id, bool is_popup) {
   }
 }
 
-void LogClickedActionButton(const std::string& notification_id, bool is_popup) {
-  auto type = GetNotificationType(notification_id);
-  if (!type.has_value())
+void LogClickedActionButton(const std::string& notification_id,
+                            bool is_popup,
+                            int button_index) {
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
+  if (!notification) {
     return;
-
+  }
+  const auto type = GetNotificationType(*notification);
   if (is_popup) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Notifications.Cros.Actions.Popup.ClickedActionButton", type.value());
+        "Notifications.Cros.Actions.Popup.ClickedActionButton", type);
   } else {
     UMA_HISTOGRAM_ENUMERATION(
-        "Notifications.Cros.Actions.Tray.ClickedActionButton", type.value());
+        "Notifications.Cros.Actions.Tray.ClickedActionButton", type);
   }
+
+  if (!ValidCatalogName(notification->notifier_id())) {
+    return;
+  }
+
+  const std::string histogram_base =
+      GetNotifierFrameworkNotificationHistogramBase(notification->pinned());
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("%s.ClickedActionButton.%u", histogram_base.c_str(),
+                         button_index + 1),
+      notification->notifier_id().catalog_name);
 }
 
 void LogInlineReplySent(const std::string& notification_id, bool is_popup) {

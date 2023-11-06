@@ -46,7 +46,8 @@ void NotificationMetricsRecorder::OnNotificationClicked(
   if (reply.has_value()) {
     metrics_utils::LogInlineReplySent(notification_id, is_popup);
   } else if (button_index.has_value()) {
-    metrics_utils::LogClickedActionButton(notification_id, is_popup);
+    metrics_utils::LogClickedActionButton(notification_id, is_popup,
+                                          button_index.value());
   } else {
     metrics_utils::LogClickedBody(notification_id, is_popup);
   }

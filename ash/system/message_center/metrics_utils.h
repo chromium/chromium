@@ -122,7 +122,9 @@ void LogHover(const std::string& notification_id, bool is_popup);
 void LogClickedBody(const std::string& notification_id, bool is_popup);
 
 // Logs a ClickedActionButton event.
-void LogClickedActionButton(const std::string& notification_id, bool is_popup);
+void LogClickedActionButton(const std::string& notification_id,
+                            bool is_popup,
+                            int button_index);
 
 // Logs an InlineReplySent event.
 ASH_EXPORT void LogInlineReplySent(const std::string& notification_id,

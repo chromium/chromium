@@ -4949,6 +4949,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.ClickedActionButton.{ButtonIndex}"
+    enum="NotificationCatalogName" expires_after="2024-03-17">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks action button presses on system notifications. Records the
+    notification catalog name in one of the button index buckets.
+  </summary>
+  <token key="UnpinnedOrPinned">
+    <variant name=""/>
+    <variant name="Pinned"/>
+  </token>
+  <token key="ButtonIndex">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+  </token>
+</histogram>
+
+<histogram
     name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Popup.Dismissed.{TimeRange}"
     enum="NotificationCatalogName" expires_after="2024-03-17">
   <owner>kradtke@google.com</owner>
