@@ -23,6 +23,7 @@
 #include "components/domain_reliability/clear_mode.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -30,6 +31,7 @@
 #include "content/public/browser/permission_controller_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -86,9 +88,27 @@ class TestingProfile : public Profile {
   // Default constructor that cannot be used with multi-profiles.
   TestingProfile();
 
-  using TestingFactories =
-      std::vector<std::pair<BrowserContextKeyedServiceFactory*,
-                            BrowserContextKeyedServiceFactory::TestingFactory>>;
+  // Wrapper over absl::variant to help type deduction when calling
+  // AddTestingFactories(). See example call in the method's comment.
+  struct TestingFactory {
+    TestingFactory(
+        BrowserContextKeyedServiceFactory* service_factory,
+        BrowserContextKeyedServiceFactory::TestingFactory testing_factory);
+    TestingFactory(RefcountedBrowserContextKeyedServiceFactory* service_factory,
+                   RefcountedBrowserContextKeyedServiceFactory::TestingFactory
+                       testing_factory);
+    TestingFactory(const TestingFactory&);
+    TestingFactory& operator=(const TestingFactory&);
+    ~TestingFactory();
+
+    absl::variant<
+        std::pair<BrowserContextKeyedServiceFactory*,
+                  BrowserContextKeyedServiceFactory::TestingFactory>,
+        std::pair<RefcountedBrowserContextKeyedServiceFactory*,
+                  RefcountedBrowserContextKeyedServiceFactory::TestingFactory>>
+        service_factory_and_testing_factory;
+  };
+  using TestingFactories = std::vector<TestingFactory>;
 
   // Helper class for building an instance of TestingProfile (allows injecting
   // mocks for various services prior to profile initialization).
@@ -113,9 +133,18 @@ class TestingProfile : public Profile {
     Builder& AddTestingFactory(
         BrowserContextKeyedServiceFactory* service_factory,
         BrowserContextKeyedServiceFactory::TestingFactory testing_factory);
+    Builder& AddTestingFactory(
+        RefcountedBrowserContextKeyedServiceFactory* service_factory,
+        RefcountedBrowserContextKeyedServiceFactory::TestingFactory
+            testing_factory);
 
     // Add multiple testing factories to the TestingProfile. These testing
     // factories are applied before the ProfileKeyedServices are created.
+    // Example use:
+    //
+    // AddTestingFactories(
+    //     {{RegularServiceFactory::GetInstance(), test_factory1},
+    //      {RefcountedServiceFactory::GetInstance(), test_factory2}});
     Builder& AddTestingFactories(const TestingFactories& testing_factories);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

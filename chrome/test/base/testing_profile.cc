@@ -157,6 +157,25 @@ std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
 
 }  // namespace
 
+TestingProfile::TestingFactory::TestingFactory(
+    BrowserContextKeyedServiceFactory* service_factory,
+    BrowserContextKeyedServiceFactory::TestingFactory testing_factory)
+    : service_factory_and_testing_factory(
+          std::pair(service_factory, std::move(testing_factory))) {}
+
+TestingProfile::TestingFactory::TestingFactory(
+    RefcountedBrowserContextKeyedServiceFactory* service_factory,
+    RefcountedBrowserContextKeyedServiceFactory::TestingFactory testing_factory)
+    : service_factory_and_testing_factory(
+          std::pair(service_factory, std::move(testing_factory))) {}
+
+TestingProfile::TestingFactory::TestingFactory(const TestingFactory&) = default;
+
+TestingProfile::TestingFactory& TestingProfile::TestingFactory::operator=(
+    const TestingFactory&) = default;
+
+TestingProfile::TestingFactory::~TestingFactory() = default;
+
 // static
 const char TestingProfile::kDefaultProfileUserName[] = "testing_profile@test";
 
@@ -247,8 +266,11 @@ TestingProfile::TestingProfile(
   }
 
   // Set any testing factories prior to initializing the services.
-  for (TestingFactories::value_type& pair : testing_factories)
-    pair.first->SetTestingFactory(this, std::move(pair.second));
+  for (const auto& f : testing_factories) {
+    absl::visit(
+        [this](const auto& p) { p.first->SetTestingFactory(this, p.second); },
+        f.service_factory_and_testing_factory);
+  }
   testing_factories.clear();
 
   Init(is_supervised_profile);
@@ -1100,6 +1122,14 @@ TestingProfile::Builder::OverridePolicyConnectorIsManagedForTesting(
 TestingProfile::Builder& TestingProfile::Builder::AddTestingFactory(
     BrowserContextKeyedServiceFactory* service_factory,
     BrowserContextKeyedServiceFactory::TestingFactory testing_factory) {
+  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
+  return *this;
+}
+
+TestingProfile::Builder& TestingProfile::Builder::AddTestingFactory(
+    RefcountedBrowserContextKeyedServiceFactory* service_factory,
+    RefcountedBrowserContextKeyedServiceFactory::TestingFactory
+        testing_factory) {
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }

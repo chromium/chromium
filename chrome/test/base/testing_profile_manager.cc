@@ -132,8 +132,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   builder.SetIsMainProfile(is_main_profile);
 #endif
 
-  for (TestingProfile::TestingFactories::value_type& pair : testing_factories)
-    builder.AddTestingFactory(pair.first, std::move(pair.second));
+  builder.AddTestingFactories(testing_factories);
   testing_factories.clear();
 
   builder.SetSharedURLLoaderFactory(shared_url_loader_factory);
