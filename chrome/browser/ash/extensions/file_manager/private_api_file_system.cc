@@ -34,6 +34,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_service_factory.h"
@@ -200,44 +201,45 @@ void ComputeChecksumRespondOnUIThread(
 ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
     api::file_manager_private::FormatFileSystemType filesystem) {
   switch (filesystem) {
-    case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_NONE:
+    case api::file_manager_private::FormatFileSystemType::kNone:
       return ash::disks::FormatFileSystemType::kUnknown;
-    case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_VFAT:
+    case api::file_manager_private::FormatFileSystemType::kVfat:
       return ash::disks::FormatFileSystemType::kVfat;
-    case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_EXFAT:
+    case api::file_manager_private::FormatFileSystemType::kExfat:
       return ash::disks::FormatFileSystemType::kExfat;
-    case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_NTFS:
+    case api::file_manager_private::FormatFileSystemType::kNtfs:
       return ash::disks::FormatFileSystemType::kNtfs;
   }
-  NOTREACHED() << "Unknown format filesystem " << filesystem;
+  NOTREACHED() << "Unknown format filesystem "
+               << base::to_underlying(filesystem);
   return ash::disks::FormatFileSystemType::kUnknown;
 }
 
 absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
     api::file_manager_private::IOTaskType type) {
   switch (type) {
-    case api::file_manager_private::IO_TASK_TYPE_COPY:
+    case api::file_manager_private::IOTaskType::kCopy:
       return file_manager::io_task::OperationType::kCopy;
-    case api::file_manager_private::IO_TASK_TYPE_DELETE:
+    case api::file_manager_private::IOTaskType::kDelete:
       return file_manager::io_task::OperationType::kDelete;
-    case api::file_manager_private::IO_TASK_TYPE_EMPTY_TRASH:
+    case api::file_manager_private::IOTaskType::kEmptyTrash:
       return file_manager::io_task::OperationType::kEmptyTrash;
-    case api::file_manager_private::IO_TASK_TYPE_EXTRACT:
+    case api::file_manager_private::IOTaskType::kExtract:
       return file_manager::io_task::OperationType::kExtract;
-    case api::file_manager_private::IO_TASK_TYPE_MOVE:
+    case api::file_manager_private::IOTaskType::kMove:
       return file_manager::io_task::OperationType::kMove;
-    case api::file_manager_private::IO_TASK_TYPE_RESTORE:
+    case api::file_manager_private::IOTaskType::kRestore:
       return file_manager::io_task::OperationType::kRestore;
-    case api::file_manager_private::IO_TASK_TYPE_RESTORE_TO_DESTINATION:
+    case api::file_manager_private::IOTaskType::kRestoreToDestination:
       return file_manager::io_task::OperationType::kRestoreToDestination;
-    case api::file_manager_private::IO_TASK_TYPE_TRASH:
+    case api::file_manager_private::IOTaskType::kTrash:
       return file_manager::io_task::OperationType::kTrash;
-    case api::file_manager_private::IO_TASK_TYPE_ZIP:
+    case api::file_manager_private::IOTaskType::kZip:
       return file_manager::io_task::OperationType::kZip;
-    case api::file_manager_private::IO_TASK_TYPE_NONE:
+    case api::file_manager_private::IOTaskType::kNone:
       return {};
   }
-  NOTREACHED() << "Unknown I/O task type " << type;
+  NOTREACHED() << "Unknown I/O task type " << base::to_underlying(type);
   return {};
 }
 
@@ -246,16 +248,16 @@ extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
   using extensions::api::file_manager_private::DlpLevel;
   switch (level) {
     case policy::DlpRulesManager::Level::kAllow:
-      return DlpLevel::DLP_LEVEL_ALLOW;
+      return DlpLevel::kAllow;
     case policy::DlpRulesManager::Level::kBlock:
-      return DlpLevel::DLP_LEVEL_BLOCK;
+      return DlpLevel::kBlock;
     case policy::DlpRulesManager::Level::kWarn:
-      return DlpLevel::DLP_LEVEL_WARN;
+      return DlpLevel::kWarn;
     case policy::DlpRulesManager::Level::kReport:
-      return DlpLevel::DLP_LEVEL_REPORT;
+      return DlpLevel::kReport;
     case policy::DlpRulesManager::Level::kNotSet:
       NOTREACHED() << "DLP level not set.";
-      return DlpLevel::DLP_LEVEL_NONE;
+      return DlpLevel::kNone;
   }
   NOTREACHED() << "Unknown DLP level.";
   return {};
@@ -267,17 +269,17 @@ DlpRulesManagerComponentToApiEnum(data_controls::Component component) {
   using Component = ::data_controls::Component;
   switch (component) {
     case Component::kArc:
-      return VolumeType::VOLUME_TYPE_ANDROID_FILES;
+      return VolumeType::kAndroidFiles;
     case Component::kCrostini:
-      return VolumeType::VOLUME_TYPE_CROSTINI;
+      return VolumeType::kCrostini;
     case Component::kPluginVm:
-      return VolumeType::VOLUME_TYPE_GUEST_OS;
+      return VolumeType::kGuestOs;
     case Component::kUsb:
-      return VolumeType::VOLUME_TYPE_REMOVABLE;
+      return VolumeType::kRemovable;
     case Component::kDrive:
-      return VolumeType::VOLUME_TYPE_DRIVE;
+      return VolumeType::kDrive;
     case Component::kOneDrive:
-      return VolumeType::VOLUME_TYPE_PROVIDED;
+      return VolumeType::kProvided;
     case Component::kUnknownComponent:
       NOTREACHED() << "DLP component not set.";
       return {};
@@ -289,30 +291,30 @@ DlpRulesManagerComponentToApiEnum(data_controls::Component component) {
 policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
     api::file_manager_private::PolicyDialogType type) {
   switch (type) {
-    case api::file_manager_private::POLICY_DIALOG_TYPE_NONE:
+    case api::file_manager_private::PolicyDialogType::kNone:
       return policy::FilesDialogType::kUnknown;
-    case api::file_manager_private::POLICY_DIALOG_TYPE_WARNING:
+    case api::file_manager_private::PolicyDialogType::kWarning:
       return policy::FilesDialogType::kWarning;
-    case api::file_manager_private::POLICY_DIALOG_TYPE_ERROR:
+    case api::file_manager_private::PolicyDialogType::kError:
       return policy::FilesDialogType::kError;
   }
-  NOTREACHED() << "Unknown policy dialog type " << type;
+  NOTREACHED() << "Unknown policy dialog type " << base::to_underlying(type);
   return policy::FilesDialogType::kUnknown;
 }
 
 absl::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     api::file_manager_private::PolicyErrorType type) {
   switch (type) {
-    case api::file_manager_private::POLICY_ERROR_TYPE_DLP:
+    case api::file_manager_private::PolicyErrorType::kDlp:
       return policy::Policy::kDlp;
-    case api::file_manager_private::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS:
+    case api::file_manager_private::PolicyErrorType::kEnterpriseConnectors:
       return policy::Policy::kEnterpriseConnectors;
-    case api::file_manager_private::POLICY_ERROR_TYPE_NONE:
+    case api::file_manager_private::PolicyErrorType::kNone:
       return absl::nullopt;
-    case api::file_manager_private::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT:
-      NOTREACHED() << "Unexpected policy type " << type;
+    case api::file_manager_private::PolicyErrorType::kDlpWarningTimeout:
+      NOTREACHED() << "Unexpected policy type " << base::to_underlying(type);
   }
-  NOTREACHED() << "Unknown policy error type " << type;
+  NOTREACHED() << "Unknown policy error type " << base::to_underlying(type);
   return absl::nullopt;
 }
 
@@ -761,8 +763,8 @@ void FileManagerPrivateInternalGetDriveQuotaMetadataFunction::
 
   quotaMetadata_.user_type =
       usage->user_type == drivefs::mojom::UserType::kUnmanaged
-          ? api::file_manager_private::UserType::USER_TYPE_UNMANAGED
-          : api::file_manager_private::UserType::USER_TYPE_ORGANIZATION;
+          ? api::file_manager_private::UserType::kUnmanaged
+          : api::file_manager_private::UserType::kOrganization;
   quotaMetadata_.used_bytes = static_cast<double>(usage->used_user_bytes);
   quotaMetadata_.total_bytes = static_cast<double>(usage->total_user_bytes);
   quotaMetadata_.organization_limit_exceeded =
@@ -1202,7 +1204,8 @@ FileManagerPrivateGetDialogCallerFunction::Run() {
     }
     if (caller->component().has_value()) {
       info.Set("component",
-               DlpRulesManagerComponentToApiEnum(caller->component().value()));
+               base::to_underlying(DlpRulesManagerComponentToApiEnum(
+                   caller->component().value())));
     }
   }
 

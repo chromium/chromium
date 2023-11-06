@@ -31,12 +31,12 @@ using extensions::api::file_manager_private::SharesheetLaunchSource;
 
 sharesheet::LaunchSource GetLaunchSource(SharesheetLaunchSource launch_source) {
   switch (launch_source) {
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_SHARESHEET_BUTTON):
+    case (SharesheetLaunchSource::kSharesheetButton):
       return sharesheet::LaunchSource::kFilesAppShareButton;
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_CONTEXT_MENU):
+    case (SharesheetLaunchSource::kContextMenu):
       return sharesheet::LaunchSource::kFilesAppContextMenu;
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_UNKNOWN):
-    case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_NONE):
+    case (SharesheetLaunchSource::kUnknown):
+    case (SharesheetLaunchSource::kNone):
       return sharesheet::LaunchSource::kUnknown;
   }
 }

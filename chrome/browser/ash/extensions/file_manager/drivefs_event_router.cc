@@ -32,8 +32,7 @@ file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
     drivefs::mojom::DialogReason::Type type) {
   switch (type) {
     case drivefs::mojom::DialogReason::Type::kEnableDocsOffline:
-      return file_manager_private::
-          DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+      return file_manager_private::DriveConfirmDialogType::kEnableDocsOffline;
   }
 }
 
@@ -55,18 +54,18 @@ file_manager_private::SyncStatus ConvertSyncStatus(drivefs::SyncStatus status) {
   switch (status) {
     case drivefs::SyncStatus::kNotFound:
     case drivefs::SyncStatus::kMoved:
-      return file_manager_private::SYNC_STATUS_NOT_FOUND;
+      return file_manager_private::SyncStatus::kNotFound;
     case drivefs::SyncStatus::kQueued:
-      return file_manager_private::SYNC_STATUS_QUEUED;
+      return file_manager_private::SyncStatus::kQueued;
     case drivefs::SyncStatus::kInProgress:
-      return file_manager_private::SYNC_STATUS_IN_PROGRESS;
+      return file_manager_private::SyncStatus::kInProgress;
     case drivefs::SyncStatus::kCompleted:
-      return file_manager_private::SYNC_STATUS_COMPLETED;
+      return file_manager_private::SyncStatus::kCompleted;
     case drivefs::SyncStatus::kError:
-      return file_manager_private::SYNC_STATUS_ERROR;
+      return file_manager_private::SyncStatus::kError;
     default:
       NOTREACHED();
-      return file_manager_private::SYNC_STATUS_NOT_FOUND;
+      return file_manager_private::SyncStatus::kNotFound;
   }
 }
 
@@ -142,8 +141,8 @@ void DriveFsEventRouter::OnFilesChanged(
     for (const auto& change : changes) {
       auto& event = events[change.path.DirName()];
       if (!event.changed_files) {
-        event.event_type = extensions::api::file_manager_private::
-            FILE_WATCH_EVENT_TYPE_CHANGED;
+        event.event_type =
+            extensions::api::file_manager_private::FileWatchEventType::kChanged;
         event.changed_files.emplace();
         event.entry.additional_properties.Set(
             "fileSystemRoot", base::StrCat({ConvertDrivePathToFileSystemUrl(
@@ -162,9 +161,9 @@ void DriveFsEventRouter::OnFilesChanged(
           ConvertDrivePathToFileSystemUrl(change.path, listener_url).spec();
       file_manager_change.changes.push_back(
           change.type == drivefs::mojom::FileChange::Type::kDelete
-              ? extensions::api::file_manager_private::CHANGE_TYPE_DELETE
-              : extensions::api::file_manager_private::
-                    CHANGE_TYPE_ADD_OR_UPDATE);
+              ? extensions::api::file_manager_private::ChangeType::kDelete
+              : extensions::api::file_manager_private::ChangeType::
+                    kAddOrUpdate);
     }
     for (auto& event : events) {
       BroadcastOnDirectoryChangedEvent(event.first, event.second);
@@ -176,18 +175,18 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
   file_manager_private::DriveSyncErrorEvent event;
   switch (error.type) {
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFull:
-      event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE;
+      event.type = file_manager_private::DriveSyncErrorType::kNoServerSpace;
       break;
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFullOrganization:
-      event.type = file_manager_private::
-          DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION;
+      event.type =
+          file_manager_private::DriveSyncErrorType::kNoServerSpaceOrganization;
       break;
     case drivefs::mojom::DriveError::Type::kPinningFailedDiskFull:
-      event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
+      event.type = file_manager_private::DriveSyncErrorType::kNoLocalSpace;
       break;
     case drivefs::mojom::DriveError::Type::kCantUploadSharedDriveStorageFull:
       event.type =
-          file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE;
+          file_manager_private::DriveSyncErrorType::kNoSharedDriveSpace;
       event.shared_drive = error.shared_drive;
       break;
   }

@@ -814,10 +814,10 @@ bool ExecuteFileTask(Profile* profile,
     if (done) {
       if (started) {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+            extensions::api::file_manager_private::TaskResult::kOpened, "");
       } else {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+            extensions::api::file_manager_private::TaskResult::kFailed, "");
       }
     }
     return true;
@@ -835,10 +835,10 @@ bool ExecuteFileTask(Profile* profile,
     if (done) {
       if (started) {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+            extensions::api::file_manager_private::TaskResult::kOpened, "");
       } else {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+            extensions::api::file_manager_private::TaskResult::kFailed, "");
       }
     }
     return true;
@@ -854,10 +854,10 @@ bool ExecuteFileTask(Profile* profile,
     if (done) {
       if (started) {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+            extensions::api::file_manager_private::TaskResult::kOpened, "");
       } else {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+            extensions::api::file_manager_private::TaskResult::kFailed, "");
       }
     }
     return true;
@@ -872,7 +872,7 @@ bool ExecuteFileTask(Profile* profile,
         OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
     if (result && done) {
       std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+          extensions::api::file_manager_private::TaskResult::kOpened, "");
     }
     return result;
   }
@@ -913,7 +913,7 @@ bool ExecuteFileTask(Profile* profile,
                                  params);
     if (done) {
       std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+          extensions::api::file_manager_private::TaskResult::kOpened, "");
     }
     return true;
   }

@@ -463,7 +463,7 @@ void ExtensionAppsChromeOs::LaunchExtension(const std::string& app_id,
              std::string error) {
             bool success =
                 result !=
-                extensions::api::file_manager_private::TASK_RESULT_FAILED;
+                extensions::api::file_manager_private::TaskResult::kFailed;
             std::move(callback).Run(ConvertBoolToLaunchResult(success));
           },
           std::move(callback)));

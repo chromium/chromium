@@ -198,14 +198,14 @@ bool ConvertURLsToProvidedInfo(
 bool IsAllowedSource(storage::FileSystemType type,
                      fmp::SourceRestriction restriction) {
   switch (restriction) {
-    case fmp::SOURCE_RESTRICTION_NONE:
+    case fmp::SourceRestriction::kNone:
       NOTREACHED();
       return false;
 
-    case fmp::SOURCE_RESTRICTION_ANY_SOURCE:
+    case fmp::SourceRestriction::kAnySource:
       return true;
 
-    case fmp::SOURCE_RESTRICTION_NATIVE_SOURCE:
+    case fmp::SourceRestriction::kNativeSource:
       return type == storage::kFileSystemTypeLocal;
   }
 }
@@ -314,13 +314,13 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
 
   content::PageZoom zoom_type;
   switch (params->operation) {
-    case fmp::ZOOM_OPERATION_TYPE_IN:
+    case fmp::ZoomOperationType::kIn:
       zoom_type = content::PAGE_ZOOM_IN;
       break;
-    case fmp::ZOOM_OPERATION_TYPE_OUT:
+    case fmp::ZoomOperationType::kOut:
       zoom_type = content::PAGE_ZOOM_OUT;
       break;
-    case fmp::ZOOM_OPERATION_TYPE_RESET:
+    case fmp::ZoomOperationType::kReset:
       zoom_type = content::PAGE_ZOOM_RESET;
       break;
     default:
@@ -358,21 +358,21 @@ FileManagerPrivateOpenInspectorFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   switch (params->type) {
-    case fmp::INSPECTION_TYPE_NORMAL:
+    case fmp::InspectionType::kNormal:
       // Open inspector for foreground page.
       DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents());
       break;
-    case fmp::INSPECTION_TYPE_CONSOLE:
+    case fmp::InspectionType::kConsole:
       // Open inspector for foreground page and bring focus to the console.
       DevToolsWindow::OpenDevToolsWindow(
           GetSenderWebContents(), DevToolsToggleAction::ShowConsolePanel());
       break;
-    case fmp::INSPECTION_TYPE_ELEMENT:
+    case fmp::InspectionType::kElement:
       // Open inspector for foreground page in inspect element mode.
       DevToolsWindow::OpenDevToolsWindow(GetSenderWebContents(),
                                          DevToolsToggleAction::Inspect());
       break;
-    case fmp::INSPECTION_TYPE_BACKGROUND:
+    case fmp::InspectionType::kBackground:
       // Open inspector for background page if extension pointer is not null.
       // Files app SWA is not an extension and thus has no associated background
       // page.
@@ -474,13 +474,13 @@ FileManagerPrivateGetProvidersFunction::Run() {
     result_item.multiple_mounts = capabilities.multiple_mounts;
     switch (capabilities.source) {
       case SOURCE_FILE:
-        result_item.source = fmp::PROVIDER_SOURCE_FILE;
+        result_item.source = fmp::ProviderSource::kFile;
         break;
       case SOURCE_DEVICE:
-        result_item.source = fmp::PROVIDER_SOURCE_DEVICE;
+        result_item.source = fmp::ProviderSource::kDevice;
         break;
       case SOURCE_NETWORK:
-        result_item.source = fmp::PROVIDER_SOURCE_NETWORK;
+        result_item.source = fmp::ProviderSource::kNetwork;
         break;
     }
     result.push_back(std::move(result_item));
@@ -858,13 +858,13 @@ void FileManagerPrivateInternalInstallLinuxPackageFunction::
   fmp::InstallLinuxPackageResponse response;
   switch (result) {
     case crostini::CrostiniResult::SUCCESS:
-      response = fmp::INSTALL_LINUX_PACKAGE_RESPONSE_STARTED;
+      response = fmp::InstallLinuxPackageResponse::kStarted;
       break;
     case crostini::CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED:
-      response = fmp::INSTALL_LINUX_PACKAGE_RESPONSE_FAILED;
+      response = fmp::InstallLinuxPackageResponse::kFailed;
       break;
     case crostini::CrostiniResult::BLOCKING_OPERATION_ALREADY_ACTIVE:
-      response = fmp::INSTALL_LINUX_PACKAGE_RESPONSE_INSTALL_ALREADY_ACTIVE;
+      response = fmp::InstallLinuxPackageResponse::kInstallAlreadyActive;
       break;
     default:
       NOTREACHED();
@@ -1141,8 +1141,8 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateGetDeviceConnectionStateFunction::Run() {
   fmp::DeviceConnectionState result =
       content::GetNetworkConnectionTracker()->IsOffline()
-          ? fmp::DEVICE_CONNECTION_STATE_OFFLINE
-          : fmp::DEVICE_CONNECTION_STATE_ONLINE;
+          ? fmp::DeviceConnectionState::kOffline
+          : fmp::DeviceConnectionState::kOnline;
 
   return RespondNow(
       ArgumentList(fmp::GetDeviceConnectionState::Results::Create(result)));

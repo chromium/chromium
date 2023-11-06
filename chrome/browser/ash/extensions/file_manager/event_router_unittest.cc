@@ -42,11 +42,11 @@ TEST(EventRouterTest, PopulateCrostiniEvent) {
       extensions::Extension::GetBaseURLFromExtensionId("extensionid"));
   EventRouter::PopulateCrostiniEvent(
       ext_event,
-      extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE,
+      extensions::api::file_manager_private::CrostiniEventType::kUnshare,
       "vmname", ext_origin, "mountname", "filesystemname", "/full/path");
 
   EXPECT_EQ(ext_event.event_type,
-            extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_UNSHARE);
+            extensions::api::file_manager_private::CrostiniEventType::kUnshare);
   EXPECT_EQ(ext_event.vm_name, "vmname");
   EXPECT_EQ(ext_event.entries.size(), 1u);
   base::Value::Dict ext_props;
@@ -63,11 +63,11 @@ TEST(EventRouterTest, PopulateCrostiniEvent) {
       GURL("chrome://file-manager/this-part-should-not-be-in?the=event"));
   EventRouter::PopulateCrostiniEvent(
       swa_event,
-      extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_SHARE,
+      extensions::api::file_manager_private::CrostiniEventType::kShare,
       "vmname", swa_origin, "mountname", "filesystemname", "/full/path");
 
   EXPECT_EQ(swa_event.event_type,
-            extensions::api::file_manager_private::CROSTINI_EVENT_TYPE_SHARE);
+            extensions::api::file_manager_private::CrostiniEventType::kShare);
   EXPECT_EQ(swa_event.vm_name, "vmname");
   EXPECT_EQ(swa_event.entries.size(), 1u);
   base::Value::Dict swa_props;

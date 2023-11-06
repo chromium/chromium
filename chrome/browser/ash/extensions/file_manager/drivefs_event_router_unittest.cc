@@ -170,7 +170,7 @@ inline void AddEvent(std::vector<drivefs::mojom::ItemEventPtr>& events,
 
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   FileWatchEvent event;
-  event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
+  event.event_type = file_manager_private::FileWatchEventType::kChanged;
   event.entry.additional_properties.Set("fileSystemRoot", "ext:/");
   event.entry.additional_properties.Set("fileSystemName", "drivefs");
   event.entry.additional_properties.Set("fileFullPath", "/root");
@@ -180,21 +180,21 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   {
     auto& changed_file = event.changed_files->back();
     changed_file.url = "ext:/root/a";
-    changed_file.changes.push_back(file_manager_private::CHANGE_TYPE_DELETE);
+    changed_file.changes.push_back(file_manager_private::ChangeType::kDelete);
   }
   event.changed_files->emplace_back();
   {
     auto& changed_file = event.changed_files->back();
     changed_file.url = "ext:/root/b";
     changed_file.changes.push_back(
-        file_manager_private::CHANGE_TYPE_ADD_OR_UPDATE);
+        file_manager_private::ChangeType::kAddOrUpdate);
   }
   event.changed_files->emplace_back();
   {
     auto& changed_file = event.changed_files->back();
     changed_file.url = "ext:/root/c";
     changed_file.changes.push_back(
-        file_manager_private::CHANGE_TYPE_ADD_OR_UPDATE);
+        file_manager_private::ChangeType::kAddOrUpdate);
   }
 
   EXPECT_CALL(event_router_, IsPathWatched(base::FilePath("/root")))
@@ -220,7 +220,7 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
 
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
   FileWatchEvent event;
-  event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
+  event.event_type = file_manager_private::FileWatchEventType::kChanged;
   event.entry.additional_properties.Set("fileSystemRoot", "ext:/");
   event.entry.additional_properties.Set("fileSystemName", "drivefs");
   event.entry.additional_properties.Set("fileFullPath", "/root/a");
@@ -230,14 +230,14 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
   {
     auto& changed_file = event.changed_files->back();
     changed_file.url = "ext:/root/a/file";
-    changed_file.changes.push_back(file_manager_private::CHANGE_TYPE_DELETE);
+    changed_file.changes.push_back(file_manager_private::ChangeType::kDelete);
   }
   EXPECT_CALL(
       event_router_,
       BroadcastEventImpl(file_manager_private::OnDirectoryChanged::kEventName,
                          MatchFileWatchEvent(event)));
 
-  event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
+  event.event_type = file_manager_private::FileWatchEventType::kChanged;
   event.entry.additional_properties.Set("fileSystemRoot", "ext:/");
   event.entry.additional_properties.Set("fileSystemName", "drivefs");
   event.entry.additional_properties.Set("fileFullPath", "/root/b");
@@ -248,7 +248,7 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
     auto& changed_file = event.changed_files->back();
     changed_file.url = "ext:/root/b/file";
     changed_file.changes.push_back(
-        file_manager_private::CHANGE_TYPE_ADD_OR_UPDATE);
+        file_manager_private::ChangeType::kAddOrUpdate);
   }
   EXPECT_CALL(
       event_router_,
@@ -265,7 +265,7 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
 
 TEST_F(DriveFsEventRouterTest, OnError_CantUploadStorageFull) {
   DriveSyncErrorEvent event;
-  event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE;
+  event.type = file_manager_private::DriveSyncErrorType::kNoServerSpace;
   event.file_url = "ext:/a";
   EXPECT_CALL(
       event_router_,
@@ -282,7 +282,7 @@ TEST_F(DriveFsEventRouterTest, OnError_CantUploadStorageFull) {
 TEST_F(DriveFsEventRouterTest, OnError_CantUploadStorageFullOrganization) {
   DriveSyncErrorEvent event;
   event.type =
-      file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION;
+      file_manager_private::DriveSyncErrorType::kNoServerSpaceOrganization;
   event.file_url = "ext:/a";
   EXPECT_CALL(
       event_router_,
@@ -298,7 +298,7 @@ TEST_F(DriveFsEventRouterTest, OnError_CantUploadStorageFullOrganization) {
 
 TEST_F(DriveFsEventRouterTest, OnError_CantPinDiskFull) {
   DriveSyncErrorEvent event;
-  event.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
+  event.type = file_manager_private::DriveSyncErrorType::kNoLocalSpace;
   event.file_url = "ext:a";
   EXPECT_CALL(
       event_router_,
@@ -315,7 +315,7 @@ TEST_F(DriveFsEventRouterTest, OnError_CantPinDiskFull) {
 TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_Display) {
   DriveConfirmDialogEvent expected_event;
   expected_event.type =
-      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+      file_manager_private::DriveConfirmDialogType::kEnableDocsOffline;
   expected_event.file_url = "ext:a";
   EXPECT_CALL(
       event_router_,
@@ -342,7 +342,7 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_Display) {
 TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_OneDialogAtATime) {
   DriveConfirmDialogEvent expected_event;
   expected_event.type =
-      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+      file_manager_private::DriveConfirmDialogType::kEnableDocsOffline;
   expected_event.file_url = "ext:a";
   EXPECT_CALL(
       event_router_,

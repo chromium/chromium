@@ -294,7 +294,7 @@ class SystemNotificationManager {
 
   // Keep track of the bulk-pinning stage.
   using BulkPinStage = file_manager_private::BulkPinStage;
-  BulkPinStage bulk_pin_stage_ = BulkPinStage::BULK_PIN_STAGE_NONE;
+  BulkPinStage bulk_pin_stage_ = BulkPinStage::kNone;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};

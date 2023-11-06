@@ -164,24 +164,24 @@ void DispatchEventToExtension(
 fmp::IOTaskState GetIOTaskState(io_task::State state) {
   switch (state) {
     case io_task::State::kQueued:
-      return fmp::IO_TASK_STATE_QUEUED;
+      return fmp::IOTaskState::kQueued;
     case io_task::State::kScanning:
-      return fmp::IO_TASK_STATE_SCANNING;
+      return fmp::IOTaskState::kScanning;
     case io_task::State::kInProgress:
-      return fmp::IO_TASK_STATE_IN_PROGRESS;
+      return fmp::IOTaskState::kInProgress;
     case io_task::State::kPaused:
-      return fmp::IO_TASK_STATE_PAUSED;
+      return fmp::IOTaskState::kPaused;
     case io_task::State::kSuccess:
-      return fmp::IO_TASK_STATE_SUCCESS;
+      return fmp::IOTaskState::kSuccess;
     case io_task::State::kError:
-      return fmp::IO_TASK_STATE_ERROR;
+      return fmp::IOTaskState::kError;
     case io_task::State::kNeedPassword:
-      return fmp::IO_TASK_STATE_NEED_PASSWORD;
+      return fmp::IOTaskState::kNeedPassword;
     case io_task::State::kCancelled:
-      return fmp::IO_TASK_STATE_CANCELLED;
+      return fmp::IOTaskState::kCancelled;
     default:
       NOTREACHED();
-      return fmp::IO_TASK_STATE_ERROR;
+      return fmp::IOTaskState::kError;
   }
 }
 
@@ -189,53 +189,53 @@ fmp::IOTaskState GetIOTaskState(io_task::State state) {
 fmp::IOTaskType GetIOTaskType(io_task::OperationType type) {
   switch (type) {
     case io_task::OperationType::kCopy:
-      return fmp::IO_TASK_TYPE_COPY;
+      return fmp::IOTaskType::kCopy;
     case io_task::OperationType::kDelete:
-      return fmp::IO_TASK_TYPE_DELETE;
+      return fmp::IOTaskType::kDelete;
     case io_task::OperationType::kEmptyTrash:
-      return fmp::IO_TASK_TYPE_EMPTY_TRASH;
+      return fmp::IOTaskType::kEmptyTrash;
     case io_task::OperationType::kExtract:
-      return fmp::IO_TASK_TYPE_EXTRACT;
+      return fmp::IOTaskType::kExtract;
     case io_task::OperationType::kMove:
-      return fmp::IO_TASK_TYPE_MOVE;
+      return fmp::IOTaskType::kMove;
     case io_task::OperationType::kRestore:
-      return fmp::IO_TASK_TYPE_RESTORE;
+      return fmp::IOTaskType::kRestore;
     case io_task::OperationType::kRestoreToDestination:
-      return fmp::IO_TASK_TYPE_RESTORE_TO_DESTINATION;
+      return fmp::IOTaskType::kRestoreToDestination;
     case io_task::OperationType::kTrash:
-      return fmp::IO_TASK_TYPE_TRASH;
+      return fmp::IOTaskType::kTrash;
     case io_task::OperationType::kZip:
-      return fmp::IO_TASK_TYPE_ZIP;
+      return fmp::IOTaskType::kZip;
     default:
       NOTREACHED();
-      return fmp::IO_TASK_TYPE_COPY;
+      return fmp::IOTaskType::kCopy;
   }
 }
 
 fmp::PolicyErrorType GetPolicyErrorType(
     absl::optional<io_task::PolicyErrorType> type) {
   if (!type.has_value()) {
-    return fmp::PolicyErrorType::POLICY_ERROR_TYPE_NONE;
+    return fmp::PolicyErrorType::kNone;
   }
   switch (type.value()) {
     case io_task::PolicyErrorType::kDlp:
-      return fmp::POLICY_ERROR_TYPE_DLP;
+      return fmp::PolicyErrorType::kDlp;
     case io_task::PolicyErrorType::kEnterpriseConnectors:
-      return fmp::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS;
+      return fmp::PolicyErrorType::kEnterpriseConnectors;
     case io_task::PolicyErrorType::kDlpWarningTimeout:
-      return fmp::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT;
+      return fmp::PolicyErrorType::kDlpWarningTimeout;
     default:
       NOTREACHED();
-      return fmp::POLICY_ERROR_TYPE_NONE;
+      return fmp::PolicyErrorType::kNone;
   }
 }
 
 fmp::PolicyErrorType GetPolicyErrorType(policy::Policy policy) {
   switch (policy) {
     case policy::Policy::kDlp:
-      return fmp::POLICY_ERROR_TYPE_DLP;
+      return fmp::PolicyErrorType::kDlp;
     case policy::Policy::kEnterpriseConnectors:
-      return fmp::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS;
+      return fmp::PolicyErrorType::kEnterpriseConnectors;
   }
 }
 
@@ -513,7 +513,7 @@ fmp::FileWatchEvent CreateFileWatchEvent(
     fmp::ChangeType change_type) {
   fmp::FileWatchEvent event;
 
-  event.event_type = fmp::FILE_WATCH_EVENT_TYPE_CHANGED;
+  event.event_type = fmp::FileWatchEventType::kChanged;
   event.entry.additional_properties.Set("fileSystemRoot", info.root_url.spec());
   event.entry.additional_properties.Set("fileSystemName", info.name);
   event.entry.additional_properties.Set("fileFullPath",
@@ -555,46 +555,46 @@ MaybeStartInteractionWithODFS(const storage::FileSystemURL& url,
 fmp::MountError MountErrorToMountCompletedStatus(ash::MountError error) {
   switch (error) {
     case ash::MountError::kSuccess:
-      return fmp::MOUNT_ERROR_SUCCESS;
+      return fmp::MountError::kSuccess;
     case ash::MountError::kUnknownError:
-      return fmp::MOUNT_ERROR_UNKNOWN_ERROR;
+      return fmp::MountError::kUnknownError;
     case ash::MountError::kInternalError:
-      return fmp::MOUNT_ERROR_INTERNAL_ERROR;
+      return fmp::MountError::kInternalError;
     case ash::MountError::kInvalidArgument:
-      return fmp::MOUNT_ERROR_INVALID_ARGUMENT;
+      return fmp::MountError::kInvalidArgument;
     case ash::MountError::kInvalidPath:
-      return fmp::MOUNT_ERROR_INVALID_PATH;
+      return fmp::MountError::kInvalidPath;
     case ash::MountError::kPathAlreadyMounted:
-      return fmp::MOUNT_ERROR_PATH_ALREADY_MOUNTED;
+      return fmp::MountError::kPathAlreadyMounted;
     case ash::MountError::kPathNotMounted:
-      return fmp::MOUNT_ERROR_PATH_NOT_MOUNTED;
+      return fmp::MountError::kPathNotMounted;
     case ash::MountError::kDirectoryCreationFailed:
-      return fmp::MOUNT_ERROR_DIRECTORY_CREATION_FAILED;
+      return fmp::MountError::kDirectoryCreationFailed;
     case ash::MountError::kInvalidMountOptions:
-      return fmp::MOUNT_ERROR_INVALID_MOUNT_OPTIONS;
+      return fmp::MountError::kInvalidMountOptions;
     case ash::MountError::kInsufficientPermissions:
-      return fmp::MOUNT_ERROR_INSUFFICIENT_PERMISSIONS;
+      return fmp::MountError::kInsufficientPermissions;
     case ash::MountError::kMountProgramNotFound:
-      return fmp::MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND;
+      return fmp::MountError::kMountProgramNotFound;
     case ash::MountError::kMountProgramFailed:
-      return fmp::MOUNT_ERROR_MOUNT_PROGRAM_FAILED;
+      return fmp::MountError::kMountProgramFailed;
     case ash::MountError::kInvalidDevicePath:
-      return fmp::MOUNT_ERROR_INVALID_DEVICE_PATH;
+      return fmp::MountError::kInvalidDevicePath;
     case ash::MountError::kUnknownFilesystem:
-      return fmp::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+      return fmp::MountError::kUnknownFilesystem;
     case ash::MountError::kUnsupportedFilesystem:
-      return fmp::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+      return fmp::MountError::kUnsupportedFilesystem;
     case ash::MountError::kNeedPassword:
-      return fmp::MOUNT_ERROR_NEED_PASSWORD;
+      return fmp::MountError::kNeedPassword;
     case ash::MountError::kInProgress:
-      return fmp::MOUNT_ERROR_IN_PROGRESS;
+      return fmp::MountError::kInProgress;
     case ash::MountError::kCancelled:
-      return fmp::MOUNT_ERROR_CANCELLED;
+      return fmp::MountError::kCancelled;
     case ash::MountError::kBusy:
-      return fmp::MOUNT_ERROR_BUSY;
+      return fmp::MountError::kBusy;
     default:
       LOG(ERROR) << "Unexpected mount error: " << error;
-      return fmp::MOUNT_ERROR_UNKNOWN_ERROR;
+      return fmp::MountError::kUnknownError;
   }
 }
 
@@ -916,8 +916,8 @@ void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
   }
 
   fmp::FileWatchEvent event;
-  event.event_type = watcher_error ? fmp::FILE_WATCH_EVENT_TYPE_ERROR
-                                   : fmp::FILE_WATCH_EVENT_TYPE_CHANGED;
+  event.event_type = watcher_error ? fmp::FileWatchEventType::kError
+                                   : fmp::FileWatchEventType::kChanged;
 
   event.entry.additional_properties.Set("fileSystemName",
                                         entry_definition.file_system_name);
@@ -965,7 +965,7 @@ void EventRouter::OnVolumeMounted(ash::MountError error_code,
     return;
   }
 
-  DispatchMountCompletedEvent(fmp::MOUNT_COMPLETED_EVENT_TYPE_MOUNT, error_code,
+  DispatchMountCompletedEvent(fmp::MountCompletedEventType::kMount, error_code,
                               volume);
 
   // Record the UMA metrics for mounted FSPs.
@@ -980,7 +980,7 @@ void EventRouter::OnVolumeMounted(ash::MountError error_code,
 void EventRouter::OnVolumeUnmounted(ash::MountError error_code,
                                     const Volume& volume) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DispatchMountCompletedEvent(fmp::MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT,
+  DispatchMountCompletedEvent(fmp::MountCompletedEventType::kUnmount,
                               error_code, volume);
 
   // TODO(mtomasz): Move VolumeManager and part of the event router outside of
@@ -1137,19 +1137,19 @@ void EventRouter::PopulateCrostiniEvent(fmp::CrostiniEvent& event,
 
 void EventRouter::OnPersistedPathRegistered(const std::string& vm_name,
                                             const base::FilePath& path) {
-  SendCrostiniEvent(fmp::CROSTINI_EVENT_TYPE_SHARE, vm_name, path);
+  SendCrostiniEvent(fmp::CrostiniEventType::kShare, vm_name, path);
 }
 
 void EventRouter::OnUnshare(const std::string& vm_name,
                             const base::FilePath& path) {
-  SendCrostiniEvent(fmp::CROSTINI_EVENT_TYPE_UNSHARE, vm_name, path);
+  SendCrostiniEvent(fmp::CrostiniEventType::kUnshare, vm_name, path);
 }
 
 void EventRouter::OnGuestRegistered(const guest_os::GuestId& guest) {
   fmp::CrostiniEvent event;
   event.vm_name = guest.vm_name;
   event.container_name = guest.container_name;
-  event.event_type = fmp::CROSTINI_EVENT_TYPE_ENABLE;
+  event.event_type = fmp::CrostiniEventType::kEnable;
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
                  fmp::OnCrostiniChanged::kEventName,
@@ -1160,7 +1160,7 @@ void EventRouter::OnGuestUnregistered(const guest_os::GuestId& guest) {
   fmp::CrostiniEvent event;
   event.vm_name = guest.vm_name;
   event.container_name = guest.container_name;
-  event.event_type = fmp::CROSTINI_EVENT_TYPE_DISABLE;
+  event.event_type = fmp::CrostiniEventType::kDisable;
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
                  fmp::OnCrostiniChanged::kEventName,
@@ -1196,7 +1196,7 @@ void EventRouter::DropFailedPluginVmDirectoryNotShared() {
   fmp::CrostiniEvent event;
   event.vm_name = plugin_vm::kPluginVmName;
   event.event_type =
-      fmp::CROSTINI_EVENT_TYPE_DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
+      fmp::CrostiniEventType::kDropFailedPluginVmDirectoryNotShared;
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
                  fmp::OnCrostiniChanged::kEventName,
@@ -1353,7 +1353,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
 
   // CopyOrMoveIOTask can enter PAUSED state when it needs the user to resolve
   // a file name conflict, or because it needs user to review a policy warning.
-  if (GetIOTaskState(status.state) == fmp::IO_TASK_STATE_PAUSED) {
+  if (GetIOTaskState(status.state) == fmp::IOTaskState::kPaused) {
     fmp::PauseParams pause_params;
     if (status.pause_params.conflict_params) {
       pause_params.conflict_params.emplace();
@@ -1382,7 +1382,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
 
   // The TrashIOTask is the only IOTask that uses the output Entry's, so don't
   // try to resolve the outputs for all other IOTasks.
-  if (GetIOTaskType(status.type) != fmp::IO_TASK_TYPE_TRASH ||
+  if (GetIOTaskType(status.type) != fmp::IOTaskType::kTrash ||
       outputs.size() == 0) {
     BroadcastIOTask(std::move(event_status));
     return;
@@ -1547,7 +1547,7 @@ drivefs::SyncState EventRouter::GetDriveSyncStateForPath(
 
 void EventRouter::OnFilesAddedToDlpDaemon(
     const std::vector<base::FilePath>& files) {
-  OnFilesChanged(files, fmp::ChangeType::CHANGE_TYPE_ADD_OR_UPDATE);
+  OnFilesChanged(files, fmp::ChangeType::kAddOrUpdate);
 }
 
 // Observes App Service and notifies Files app when there are any changes in the
@@ -1566,8 +1566,8 @@ void EventRouter::OnConnectionChanged(
     const network::mojom::ConnectionType type) {
   fmp::DeviceConnectionState result =
       content::GetNetworkConnectionTracker()->IsOffline()
-          ? fmp::DEVICE_CONNECTION_STATE_OFFLINE
-          : fmp::DEVICE_CONNECTION_STATE_ONLINE;
+          ? fmp::DeviceConnectionState::kOffline
+          : fmp::DeviceConnectionState::kOnline;
   BroadcastEvent(profile_,
                  extensions::events::
                      FILE_MANAGER_PRIVATE_ON_DEVICE_CONNECTION_STATUS_CHANGED,
