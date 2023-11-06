@@ -18,12 +18,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <!-- This empty view balances the close button so the drag handlebar and "Chrome now playing" can be centered. -->
-        <View
-            android:layout_width="@dimen/readaloud_close_button_size"
-            android:layout_height="@dimen/readaloud_close_button_size"
-            android:layout_margin="@dimen/readaloud_close_button_margin"
-            android:layout_weight="0"/>
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -47,14 +41,6 @@ found in the LICENSE file.
                 android:text="@string/readaloud_chrome_now_playing"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
         </LinearLayout>
-        <ImageView
-            android:id="@+id/readaloud_expanded_player_close_button"
-            android:src="@drawable/baseline_close_24"
-            android:contentDescription="@string/readaloud_close_player_button_content_description"
-            android:layout_width="@dimen/readaloud_close_button_size"
-            android:layout_height="@dimen/readaloud_close_button_size"
-            android:layout_margin="@dimen/readaloud_close_button_margin"
-            android:layout_weight="0"/>
     </LinearLayout>
 
     <LinearLayout

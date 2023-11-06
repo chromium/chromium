@@ -87,7 +87,6 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
-        setOnClickListener(R.id.readaloud_expanded_player_close_button, handler::onCloseClick);
         setOnClickListener(R.id.readaloud_play_pause_button, handler::onPlayPauseClick);
         setOnClickListener(R.id.readaloud_seek_back_button, handler::onSeekBackClick);
         setOnClickListener(R.id.readaloud_seek_forward_button, handler::onSeekForwardClick);
