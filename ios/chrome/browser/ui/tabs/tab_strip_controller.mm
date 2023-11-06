@@ -506,39 +506,31 @@ const CGFloat kSymbolSize = 18;
     UIImage* buttonNewTabImage =
         DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-      buttonConfiguration.image = buttonNewTabImage;
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kGrey500Color];
-      _buttonNewTab.configurationUpdateHandler = ^(UIButton* incomingButton) {
-        UIButtonConfiguration* updatedConfig = incomingButton.configuration;
-        switch (incomingButton.state) {
-          case UIControlStateHighlighted: {
-            updatedConfig.baseForegroundColor =
-                [UIColor colorNamed:kGrey700Color];
-            break;
-          }
-          case UIControlStateNormal:
-            updatedConfig.baseForegroundColor =
-                [UIColor colorNamed:kGrey500Color];
-            break;
-          default:
-            break;
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+    buttonConfiguration.image = buttonNewTabImage;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kGrey500Color];
+    _buttonNewTab.configurationUpdateHandler = ^(UIButton* incomingButton) {
+      UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+      switch (incomingButton.state) {
+        case UIControlStateHighlighted: {
+          updatedConfig.baseForegroundColor =
+              [UIColor colorNamed:kGrey700Color];
+          break;
         }
-        incomingButton.configuration = updatedConfig;
-      };
-      _buttonNewTab.configuration = buttonConfiguration;
-    } else {
-      UIEdgeInsets imageInsets = UIEdgeInsetsMake(
-          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-      SetImageEdgeInsets(_buttonNewTab, imageInsets);
-      [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
-      [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
-    }
+        case UIControlStateNormal:
+          updatedConfig.baseForegroundColor =
+              [UIColor colorNamed:kGrey500Color];
+          break;
+        default:
+          break;
+      }
+      incomingButton.configuration = updatedConfig;
+    };
+    _buttonNewTab.configuration = buttonConfiguration;
 
     _buttonNewTabSpotlightView = [[UIView alloc] init];
     _buttonNewTabSpotlightView.hidden = YES;
@@ -636,15 +628,9 @@ const CGFloat kSymbolSize = 18;
 #pragma mark - TabStripCommands
 
 - (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-  if (IsUIButtonConfigurationEnabled()) {
-    _buttonNewTab.tintColor = IPHHighlighted
-                                  ? [UIColor colorNamed:kSolidWhiteColor]
-                                  : [UIColor colorNamed:kGrey500Color];
-  } else {
-    _buttonNewTab.imageView.tintColor =
-        IPHHighlighted ? [UIColor colorNamed:kSolidWhiteColor]
-                       : [UIColor colorNamed:kGrey500Color];
-  }
+  _buttonNewTab.tintColor = IPHHighlighted
+                                ? [UIColor colorNamed:kSolidWhiteColor]
+                                : [UIColor colorNamed:kGrey500Color];
   _buttonNewTabSpotlightView.backgroundColor =
       IPHHighlighted ? [UIColor colorNamed:kBlueColor] : nil;
   _buttonNewTabSpotlightView.hidden = !IPHHighlighted;
