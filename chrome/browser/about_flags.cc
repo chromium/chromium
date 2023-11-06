@@ -537,16 +537,33 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kCCTRealTimeEngagementSignalsParamFakeValues[] = {{"real_values", "false"}};
 
+const FeatureEntry::FeatureParam kCCTPageInsightsHubFastPeekTriggerParam = {
+    "page_insights_can_autotrigger_after_end", "1000"};  // 1s
+const FeatureEntry::FeatureParam kCCTPageInsightsHubShorterFullSizeParam = {
+    "page_insights_full_height_ratio", "0.775"};
+const FeatureEntry::FeatureParam kCCTPageInsightsHubShorterPeekSizeParam = {
+    "page_insights_peek_height_ratio", "0.13"};
 const FeatureEntry::FeatureParam
-    kCCTPageInsightsHubAutotriggerDurationTesting[] = {
-        {"page_insights_can_autotrigger_after_end", "1000"}  // 1s
-};
-
-const FeatureEntry::FeatureVariation
-    kCCTPageInsightsHubAutotriggerDurationVariations[] = {
-        {"with fast peek trigger",
-         kCCTPageInsightsHubAutotriggerDurationTesting,
-         std::size(kCCTPageInsightsHubAutotriggerDurationTesting), nullptr}};
+    kCCTPageInsightsHubShorterPeekWithPrivacySizeParam = {
+        "page_insights_peek_with_privacy_height_ratio", "0.2"};
+const FeatureEntry::FeatureParam kCCTPageInsightsHubFastPeekTriggerParams[] = {
+    kCCTPageInsightsHubFastPeekTriggerParam};
+const FeatureEntry::FeatureParam kCCTPageInsightsHubShorterSheetParams[] = {
+    kCCTPageInsightsHubShorterFullSizeParam,
+    kCCTPageInsightsHubShorterPeekSizeParam,
+    kCCTPageInsightsHubShorterPeekWithPrivacySizeParam};
+const FeatureEntry::FeatureParam kCCTPageInsightsHubBothParams[] = {
+    kCCTPageInsightsHubFastPeekTriggerParam,
+    kCCTPageInsightsHubShorterFullSizeParam,
+    kCCTPageInsightsHubShorterPeekSizeParam,
+    kCCTPageInsightsHubShorterPeekWithPrivacySizeParam};
+const FeatureEntry::FeatureVariation kCCTPageInsightsHubVariations[] = {
+    {"with fast peek trigger", kCCTPageInsightsHubFastPeekTriggerParams,
+     std::size(kCCTPageInsightsHubFastPeekTriggerParams), nullptr},
+    {"with shorter sheet", kCCTPageInsightsHubShorterSheetParams,
+     std::size(kCCTPageInsightsHubShorterSheetParams), nullptr},
+    {"with both", kCCTPageInsightsHubBothParams,
+     std::size(kCCTPageInsightsHubBothParams), nullptr}};
 
 const FeatureEntry::FeatureVariation kCCTRealTimeEngagementSignalsVariations[] =
     {{"Send real values", kCCTRealTimeEngagementSignalsParamRealValues,
@@ -7410,10 +7427,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"cct-page-insights-hub", flag_descriptions::kCCTPageInsightsHubName,
      flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kCCTPageInsightsHub,
-         kCCTPageInsightsHubAutotriggerDurationVariations,
-         "CCTPageInsightsHubAutotriggerDuration")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTPageInsightsHub,
+                                    kCCTPageInsightsHubVariations,
+                                    "CCTPageInsightsHubVariations")},
     {"cct-prevent-touches", flag_descriptions::kCCTPreventTouchesName,
      flag_descriptions::kCCTPreventTouchesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTPreventTouches)},
