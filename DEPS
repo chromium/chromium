@@ -4138,7 +4138,7 @@ deps = {
   },
 
   'src/third_party/ml': {
-      'url': Var('chrome_git') + '/chrome/third_party/ml.git' + '@' + '05e8032fd4cbe1508963eb1357b979e3d28e48e0',
+      'url': Var('chrome_git') + '/chrome/third_party/ml.git' + '@' + '12e73e8a007bd7ceaabfc1c0c8baa54c9c8348ff',
       'condition': 'checkout_third_party_ml',
   },
 
