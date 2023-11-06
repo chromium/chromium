@@ -1,7 +1,6 @@
 <style include="settings-shared">
   :host {
-    --cr-toolbar-search-field-background:
-        var(--cros-toolbar-search-bg-color);
+    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_shaded);
     --cr-toolbar-focused-min-height: 40px;
     --cr-toolbar-icon-container-size: 32px;
     --cr-toolbar-icon-margin: 8px 16px;
@@ -17,10 +16,6 @@
     flex-basis: var(--cr-toolbar-field-width);
     transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1);
     width: var(--cr-toolbar-field-width);
-  }
-
-  :host-context(body.jelly-enabled):host {
-    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_shaded);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -129,22 +124,14 @@
     margin-inline-start: 8px;
   }
 
-  /* The separator covers the top box shadow of the dropdown so that
-    * var(--cr-elevation-3) can be used instead of custom values. */
+  /* The separator covers the top box shadow of the dropdown. */
   .separator {
     background-color: var(--cros-bg-color-elevation-3);
-    border-bottom: none;
-    border-inline-end: none;
-    border-inline-start: none;
-    border-top: 1px solid var(--cros-separator-color);
+    border-top: 1px solid var(--cros-sys-separator);
     height: var(--separator-height);
     margin-inline-end: 0;
     margin-inline-start: 0;
     margin-top: -9px;
-  }
-
-  :host-context(body.jelly-enabled) .separator {
-    border-color: var(--cros-sys-separator);
   }
 </style>
 <cr-toolbar-search-field id="search" narrow="[[narrow]]"
