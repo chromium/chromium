@@ -7678,7 +7678,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="199" label="SYNC_COMPOSITOR_NO_BEGIN_FRAME"/>
   <int value="200" label="WEBUI_BAD_HOST_ACCESS"/>
   <int value="201" label="OBSOLETE_RFMF_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
-  <int value="202" label="PERMISSION_SERVICE_BAD_PERMISSION_DESCRIPTOR"/>
+  <int value="202" label="PSI_BAD_PERMISSION_DESCRIPTOR"/>
   <int value="203" label="BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
   <int value="204" label="OBSOLETE_RFPH_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
   <int value="205" label="RFH_ERROR_PROCESS_NON_ERROR_COMMIT"/>
@@ -7786,13 +7786,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
   <int value="302" label="MH_MIDI_PERMISSION"/>
   <int value="303" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT"/>
-  <int value="304"
-      label="PERMISSION_SERVICE_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE"/>
+  <int value="304" label="PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE"/>
   <int value="305" label="RFH_FOCUS_ACROSS_FENCED_BOUNDARY"/>
   <int value="306"
       label="RFH_RECEIVED_INVALID_SHARED_STORAGE_WRITABLE_ATTRIBUTE"/>
   <int value="307"
       label="MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED"/>
+  <int value="308" label="PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -102,7 +102,10 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
                        MAYBE_RequestInvalidPermissionType) {
   content::WebContentsConsoleObserver console_observer(web_contents());
-  ClickElementWithId(web_contents(), "invalid");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(),
+      embedded_test_server()->GetURL("/permissions/permission_element.html"),
+      1));
   ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ(

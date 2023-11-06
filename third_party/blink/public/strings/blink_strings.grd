@@ -687,6 +687,18 @@ below:
       <message name="IDS_PERMISSION_REQUEST_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
         Share location
       </message>
+      <message name="IDS_PERMISSION_REQUEST_CAMERA_ALLOWED" desc="Label for a permission element when camera access is allowed">
+        Camera allowed
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED" desc="Label for a permission element when microphone access is allowed">
+        Microphone allowed
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED" desc="Label for a permission element when camera access and microphone access are allowed">
+        Camera and microphone allowed
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED" desc="Label for a permission element when geolocation access is allowed">
+        Sharing location allowed
+      </message>
 
       <message name="IDS_STRONG_PASSWORD_LABEL" desc="Label displayed in the password input form in the sign-up flow when it is generated">
         Strong password

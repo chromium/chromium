@@ -2608,7 +2608,15 @@
     "expires": "Jul 1, 2024",
     "owners": ["arichiv@chromium.org"]
   },
-
+  {
+    "prefix": "permission-element",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/html/semantics/permission-element"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=PermissionElement"],
+    "owners": ["permissions-core@google.com"],
+    "expires": "Jul 1, 2024"
+  },
   "The GenericSensorExtraClasses feature is controlled by a flag, which has ",
   "an expiration date. |expires| below is set to 'never' to avoid having to ",
   "manage the expiration date in two locations.",
