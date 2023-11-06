@@ -2149,7 +2149,10 @@ suite('scanningAppTest', function() {
 
   // Verify that no scanners get evicted when the number of scanners in saved
   // scan settings is equal to |MAX_NUM_SAVED_SCANNERS|.
-  test('doNotEvictScannersAtMax', async () => {
+  //
+  // Flaky test
+  // TODO(https://crbug.com/1499761): Reenable it.
+  test.skip('doNotEvictScannersAtMax', async () => {
     const scanners: ScannerSetting[] = new Array(MAX_NUM_SAVED_SCANNERS);
     for (let i = 0; i < MAX_NUM_SAVED_SCANNERS; i++) {
       scanners[i] = {
