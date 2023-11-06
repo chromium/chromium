@@ -159,7 +159,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
           debug_label, std::move(buffer_handle))));
 }
 
-Mailbox ClientSharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::BufferPlane plane,
@@ -171,10 +171,11 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
   DCHECK(gpu::IsValidClientUsage(usage)) << usage;
   auto buffer_format = gpu_memory_buffer->GetFormat();
   CHECK(gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format));
-  return AddMailbox(proxy_->CreateSharedImage(
-      buffer_format, plane, gpu_memory_buffer->GetSize(), color_space,
-      surface_origin, alpha_type, usage, debug_label,
-      gpu_memory_buffer->CloneHandle()));
+  return base::MakeRefCounted<ClientSharedImage>(
+      AddMailbox(proxy_->CreateSharedImage(
+          buffer_format, plane, gpu_memory_buffer->GetSize(), color_space,
+          surface_origin, alpha_type, usage, debug_label,
+          gpu_memory_buffer->CloneHandle())));
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -1269,24 +1269,25 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 #endif
 
       constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image;
       if (base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo)) {
         viz::SharedImageFormat si_format =
             OutputFormatToSharedImageFormat(output_format_, plane);
         if (SetPrefersExternalSampler(si_format)) {
           plane_resource.is_multiplanar_buffer = true;
         }
-        auto client_shared_image = sii->CreateSharedImage(
+        client_shared_image = sii->CreateSharedImage(
             si_format, gpu_memory_buffer->GetSize(), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
             gpu_memory_buffer->CloneHandle());
-        CHECK(client_shared_image);
-        plane_resource.mailbox = client_shared_image->mailbox();
       } else {
-        plane_resource.mailbox = sii->CreateSharedImage(
+        client_shared_image = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
             GetSharedImageBufferPlane(output_format_, plane), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel);
       }
+      CHECK(client_shared_image);
+      plane_resource.mailbox = client_shared_image->mailbox();
     } else if (!plane_resource.mailbox.IsZero()) {
       sii->UpdateSharedImage(frame_resources->sync_token,
                              plane_resource.mailbox);

@@ -379,10 +379,12 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       gpu::GpuMemoryBufferManager* gmb_manager =
           context_factory_->GetGpuMemoryBufferManager();
       for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
-        mailboxes_[plane] = shared_image_interface->CreateSharedImage(
+        auto client_shared_image = shared_image_interface->CreateSharedImage(
             gmb.get(), gmb_manager, buffer_planes_[plane],
             frame_info->color_space, kTopLeft_GrSurfaceOrigin,
             kPremul_SkAlphaType, kSharedImageUsage, "CameraVideoFrame");
+        CHECK(client_shared_image);
+        mailboxes_[plane] = client_shared_image->mailbox();
       }
     }
 

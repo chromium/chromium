@@ -233,7 +233,8 @@ TestSharedImageInterface::CreateSharedImage(
   return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
+scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::BufferPlane plane,
@@ -246,7 +247,7 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
   most_recent_size_ = gpu_memory_buffer->GetSize();
-  return mailbox;
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
 void TestSharedImageInterface::UpdateSharedImage(

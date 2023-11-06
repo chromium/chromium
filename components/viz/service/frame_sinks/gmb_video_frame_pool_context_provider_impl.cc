@@ -102,10 +102,11 @@ class GmbVideoFramePoolContext
                          uint32_t usage,
                          gpu::Mailbox& mailbox,
                          gpu::SyncToken& sync_token) override {
-    mailbox = sii_in_process_->CreateSharedImage(
+    auto client_shared_image = sii_in_process_->CreateSharedImage(
         gpu_memory_buffer, gpu_memory_buffer_manager_, plane, color_space,
         surface_origin, alpha_type, usage, "VizGmbVideoFramePool");
-
+    CHECK(client_shared_image);
+    mailbox = client_shared_image->mailbox();
     sync_token = sii_in_process_->GenVerifiedSyncToken();
   }
 

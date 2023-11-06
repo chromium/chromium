@@ -267,20 +267,22 @@ Buffer::Texture::Texture(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
     auto si_format = GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
-    auto client_shared_image = sii->CreateSharedImage(
+    client_shared_image = sii->CreateSharedImage(
         si_format, gpu_memory_buffer_->GetSize(), color_space,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
         gpu_memory_buffer_->CloneHandle());
-    CHECK(client_shared_image);
-    mailbox_ = client_shared_image->mailbox();
+
   } else {
-    mailbox_ = sii->CreateSharedImage(
+    client_shared_image = sii->CreateSharedImage(
         gpu_memory_buffer_, gpu_memory_buffer_manager,
         gfx::BufferPlane::DEFAULT, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "ExoTexture");
   }
+  CHECK(client_shared_image);
+  mailbox_ = client_shared_image->mailbox();
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
