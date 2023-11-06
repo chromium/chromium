@@ -24,6 +24,12 @@ const readyPromise = new Promise(resolve => readyCallback = resolve);
  * codebase.
  */
 export class SwitchAccess {
+  /** @private */
+  constructor() {
+    /* @private {!Mode} */
+    this.mode_ = Mode.ITEM_SCAN;
+  }
+
   /** @param {!AutomationNode} desktop */
   static async init(desktop) {
     if (SwitchAccess.instance) {
@@ -44,47 +50,6 @@ export class SwitchAccess {
   /** @return {!Promise} */
   static async ready() {
     return readyPromise;
-  }
-
-  /**
-   * @param {!AutomationNode} desktop
-   * @param {AutomationNode} currentFocus
-   * @private
-   */
-  async waitForFocus_(desktop, currentFocus) {
-    return new Promise(resolve => {
-      // Focus is available. Finish init without waiting for further events.
-      // Disallow web view nodes, which indicate a root web area is still
-      // loading and pending focus.
-      if (currentFocus && currentFocus.role !== RoleType.WEB_VIEW) {
-        resolve();
-        return;
-      }
-
-      // Wait for the focus to be sent. If |currentFocus| was undefined, this is
-      // guaranteed. Otherwise, also set a timed callback to ensure we do
-      // eventually init.
-      let callbackId = 0;
-      const listener = maybeEvent => {
-        if (maybeEvent && maybeEvent.target.role === RoleType.WEB_VIEW) {
-          return;
-        }
-
-        desktop.removeEventListener(EventType.FOCUS, listener, false);
-        clearTimeout(callbackId);
-
-        resolve();
-      };
-
-      desktop.addEventListener(EventType.FOCUS, listener, false);
-      callbackId = setTimeout(listener, 5000);
-    });
-  }
-
-  /** @private */
-  constructor() {
-    /* @private {!Mode} */
-    this.mode_ = Mode.ITEM_SCAN;
   }
 
   /**
@@ -161,6 +126,41 @@ export class SwitchAccess {
         'Accessibility.CrosSwitchAccess.Error',
         /** @type {number} */ (errorType), errorTypeCountForUMA);
     return new Error(errorString);
+  }
+
+  /**
+   * @param {!AutomationNode} desktop
+   * @param {AutomationNode} currentFocus
+   * @private
+   */
+  async waitForFocus_(desktop, currentFocus) {
+    return new Promise(resolve => {
+      // Focus is available. Finish init without waiting for further events.
+      // Disallow web view nodes, which indicate a root web area is still
+      // loading and pending focus.
+      if (currentFocus && currentFocus.role !== RoleType.WEB_VIEW) {
+        resolve();
+        return;
+      }
+
+      // Wait for the focus to be sent. If |currentFocus| was undefined, this is
+      // guaranteed. Otherwise, also set a timed callback to ensure we do
+      // eventually init.
+      let callbackId = 0;
+      const listener = maybeEvent => {
+        if (maybeEvent && maybeEvent.target.role === RoleType.WEB_VIEW) {
+          return;
+        }
+
+        desktop.removeEventListener(EventType.FOCUS, listener, false);
+        clearTimeout(callbackId);
+
+        resolve();
+      };
+
+      desktop.addEventListener(EventType.FOCUS, listener, false);
+      callbackId = setTimeout(listener, 5000);
+    });
   }
 }
 
