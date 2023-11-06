@@ -968,6 +968,7 @@
   }
   [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
   [self updateFeedLayout];
+  [self cancelOmniboxEdit];
   [self.NTPViewController setContentOffsetToTop];
 }
 
@@ -1594,6 +1595,7 @@
 // changed.
 - (void)handleFeedVisibilityDidChange {
   [self updateNTPForFeed];
+  [self cancelOmniboxEdit];
   [self setContentOffsetToTop];
   [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
