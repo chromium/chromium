@@ -235,7 +235,7 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
     if (auto* parent_widget = Widget::GetWidgetForNativeView(params.parent)) {
       // If our parent is z-ordered above us, then float a bit higher.
       params.z_order =
-          std::max(params.z_order.value_or(ui::ZOrderLevel::kNormal),
+          std::max(params.z_order.value_or(params.EffectiveZOrderLevel()),
                    parent_widget->GetZOrderLevel());
     }
   }

@@ -3189,4 +3189,13 @@ TEST_F(MenuControllerTest, ChildMenuOpenDirectionStateUpdatesCorrectly) {
             GetChildMenuOpenDirectionAtDepth(10));
 }
 
+TEST_F(MenuControllerTest, MenuHostHasCorrectZOrderLevel) {
+  ShowSubmenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuHost* const host = menu_host_for_submenu(submenu);
+
+  // Ensure that the menu host has the correct z order level.
+  EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, host->GetZOrderLevel());
+}
+
 }  // namespace views

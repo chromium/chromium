@@ -2455,6 +2455,35 @@ TEST_F(NativeWidgetMacTest, FocusManagerChangeOnReparentNativeView) {
   EXPECT_EQ(GetFocusManager(child_native_widget), child->GetFocusManager());
 }
 
+TEST_F(NativeWidgetMacTest,
+       CorrectZOrderForMenuTypeWhenParamsZOrderHasNoValue) {
+  NativeWidgetMacTestWindow* parent_window;
+  NativeWidgetMacTestWindow* child_window;
+
+  Widget::InitParams init_params_parent =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(init_params_parent), &parent_window);
+
+  Widget::InitParams init_params_child =
+      CreateParams(Widget::InitParams::TYPE_MENU);
+  init_params_child.parent = parent->GetNativeView();
+  Widget* child =
+      CreateWidgetWithTestWindow(std::move(init_params_child), &child_window);
+
+  EXPECT_NE(nil, child_window.parentWindow);
+  EXPECT_EQ(parent_window, child_window.parentWindow);
+
+  parent->Show();
+  child->Show();
+
+  // Ensure that the child widget has kFloatingWindow z_order, when
+  // params.z_order is not specified for a widget of menu type.
+  EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, child->GetZOrderLevel());
+
+  parent->CloseNow();
+}
+
 }  // namespace views::test
 
 @implementation TestStopAnimationWaiter
