@@ -695,9 +695,6 @@ void PepperUDPSocketMessageFilter::SendBindReply(
     const ppapi::host::ReplyMessageContext& context,
     int32_t result,
     const PP_NetAddress_Private& addr) {
-  UMA_HISTOGRAM_BOOLEAN("Pepper.PluginContextSecurity.UDPBind",
-                        is_potentially_secure_plugin_context_);
-
   ppapi::host::ReplyMessageContext reply_context(context);
   reply_context.params.set_result(result);
   SendReply(reply_context, PpapiPluginMsg_UDPSocket_BindReply(addr));
