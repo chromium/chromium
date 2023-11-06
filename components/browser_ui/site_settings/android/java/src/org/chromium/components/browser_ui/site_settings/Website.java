@@ -8,7 +8,6 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -146,7 +145,7 @@ public final class Website implements WebsiteEntry {
      */
     public int compareByStorageTo(Website to) {
         if (this == to) return 0;
-        return MathUtils.compareLongs(to.getTotalUsage(), getTotalUsage());
+        return Long.compare(to.getTotalUsage(), getTotalUsage());
     }
 
     /**
