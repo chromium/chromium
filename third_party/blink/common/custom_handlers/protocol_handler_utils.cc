@@ -65,6 +65,7 @@ bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
     }
     return true;
   }
+
   static constexpr const char* const kProtocolSafelist[] = {
       "bitcoin", "cabal",  "dat",    "did",  "doi",  "dweb", "ethereum",
       "geo",     "hyper",  "im",     "ipfs", "ipns", "irc",  "ircs",
@@ -72,19 +73,22 @@ bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
       "sip",     "sms",    "smsto",  "ssb",  "ssh",  "tel",  "urn",
       "webcal",  "wtai",   "xmpp"};
 
-  static constexpr const char* const kProtocolSafelistFtpEnabled[] = {
-      "bitcoin",  "cabal",  "dat",   "did",  "doi",         "dweb",
-      "ethereum", "ftp",    "ftps",  "geo",  "hyper",       "im",
-      "ipfs",     "ipns",   "irc",   "ircs", "magnet",      "mailto",
-      "matrix",   "mms",    "news",  "nntp", "openpgp4fpr", "sftp",
-      "sip",      "sms",    "smsto", "ssb",  "ssh",         "tel",
-      "urn",      "webcal", "wtai",  "xmpp"};
-
-  return base::FeatureList::IsEnabled(
-             features::kSafelistFTPToRegisterProtocolHandler)
-             ? base::Contains(kProtocolSafelistFtpEnabled,
-                              base::ToLowerASCII(scheme))
-             : base::Contains(kProtocolSafelist, base::ToLowerASCII(scheme));
+  std::string lower_scheme = base::ToLowerASCII(scheme);
+  if (base::Contains(kProtocolSafelist, lower_scheme)) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kSafelistFTPToRegisterProtocolHandler) &&
+      (lower_scheme == "ftp" || lower_scheme == "ftps" ||
+       lower_scheme == "sftp")) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kSafelistPaytoToRegisterProtocolHandler) &&
+      lower_scheme == "payto") {
+    return true;
+  }
+  return false;
 }
 
 bool IsAllowedCustomHandlerURL(const GURL& url,

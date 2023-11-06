@@ -1635,6 +1635,11 @@ BASE_FEATURE(kSafelistFTPToRegisterProtocolHandler,
              "SafelistFTPToRegisterProtocolHandler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
+BASE_FEATURE(kSafelistPaytoToRegisterProtocolHandler,
+             "SafelistPaytoToRegisterProtocolHandler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSSVTrailerEnforceExposureAssertion,
              "SSVTrailerEnforceExposureAssertion",
              base::FEATURE_ENABLED_BY_DEFAULT);
