@@ -14,19 +14,20 @@
 
 namespace media {
 
-class V4L2VP9Picture : public VP9Picture {
+class StatelessVP9Picture : public VP9Picture {
  public:
-  explicit V4L2VP9Picture(scoped_refptr<StatelessDecodeSurface> dec_surface)
+  explicit StatelessVP9Picture(
+      scoped_refptr<StatelessDecodeSurface> dec_surface)
       : dec_surface_(std::move(dec_surface)) {}
 
-  V4L2VP9Picture(const V4L2VP9Picture&) = delete;
-  V4L2VP9Picture& operator=(const V4L2VP9Picture&) = delete;
+  StatelessVP9Picture(const StatelessVP9Picture&) = delete;
+  StatelessVP9Picture& operator=(const StatelessVP9Picture&) = delete;
 
  private:
-  ~V4L2VP9Picture() override = default;
+  ~StatelessVP9Picture() override = default;
 
   scoped_refptr<VP9Picture> CreateDuplicate() override {
-    return base::MakeRefCounted<V4L2VP9Picture>(dec_surface_);
+    return base::MakeRefCounted<StatelessVP9Picture>(dec_surface_);
   }
 
   scoped_refptr<StatelessDecodeSurface> dec_surface_;
@@ -145,7 +146,7 @@ scoped_refptr<VP9Picture> VP9Delegate::CreateVP9Picture() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
+  return base::MakeRefCounted<StatelessVP9Picture>(std::move(dec_surface));
 }
 
 DecodeStatus VP9Delegate::SubmitDecode(
