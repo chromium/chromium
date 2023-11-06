@@ -97,7 +97,7 @@ class BoundSessionCookieRefreshServiceImpl
 
   // BoundSessionCookieController::Delegate
   void OnBoundSessionThrottlerParamsChanged() override;
-  void TerminateSession() override;
+  void OnPersistentErrorEncountered() override;
 
   // StoragePartition::DataRemovalObserver:
   void OnStorageKeyDataCleared(
@@ -115,6 +115,10 @@ class BoundSessionCookieRefreshServiceImpl
           bound_session_params);
 
   void UpdateAllRenderers();
+
+  // Terminates ongoing device bound session, clears the session params from
+  // storage and updates all renderers.
+  void TerminateSession();
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   // Never null. Stored as `std::unique_ptr` for polymorphism.

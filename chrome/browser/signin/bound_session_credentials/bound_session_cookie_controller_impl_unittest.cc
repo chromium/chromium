@@ -175,7 +175,9 @@ class BoundSessionCookieControllerImplTest
     on_bound_session_throttler_params_changed_call_count_++;
   }
 
-  void TerminateSession() override { on_terminate_session_called_ = true; }
+  void OnPersistentErrorEncountered() override {
+    on_persistent_error_encountered_called_ = true;
+  }
 
   void SetExpirationTimeAndNotify(const std::string& cookie_name,
                                   const base::Time& expiration_time) {
@@ -233,8 +235,8 @@ class BoundSessionCookieControllerImplTest
     return on_bound_session_throttler_params_changed_call_count_;
   }
 
-  bool on_cookie_refresh_persistent_failure_called() {
-    return on_terminate_session_called_;
+  bool on_persistent_error_encountered_called() {
+    return on_persistent_error_encountered_called_;
   }
 
   void ResetOnBoundSessionThrottlerParamsChangedCallCount() {
@@ -279,7 +281,7 @@ class BoundSessionCookieControllerImplTest
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
   size_t on_bound_session_throttler_params_changed_call_count_ = 0;
-  bool on_terminate_session_called_ = false;
+  bool on_persistent_error_encountered_called_ = false;
 };
 
 TEST_F(BoundSessionCookieControllerImplTest, KeyLoadedOnStartup) {
@@ -478,7 +480,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieRefreshFailedWithPersistentError) {
   ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
-  EXPECT_FALSE(on_cookie_refresh_persistent_failure_called());
+  EXPECT_FALSE(on_persistent_error_encountered_called());
 
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   task_environment()->FastForwardBy(base::Minutes(12));
@@ -501,7 +503,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
       BoundSessionRefreshCookieFetcher::Result::kServerPersistentError,
       absl::nullopt);
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(on_cookie_refresh_persistent_failure_called());
+  EXPECT_TRUE(on_persistent_error_encountered_called());
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(controller->min_cookie_expiration_time(), min_cookie_expiration);
   EXPECT_THAT(
@@ -542,7 +544,7 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
       BoundSessionRefreshCookieFetcher::Result::kSuccess,
       GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
-  EXPECT_FALSE(on_cookie_refresh_persistent_failure_called());
+  EXPECT_FALSE(on_persistent_error_encountered_called());
 
   EXPECT_THAT(
       histogram_tester()->GetAllSamples(

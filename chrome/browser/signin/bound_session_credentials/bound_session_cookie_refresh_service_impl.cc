@@ -166,12 +166,8 @@ void BoundSessionCookieRefreshServiceImpl::
   UpdateAllRenderers();
 }
 
-void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
-  cookie_controller_.reset();
-  // TODO(b/300627729): stop clearing all params once multiple sessions are
-  // supported.
-  session_params_storage_->ClearAllParams();
-  UpdateAllRenderers();
+void BoundSessionCookieRefreshServiceImpl::OnPersistentErrorEncountered() {
+  TerminateSession();
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
@@ -233,4 +229,12 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
   if (session_updated_callback_for_testing_) {
     session_updated_callback_for_testing_.Run();
   }
+}
+
+void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
+  cookie_controller_.reset();
+  // TODO(b/300627729): stop clearing all params once multiple sessions are
+  // supported.
+  session_params_storage_->ClearAllParams();
+  UpdateAllRenderers();
 }

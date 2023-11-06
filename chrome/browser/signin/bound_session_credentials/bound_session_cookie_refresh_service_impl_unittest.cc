@@ -104,7 +104,9 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
     }
   }
 
-  void SimulateTerminateSession() { delegate_->TerminateSession(); }
+  void SimulateOnPersistentErrorEncountered() {
+    delegate_->OnPersistentErrorEncountered();
+  }
 
   void SimulateRefreshBoundSessionCompleted() {
     EXPECT_FALSE(resume_blocked_requests_.empty());
@@ -134,7 +136,8 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   ~BoundSessionCookieRefreshServiceImplTest() override = default;
 
-  std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
+  std::unique_ptr<BoundSessionCookieController>
+  CreateBoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
@@ -158,7 +161,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
               &storage_partition_, content::GetNetworkConnectionTracker());
       cookie_refresh_service_->set_controller_factory_for_testing(
           base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
-                                  GetBoundSessionCookieController,
+                                  CreateBoundSessionCookieController,
                               base::Unretained(this)));
       cookie_refresh_service_->Initialize();
     }
@@ -193,6 +196,11 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
               return storage_key.MatchesOriginForTrustedStorageDeletion(origin);
             }),
         begin, end);
+  }
+
+  void SimulateTerminateSession() {
+    CHECK(cookie_refresh_service_);
+    cookie_refresh_service_->TerminateSession();
   }
 
   void ResetCookieRefreshService() { cookie_refresh_service_.reset(); }
@@ -382,7 +390,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     VerifyNoBoundSession();
   });
-  cookie_controller()->SimulateTerminateSession();
+  SimulateTerminateSession();
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 
@@ -391,7 +399,27 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
-  cookie_controller()->SimulateTerminateSession();
+  SimulateTerminateSession();
+  VerifyNoBoundSession();
+
+  // Verify prefs were cleared.
+  // Ensure on next startup, there won't be a bound session.
+  ResetCookieRefreshService();
+  service = GetCookieRefreshServiceImpl();
+
+  SCOPED_TRACE("No bound session on Startup.");
+  VerifyNoBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       TerminateSessionOnPersistentErrorEncountered) {
+  SetupPreConditionForBoundSession();
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
+
+  ASSERT_TRUE(cookie_controller());
+  cookie_controller()->SimulateOnPersistentErrorEncountered();
+
   VerifyNoBoundSession();
 
   // Verify prefs were cleared.
