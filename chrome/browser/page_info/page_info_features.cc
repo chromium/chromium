@@ -23,7 +23,7 @@ bool IsAboutThisSiteAsyncFetchingEnabled() {
 
 BASE_FEATURE(kAboutThisSiteAsyncFetching,
              "AboutThisSiteAsyncFetching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsPersistentSidePanelEntryFeatureEnabled() {
