@@ -1159,7 +1159,11 @@ reviewer.
         summary="IsAttributionReportingAllowed"/>
     <variant name="IsAttributionReportingEverAllowed"
         summary="IsAttributionReportingEverAllowed"/>
-    <variant name="IsFledgeAllowed" summary="IsFledgeAllowed"/>
+    <variant name="IsFledgeBuyAllowed" summary="IsFledgeBuyAllowed"/>
+    <variant name="IsFledgeJoinAllowed" summary="IsFledgeJoinAllowed"/>
+    <variant name="IsFledgeLeaveAllowed" summary="IsFledgeLeaveAllowed"/>
+    <variant name="IsFledgeSellAllowed" summary="IsFledgeSellAllowed"/>
+    <variant name="IsFledgeUpdateAllowed" summary="IsFledgeUpdateAllowed"/>
     <variant name="IsPrivacySandboxReportingDestinationAttested"
         summary="IsPrivacySandboxReportingDestinationAttested"/>
     <variant name="IsPrivateAggregationAllowed"
