@@ -54,8 +54,9 @@ class BinaryUploadService : public KeyedService {
     // Some or all parts of the file are encrypted.
     FILE_ENCRYPTED = 7,
 
-    // The file's type is not supported and the file was not uploaded.
-    DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
+    // Deprecated: The file's type is not supported and the file was not
+    // uploaded.
+    // DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
 
     // The server returned a 429 HTTP status indicating too many requests are
     // being sent.

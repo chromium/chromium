@@ -150,7 +150,6 @@ class AnalysisServiceSettings {
   DefaultAction default_action_ = DefaultAction::kAllow;
   bool block_password_protected_files_ = false;
   bool block_large_files_ = false;
-  bool block_unsupported_file_types_ = false;
   size_t minimum_data_size_ = 100;
   // A map from tag (dlp, malware, etc) to the custom message, "learn more" link
   // and other settings associated to a specific tag.

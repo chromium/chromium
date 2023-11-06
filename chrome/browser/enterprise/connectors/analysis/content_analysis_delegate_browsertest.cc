@@ -985,7 +985,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
 // - block_until_verdict
 // - block_password_protected
 // - block_large_files
-// - block_unsupported_file_types
 class ContentAnalysisDelegateBlockingSettingBrowserTest
     : public ContentAnalysisDelegateBrowserTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {

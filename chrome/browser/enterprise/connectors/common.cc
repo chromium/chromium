@@ -94,9 +94,6 @@ bool ResultShouldAllowDataUse(
 
     case BinaryUploadService::Result::FILE_ENCRYPTED:
       return !settings.block_password_protected_files;
-
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return !settings.block_unsupported_file_types;
   }
 }
 
@@ -445,9 +442,7 @@ bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
 bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
   return result != safe_browsing::BinaryUploadService::Result::SUCCESS &&
          result != safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE &&
-         result != safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED &&
-         result != safe_browsing::BinaryUploadService::Result::
-                       DLP_SCAN_UNSUPPORTED_FILE_TYPE;
+         result != safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

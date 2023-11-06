@@ -642,10 +642,6 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
              analysis_settings_.block_password_protected_files) {
     download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
-  } else if (result ==
-                 BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE &&
-             analysis_settings_.block_unsupported_file_types) {
-    download_result = DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE;
   }
 
   LogDeepScanResult(download_result, trigger_,

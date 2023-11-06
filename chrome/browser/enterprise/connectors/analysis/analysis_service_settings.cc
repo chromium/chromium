@@ -104,8 +104,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       settings_dict.FindBool(kKeyBlockPasswordProtected).value_or(false);
   block_large_files_ =
       settings_dict.FindBool(kKeyBlockLargeFiles).value_or(false);
-  block_unsupported_file_types_ =
-      settings_dict.FindBool(kKeyBlockUnsupportedFileTypes).value_or(false);
   minimum_data_size_ = settings_dict.FindInt(kKeyMinimumDataSize).value_or(100);
 
   const base::Value::List* custom_messages =
@@ -199,7 +197,6 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   settings.default_action = default_action_;
   settings.block_password_protected_files = block_password_protected_files_;
   settings.block_large_files = block_large_files_;
-  settings.block_unsupported_file_types = block_unsupported_file_types_;
   if (is_cloud_analysis()) {
     CloudAnalysisSettings cloud_settings;
     cloud_settings.analysis_url = GURL(analysis_config_->url);

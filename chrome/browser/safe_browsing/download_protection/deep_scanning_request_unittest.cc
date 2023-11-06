@@ -325,8 +325,6 @@ class DeepScanningRequestTest : public testing::Test {
               default_settings.block_large_files);
     ASSERT_EQ(settings.value().block_password_protected_files,
               default_settings.block_password_protected_files);
-    ASSERT_EQ(settings.value().block_unsupported_file_types,
-              default_settings.block_unsupported_file_types);
     ASSERT_EQ(settings.value().block_until_verdict,
               default_settings.block_until_verdict);
     ASSERT_EQ(settings.value().cloud_or_local_settings.analysis_url(),
