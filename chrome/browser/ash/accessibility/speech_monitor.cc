@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/pattern.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -143,8 +144,7 @@ void SpeechMonitor::WillSpeakUtteranceWithVoice(
     const content::VoiceData& voice_data) {
   if (!utterance_queue_.empty() &&
       utterance_queue_.back().text == utterance->GetText() &&
-      std::find(repeated_speech_.begin(), repeated_speech_.end(),
-                utterance->GetText()) == repeated_speech_.end()) {
+      !base::Contains(repeated_speech_, utterance->GetText())) {
     repeated_speech_.push_back(utterance->GetText());
   }
 
