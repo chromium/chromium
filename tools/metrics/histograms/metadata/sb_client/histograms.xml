@@ -818,10 +818,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.TfLiteModelLoadTime.{Scorer}" units="ms"
     expires_after="2022-03-16">
-  <obsolete>
-    Removed 03-2023 since the value was consistently small, and we don't expect
-    it to change over time.
-  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

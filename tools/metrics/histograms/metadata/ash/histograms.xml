@@ -6564,10 +6564,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow{Stage}" units="%"
     expires_after="2023-10-30">
-  <obsolete>
-    This metric is reported on every dropped frame instead of every frame. It is
-    deprecated in favor of Ash.Smoothness.PercentDroppedFrames_1sWindow2.
-  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -7627,6 +7623,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.Online.Result" enum="SetWallpaperResult"
+    expires_after="2023-08-31">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the result of user's attempt to set a wallpaper. Recorded when a user
+    selects a wallpaper from the personalization hub. b/285387348: Add more
+    variants and fix incorrect metric recording for online wallpapers.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Preview.Show" enum="BooleanHit"
     expires_after="2024-02-13">
   <owner>jasontt@chromium.org</owner>
@@ -7658,25 +7665,6 @@ chromium-metrics-reviews@google.com.
     This metric expired in April 2022 and was revived in August 2022. Data
     between these times is incomplete.
   </summary>
-</histogram>
-
-<histogram name="Ash.Wallpaper.{WallpaperType}.Result"
-    enum="SetWallpaperResult" expires_after="2023-08-31">
-  <obsolete>
-    Replaced Aug 2023 by Ash.Wallpaper.{WallpaperType}.Result2.
-  </obsolete>
-  <owner>jasontt@chromium.org</owner>
-  <owner>assistive-eng@google.com</owner>
-  <summary>
-    Tracks the result of user's attempt to set a wallpaper. Recorded when a user
-    selects a wallpaper from the personalization hub. b/285387348: Add more
-    variants and fix incorrect metric recording for online wallpapers.
-  </summary>
-  <token key="WallpaperType">
-    <variant name="Customized"/>
-    <variant name="OnceGooglePhotos"/>
-    <variant name="Online"/>
-  </token>
 </histogram>
 
 <histogram name="Ash.Wallpaper.{WallpaperType}.Result2"

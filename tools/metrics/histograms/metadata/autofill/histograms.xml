@@ -5170,9 +5170,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.UnmaskPrompt.Events" enum="AutofillUnmaskPromptEvent"
     expires_after="2023-03-19">
-  <obsolete>
-    Deprecated in M109. Subsumed by Autofill.UnmaskPrompt.{CardType}.Events.
-  </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>

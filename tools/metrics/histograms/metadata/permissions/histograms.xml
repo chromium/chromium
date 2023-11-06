@@ -416,10 +416,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.CrowdDeny.PreloadData.WarningOnly" enum="Boolean"
     expires_after="2021-10-25">
-  <obsolete>
-    Adding the obsolete tag for bookkeeping. Histogram not recorded since its
-    expiry date 2021-10-25
-  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>

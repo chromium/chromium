@@ -1119,9 +1119,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EasyUnlock.AuthEvent.SignIn" enum="EasyUnlockAuthEvent"
     expires_after="2023-12-31">
-  <obsolete>
-    Sign in with Smart Lock deprecated.
-  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1134,9 +1131,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EasyUnlock.AuthEvent.SignIn.Duration" units="ms"
     expires_after="2023-12-31">
-  <obsolete>
-    Sign in with Smart Lock deprecated.
-  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
