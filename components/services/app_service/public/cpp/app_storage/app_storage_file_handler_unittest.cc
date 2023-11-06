@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -149,6 +150,20 @@ class AppStorageFileHandlerTest : public testing::Test {
     return apps;
   }
 
+  void VerifyIconKey(IconKey& icon_key) {
+    std::vector<AppPtr> apps = CreateOneApp();
+    apps[0]->icon_key = std::move(*icon_key.Clone());
+    WriteToFile(std::move(apps));
+    auto app_info = ReadFromFile();
+    ASSERT_TRUE(app_info);
+    EXPECT_EQ(1u, app_info->apps.size());
+    // Set `update_version` to the init false value.
+    icon_key.update_version = false;
+    // Clear the kPaused icon effect.
+    icon_key.icon_effects = icon_key.icon_effects & (~IconEffects::kPaused);
+    EXPECT_EQ(icon_key, app_info->apps[0]->icon_key.value());
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir tmp_dir_;
@@ -242,6 +257,35 @@ TEST_F(AppStorageFileHandlerTest, ReadAndWriteMultipleApps) {
   EXPECT_EQ(2u, app_info->app_types.size());
   EXPECT_TRUE(base::Contains(app_info->app_types, kAppType1));
   EXPECT_TRUE(base::Contains(app_info->app_types, kAppType2));
+}
+
+// Test AppStorageFileHandler can read and write the app info for icon updates.
+TEST_F(AppStorageFileHandlerTest, VerifyIconUpdates) {
+  {
+    // Verify for the none icon effect.
+    IconKey icon_key;
+    VerifyIconKey(icon_key);
+  }
+  {
+    // Verify for the multiple icon effects.
+    IconKey icon_key =
+        IconKey(/*resource_id=*/65535,
+                IconEffects::kCrOsStandardIcon | IconEffects::kBlocked);
+    VerifyIconKey(icon_key);
+  }
+  {
+    // Verify the kPaused icon effect can be cleared.
+    IconKey icon_key =
+        IconKey(IconEffects::kCrOsStandardIcon | IconEffects::kPaused);
+    VerifyIconKey(icon_key);
+  }
+  {
+    // Verify `update_version` isn't saved, and it can be set as the init false
+    // value.
+    IconKey icon_key = IconKey(IconEffects::kCrOsStandardIcon);
+    icon_key.update_version = 10;
+    VerifyIconKey(icon_key);
+  }
 }
 
 }  // namespace apps

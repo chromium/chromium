@@ -32,6 +32,7 @@ constexpr char kDescriptionKey[] = "description";
 constexpr char kVersionKey[] = "version";
 constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
 constexpr char kIconResourceIdKey[] = "icon_resource_id";
+constexpr char kIconEffectsKey[] = "icon_effects";
 constexpr char kLastLaunchTimeKey[] = "last_launch_time";
 constexpr char kInstallTimeKey[] = "install_time";
 constexpr char kPermissionsKey[] = "permissions";
@@ -218,9 +219,15 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::version, kVersionKey, dict);
     SetKey(app, &App::additional_search_terms, kAdditionalSearchTermsKey, dict);
 
-    if (app->icon_key.has_value() &&
-        app->icon_key->resource_id != IconKey::kInvalidResourceId) {
+    if (app->icon_key.has_value()) {
       dict.Set(kIconResourceIdKey, app->icon_key->resource_id);
+
+      // Clear the kPaused icon effect, because the default value is false for
+      // `paused`, and we wait for the family link to set the paused status
+      // and apply the kPaused icon effect.
+      IconEffects icon_effects = static_cast<IconEffects>(
+          app->icon_key->icon_effects & (~IconEffects::kPaused));
+      dict.Set(kIconEffectsKey, static_cast<int>(icon_effects));
     }
 
     SetKey(app, &App::last_launch_time, kLastLaunchTimeKey, dict);
@@ -295,10 +302,21 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
       }
     }
 
-    auto icon_resource_id = value->FindInt(kIconResourceIdKey);
-    if (icon_resource_id.has_value()) {
-      app->icon_key =
-          apps::IconKey(icon_resource_id.value(), apps::IconEffects::kNone);
+    int32_t icon_resource_id = IconKey::kInvalidResourceId;
+    IconEffects icon_effects = IconEffects::kNone;
+
+    auto icon_resource_value = value->FindInt(kIconResourceIdKey);
+    if (icon_resource_value.has_value()) {
+      icon_resource_id = icon_resource_value.value();
+    }
+
+    auto icon_effects_value = value->FindInt(kIconEffectsKey);
+    if (icon_effects_value.has_value()) {
+      icon_effects = static_cast<IconEffects>(icon_effects_value.value());
+    }
+
+    if (icon_resource_value.has_value() || icon_effects_value.has_value()) {
+      app->icon_key = apps::IconKey(icon_resource_id, icon_effects);
     }
 
     app->last_launch_time = base::ValueToTime(value->Find(kLastLaunchTimeKey));

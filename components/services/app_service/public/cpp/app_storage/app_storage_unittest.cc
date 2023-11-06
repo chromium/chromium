@@ -172,7 +172,7 @@ class AppStorageTest : public testing::Test {
     app2->version = "version";
     app2->additional_search_terms = {"term1", "term2"};
     app2->icon_key =
-        apps::IconKey(/*resource_id=*/65535, apps::IconEffects::kNone);
+        IconKey(/*resource_id=*/65535, IconEffects::kCrOsStandardIcon);
     app2->last_launch_time = base::Time() + base::Days(2);
     app2->install_time = base::Time() + base::Days(1);
 
@@ -224,6 +224,15 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(show_in_management, true)
   MODIFY_FIELD(handles_intents, false)
   MODIFY_FIELD(allow_uninstall, false)
+
+  void ModifyIconKey(absl::optional<IconKey> icon_key) {
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    app->icon_key = std::move(icon_key);
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    app_registry_cache_.OnApps(std::move(apps), kAppType1,
+                               /*should_notify_initialized=*/false);
+  }
 
   void ModifyPermissions() {
     AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
@@ -377,6 +386,36 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(show_in_management, true);
   VERIFY_MODIFY_FIELD(handles_intents, false);
   VERIFY_MODIFY_FIELD(allow_uninstall, false);
+
+  // Verify for the none icon effect.
+  IconKey icon_key1(IconEffects::kNone);
+  ModifyIconKey(std::move(*(icon_key1.Clone())));
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+  apps[0]->icon_key = std::move(icon_key1);
+  VerifySavedApps(apps);
+
+  // Verify the icon effect modification.
+  IconKey icon_key2(IconEffects::kCrOsStandardIcon);
+  ModifyIconKey(std::move(*(icon_key2.Clone())));
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+  apps[0]->icon_key = std::move(icon_key2);
+  VerifySavedApps(apps);
+
+  // Verify the kPaused icon effect can be filtered out. We don't need to modify
+  // `apps`, because the icon key won't be updated, and we don't need to wait
+  // for the saving as well. After modifying the intent filters, the apps can be
+  // checked again.
+  IconKey icon_key3(IconEffects::kCrOsStandardIcon | IconEffects::kPaused);
+  ModifyIconKey(std::move(icon_key3));
+  EXPECT_FALSE(app_storage()->is_app_changed());
+
+  // Verify the icon_key's `update_version` can be filtered out. We don't need
+  // to modify `apps`, because `update_version` won't be saved,. After modifying
+  // the intent filters, the apps can be checked again.
+  IconKey icon_key4(IconEffects::kCrOsStandardIcon);
+  icon_key4.update_version = true;
+  ModifyIconKey(std::move(icon_key4));
+  EXPECT_FALSE(app_storage()->is_app_changed());
 
   ModifyPermissions();
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);

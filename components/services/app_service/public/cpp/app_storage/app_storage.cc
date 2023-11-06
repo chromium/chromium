@@ -14,6 +14,7 @@
 #include "base/task/task_runner.h"
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps {
@@ -141,11 +142,21 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
     return true;
   }
 
-  if (app->icon_key.has_value() &&
-      (!it->second->icon_key.has_value() ||
-       app->icon_key.value().resource_id !=
-           it->second->icon_key.value().resource_id)) {
-    return true;
+  if (app->icon_key.has_value()) {
+    if (!it->second->icon_key.has_value()) {
+      return true;
+    }
+    if (app->icon_key.value().resource_id !=
+        it->second->icon_key.value().resource_id) {
+      return true;
+    }
+    // Skip the kPaused icon effect, because we don't save the paused status,
+    // and we wait for the family link to set the paused status and apply the
+    // kPaused icon effect.
+    if ((app->icon_key.value().icon_effects & (~IconEffects::kPaused)) !=
+        (it->second->icon_key.value().icon_effects & (~IconEffects::kPaused))) {
+      return true;
+    }
   }
 
   IS_APP_VALUE_CHANGED(last_launch_time);
