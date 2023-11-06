@@ -17,7 +17,6 @@
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_context.h"
@@ -26,7 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
