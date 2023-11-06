@@ -15,9 +15,7 @@ class FakeAttestationCertificateGenerator
   FakeAttestationCertificateGenerator();
   ~FakeAttestationCertificateGenerator() override;
 
-  void RetrieveCertificate(
-      AttestationCertificateGenerator::OnCertificateRetrievedCallback callback)
-      override;
+  void RetrieveCertificate() override;
 
   const std::vector<std::string> CERTS = {"fake_cert"};
 };

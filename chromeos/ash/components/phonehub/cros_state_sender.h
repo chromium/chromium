@@ -22,7 +22,8 @@ class PhoneModel;
 // phone.
 class CrosStateSender
     : public secure_channel::ConnectionManager::Observer,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public AttestationCertificateGenerator::Observer {
  public:
   CrosStateSender(
       MessageSender* message_sender,
@@ -55,15 +56,18 @@ class CrosStateSender
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
 
+  // AttestationCertificateGenerator::Observer:
+  void OnCertificateGenerated(const std::vector<std::string>& attestation_certs,
+                              bool is_valid) override;
+
   // Sends the cros state to the phone, and initiates a retry after
   // |retry_delay_| if the message was not successfully sent.
   void PerformUpdateCrosState();
   void OnRetryTimerFired();
   void SendCrosStateMessage(const std::vector<std::string>* attestation_certs);
-  void OnAttestationCertificateRetrieved(
-      const std::vector<std::string>& attestation_certs,
-      bool is_valid);
+  void RecordResultMetrics(bool is_attestation_certificate_valid);
 
+  bool is_certificate_requested_ = false;
   raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
   raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
       connection_manager_;
