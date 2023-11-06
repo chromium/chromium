@@ -72,9 +72,15 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (ui::IsOverlayScrollbarEnabled()) {
-    settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
-    settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
     settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
+    if (ui::IsFluentOverlayScrollbarEnabled()) {
+      settings.scrollbar_fade_delay = ui::kFluentOverlayScrollbarFadeDelay;
+      settings.scrollbar_fade_duration =
+          ui::kFluentOverlayScrollbarFadeDuration;
+    } else {
+      settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
+      settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -607,11 +613,14 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     settings.scrollbar_flash_after_any_scroll_update =
         !settings.enable_fluent_overlay_scrollbar;
     // Avoid animating in web tests to improve reliability.
-    if (settings.enable_fluent_overlay_scrollbar &&
-        WebTestSupport::IsRunningWebTest()) {
-      settings.scrollbar_thinning_duration = base::Milliseconds(0);
-      settings.scrollbar_fade_delay = base::Milliseconds(0);
-      settings.scrollbar_fade_duration = base::Milliseconds(0);
+    if (settings.enable_fluent_overlay_scrollbar) {
+      settings.scrollbar_thinning_duration =
+          ui::kFluentOverlayScrollbarThinningDuration;
+      if (WebTestSupport::IsRunningWebTest()) {
+        settings.scrollbar_thinning_duration = base::Milliseconds(0);
+        settings.scrollbar_fade_delay = base::Milliseconds(0);
+        settings.scrollbar_fade_duration = base::Milliseconds(0);
+      }
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
