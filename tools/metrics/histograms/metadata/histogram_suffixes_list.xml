@@ -5321,13 +5321,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Video.Roughness"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="VRSessionType" separator=".">
-  <suffix name="WebVR"
-      label="The session is restricted to the period that browser is
-             displaying WebVR contents."/>
-  <affected-histogram name="VRSessionTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebAppContainerEngagementType" separator=".">
   <suffix name="InTab" label="Happened in app running as a tab"/>
   <suffix name="InWindow" label="Happened in app running as a window"/>
