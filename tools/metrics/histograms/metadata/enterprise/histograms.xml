@@ -41,6 +41,7 @@ chromium-metrics-reviews@google.com.
       summary="Handler for open browser windows and browsing data on Lacros"/>
   <variant name="LacrosExtension" summary="Handler for extensions on Lacros"/>
   <variant name="LacrosWebApp" summary="Handler for web apps on Lacros"/>
+  <variant name="PinnedApps" summary="Handler for pinned apps"/>
   <variant name="PrintJobs" summary="Handler for print jobs"/>
   <variant name="WebApp" summary="Handler for web apps"/>
 </variants>
