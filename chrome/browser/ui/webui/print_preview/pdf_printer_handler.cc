@@ -45,6 +45,7 @@
 #include "printing/units.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -61,6 +62,10 @@
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#endif
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
 #endif
 
 namespace printing {
@@ -529,13 +534,24 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
   file_type_info.allowed_paths =
       ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH;
 
+  gfx::NativeView owning_window = preview_web_contents_->GetNativeView();
+#if defined(USE_AURA)
+  if (!owning_window->IsVisible()) {
+    auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+    CHECK(dialog_controller);
+    auto* initiator = dialog_controller->GetInitiator(preview_web_contents_);
+    if (initiator) {
+      owning_window = initiator->GetNativeView();
+    }
+  }
+#endif
+
   select_file_dialog_ =
       ui::SelectFileDialog::Create(this, nullptr /*policy already checked*/);
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), path,
       &file_type_info, 0, kPdfExtension,
-      platform_util::GetTopLevel(preview_web_contents_->GetNativeView()),
-      nullptr);
+      platform_util::GetTopLevel(owning_window), nullptr);
 }
 
 base::FilePath PdfPrinterHandler::GetSaveLocation() const {
