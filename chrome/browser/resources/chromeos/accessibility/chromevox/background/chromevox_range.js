@@ -8,9 +8,11 @@
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
+import {Cursor} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
+import {EarconId} from '../common/earcon_id.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
@@ -118,6 +120,14 @@ export class ChromeVoxRange {
    */
   static set(newRange, opt_fromEditing) {
     ChromeVoxRange.instance.set_(...arguments);
+  }
+
+  /**
+   * @return {boolean} true if the selection is toggled on, false if it is
+   * toggled off.
+   */
+  static toggleSelection() {
+    return ChromeVoxRange.instance.toggleSelection_();
   }
 
   // ================= Observer Functions =================
@@ -404,6 +414,44 @@ export class ChromeVoxRange {
     // the next or previous focusable node from |start|.
     if (!start.state[StateType.OFFSCREEN]) {
       start.setSequentialFocusNavigationStartingPoint();
+    }
+  }
+
+  /**
+   * @return {boolean} true if the selection is toggled on, false if it is
+   * toggled off.
+   * @private
+   */
+  toggleSelection_() {
+    if (!ChromeVoxRange.pageSel) {
+      ChromeVox.earcons.playEarcon(EarconId.SELECTION);
+      ChromeVoxRange.pageSel = ChromeVoxRange.current;
+      DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+          true);
+      return true;
+    } else {
+      const root = ChromeVoxRange.current.start.node.root;
+      if (root && root.selectionStartObject && root.selectionEndObject &&
+          !isNaN(Number(root.selectionStartOffset)) &&
+          !isNaN(Number(root.selectionEndOffset))) {
+        ChromeVox.earcons.playEarcon(EarconId.SELECTION_REVERSE);
+        const sel = new CursorRange(
+            new Cursor(
+                root.selectionStartObject,
+                /** @type {number} */ (root.selectionStartOffset)),
+            new Cursor(
+                root.selectionEndObject,
+                /** @type {number} */ (root.selectionEndOffset)));
+        const o =
+            new Output()
+                .format('@end_selection')
+                .withSpeechAndBraille(sel, sel, OutputCustomEvent.NAVIGATE)
+                .go();
+        DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+            false);
+      }
+      ChromeVoxRange.pageSel = null;
+      return false;
     }
   }
 }
