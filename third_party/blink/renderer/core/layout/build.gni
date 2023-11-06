@@ -251,6 +251,7 @@ blink_core_sources_layout = [
   "inline/text_item_type.h",
   "inline/text_offset_range.cc",
   "inline/text_offset_range.h",
+  "intrinsic_sizing_info.cc",
   "intrinsic_sizing_info.h",
   "layout_block.cc",
   "layout_block.h",

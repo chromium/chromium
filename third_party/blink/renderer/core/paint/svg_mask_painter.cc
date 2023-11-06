@@ -169,14 +169,6 @@ float ComputeTilePhase(float position, float tile_extent) {
   return tile_extent ? tile_extent - std::fmod(position, tile_extent) : 0;
 }
 
-float ResolveWidthForRatio(float height, const gfx::SizeF& natural_ratio) {
-  return height * natural_ratio.width() / natural_ratio.height();
-}
-
-float ResolveHeightForRatio(float width, const gfx::SizeF& natural_ratio) {
-  return width * natural_ratio.height() / natural_ratio.width();
-}
-
 gfx::SizeF FitToAspectRatio(const gfx::RectF& rect,
                             const gfx::SizeF& aspect_ratio,
                             bool grow) {
