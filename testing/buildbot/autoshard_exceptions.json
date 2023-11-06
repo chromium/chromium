@@ -94,6 +94,23 @@
                 "shards": "16"
             }
         },
+        "chromeos-amd64-generic-rel-renamed": {
+            "chrome_all_tast_tests": {
+                "debug": {
+                    "avg_num_builds_per_peak_hour": 96,
+                    "estimated_bot_hour_delta": 56.32,
+                    "prev_avg_pending_time_sec": 205.5,
+                    "prev_p50_pending_time_sec": 4.0,
+                    "prev_p90_pending_time_sec": 755.0,
+                    "prev_percentile_duration_minutes": 22.35,
+                    "prev_shard_count": 7,
+                    "simulated_max_shard_duration": 12.03,
+                    "test_overhead_min": 5.866666666666666,
+                    "try_builder": "chromeos-amd64-generic-rel-renamed"
+                },
+                "shards": 13
+            }
+        },
         "linux-chromeos-rel": {
             "ash_pixeltests": {
                 "debug": {
@@ -479,45 +496,48 @@
             },
             "content_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "73.0",
-                    "estimated_bot_hour_delta": "-2.27",
-                    "prev_avg_pending_time_sec": "449.3",
-                    "prev_p50_pending_time_sec": "76.0",
-                    "prev_p90_pending_time_sec": "1455.0",
-                    "prev_percentile_duration_minutes": "14.38",
-                    "prev_shard_count": "43",
-                    "simulated_max_shard_duration": "14.72",
+                    "avg_num_builds_per_peak_hour": 103,
+                    "estimated_bot_hour_delta": 21.63,
+                    "prev_avg_pending_time_sec": 445.8,
+                    "prev_p50_pending_time_sec": 82.0,
+                    "prev_p90_pending_time_sec": 1465.0,
+                    "prev_percentile_duration_minutes": 21.88,
+                    "prev_shard_count": 42,
+                    "simulated_max_shard_duration": 14.59,
+                    "test_overhead_min": 0.6,
                     "try_builder": "linux_chromium_tsan_rel_ng"
                 },
-                "shards": "42"
+                "shards": 63
             },
             "interactive_ui_tests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "82.0",
-                    "estimated_bot_hour_delta": "2.8",
-                    "prev_avg_pending_time_sec": "101.2",
-                    "prev_p50_pending_time_sec": "5.0",
-                    "prev_p90_pending_time_sec": "318.0",
-                    "prev_percentile_duration_minutes": "15.29",
-                    "prev_shard_count": "40",
-                    "simulated_max_shard_duration": "14.92",
+                    "avg_num_builds_per_peak_hour": 103,
+                    "estimated_bot_hour_delta": 9.61,
+                    "prev_avg_pending_time_sec": 449.5,
+                    "prev_p50_pending_time_sec": 82.0,
+                    "prev_p90_pending_time_sec": 1467.0,
+                    "prev_percentile_duration_minutes": 17.76,
+                    "prev_shard_count": 41,
+                    "simulated_max_shard_duration": 14.86,
+                    "test_overhead_min": 0.7,
                     "try_builder": "linux_chromium_tsan_rel_ng"
                 },
-                "shards": "41"
+                "shards": 49
             },
             "sync_integration_tests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "76.0",
-                    "estimated_bot_hour_delta": "-2.22",
-                    "prev_avg_pending_time_sec": "392.1",
-                    "prev_p50_pending_time_sec": "75.0",
-                    "prev_p90_pending_time_sec": "1472.0",
-                    "prev_percentile_duration_minutes": "12.93",
-                    "prev_shard_count": "7",
-                    "simulated_max_shard_duration": "15.08",
+                    "avg_num_builds_per_peak_hour": 103,
+                    "estimated_bot_hour_delta": 1.09,
+                    "prev_avg_pending_time_sec": 438.5,
+                    "prev_p50_pending_time_sec": 66.0,
+                    "prev_p90_pending_time_sec": 1455.0,
+                    "prev_percentile_duration_minutes": 17.27,
+                    "prev_shard_count": 6,
+                    "simulated_max_shard_duration": 14.8,
+                    "test_overhead_min": 0.6333333333333333,
                     "try_builder": "linux_chromium_tsan_rel_ng"
                 },
-                "shards": "6"
+                "shards": 7
             },
             "unit_tests": {
                 "debug": {
