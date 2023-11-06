@@ -417,8 +417,8 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   return wgpu::TextureFormat::Undefined;
 }
 
-wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
-                                 int plane_index) {
+wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
+                                            int plane_index) {
   CHECK(format.is_multi_plane() || format.IsLegacyMultiplanar() ||
         (plane_index == 0));
   // The multi plane formats create a separate image per plane and return the
@@ -533,7 +533,8 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
     bool scanout_dcomp_surface,
     bool supports_multiplanar_rendering) {
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
-  wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
+  wgpu::TextureFormat wgpu_format =
+      ToDawnTextureViewFormat(format, plane_index);
   if (wgpu_format != wgpu::TextureFormat::Undefined) {
     dawn_texture_info.fSampleCount = 1;
     dawn_texture_info.fFormat = wgpu_format;

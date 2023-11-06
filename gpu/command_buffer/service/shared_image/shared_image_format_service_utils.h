@@ -97,17 +97,19 @@ GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
                                      int plane_index);
 #endif
 
-// Following functions return the appropriate WebGPU/Dawn format for a
+// Following functions return the appropriate Dawn format for a
+// SharedImageFormat. Returns wgpu::TextureFormat format for given `format`.
+// Note that this will return a multi-planar Dawn format for multi-planar
 // SharedImageFormat.
-// Returns wgpu::TextureFormat format for given `format`. Note that this will
-// return a multi-planar Dawn format for multi-planar SharedImageFormat.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
     viz::SharedImageFormat format);
 // Returns wgpu::TextureFormat format for given `format` and `plane_index`. Note
-// that this returns a single plane Dawn format and not a multi-planar format.
-// `plane_index` must be 0 if `format` is single-plane.
-GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
-                                                  int plane_index);
+// that this returns a single plane Dawn format i.e the TextureView format and
+// not a multi-planar format. `plane_index` must be 0 if `format` is
+// single-plane.
+GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnTextureViewFormat(
+    viz::SharedImageFormat format,
+    int plane_index);
 
 // Returns the supported Dawn texture usage. `is_yuv_plane` indicates if the
 // texture corresponds to a plane of a multi-planar image and `is_dcomp_surface`
