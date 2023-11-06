@@ -7489,12 +7489,12 @@
   },
   {
     "name": "tab-grid-new-transitions",
-    "owners": [ "pakzhygitov@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 125
   },
   {
     "name": "tab-grid-refactoring",
-    "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "pakzhygitov@chromium.org", "bling-flags@google.com" ],
+    "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 125
   },
   {

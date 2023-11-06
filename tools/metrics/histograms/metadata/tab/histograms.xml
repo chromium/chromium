@@ -1117,7 +1117,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
     expires_after="2024-03-17">
-  <owner>pakzhygitov@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
     [iOS] The number of duplicated tabs restored at cold launch.
@@ -2357,7 +2357,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TimeSinceCreationAtStartup" enum="IOSAllOpenTabsAge"
     expires_after="2024-03-17">
-  <owner>pakzhygitov@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
     [iOS] The age of tabs opened at cold launch. The age of a tab is the time
@@ -2367,7 +2367,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.UnusedCountAtStartup" units="tabs"
     expires_after="2024-03-17">
-  <owner>pakzhygitov@google.com</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
     [iOS] The number of old/unused tabs opened at cold launch. Inactive tab is a

@@ -20987,7 +20987,6 @@ should be able to be added at any place in this file.
 <action name="MobileMenuPinTab">
   <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User tapped on the 'Pin Tab' action in the iOS overflow menu.
   </description>
@@ -21145,7 +21144,6 @@ should be able to be added at any place in this file.
 <action name="MobileMenuUnpinTab">
   <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User tapped on the 'Unpin Tab' action in the iOS overflow menu.
   </description>
@@ -22518,7 +22516,6 @@ should be able to be added at any place in this file.
 <action name="MobileSnackbarUndoPinAction">
   <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User tapped on the UNDO button of the snackbar displayed after pinning a tab
     from the iOS overflow menu.
@@ -22528,7 +22525,6 @@ should be able to be added at any place in this file.
 <action name="MobileSnackbarUndoUnpinAction">
   <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User tapped on the UNDO button of the snackbar displayed after unpinning a
     tab from the iOS overflow menu.
@@ -22712,7 +22708,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabGridCloseAllNonPinnedTabs">
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User in the iOS tab grid used the Close All control and chose to close all
     non-pinned tabs.
@@ -22932,7 +22927,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabGridPinnedTabSelected">
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User selected a tab in the iOS tab grid pinned tabs section.
   </description>
@@ -23158,7 +23152,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabPinned">
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User pins a Tab. This includes pinning a tab from the tab strip, tab grid
     and overflow menu.
@@ -23257,7 +23250,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabUnpinned">
   <owner>ewannpv@chromium.org</owner>
-  <owner>pakzhygitov@google.com</owner>
   <description>
     User unpins a Tab. This includes unpinning a tab from the tab strip, tab
     grid and overflow menu.
