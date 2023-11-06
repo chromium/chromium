@@ -90,7 +90,7 @@ import java.util.concurrent.TimeoutException;
     "force-fieldtrials=Study/Group"
 })
 @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.EMPTY_STATES})
-@DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+@DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction({
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_TABLET
