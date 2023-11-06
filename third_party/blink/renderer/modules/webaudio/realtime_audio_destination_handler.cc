@@ -118,12 +118,21 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
   uint32_t old_channel_count = ChannelCount();
   AudioHandler::SetChannelCount(channel_count, exception_state);
 
-  // Stop, re-create and start the destination to apply the new channel count.
-  if (ChannelCount() != old_channel_count && !exception_state.HadException()) {
-    StopPlatformDestination();
-    CreatePlatformDestination();
-    StartPlatformDestination();
+  // After the context is closed, changing channel count will be ignored
+  // because it will trigger the recreation of the platform destination. This
+  // in turn can activate the audio rendering thread.
+  AudioContext* context = static_cast<AudioContext*>(Context());
+  CHECK(context);
+  if (context->ContextState() == AudioContext::kClosed ||
+      ChannelCount() == old_channel_count ||
+      exception_state.HadException()) {
+    return;
   }
+
+  // Stop, re-create and start the destination to apply the new channel count.
+  StopPlatformDestination();
+  CreatePlatformDestination();
+  StartPlatformDestination();
 }
 
 void RealtimeAudioDestinationHandler::StartRendering() {
