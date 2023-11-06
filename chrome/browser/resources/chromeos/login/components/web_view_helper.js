@@ -57,7 +57,7 @@ export class WebViewHelper {
       }
     };
 
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.setRequestHeader('Accept', contentType);
     xhr.onreadystatechange = function() {
@@ -69,7 +69,7 @@ export class WebViewHelper {
         return;
       }
 
-      var responseContentType = xhr.getResponseHeader('Content-Type');
+      const responseContentType = xhr.getResponseHeader('Content-Type');
       if (responseContentType && !responseContentType.includes(contentType)) {
         onError();
         return;

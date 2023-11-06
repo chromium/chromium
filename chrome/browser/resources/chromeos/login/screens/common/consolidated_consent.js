@@ -303,7 +303,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       return;
     }
 
-    var configuration = Oobe.getInstance().getOobeConfiguration();
+    const configuration = Oobe.getInstance().getOobeConfiguration();
     if (!configuration) {
       return;
     }
@@ -390,14 +390,14 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   loadPrivacyPolicyWebview_(online_tos_url) {
     const webview = this.$.consolidatedConsentPrivacyPolicyWebview;
 
-    var loadFailureCallback = () => {
+    const loadFailureCallback = () => {
       if (this.isDemo_) {
         WebViewHelper.loadUrlContentToWebView(
             webview, PRIVACY_POLICY_URL, ContentType.PDF);
       }
     };
 
-    var tosLoader = new WebViewLoader(
+    const tosLoader = new WebViewLoader(
         webview, CONSOLIDATED_CONSENT_ONLINE_LOAD_TIMEOUT_IN_MS,
         loadFailureCallback, false /* clear_anchors */, false /* inject_css */);
     tosLoader.setUrl(online_tos_url);

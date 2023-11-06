@@ -12,7 +12,7 @@ import {loadTimeData} from '../i18n_setup.js';
 
 export const CLEAR_ANCHORS_CONTENT_SCRIPT = {
   code: 'A=Array.from(document.getElementsByTagName("a"));' +
-      'for(var i = 0; i < A.length; ++i) {' +
+      'for(let i = 0; i < A.length; ++i) {' +
       '  const el = A[i];' +
       '  let e = document.createElement("span");' +
       '  if (el.textContent.trim().length > 0) {' +

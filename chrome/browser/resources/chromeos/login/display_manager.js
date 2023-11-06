@@ -374,7 +374,7 @@ export function invokePolymerMethod(element, name, ...args) {
         }
       }
       const dynamicElements = document.getElementsByClassName('i18n-dynamic');
-      for (var child of dynamicElements) {
+      for (const child of dynamicElements) {
         if (typeof (child.i18nUpdateLocale) === 'function') {
           child.i18nUpdateLocale();
         }

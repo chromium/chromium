@@ -31,7 +31,7 @@ import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
  * third_party/cros_system_api/dbus/service_constants.h.
  * @enum {number}
  */
-var FingerprintResultType = {
+const FingerprintResultType = {
   SUCCESS: 0,
   PARTIAL: 1,
   INSUFFICIENT: 2,

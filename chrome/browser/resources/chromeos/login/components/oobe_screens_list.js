@@ -138,7 +138,7 @@ export class OobeScreensList extends OobeScreensListBase {
   getAriaLabelToggleButtons_(
       locale, screen_title, screen_subtitle, screen_is_synced,
       screen_is_completed, screen_id, screen_is_selected) {
-    var ariaLabel = this.i18nDynamic(locale, screen_title);
+    let ariaLabel = this.i18nDynamic(locale, screen_title);
     if (screen_subtitle) {
       if (screen_id === 'display-size') {
         ariaLabel = ariaLabel + '.' + screen_subtitle;

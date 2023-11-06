@@ -14,7 +14,7 @@ import {OobeTypes} from '../oobe_types.js';
 const CALLBACK_USER_ACTED = 'userActed';
 
 /** @polymerBehavior */
-export var LoginScreenBehavior = {
+export const LoginScreenBehavior = {
   // List of methods exported to login.screenName.<method> API.
   // This is expected to be overridden by the Polymer object using this
   // behavior.

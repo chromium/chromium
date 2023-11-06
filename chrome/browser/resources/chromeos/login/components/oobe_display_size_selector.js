@@ -118,7 +118,7 @@ export class OobeDisplaySizeSelector extends OobeDisplaySizeSelectorBase {
   updatePreviewSizes_() {
     const selectedSize = this.availableSizesTicks_[this.tickedSizeIndex_].value;
     const icons = this.shadowRoot.querySelectorAll('.app-icon');
-    for (var i = 0; i < icons.length; i++) {
+    for (let i = 0; i < icons.length; i++) {
       icons[i].style.width = selectedSize * DEFAULT_APP_ICON_SIZE + 'px';
     }
 
@@ -126,7 +126,7 @@ export class OobeDisplaySizeSelector extends OobeDisplaySizeSelectorBase {
     title.style.fontSize = selectedSize * DEFAULT_FONT_SIZE + 'px';
 
     const names = this.shadowRoot.querySelectorAll('.app-name');
-    for (var i = 0; i < names.length; i++) {
+    for (let i = 0; i < names.length; i++) {
       names[i].style.fontSize = selectedSize * DEFAULT_FONT_SIZE + 'px';
     }
   }

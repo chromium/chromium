@@ -35,8 +35,8 @@ const OobeI18nBehaviorImpl = {
     // TODO(crbug.com/955194): move i18nUpdateLocale from I18nBehavior to this
     // class.
     I18nBehavior.i18nUpdateLocale.call(this);
-    var matches = this.shadowRoot.querySelectorAll('.i18n-dynamic');
-    for (var child of matches) {
+    const matches = this.shadowRoot.querySelectorAll('.i18n-dynamic');
+    for (const child of matches) {
       if (typeof (child.i18nUpdateLocale) === 'function') {
         child.i18nUpdateLocale();
       }

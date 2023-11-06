@@ -1175,7 +1175,7 @@ export class OobeApiProvider {
 
       // There are cases when we have different element with the same slot, so
       // we must find all of them for a given adaptive dialog.
-      var result = [];
+      const result = [];
 
       for (const child of dialog.children) {
         if (child.hidden) {

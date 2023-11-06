@@ -110,8 +110,8 @@ export class OobeAdaptiveDialog extends PolymerElement {
       this.readMoreState = ReadMoreState.HIDDEN;
     }
 
-    var scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
-    var contentContainer = this.shadowRoot.querySelector('#contentContainer');
+    const scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
+    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
     if (!scrollContainer || !contentContainer) {
       return;
     }
@@ -137,7 +137,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
    * @private
    */
   applyScrollClassTags_() {
-    var el = this.shadowRoot.querySelector('#scrollContainer');
+    const el = this.shadowRoot.querySelector('#scrollContainer');
     el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
     el.classList.toggle('is-scrolled', el.scrollTop > 0);
     el.classList.toggle(
@@ -168,7 +168,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
       this.removeReadMoreButton_();
       return;
     }
-    var content = this.shadowRoot.querySelector('#contentContainer');
+    const content = this.shadowRoot.querySelector('#contentContainer');
     if (this.readMoreState == ReadMoreState.UNKNOWN) {
       if (content.clientHeight < content.scrollHeight) {
         this.readMoreState = ReadMoreState.SHOWN;
@@ -204,7 +204,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
    * Scroll to the bottom of footer container.
    */
   scrollToBottom() {
-    var el = this.shadowRoot.querySelector('#scrollContainer');
+    const el = this.shadowRoot.querySelector('#scrollContainer');
     el.scrollTop = el.scrollHeight;
   }
 
@@ -224,9 +224,9 @@ export class OobeAdaptiveDialog extends PolymerElement {
 
   /** @private */
   focusOnShow_() {
-    var focusedElements = this.getElementsByClassName('focus-on-show');
-    var focused = false;
-    for (var i = 0; i < focusedElements.length; ++i) {
+    const focusedElements = this.getElementsByClassName('focus-on-show');
+    let focused = false;
+    for (let i = 0; i < focusedElements.length; ++i) {
       if (focusedElements[i].hidden) {
         continue;
       }
@@ -258,12 +258,12 @@ export class OobeAdaptiveDialog extends PolymerElement {
 
   /** @private */
   addReadMoreButton_() {
-    var contentContainer = this.shadowRoot.querySelector('#contentContainer');
+    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
     contentContainer.setAttribute('read-more-content', true);
     this.showReadMoreButton_ = true;
 
     afterNextRender(this, () => {
-      var readMoreButton = this.shadowRoot.querySelector('#readMoreButton');
+      const readMoreButton = this.shadowRoot.querySelector('#readMoreButton');
       this.focusElement_(readMoreButton);
     });
 
@@ -283,13 +283,13 @@ export class OobeAdaptiveDialog extends PolymerElement {
 
   /** @private */
   removeReadMoreButton_() {
-    var contentContainer = this.shadowRoot.querySelector('#contentContainer');
+    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
     contentContainer.removeAttribute('read-more-content');
     this.showReadMoreButton_ = false;
 
     // If `read more` button is focused after it was removed, move focus to the
     // 'focus-on-show' element.
-    var readMoreButton = this.shadowRoot.querySelector('#readMoreButton');
+    const readMoreButton = this.shadowRoot.querySelector('#readMoreButton');
     if (this.shadowRoot.activeElement == readMoreButton) {
       this.focusOnShow_();
     }

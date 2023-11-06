@@ -39,7 +39,7 @@ import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '.
  *             computer_ou: ?string, encryption_types: ?string,
  *             computer_name_validation_regex: ?string}}
  */
-export var JoinConfigType;
+export let JoinConfigType;
 
 // Possible error states of the screen. Must be in the same order as
 // ActiveDirectoryErrorState enum values. Used in enterprise_enrollment
@@ -67,7 +67,7 @@ const DEFAULT_ENCRYPTION_TYPES = 'strong';
  * @typedef {Iterable<{value: string, title: string, selected: boolean,
  *                      subtitle: string}>}
  */
-var EncryptionSelectListType;
+let EncryptionSelectListType;
 
 /**
  * @constructor
@@ -312,9 +312,9 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   setupEncList() {
-    var list = /** @type {!EncryptionSelectListType}>} */
+    let list = /** @type {!EncryptionSelectListType}>} */
         (loadTimeData.getValue('encryptionTypesList'));
-    for (var item of list) {
+    for (const item of list) {
       this.encryptionValueToSubtitleMap[item.value] = item.subtitle;
       delete item.subtitle;
     }
@@ -381,8 +381,8 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       return;
     }
     this.joinConfigOptions_ = options;
-    var selectList = [];
-    for (var i = 0; i < options.length; ++i) {
+    const selectList = [];
+    for (let i = 0; i < options.length; ++i) {
       selectList.push({title: options[i].name, value: i});
     }
     setupSelect(
@@ -415,7 +415,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       return;
     }
 
-    var user = /** @type {string} */ (this.$.userInput.value);
+    let user = /** @type {string} */ (this.$.userInput.value);
     const password = /** @type {string} / */ (this.$.passwordInput.value);
     if (!user.includes('@') && this.userRealm) {
       user += this.userRealm;
@@ -476,7 +476,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
 
   /** @private */
   onUnlockPasswordEntered_() {
-    var msg = {
+    const msg = {
       'unlock_password': this.$.unlockPasswordInput.value,
     };
     this.dispatchEvent(new CustomEvent(
@@ -515,8 +515,8 @@ class OfflineAdLogin extends OfflineAdLoginBase {
     this.errorState = ActiveDirectoryErrorState.NONE;
     this.previousSelectedConfigOption_ = this.selectedConfigOption_;
     this.selectedConfigOption_ = this.joinConfigOptions_[value];
-    var option = this.selectedConfigOption_;
-    var encryptionTypes =
+    const option = this.selectedConfigOption_;
+    let encryptionTypes =
         option['encryption_types'] || DEFAULT_ENCRYPTION_TYPES;
     if (!(encryptionTypes in this.encryptionValueToSubtitleMap)) {
       encryptionTypes = DEFAULT_ENCRYPTION_TYPES;

@@ -560,7 +560,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   onAuthCompleted_(e) {
-    var detail = e.detail;
+    const detail = e.detail;
     if (!detail.email) {
       this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
       return;

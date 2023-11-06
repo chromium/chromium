@@ -29,7 +29,7 @@ import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manage
  * enum must be the same.
  * @enum {string}
  */
-var EncryptionMigrationUIState = {
+const EncryptionMigrationUIState = {
   INITIAL: 'initial',
   READY: 'ready',
   MIGRATING: 'migrating',

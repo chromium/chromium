@@ -171,7 +171,8 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
     }
     if (this.isManualInput) {
       // When using manual password entry, both passwords must match.
-      var confirmPasswordInput = this.shadowRoot.querySelector('#confirmPasswordInput');
+      const confirmPasswordInput =
+          this.shadowRoot.querySelector('#confirmPasswordInput');
       if (!confirmPasswordInput.validate()) {
         return;
       }

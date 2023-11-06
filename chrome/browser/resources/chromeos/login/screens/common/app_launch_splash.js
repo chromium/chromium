@@ -130,7 +130,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
    * @param {boolean} visible Whether to show the option.
    */
   toggleNetworkConfig(visible) {
-    var currVisible =
+    const currVisible =
         !this.$.configNetworkContainer.classList.contains('faded');
     if (currVisible == visible) {
       return;

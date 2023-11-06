@@ -46,7 +46,7 @@ export function setupSelect(select, list, callback) {
     }
   }
   if (callback) {
-    var runCallback = function() {
+    const runCallback = function() {
       callback(select.options[select.selectedIndex].value);
     };
     select.addEventListener('input', runCallback);
