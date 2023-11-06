@@ -278,8 +278,12 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
     case mojom::blink::V8CacheOptions::kCode: {
       if (!HasHotTimestamp(cache_handler)) {
         if (local_compile_hints_enabled) {
-          // If the resource is not yet hot for caching, produce compile hints
-          // instead of setting the time stamp.
+          // If the resource is not yet hot for caching, set the timestamp and
+          // produce compile hints. Setting the time stamp first is important,
+          // because compile hints are only produced later (when the page turns
+          // interactive). If the user navigates away before that happens, we
+          // don't want to end up with no cache at all, since the resource would
+          // then appear to be cold during the next run.
 
           // TODO(1495723): This branch doesn't check HasCompileHints. It's not
           // clear what we should do if the resource is not hot but we have
@@ -289,7 +293,7 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
           // code cache yet) and produce new ones.
           return std::make_tuple(
               v8::ScriptCompiler::kProduceCompileHints,
-              ProduceCacheOptions::kNoProduceCache,
+              ProduceCacheOptions::kSetTimeStamp,
               v8::ScriptCompiler::kNoCacheBecauseCacheTooCold);
         }
         return std::make_tuple(no_code_cache_compile_options,
