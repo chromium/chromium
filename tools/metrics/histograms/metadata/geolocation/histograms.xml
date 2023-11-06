@@ -105,15 +105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.NetworkLocationRequest.AccessPoints" units="units"
-    expires_after="M85">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
-  <summary>
-    The number of WiFi access points used to determine geolocation.
-  </summary>
-</histogram>
-
 <histogram name="Geolocation.NetworkLocationRequest.Event"
     enum="NetworkLocationRequestEvent" expires_after="2024-04-28">
   <owner>mattreynolds@chromium.org</owner>

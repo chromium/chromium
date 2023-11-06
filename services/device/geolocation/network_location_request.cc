@@ -86,14 +86,6 @@ void RecordUmaResponseCode(int code) {
                            code);
 }
 
-void RecordUmaAccessPoints(int count) {
-  const int min = 1;
-  const int max = 20;
-  const int buckets = 21;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Geolocation.NetworkLocationRequest.AccessPoints",
-                              count, min, max, buckets);
-}
-
 void RecordUmaRequestInterval(base::TimeDelta time_delta) {
   const int kMin = 1;
   const int kMax = 11;
@@ -202,7 +194,6 @@ void NetworkLocationRequest::MakeRequest(
       << "Sending a network location request: Number of Wi-Fi APs="
       << wifi_data.access_point_data.size();
   RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_REQUEST_START);
-  RecordUmaAccessPoints(wifi_data.access_point_data.size());
   if (url_loader_) {
     GEOLOCATION_LOG(DEBUG) << "Cancelling pending network location request";
     DVLOG(1) << "NetworkLocationRequest : Cancelling pending request";
