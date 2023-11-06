@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
@@ -25,11 +26,22 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
       requested_handler_(false) {
   set_owned_by_client();
 
-  // Prepare for instantiation of a `RealboxHandler` that will connect with
-  // this omnibox controller. The URL load will instantiate and bind
-  // the handler asynchronously.
-  OmniboxPopupUI::SetOmniboxController(controller);
-  LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
+  // Build URL with SessionID to ensure correct omnibox controller binding
+  // without relying on mutable state subject to timing and destruction issues.
+  // The webui's page handler (RealboxHandler) needs to know what omnibox
+  // controller to use, but the native pointer value can't safely be passed in,
+  // and hacks like getting last active browser or any other shared mutable
+  // state can result in subtle races and even use-after-free bugs. The
+  // window and its omnibox could destruct, or the browser changed, or even
+  // a new omnibox could be constructed to overwrite the shared value, within
+  // the time window of loading the URL in a separate process. Using a unique
+  // session ID avoids these problems and ensures that only the omnibox
+  // controller that owns this popup presenter will be selected.
+  GURL url(base::StringPrintf("%s?session_id=%d",
+                              chrome::kChromeUIOmniboxPopupURL,
+                              location_bar_view->browser()->session_id().id()));
+  LoadInitialURL(url);
+
   location_bar_view_->AddObserver(this);
 }
 
