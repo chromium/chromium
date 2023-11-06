@@ -25,7 +25,7 @@ function createComponentAuctionConfig(uuid) {
   };
 }
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -35,7 +35,7 @@ promise_test(async test => {
   await runBasicFledgeTestExpectingNoWinner(test, uuid, createComponentAuctionConfig(uuid));
 }, 'Component auction allowed not specified by bidder.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -46,7 +46,7 @@ promise_test(async test => {
   await runBasicFledgeTestExpectingNoWinner(test, uuid, createComponentAuctionConfig(uuid));
 }, 'Component auction not allowed by bidder.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -62,7 +62,7 @@ promise_test(async test => {
   await runBasicFledgeTestExpectingNoWinner(test, uuid, auctionConfig);
 }, 'Component auction allowed not specified by component seller.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -78,7 +78,7 @@ promise_test(async test => {
   await runBasicFledgeTestExpectingNoWinner(test, uuid, auctionConfig);
 }, 'Component auction not allowed by component seller.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -94,7 +94,7 @@ promise_test(async test => {
   await runBasicFledgeTestExpectingNoWinner(test, uuid, auctionConfig);
 }, 'Component auction allowed not specified by top-level seller.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -114,7 +114,7 @@ promise_test(async test => {
   throw 'Exception unexpectedly not thrown.'
 }, 'Component auction top-level auction cannot have buyers.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   await joinInterestGroup(
@@ -130,7 +130,7 @@ promise_test(async test => {
   await runBasicFledgeTestExpectingNoWinner(test, uuid, auctionConfig);
 }, 'Component auction not allowed by top-level seller.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   // Use distinct origins so can validate all origin parameters passed to worklets.
@@ -229,7 +229,7 @@ promise_test(async test => {
       [bidderReportURL, componentSellerReportURL, topLevelSellerReportURL]);
 }, 'Component auction browserSignals origins.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   let bidderReportURL = createBidderReportURL(uuid);
@@ -256,9 +256,9 @@ promise_test(async test => {
                  throw "Unexpected component bid: " + bid`,
           reportResult:
               `if (browserSignals.bid !== 5)
-                 throw "Unexpected component browserSignals.bid: " + browserSignals.bid;
+                 throw "Unexpected component bid: " + browserSignals.bid;
                if (browserSignals.modifiedBid !== undefined)
-                 throw "Unexpected component browserSignals.modifiedBid: " + browserSignals.modifiedBid;
+                 throw "Unexpected component modifiedBid: " + browserSignals.modifiedBid;
                sendReportTo("${componentSellerReportURL}");` });
 
   auctionConfig.decisionLogicURL =
@@ -269,9 +269,9 @@ promise_test(async test => {
                  throw "Unexpected top-level bid: " + bid`,
           reportResult:
               `if (browserSignals.bid !== 5)
-                 throw "Unexpected top-level browserSignals.bid: " + browserSignals.bid;
+                 throw "Unexpected top-level bid: " + browserSignals.bid;
                if (browserSignals.modifiedBid !== undefined)
-                 throw "Unexpected top-level browserSignals.modifiedBid: " + browserSignals.modifiedBid;
+                 throw "Unexpected top-level modifiedBid: " + browserSignals.modifiedBid;
                sendReportTo("${topLevelSellerReportURL}");` });
 
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfig);
@@ -280,7 +280,7 @@ promise_test(async test => {
       [bidderReportURL, componentSellerReportURL, topLevelSellerReportURL]);
 }, 'Component auction unmodified bid.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   let bidderReportURL = createBidderReportURL(uuid);
@@ -300,31 +300,31 @@ promise_test(async test => {
   let auctionConfig = createComponentAuctionConfig(uuid);
 
   auctionConfig.componentAuctions[0].decisionLogicURL =
-    createDecisionScriptURL(
-        uuid,
-        { scoreAd:
-              `if (bid !== 5)
-                 throw "Unexpected component bid: " + bid
-               return {desirability: 5, allowComponentAuction: true, bid: 4};`,
-          reportResult:
-              `if (browserSignals.bid !== 5)
-                 throw "Unexpected component browserSignals.bid: " + browserSignals.bid;
-               if (browserSignals.modifiedBid !== 4)
-                 throw "Unexpected component browserSignals.modifiedBid: " + browserSignals.modifiedBid;
-               sendReportTo("${componentSellerReportURL}");` });
+      createDecisionScriptURL(
+          uuid,
+          { scoreAd:
+                `if (bid !== 5)
+                   throw "Unexpected component bid: " + bid
+                 return {desirability: 5, allowComponentAuction: true, bid: 4};`,
+            reportResult:
+                `if (browserSignals.bid !== 5)
+                   throw "Unexpected component bid: " + browserSignals.bid;
+                 if (browserSignals.modifiedBid !== 4)
+                   throw "Unexpected component modifiedBid: " + browserSignals.modifiedBid;
+                 sendReportTo("${componentSellerReportURL}");` });
 
   auctionConfig.decisionLogicURL =
-    createDecisionScriptURL(
-        uuid,
-        { scoreAd:
-              `if (bid !== 4)
-                 throw "Unexpected top-level bid: " + bid`,
-          reportResult:
-              `if (browserSignals.bid !== 4)
-                 throw "Unexpected top-level browserSignals.bid: " + browserSignals.bid;
-               if (browserSignals.modifiedBid !== undefined)
-                 throw "Unexpected top-level browserSignals.modifiedBid: " + browserSignals.modifiedBid;
-               sendReportTo("${topLevelSellerReportURL}");` });
+      createDecisionScriptURL(
+          uuid,
+          { scoreAd:
+                `if (bid !== 4)
+                   throw "Unexpected top-level bid: " + bid`,
+            reportResult:
+                `if (browserSignals.bid !== 4)
+                   throw "Unexpected top-level bid: " + browserSignals.bid;
+                 if (browserSignals.modifiedBid !== undefined)
+                   throw "Unexpected top-level modifiedBid: " + browserSignals.modifiedBid;
+                 sendReportTo("${topLevelSellerReportURL}");` });
 
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfig);
   await waitForObservedRequests(
@@ -332,7 +332,7 @@ promise_test(async test => {
       [bidderReportURL, componentSellerReportURL, topLevelSellerReportURL]);
 }, 'Component auction modified bid.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   let bidderReportURL = createBidderReportURL(uuid);
@@ -352,31 +352,31 @@ promise_test(async test => {
   let auctionConfig = createComponentAuctionConfig(uuid);
 
   auctionConfig.componentAuctions[0].decisionLogicURL =
-    createDecisionScriptURL(
-        uuid,
-        { scoreAd:
-              `if (bid !== 5)
-                 throw "Unexpected component bid: " + bid
-               return {desirability: 5, allowComponentAuction: true, bid: 5};`,
-          reportResult:
-              `if (browserSignals.bid !== 5)
-                 throw "Unexpected component browserSignals.bid: " + browserSignals.bid;
-               if (browserSignals.modifiedBid !== 5)
-                 throw "Unexpected component browserSignals.modifiedBid: " + browserSignals.modifiedBid;
-               sendReportTo("${componentSellerReportURL}");` });
+      createDecisionScriptURL(
+          uuid,
+          { scoreAd:
+                `if (bid !== 5)
+                   throw "Unexpected component bid: " + bid
+                 return {desirability: 5, allowComponentAuction: true, bid: 5};`,
+            reportResult:
+                `if (browserSignals.bid !== 5)
+                   throw "Unexpected component bid: " + browserSignals.bid;
+                 if (browserSignals.modifiedBid !== 5)
+                   throw "Unexpected component modifiedBid: " + browserSignals.modifiedBid;
+                 sendReportTo("${componentSellerReportURL}");` });
 
   auctionConfig.decisionLogicURL =
-    createDecisionScriptURL(
-        uuid,
-        { scoreAd:
-              `if (bid !== 5)
-                 throw "Unexpected top-level bid: " + bid`,
-          reportResult:
-              `if (browserSignals.bid !== 5)
-                 throw "Unexpected top-level browserSignals.bid: " + browserSignals.bid;
-               if (browserSignals.modifiedBid !== undefined)
-                 throw "Unexpected top-level browserSignals.modifiedBid: " + browserSignals.modifiedBid;
-               sendReportTo("${topLevelSellerReportURL}");` });
+      createDecisionScriptURL(
+          uuid,
+          { scoreAd:
+                `if (bid !== 5)
+                   throw "Unexpected top-level bid: " + bid`,
+            reportResult:
+                `if (browserSignals.bid !== 5)
+                   throw "Unexpected top-level bid: " + browserSignals.bid;
+                 if (browserSignals.modifiedBid !== undefined)
+                   throw "Unexpected top-level modifiedBid: " + browserSignals.modifiedBid;
+                 sendReportTo("${topLevelSellerReportURL}");` });
 
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfig);
   await waitForObservedRequests(
@@ -384,7 +384,7 @@ promise_test(async test => {
       [bidderReportURL, componentSellerReportURL, topLevelSellerReportURL]);
 }, 'Component auction modified bid to same value.');
 
-promise_test(async test => {
+subsetTest(promise_test, async test => {
   const uuid = generateUuid(test);
 
   let bidderReportURL = createBidderReportURL(uuid);
@@ -404,31 +404,31 @@ promise_test(async test => {
   let auctionConfig = createComponentAuctionConfig(uuid);
 
   auctionConfig.componentAuctions[0].decisionLogicURL =
-    createDecisionScriptURL(
-        uuid,
-        { scoreAd:
-              `if (bid !== 5)
-                 throw "Unexpected component bid: " + bid`,
-          reportResult:
-              `if (browserSignals.bid !== 5)
-                 throw "Unexpected component browserSignals.bid: " + browserSignals.bid;
-               if (browserSignals.modifiedBid !== undefined)
-                 throw "Unexpected component browserSignals.modifiedBid: " + browserSignals.modifiedBid;
-               sendReportTo("${componentSellerReportURL}");` });
+      createDecisionScriptURL(
+          uuid,
+          { scoreAd:
+                `if (bid !== 5)
+                   throw "Unexpected component bid: " + bid`,
+            reportResult:
+                `if (browserSignals.bid !== 5)
+                   throw "Unexpected component bid: " + browserSignals.bid;
+                 if (browserSignals.modifiedBid !== undefined)
+                   throw "Unexpected component modifiedBid: " + browserSignals.modifiedBid;
+                 sendReportTo("${componentSellerReportURL}");` });
 
   auctionConfig.decisionLogicURL =
-    createDecisionScriptURL(
-        uuid,
-        { scoreAd:
-              `if (bid !== 5)
-                 throw "Unexpected top-level bid: " + bid
-               return {desirability: 5, allowComponentAuction: true, bid: 4};`,
-          reportResult:
-              `if (browserSignals.bid !== 5)
-                 throw "Unexpected top-level browserSignals.bid: " + browserSignals.bid;
-               if (browserSignals.modifiedBid !== undefined)
-                 throw "Unexpected top-level browserSignals.modifiedBid: " + browserSignals.modifiedBid;
-               sendReportTo("${topLevelSellerReportURL}");` });
+      createDecisionScriptURL(
+          uuid,
+          { scoreAd:
+                `if (bid !== 5)
+                   throw "Unexpected top-level bid: " + bid
+                 return {desirability: 5, allowComponentAuction: true, bid: 4};`,
+            reportResult:
+                `if (browserSignals.bid !== 5)
+                   throw "Unexpected top-level bid: " + browserSignals.bid;
+                 if (browserSignals.modifiedBid !== undefined)
+                   throw "Unexpected top-level modifiedBid: " + browserSignals.modifiedBid;
+                 sendReportTo("${topLevelSellerReportURL}");` });
 
   await runBasicFledgeAuctionAndNavigate(test, uuid, auctionConfig);
   await waitForObservedRequests(
