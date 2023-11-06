@@ -780,7 +780,8 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
     case TabOrganizationRequest::State::COMPLETED: {
       if (session.tab_organizations().size() > 0) {
         mojo_session->state = tab_search::mojom::TabOrganizationState::kSuccess;
-        for (const auto& organization : session.tab_organizations()) {
+        for (const std::unique_ptr<TabOrganization>& organization :
+             session.tab_organizations()) {
           organizations.emplace_back(
               GetMojoForTabOrganization(organization.get()));
         }

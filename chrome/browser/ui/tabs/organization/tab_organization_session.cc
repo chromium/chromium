@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
@@ -31,7 +32,11 @@ TabOrganizationSession::TabOrganizationSession(
   kNextSessionID++;
 }
 
-TabOrganizationSession::~TabOrganizationSession() = default;
+TabOrganizationSession::~TabOrganizationSession() {
+  for (auto& observer : observers_) {
+    observer.OnTabOrganizationSessionDestroyed(session_id());
+  }
+}
 
 // static
 std::unique_ptr<TabOrganizationSession>
@@ -82,14 +87,49 @@ bool TabOrganizationSession::IsComplete() const {
   return GetNextTabOrganization();
 }
 
+void TabOrganizationSession::AddObserver(
+    TabOrganizationSession::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabOrganizationSession::RemoveObserver(
+    TabOrganizationSession::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void TabOrganizationSession::OnTabOrganizationUpdated(
+    const TabOrganization* organization) {
+  NotifyObserversOfUpdate();
+}
+
+void TabOrganizationSession::OnTabOrganizationDestroyed(
+    TabOrganization::ID organization_id) {
+  NotifyObserversOfUpdate();
+}
+
 void TabOrganizationSession::StartRequest() {
   CHECK(request_);
   request_->SetResponseCallback(base::BindOnce(
-      &TabOrganizationSession::PopulateAndCreate, base::Unretained(this)));
+      &TabOrganizationSession::OnRequestResponse, base::Unretained(this)));
   request_->StartRequest();
+  NotifyObserversOfUpdate();
   if (service_) {
     service_->OnStartRequest(session_id_);
   }
+}
+
+void TabOrganizationSession::NotifyObserversOfUpdate() {
+  for (auto& observer : observers_) {
+    observer.OnTabOrganizationSessionUpdated(this);
+  }
+}
+
+void TabOrganizationSession::OnRequestResponse(
+    const TabOrganizationResponse* response) {
+  if (response) {
+    PopulateAndCreate(response);
+  }
+  NotifyObserversOfUpdate();
 }
 
 void TabOrganizationSession::PopulateAndCreate(

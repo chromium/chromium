@@ -86,6 +86,34 @@ class TabOrganizationTest : public testing::Test {
   const std::unique_ptr<TabStripModel> tab_strip_model_;
 };
 
+class SessionObserver : public TabOrganizationSession::Observer {
+ public:
+  void OnTabOrganizationSessionUpdated(
+      const TabOrganizationSession* session) override {
+    update_call_count++;
+  }
+
+  void OnTabOrganizationSessionDestroyed(
+      TabOrganizationSession::ID session_id) override {
+    if (!session_) {
+      return;
+    }
+
+    destroy_call_count++;
+    session_ = nullptr;
+  }
+
+  ~SessionObserver() override {
+    if (session_) {
+      session_->RemoveObserver(this);
+    }
+  }
+
+  int update_call_count = 0;
+  int destroy_call_count = 0;
+  raw_ptr<TabOrganizationSession> session_;
+};
+
 // TabData tests.
 
 // The constructor that takes the webcontents and tabstrip model should
@@ -445,6 +473,7 @@ TEST_F(TabOrganizationTest, TabOrganizationObserverTest) {
           std::vector<std::unique_ptr<TabData>>{},
           std::vector<std::u16string>{u"Organization"}, 0, absl::nullopt);
   TestObserver observer;
+  observer.tab_organization_ = organization.get();
   organization->AddObserver(&observer);
   observer.tab_organization_ = organization.get();
 
@@ -472,7 +501,7 @@ TEST_F(TabOrganizationTest, TabOrganizationObserverTest) {
       std::make_unique<TabData>(tab_strip_model(), AddTab(tab_strip_model())));
   EXPECT_EQ(observer.update_call_count, 4);
 
-  // Make changes to the organization, expect the update method to be called.
+  // Accept the organization, expect the update method to be called.
   organization->Accept();
   EXPECT_EQ(observer.update_call_count, 5);
 
@@ -772,4 +801,91 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
       tab_strip_model()->GetTabGroupForTab(
           tab_strip_model()->GetIndexOfWebContents(tab_to_not_group));
   EXPECT_FALSE(group_for_tab_to_not_group.has_value());
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationSessionObserverFail) {
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
+
+  std::unique_ptr<SessionObserver> observer =
+      std::make_unique<SessionObserver>();
+  session->AddObserver(observer.get());
+  observer->session_ = session.get();
+
+  session->StartRequest();
+  EXPECT_EQ(observer->update_call_count, 1);
+
+  request_ptr->FailRequest();
+  EXPECT_EQ(observer->update_call_count, 2);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationSessionObserverCompleteRequest) {
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
+
+  std::unique_ptr<SessionObserver> observer =
+      std::make_unique<SessionObserver>();
+  session->AddObserver(observer.get());
+  observer->session_ = session.get();
+
+  session->StartRequest();
+  EXPECT_EQ(observer->update_call_count, 1);
+
+  request_ptr->CompleteRequestForTesting({});
+  EXPECT_EQ(observer->update_call_count, 2);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationSessionObserverOrganizationUpdate) {
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>();
+  TabOrganizationRequest* request_ptr = request.get();
+
+  // Add a couple tabs with different URLs.
+  for (int i = 0; i < 5; i++) {
+    content::WebContents* tab = AddTab();
+    request->AddTabData(std::make_unique<TabData>(tab_strip_model(), tab));
+  }
+
+  // Add 2 tabs that are grouped in the response.
+  content::WebContents* tab_to_group_1 = AddTab();
+  TabData* tab_to_group_data_1 = request->AddTabData(
+      std::make_unique<TabData>(tab_strip_model(), tab_to_group_1));
+
+  content::WebContents* tab_to_group_2 = AddTab();
+  TabData* tab_to_group_data_2 = request->AddTabData(
+      std::make_unique<TabData>(tab_strip_model(), tab_to_group_2));
+
+  content::WebContents* tab_to_not_group = AddTab();
+  request->AddTabData(
+      std::make_unique<TabData>(tab_strip_model(), tab_to_not_group));
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
+
+  std::unique_ptr<SessionObserver> observer =
+      std::make_unique<SessionObserver>();
+  session->AddObserver(observer.get());
+  observer->session_ = session.get();
+
+  std::vector<TabOrganizationResponse::Organization> response_organizations;
+  TabOrganizationResponse::Organization organization(
+      u"title", {tab_to_group_data_1->tab_id(), tab_to_group_data_2->tab_id()});
+  response_organizations.emplace_back(std::move(organization));
+
+  std::unique_ptr<TabOrganizationResponse> response =
+      std::make_unique<TabOrganizationResponse>(response_organizations);
+
+  session->StartRequest();
+  EXPECT_EQ(observer->update_call_count, 1);
+
+  request_ptr->CompleteRequestForTesting(std::move(response));
+  EXPECT_EQ(observer->update_call_count, 2);
 }
