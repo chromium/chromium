@@ -11,6 +11,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/multitask_menu_nudge_delegate_ash.h"
@@ -24,8 +25,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ui/base/nudge_util.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
@@ -34,7 +33,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/widget/any_widget_observer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -162,20 +160,8 @@ TEST_F(MultitaskMenuNudgeControllerTest,
   // accelerator does not cause the crash mentioned in the bug because the
   // presence of the multitask menu causes an activation change which leads to
   // restacking that does not happen otherwise.
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      std::string("MultitaskMenuBubbleWidget"));
-  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
-      NonClientFrameViewAsh::Get(window.get())
-          ->GetHeaderView()
-          ->caption_button_container()
-          ->size_button());
-  size_button->ShowMultitaskMenu(
-      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
-  views::WidgetDelegate* delegate =
-      waiter.WaitIfNeededAndGet()->widget_delegate();
-  auto* multitask_menu =
-      static_cast<chromeos::MultitaskMenu*>(delegate->AsDialogDelegate());
+  chromeos::MultitaskMenu* multitask_menu =
+      ShowAndWaitMultitaskMenuForWindow(window.get());
 
   // After floating the window from the multitask menu, there is no crash.
   LeftClickOn(
@@ -415,17 +401,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
 
   // When opening the multitask menu, the nudge should dismiss immediately.
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      std::string("MultitaskMenuBubbleWidget"));
-  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
-      NonClientFrameViewAsh::Get(window.get())
-          ->GetHeaderView()
-          ->caption_button_container()
-          ->size_button());
-  size_button->ShowMultitaskMenu(
-      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
-  waiter.WaitIfNeededAndGet();
+  std::ignore = ShowAndWaitMultitaskMenuForWindow(window.get());
   EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 
   // Advance the clock and then destroy the window and create a new window.

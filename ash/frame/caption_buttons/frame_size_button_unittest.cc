@@ -8,6 +8,7 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -184,7 +185,7 @@ class FrameSizeButtonTest : public AshTestBase {
 
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
-  views::Widget* GetWidget() const { return widget_; }
+  views::Widget* GetWidget() { return widget_; }
 
   views::FrameCaptionButton* minimize_button() { return minimize_button_; }
   views::FrameCaptionButton* size_button() { return size_button_; }
@@ -679,13 +680,8 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
   void ShowMultitaskMenu(MultitaskMenuEntryType entry_type =
                              MultitaskMenuEntryType::kFrameSizeButtonHover) {
-    DCHECK(size_button());
-
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        std::string(kMultitaskMenuBubbleWidgetName));
-    static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu(entry_type);
-    waiter.WaitIfNeededAndGet();
+    ShowAndWaitMultitaskMenuForWindow(
+        static_cast<FrameSizeButton*>(size_button()), entry_type);
   }
 };
 

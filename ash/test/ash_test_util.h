@@ -7,17 +7,21 @@
 
 #include <cstddef>
 
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace base {
 class FilePath;
 class TimeDelta;
 }  // namespace base
+
+namespace chromeos {
+class MultitaskMenu;
+}  // namespace chromeos
 
 namespace gfx {
 class Size;
@@ -66,6 +70,16 @@ void DecorateWindow(aura::Window* window,
 // Waits until there is any visible menu item view with the specified `label`.
 // Returns the pointer to the first found target menu item view.
 views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label);
+
+// Shows and returns the clamshell multitask menu which is anchored to the frame
+// size button. Some tests create their own caption button container and
+// therefore their own size button. We use that if it is passed, otherwise try
+// to fetch the size button from the non client frame view ash.
+chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
+    absl::variant<aura::Window*, chromeos::FrameSizeButton*>
+        window_or_size_button,
+    chromeos::MultitaskMenuEntryType entry_type =
+        chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
 
 }  // namespace ash
 

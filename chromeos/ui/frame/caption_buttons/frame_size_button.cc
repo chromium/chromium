@@ -15,6 +15,7 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -22,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/tablet_state.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
@@ -260,6 +262,10 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
   multitask_menu_widget_->Show();
   delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
       /*tablet_mode=*/false);
+
+  haptics_util::PlayHapticTouchpadEffect(
+      ui::HapticTouchpadEffect::kSnap,
+      ui::HapticTouchpadEffectStrength::kMedium);
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {

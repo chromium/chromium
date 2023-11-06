@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/resize_shadow.h"
@@ -18,10 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
-#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -598,27 +596,15 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   EXPECT_TRUE(resize_shadow);
 
   // Open multi-task menu by hovering on the resize button.
-  // TODO(b/300668220): Extract this block into a helper.
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "MultitaskMenuBubbleWidget");
-  chromeos::FrameCaptionButtonContainerView::TestApi test_api(
-      NonClientFrameViewAsh::Get(test_window.get())
-          ->GetHeaderView()
-          ->caption_button_container());
-  auto* size_button =
-      static_cast<chromeos::FrameSizeButton*>(test_api.size_button());
-  size_button->ShowMultitaskMenu(
-      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
-  waiter.WaitIfNeededAndGet();
+  chromeos::MultitaskMenu* multitask_menu =
+      ShowAndWaitMultitaskMenuForWindow(test_window.get());
+  ASSERT_TRUE(multitask_menu);
 
   // Click on the floating window option.
   ui::ScopedAnimationDurationScaleMode zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  auto* menu_view = static_cast<chromeos::MultitaskMenu*>(
-                        size_button->multitask_menu_widget_for_testing()
-                            ->widget_delegate()
-                            ->AsDialogDelegate())
-                        ->multitask_menu_view();
+  chromeos::MultitaskMenuView* menu_view =
+      multitask_menu->multitask_menu_view();
   LeftClickOn(chromeos::MultitaskMenuViewTestApi(menu_view).GetFloatButton());
   EXPECT_TRUE(WindowState::Get(test_window.get())->IsFloated());
 
