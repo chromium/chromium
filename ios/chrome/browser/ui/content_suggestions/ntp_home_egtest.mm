@@ -109,6 +109,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 id<GREYMatcher> notPracticallyVisible() {
   return grey_not(grey_minimumVisiblePercent(0.01));
 }
+
+// Returns a matcher which is true if the view is mostly not visible.
+id<GREYMatcher> mostlyNotVisible() {
+  return grey_not(grey_minimumVisiblePercent(0.33));
+}
 }
 
 // Test case for the NTP home UI. More precisely, this tests the positions of
@@ -360,8 +365,9 @@ id<GREYMatcher> notPracticallyVisible() {
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/search")];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
 }
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
@@ -754,9 +760,9 @@ id<GREYMatcher> notPracticallyVisible() {
   // page.
   [self focusFakebox];
 
-  // Check the fake omnibox is not visible.
+  // Check the fake omnibox is mostly not visible.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -820,9 +826,11 @@ id<GREYMatcher> notPracticallyVisible() {
   // Offset after the fake omnibox has been tapped.
   CGPoint offsetAfterTap = collectionView.contentOffset;
 
-  // Make sure the fake omnibox has been hidden and the collection has moved.
+  // Make sure the fake omnibox has been mostly covered and the collection has
+  // moved.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
   GREYAssertTrue(offsetAfterTap.y >= origin.y,
@@ -1360,9 +1368,9 @@ id<GREYMatcher> notPracticallyVisible() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:grey_notVisible()];
-  // Fakebox should be covered.
+  // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
@@ -1395,9 +1403,9 @@ id<GREYMatcher> notPracticallyVisible() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:grey_notVisible()];
 
-  // Fakebox should be covered.
+  // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 

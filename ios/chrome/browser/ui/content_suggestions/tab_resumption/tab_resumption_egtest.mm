@@ -237,7 +237,7 @@ NSString* HostnameFromGURL(GURL URL) {
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                   error:nil];
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 180)];
   }
   [[[EarlGrey selectElementWithMatcher:
                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
