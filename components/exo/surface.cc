@@ -1222,7 +1222,8 @@ void Surface::AppendSurfaceHierarchyCallbacks(
 }
 
 void Surface::AppendSurfaceHierarchyContentsToFrame(
-    const gfx::PointF& origin,
+    const gfx::PointF& parent_to_root_px,
+    const gfx::PointF& to_parent_dp,
     bool needs_full_damage,
     FrameSinkResourceManager* resource_manager,
     absl::optional<float> device_scale_factor,
@@ -1233,8 +1234,12 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     auto* sub_surface = sub_surface_entry.first;
     // Synchronsouly commit all pending state of the sub-surface and its
     // decendents.
+    gfx::PointF to_root_px =
+        parent_to_root_px +
+        gfx::ScalePoint(to_parent_dp, device_scale_factor.value_or(1.f))
+            .OffsetFromOrigin();
     sub_surface->AppendSurfaceHierarchyContentsToFrame(
-        origin + sub_surface_entry.second.OffsetFromOrigin(), needs_full_damage,
+        to_root_px, sub_surface_entry.second, needs_full_damage,
         resource_manager, device_scale_factor, frame);
   }
 
@@ -1247,7 +1252,8 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
         std::move(state_.per_commit_explicit_release_callback_));
   }
 
-  AppendContentsToFrame(origin, needs_full_damage, device_scale_factor, frame);
+  AppendContentsToFrame(parent_to_root_px, to_parent_dp, needs_full_damage,
+                        device_scale_factor, frame);
 }
 
 bool Surface::IsSynchronized() const {
@@ -1519,38 +1525,44 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
   return quad_state;
 }
 
-void Surface::AppendContentsToFrame(const gfx::PointF& origin,
+void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
+                                    const gfx::PointF& to_parent_dp,
                                     bool needs_full_damage,
                                     absl::optional<float> device_scale_factor,
                                     viz::CompositorFrame* frame) {
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
-  gfx::RectF output_rect(origin, content_size_);
+  gfx::PointF parent_to_root_dp = gfx::ScalePoint(
+      parent_to_root_px, 1.f / device_scale_factor.value_or(1.f));
+  gfx::PointF to_root_dp = parent_to_root_dp + to_parent_dp.OffsetFromOrigin();
+  gfx::RectF output_rect(to_root_dp, content_size_);
   gfx::Rect quad_rect(0, 0, 1, 1);
 
-  // Surface bounds are in DIPs, but |damage_rect| and |output_rect| are in
+  // Surface bounds are in DIPs, but |damage_rect| should be specified in
   // pixels, so we need to scale by the |device_scale_factor|.
-  gfx::RectF damage_rect = needs_full_damage
-                               ? gfx::RectF(content_size_)
-                               : gfx::RectF(state_.damage.bounds());
-  if (!damage_rect.IsEmpty()) {
+  gfx::RectF damage_rect_px;
+  gfx::RectF damage_rect_dp = needs_full_damage
+                                  ? gfx::RectF(content_size_)
+                                  : gfx::RectF(state_.damage.bounds());
+  if (!damage_rect_dp.IsEmpty()) {
     // Outset damage by 1 DIP to as damage is in surface coordinate space and
     // client might not be aware of |device_scale_factor| and the
     // scaling/filtering it requires.
-    damage_rect.Inset(-1);
-    damage_rect += origin.OffsetFromOrigin();
-    damage_rect.Intersect(output_rect);
+    damage_rect_dp.Inset(-1);
+    damage_rect_dp += to_root_dp.OffsetFromOrigin();
+    damage_rect_dp.Intersect(output_rect);
 
+    damage_rect_px = damage_rect_dp;
     if (device_scale_factor.has_value()) {
       if (device_scale_factor.value() <= 1) {
-        damage_rect =
-            gfx::ConvertRectToPixels(damage_rect, device_scale_factor.value());
+        damage_rect_px = gfx::ConvertRectToPixels(damage_rect_px,
+                                                  device_scale_factor.value());
       } else {
         // The damage will eventually be rescaled by 1/device_scale_factor.
         // Since that scale factor is <1, taking the enclosed rect here means
         // that that rescaled RectF is <1px smaller than |damage_rect| in each
         // dimension, which makes the enclosing rect equal to |damage_rect|.
-        damage_rect.Scale(device_scale_factor.value());
+        damage_rect_px.Scale(device_scale_factor.value());
       }
     }
   }
@@ -1562,9 +1574,12 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     // we skip translating into the root surface coordinates to keep the old
     // behavior.
     // TODO(crbug.com/1457446): Remove this.
-    auto clip_rect_offset = state_.clip_rect_is_parent_coordinates
-                                ? gfx::Vector2d()
-                                : origin.OffsetFromOrigin();
+    auto clip_rect_offset =
+        state_.clip_rect_is_parent_coordinates
+            ? parent_to_root_px.OffsetFromOrigin()
+            : gfx::ScalePoint(to_root_dp, device_scale_factor.value_or(1.f))
+                  .OffsetFromOrigin();
+
     quad_clip_rect = gfx::ToEnclosedRect(*state_.clip_rect + clip_rect_offset);
   }
 
@@ -1609,8 +1624,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     // old behavior.
     // TODO(crbug.com/1470955): Remove this.
     auto rounded_corners_rect_offset =
-        state_.rounded_corners_is_root_coordinates ? gfx::Vector2d()
-                                                   : origin.OffsetFromOrigin();
+        state_.rounded_corners_is_root_coordinates
+            ? parent_to_root_dp.OffsetFromOrigin()
+            : to_root_dp.OffsetFromOrigin();
 
     // Set the mask.
     msk = gfx::MaskFilterInfo(state_.rounded_corners_bounds +
@@ -1624,16 +1640,19 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   // Compute the total transformation from post-transform buffer coordinates to
   // target coordinates.
-  // Scale and offset the normalized space to fit the content size rectangle.
+  // Scale to size then translate to position of subsurface in parent's space.
   gfx::Transform viewport_to_target_transform(
       gfx::AxisTransform2d::FromScaleAndTranslation(
-          scale, origin.OffsetFromOrigin() + translate));
+          scale, to_parent_dp.OffsetFromOrigin() + translate));
+  // Apply delegated transform matrix
   viewport_to_target_transform.PostConcat(state_.surface_transform);
-
   if (device_scale_factor.has_value()) {
     // Convert from DPs to pixels.
     viewport_to_target_transform.PostScale(device_scale_factor.value());
   }
+  // Translate to root in pixels.
+  viewport_to_target_transform.PostTranslate(
+      parent_to_root_px.OffsetFromOrigin());
 
   gfx::Transform quad_to_target_transform(buffer_transform_);
   quad_to_target_transform.PostConcat(viewport_to_target_transform);
@@ -1762,11 +1781,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
         }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
-        if (!damage_rect.IsEmpty()) {
-          texture_quad->damage_rect = gfx::ToEnclosedRect(damage_rect);
+        if (!damage_rect_px.IsEmpty()) {
+          texture_quad->damage_rect = gfx::ToEnclosedRect(damage_rect_px);
           render_pass->has_per_quad_damage = true;
           // Clear handled damage so it will not be added to the |render_pass|.
-          damage_rect = gfx::RectF();
+          damage_rect_px = gfx::RectF();
         }
       } else {
         viz::TileDrawQuad* tile_quad =
@@ -1797,7 +1816,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                        false /* force_anti_aliasing_off */);
   }
 
-  render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect));
+  render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
 }
 
 void Surface::UpdateContentSize() {

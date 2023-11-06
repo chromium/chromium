@@ -142,7 +142,7 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   viz::CompositorFrame frame1;
   frame1.render_pass_list.push_back(viz::CompositorRenderPass::Create());
   parent->AppendSurfaceHierarchyContentsToFrame(
-      gfx::PointF{},
+      gfx::PointF{}, gfx::PointF{},
       /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
       /*device_scale_factor=*/absl::nullopt, &frame1);
 
@@ -156,7 +156,7 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   viz::CompositorFrame frame2;
   frame2.render_pass_list.push_back(viz::CompositorRenderPass::Create());
   parent->AppendSurfaceHierarchyContentsToFrame(
-      gfx::PointF{},
+      gfx::PointF{}, gfx::PointF{},
       /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
       /*device_scale_factor=*/absl::nullopt, &frame2);
 
