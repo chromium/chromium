@@ -84,17 +84,17 @@ parentMessagePipe.registerHandler(
 
 let setAccessibilityEnabledCallback = null;
 parentMessagePipe.registerHandler(
-    Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, (enabled) => {
+    Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, (payload) => {
       if (setAccessibilityEnabledCallback) {
-        setAccessibilityEnabledCallback(enabled);
+        setAccessibilityEnabledCallback(payload.enabled);
       }
     });
 
 let setExploreByTouchEnabledCallback = null;
 parentMessagePipe.registerHandler(
-    Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, (enabled) => {
+    Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, (payload) => {
       if (setExploreByTouchEnabledCallback) {
-        setExploreByTouchEnabledCallback(enabled);
+        setExploreByTouchEnabledCallback(payload.enabled);
       }
     });
 
@@ -152,7 +152,12 @@ const EcheApiBindingImpl = new (class {
 
   isAccessibilityEnabled() {
     console.log('echeapi receiver.js isAccessibilityEnabled');
-    return (parentMessagePipe.sendMessage(Message.IS_ACCESSIBILITY_ENABLED));
+    return new Promise((resolve, reject) => {
+      parentMessagePipe.sendMessage(Message.IS_ACCESSIBILITY_ENABLED)
+          .then(payload => {
+            resolve(payload.result);
+          }, reject);
+    });
   }
 
   onScreenBacklightStateChanged(callback) {

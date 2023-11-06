@@ -107,6 +107,12 @@ void EcheAppAccessibilityProviderProxy::OnViewTracked() {
             &EcheAppAccessibilityProviderProxy::OnAccessibilityStatusChanged,
             weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // Send initial states.
+  if (accessibility_state_changed_callback_.has_value()) {
+    accessibility_state_changed_callback_->Run(IsAccessibilityEnabled());
+  }
+
   if (explore_by_touch_state_changed_callback_.has_value()) {
     explore_by_touch_state_changed_callback_->Run(
         accessibility_manager->IsSpokenFeedbackEnabled());
