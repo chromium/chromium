@@ -498,6 +498,7 @@ inline constexpr char kLanguageAllowedInputMethods[] =
 
 // A string pref (comma-separated list) set to the preloaded (active) input
 // method IDs (ex. "pinyin,mozc").
+// TODO: b/308389509 - Remove this constant to complete migration.
 inline constexpr char kLanguagePreloadEngines[] =
     "settings.language.preload_engines";
 inline constexpr char kLanguagePreloadEnginesSyncable[] =

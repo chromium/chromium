@@ -1899,6 +1899,15 @@ inline constexpr char kTouchpadDefaultSettings[] =
 inline constexpr char kExtendedFkeysModifier[] =
     "ash.settings.extended_fkeys_modifier";
 
+//-----------------------------------------------------------------------------
+// Language related Prefs
+//-----------------------------------------------------------------------------
+
+// A string pref (comma-separated list) that corresponds to the set of enabled
+// 1P input method engine IDs.
+inline constexpr char kLanguagePreloadEngines[] =
+    "settings.language.preload_engines";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
