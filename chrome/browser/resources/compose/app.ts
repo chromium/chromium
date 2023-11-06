@@ -16,6 +16,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -257,6 +258,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onEditClick_() {
     this.editedInput_ = this.input_;
     this.isEditingSubmittedInput_ = true;
+  }
+
+  private onRefresh_() {
+    assert(this.$.textarea.validate());
+    assert(this.submitted_);
+    this.selectedLength_ = Length.kUnset;
+    this.selectedTone_ = Tone.kUnset;
+    this.compose_();
   }
 
   private onSubmit_() {

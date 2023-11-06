@@ -165,6 +165,15 @@ suite('ComposeApp', () => {
     assertTrue(
         isVisible(app.$.refreshButton), 'Refresh button should be visible.');
 
+    // Mock changing length and tone to verify they are unset after hitting
+    // the refresh button.
+    app.$.lengthMenu.value = `${Length.kShorter}`;
+    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
+    app.$.toneMenu.value = `${Tone.kCasual}`;
+    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
+    await flushTasks();
+    testProxy.resetResolver('compose');
+
     // Click the refresh button and assert compose is called with the same args.
     app.$.refreshButton.click();
     assertTrue(
