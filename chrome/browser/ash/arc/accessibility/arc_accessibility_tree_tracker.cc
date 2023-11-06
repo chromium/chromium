@@ -125,22 +125,19 @@ FromMojomResponseToAutomationResponse(
     ax::android::mojom::SetNativeChromeVoxResponse response) {
   switch (response) {
     case ax::android::mojom::SetNativeChromeVoxResponse::SUCCESS:
-      return SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_SUCCESS;
+      return SetNativeChromeVoxResponse::kSuccess;
     case ax::android::mojom::SetNativeChromeVoxResponse::TALKBACK_NOT_INSTALLED:
-      return SetNativeChromeVoxResponse::
-          SET_NATIVE_CHROME_VOX_RESPONSE_TALKBACKNOTINSTALLED;
+      return SetNativeChromeVoxResponse::kTalkbackNotInstalled;
     case ax::android::mojom::SetNativeChromeVoxResponse::WINDOW_NOT_FOUND:
-      return SetNativeChromeVoxResponse::
-          SET_NATIVE_CHROME_VOX_RESPONSE_WINDOWNOTFOUND;
+      return SetNativeChromeVoxResponse::kWindowNotFound;
     case ax::android::mojom::SetNativeChromeVoxResponse::FAILURE:
-      return SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE;
+      return SetNativeChromeVoxResponse::kFailure;
     case ax::android::mojom::SetNativeChromeVoxResponse::
         NEED_DEPRECATION_CONFIRMATION:
-      return SetNativeChromeVoxResponse::
-          SET_NATIVE_CHROME_VOX_RESPONSE_NEEDDEPRECATIONCONFIRMATION;
+      return SetNativeChromeVoxResponse::kNeedDeprecationConfirmation;
     case ax::android::mojom::SetNativeChromeVoxResponse::INVALID_ENUM_VALUE:
       NOTREACHED();
-      return SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE;
+      return SetNativeChromeVoxResponse::kFailure;
   }
 }
 
@@ -773,14 +770,12 @@ void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(
     SetNativeChromeVoxCallback callback) {
   aura::Window* window = GetFocusedArcWindow();
   if (!window) {
-    std::move(callback).Run(
-        SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
+    std::move(callback).Run(SetNativeChromeVoxResponse::kFailure);
     return;
   }
 
   if (!GetWindowTaskId(window).has_value()) {
-    std::move(callback).Run(
-        SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
+    std::move(callback).Run(SetNativeChromeVoxResponse::kFailure);
     return;
   }
 
