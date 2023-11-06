@@ -1513,10 +1513,11 @@ void MenuController::SetSelection(MenuItemView* menu_item,
   if (pending_item_changed)
     StopShowTimer();
 
-  if (selection_types & SELECTION_UPDATE_IMMEDIATELY)
+  if (selection_types & SELECTION_UPDATE_IMMEDIATELY) {
     CommitPendingSelection();
-  else if (pending_item_changed)
+  } else if (pending_item_changed) {
     StartShowTimer();
+  }
 
   // Notify an accessibility focus event on all menu items except for the root.
   if (menu_item && pending_item_changed &&
@@ -1536,7 +1537,7 @@ void MenuController::SetSelection(MenuItemView* menu_item,
         menu_item->GetParentMenuItem()->GetSubmenu()) {
       menu_item->GetParentMenuItem()->GetSubmenu()->NotifyAccessibilityEvent(
           ax::mojom::Event::kSelectedChildrenChanged,
-          true /* send_native_event */);
+          /*send_native_event=*/true);
     }
   }
 }

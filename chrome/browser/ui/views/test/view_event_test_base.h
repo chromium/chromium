@@ -116,15 +116,15 @@ class ViewEventTestBase : public ChromeViewsTestBase {
                           base::BindOnce(method, base::Unretained(target)));
   }
 
+  // Callback from CreateEventTask. Runs the supplied task and if there are
+  // failures invokes Done.
+  void RunTestMethod(base::OnceClosure task);
+
   // Returns a task runner to use for drag-related mouse events.
   scoped_refptr<base::SingleThreadTaskRunner> GetDragTaskRunner();
 
  private:
   friend class TestBaseWidgetDelegate;
-
-  // Callback from CreateEventTask. Runs the supplied task and if there are
-  // failures invokes Done.
-  void RunTestMethod(base::OnceClosure task);
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<display::Screen> screen_;

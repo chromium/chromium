@@ -1780,8 +1780,9 @@ void Widget::OnMouseEvent(ui::MouseEvent* event) {
           // process it.
           (event->flags() &
            (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON |
-            ui::EF_RIGHT_MOUSE_BUTTON)) != 0)
+            ui::EF_RIGHT_MOUSE_BUTTON)) != 0) {
         event->SetHandled();
+      }
       return;
 
     case ui::ET_MOUSE_MOVED:

@@ -945,7 +945,7 @@ int BookmarkBarView::GetLeadingMargin() const {
   return kBookmarksBarLeadingMarginWithoutSavedTabGroups;
 }
 
-views::MenuItemView* BookmarkBarView::GetMenu() {
+const views::MenuItemView* BookmarkBarView::GetMenu() const {
   return bookmark_menu_ ? bookmark_menu_->menu() : nullptr;
 }
 
