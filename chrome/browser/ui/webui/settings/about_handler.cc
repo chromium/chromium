@@ -394,7 +394,7 @@ void AboutHandler::OnJavascriptAllowed() {
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
       base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -402,6 +402,7 @@ void AboutHandler::OnJavascriptDisallowed() {
   apply_changes_from_upgrade_observer_ = false;
   version_updater_.reset();
   policy_registrar_.reset();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void AboutHandler::OnUpgradeRecommended() {
@@ -446,7 +447,7 @@ void AboutHandler::RefreshUpdateStatus() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static_cast<VersionUpdaterCros*>(version_updater_.get())
       ->GetUpdateStatus(base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                                            base::Unretained(this)));
+                                            weak_factory_.GetWeakPtr()));
 #else
   RequestUpdate();
 #endif
@@ -528,7 +529,7 @@ void AboutHandler::HandleSetChannel(const base::Value::List& args) {
     // Check for update after switching release channel.
     version_updater_->CheckForUpdate(
         base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                            base::Unretained(this)),
+                            weak_factory_.GetWeakPtr()),
         VersionUpdater::PromoteCallback());
   }
 }
@@ -641,7 +642,7 @@ void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
                                              int64_t update_size) {
   version_updater_->SetUpdateOverCellularOneTimePermission(
       base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                          base::Unretained(this)),
+                          weak_factory_.GetWeakPtr()),
       update_version, update_size);
 }
 
@@ -777,10 +778,10 @@ void AboutHandler::HandleOpenProductLicenseOther(
 void AboutHandler::RequestUpdate() {
   version_updater_->CheckForUpdate(
       base::BindRepeating(&AboutHandler::SetUpdateStatus,
-                          base::Unretained(this)),
+                          weak_factory_.GetWeakPtr()),
 #if BUILDFLAG(IS_MAC)
       base::BindRepeating(&AboutHandler::SetPromotionState,
-                          base::Unretained(this)));
+                          weak_factory_.GetWeakPtr()));
 #else
       VersionUpdater::PromoteCallback());
 #endif  // BUILDFLAG(IS_MAC)
