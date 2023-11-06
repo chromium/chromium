@@ -187,7 +187,7 @@ CreditCard CreateServerCreditCardWithDetails(
 
 AutofillProfile CreateLocalProfileWithDetails(size_t use_count,
                                               int64_t use_date) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   DCHECK_EQ(profile.record_type(), AutofillProfile::LOCAL_PROFILE);
   profile.set_use_count(use_count);
   profile.set_use_date(UseDateFromProtoValue(use_date));

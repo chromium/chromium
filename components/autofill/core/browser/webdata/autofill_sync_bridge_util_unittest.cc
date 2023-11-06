@@ -201,7 +201,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
   std::vector<CreditCard> wallet_cards;
 
   // Create a local profile to be used as a billing address.
-  AutofillProfile billing_address;
+  AutofillProfile billing_address(AddressCountryCode("US"));
 
   // Create a card on disk that refers to that local profile as its billing
   // address.

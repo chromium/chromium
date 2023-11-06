@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -582,7 +583,8 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
 
 AutofillProfile ProfileFromSpecifics(
     const sync_pb::WalletPostalAddress& address) {
-  AutofillProfile profile(AutofillProfile::SERVER_PROFILE, std::string());
+  AutofillProfile profile(AutofillProfile::SERVER_PROFILE, std::string(),
+                          AddressCountryCode(address.country_code()));
 
   // AutofillProfile stores multi-line addresses with newline separators.
   std::vector<base::StringPiece> street_address(
@@ -601,8 +603,6 @@ AutofillProfile ProfileFromSpecifics(
                      base::UTF8ToUTF16(address.postal_code()));
   profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE,
                      base::UTF8ToUTF16(address.sorting_code()));
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY,
-                     base::UTF8ToUTF16(address.country_code()));
   profile.set_language_code(address.language_code());
 
   // SetInfo instead of SetRawInfo so the constituent pieces will be parsed

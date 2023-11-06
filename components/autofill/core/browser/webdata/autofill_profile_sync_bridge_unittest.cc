@@ -140,7 +140,8 @@ void ExtractAutofillProfilesFromDataBatch(
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructCompleteSpecifics().
 AutofillProfile ConstructCompleteProfile() {
-  AutofillProfile profile(kGuidA);
+  AutofillProfile profile(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                          AddressCountryCode("ES"));
 
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
@@ -165,7 +166,6 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Mountain View");
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"California");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"CEDEX");
   profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Clara");
   profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Street Name");
@@ -233,7 +233,7 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_city("Mountain View");
   specifics.set_address_home_state("California");
   specifics.set_address_home_zip("94043");
-  specifics.set_address_home_country("US");
+  specifics.set_address_home_country("ES");
   specifics.set_address_home_sorting_code("CEDEX");
   specifics.set_address_home_dependent_locality("Santa Clara");
   specifics.set_address_home_language_code("en");
@@ -380,7 +380,8 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
 TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Added) {
   StartSyncing({});
 
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"Jane");
   local.FinalizeAfterImport();
   AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, local);
@@ -400,7 +401,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Added_LanguageCodePropagates) {
   StartSyncing({});
 
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
   AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, local);
 
@@ -419,7 +421,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Added_LocalValidityBitfieldPropagates) {
   StartSyncing({});
 
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, local);
 
   EXPECT_CALL(
@@ -436,7 +439,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Updated) {
   StartSyncing({});
 
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"Jane");
   AutofillProfileChange change(AutofillProfileChange::UPDATE, kGuidA, local);
 
@@ -464,7 +468,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
               ElementsAre(WithUsageStats(CreateAutofillProfile(remote))));
 
   // Update to the usage stats for that profile.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
   local.set_use_count(10U);
   local.set_use_date(base::Time::FromTimeT(30));
@@ -485,7 +490,9 @@ TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Updated_IgnoreServerProfiles) {
   StartSyncing({});
 
-  AutofillProfile server_profile(AutofillProfile::SERVER_PROFILE, "server-id");
+  AutofillProfile server_profile(
+      AutofillProfile::SERVER_PROFILE, "server-id",
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   AutofillProfileChange change(AutofillProfileChange::UPDATE,
                                server_profile.guid(), server_profile);
 
@@ -497,7 +504,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Deleted) {
   StartSyncing({});
 
-  AutofillProfile local(kGuidB);
+  AutofillProfile local(kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"Jane");
   AutofillProfileChange change(AutofillProfileChange::REMOVE, kGuidB, local);
   EXPECT_CALL(mock_processor(), Delete(kGuidB, _));
@@ -513,7 +521,9 @@ TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Deleted_IgnoreServerProfiles) {
   StartSyncing({});
 
-  AutofillProfile server_profile(AutofillProfile::SERVER_PROFILE, "server-id");
+  AutofillProfile server_profile(
+      AutofillProfile::SERVER_PROFILE, "server-id",
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   AutofillProfileChange change(AutofillProfileChange::REMOVE,
                                server_profile.guid(), server_profile);
 
@@ -523,11 +533,13 @@ TEST_F(AutofillProfileSyncBridgeTest,
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
-  AutofillProfile local1(kGuidA);
+  AutofillProfile local1(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local1.FinalizeAfterImport();
-  AutofillProfile local2(kGuidB);
+  AutofillProfile local2(kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local2.SetRawInfo(NAME_FIRST, u"Tom");
   local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st");
   local2.FinalizeAfterImport();
@@ -537,11 +549,13 @@ TEST_F(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, GetData) {
-  AutofillProfile local1(kGuidA);
+  AutofillProfile local1(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local1.FinalizeAfterImport();
-  AutofillProfile local2(kGuidB);
+  AutofillProfile local2(kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local2.SetRawInfo(NAME_FIRST, u"Tom");
   local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st");
   local2.FinalizeAfterImport();
@@ -562,26 +576,31 @@ TEST_F(AutofillProfileSyncBridgeTest, GetData) {
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData) {
-  AutofillProfile local1(kGuidA);
+  AutofillProfile local1(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local1.FinalizeAfterImport();
-  AutofillProfile local2(kGuidB);
+  AutofillProfile local2(kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local2.SetRawInfo(NAME_FIRST, u"Tom");
   local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st");
   local2.FinalizeAfterImport();
 
   AddAutofillProfilesToTable({local1, local2});
 
-  AutofillProfile remote1(kGuidC);
+  AutofillProfile remote1(kGuidC, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote1.SetRawInfo(NAME_FIRST, u"Jane");
   remote1.FinalizeAfterImport();
 
-  AutofillProfile remote2(kGuidD);
+  AutofillProfile remote2(kGuidD, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote2.SetRawInfo(NAME_FIRST, u"Harry");
   remote2.FinalizeAfterImport();
 
-  AutofillProfile remote3(kGuidB);
+  AutofillProfile remote3(kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote3.SetRawInfo(NAME_FIRST, u"Tom Doe");
   remote3.FinalizeAfterImport();
 
@@ -612,7 +631,8 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData) {
 // Tests the profile migration that is performed after specifics are converted
 // to profiles.
 TEST_F(AutofillProfileSyncBridgeTest, ProfileMigration) {
-  AutofillProfile remote1(kGuidC);
+  AutofillProfile remote1(kGuidC, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote1.SetRawInfo(NAME_FIRST, u"Thomas");
   remote1.SetRawInfo(NAME_MIDDLE, u"Neo");
   remote1.SetRawInfo(NAME_LAST, u"Anderson");
@@ -625,7 +645,9 @@ TEST_F(AutofillProfileSyncBridgeTest, ProfileMigration) {
   StartSyncing({remote1_specifics});
 
   // Create the expected profile after migration.
-  AutofillProfile finalized_profile(kGuidC);
+  AutofillProfile finalized_profile(
+      kGuidC, AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   finalized_profile.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"Thomas Neo Anderson", VerificationStatus::kFormatted);
   finalized_profile.SetRawInfoWithVerificationStatus(
@@ -674,14 +696,16 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SyncAllFieldsToClient) {
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_IdenticalProfiles) {
-  AutofillProfile local1(kGuidA);
+  AutofillProfile local1(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local1.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                           VerificationStatus::kObserved);
   local1.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"1 1st st", VerificationStatus::kObserved);
   local1.FinalizeAfterImport();
 
-  AutofillProfile local2(kGuidB);
+  AutofillProfile local2(kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local2.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Tom",
                                           VerificationStatus::kObserved);
   local2.SetRawInfoWithVerificationStatus(
@@ -691,14 +715,16 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_IdenticalProfiles) {
 
   // The synced profiles are identical to the local ones, except that the guids
   // are different.
-  AutofillProfile remote1(kGuidC);
+  AutofillProfile remote1(kGuidC, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote1.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                            VerificationStatus::kObserved);
   remote1.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"1 1st st", VerificationStatus::kObserved);
   remote1.FinalizeAfterImport();
 
-  AutofillProfile remote2(kGuidD);
+  AutofillProfile remote2(kGuidD, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote2.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Tom",
                                            VerificationStatus::kObserved);
   remote2.SetRawInfoWithVerificationStatus(
@@ -754,7 +780,8 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
@@ -795,7 +822,8 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
 TEST_F(AutofillProfileSyncBridgeTest,
        MergeFullSyncData_SimilarProfiles_OlderUseDate) {
   // Different guids, difference in the phone number.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
   local.set_use_date(base::Time::FromTimeT(30));
   AddAutofillProfilesToTable({local});
@@ -819,7 +847,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        MergeFullSyncData_SimilarProfiles_NewerUseDate) {
   // Different guids, difference in the phone number.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
   local.set_use_date(base::Time::FromTimeT(30));
   AddAutofillProfilesToTable({local});
@@ -842,7 +871,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        MergeFullSyncData_SimilarProfiles_NonZeroUseCounts) {
   // Different guids, difference in the phone number.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
   local.set_use_count(12);
   AddAutofillProfilesToTable({local});
@@ -861,13 +891,16 @@ TEST_F(AutofillProfileSyncBridgeTest,
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, ApplyIncrementalSyncChanges) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   StartSyncing({});
 
-  AutofillProfile remote_profile(kGuidB);
+  AutofillProfile remote_profile(
+      kGuidB, AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   remote_profile.SetRawInfo(NAME_FIRST, u"Jane");
   remote_profile.FinalizeAfterImport();
   AutofillProfileSpecifics remote =
@@ -913,7 +946,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Verifies that setting the street address field also sets the (deprecated)
 // address line 1 and line 2 fields.
 TEST_F(AutofillProfileSyncBridgeTest, StreetAddress_SplitAutomatically) {
-  AutofillProfile local;
+  AutofillProfile local(i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"123 Example St.\nApt. 42");
   EXPECT_EQ(u"123 Example St.", local.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(u"Apt. 42", local.GetRawInfo(ADDRESS_HOME_LINE2));
@@ -930,7 +963,7 @@ TEST_F(AutofillProfileSyncBridgeTest, StreetAddress_SplitAutomatically) {
 // Verifies that setting the (deprecated) address line 1 and line 2 fields also
 // sets the street address.
 TEST_F(AutofillProfileSyncBridgeTest, StreetAddress_JointAutomatically) {
-  AutofillProfile local;
+  AutofillProfile local(i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example St.");
   local.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
   EXPECT_EQ(u"123 Example St.\nApt. 42",
@@ -962,7 +995,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   StartSyncing({remote});
 
   // Verify that full street address takes precedence over address lines.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
                                          u"456 El Camino Real\nSuite #1337",
                                          VerificationStatus::kObserved);
@@ -981,7 +1015,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // updates.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_StreetAddress_NoUpdateToEmptyStreetAddressSyncedUp) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
                                          u"123 Example St.\nApt. 42",
                                          VerificationStatus::kObserved);
@@ -1004,7 +1039,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Missing language code field should not generate sync events.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_MissingCodesNoSync) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   ASSERT_TRUE(local.language_code().empty());
   AddAutofillProfilesToTable({local});
 
@@ -1022,7 +1058,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Empty language code should be overwritten by sync.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_ExistingRemoteWinsOverMissingLocal) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   ASSERT_TRUE(local.language_code().empty());
   AddAutofillProfilesToTable({local});
 
@@ -1040,7 +1077,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Local language code should be overwritten by remote one.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_ExistingRemoteWinsOverExistingLocal) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("de");
   AddAutofillProfilesToTable({local});
 
@@ -1060,12 +1098,15 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_ExistingLocalWinsOverMissingRemote) {
   // Local autofill profile has "en" language code.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
   AddAutofillProfilesToTable({local});
 
   // Remote data does not have a language code value.
-  AutofillProfile remote_profile(kGuidA);
+  AutofillProfile remote_profile(
+      kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   remote_profile.SetRawInfo(NAME_FIRST, u"John");
   remote_profile.FinalizeAfterImport();
   AutofillProfileSpecifics remote =
@@ -1087,7 +1128,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Missing validity state bitifield should not generate sync events.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_DefaultValueNoSync) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
   // Remote data does not have a validity state bitfield value.
@@ -1105,7 +1147,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Default validity state bitfield should be overwritten by sync.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverMissingLocal) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
   // Remote data has a non default validity state bitfield value.
@@ -1123,7 +1166,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // Local validity state bitfield should be overwritten by sync.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverExistingLocal) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
   // Remote data has a non default validity state bitfield value.
@@ -1142,7 +1186,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // an existing validity state bitfield in local autofill profile.
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_ExistingLocalWinsOverMissingRemote) {
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   AddAutofillProfilesToTable({local});
 
   // Remote data has a non default validity state bitfield value.
@@ -1166,7 +1211,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_FullName_MissingValueNoSync) {
   // Local autofill profile has an empty full name.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
@@ -1190,7 +1236,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_FullName_ExistingLocalWinsOverMissingRemote) {
   // Local autofill profile has a full name.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfoWithVerificationStatus(NAME_FULL, u"John Jacob Smith",
                                          VerificationStatus::kObserved);
   local.FinalizeAfterImport();
@@ -1241,7 +1288,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
 TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_UsageStats_MissingValueNoSync) {
   // Local autofill profile has 0 for use_count/use_date.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
   local.set_use_count(0);
   local.set_use_date(base::Time());
@@ -1273,7 +1321,7 @@ class AutofillProfileSyncBridgeUpdatesUsageStatsTest
     : public AutofillProfileSyncBridgeTest,
       public testing::WithParamInterface<UpdatesUsageStatsTestCase> {
  public:
-  AutofillProfileSyncBridgeUpdatesUsageStatsTest() {}
+  AutofillProfileSyncBridgeUpdatesUsageStatsTest() = default;
 
   AutofillProfileSyncBridgeUpdatesUsageStatsTest(
       const AutofillProfileSyncBridgeUpdatesUsageStatsTest&) = delete;
@@ -1287,7 +1335,8 @@ TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {
   auto test_case = GetParam();
 
   // Local data has usage stats.
-  AutofillProfile local(kGuidA);
+  AutofillProfile local(kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+                        i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
   local.set_use_count(test_case.local_use_count);
   local.set_use_date(test_case.local_use_date);
