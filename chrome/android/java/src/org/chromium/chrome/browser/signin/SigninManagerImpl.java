@@ -19,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -35,6 +36,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -56,15 +61,15 @@ import java.util.List;
 
 /**
  * Android wrapper of the SigninManager which provides access from the Java layer.
- * <p/>
- * This class handles common paths during the sign-in and sign-out flows.
- * <p/>
- * Only usable from the UI thread as the native SigninManager requires its access to be in the
- * UI thread.
- * <p/>
- * See chrome/browser/android/signin/signin_manager_android.h for more details.
+ *
+ * <p>This class handles common paths during the sign-in and sign-out flows.
+ *
+ * <p>Only usable from the UI thread as the native SigninManager requires its access to be in the UI
+ * thread.
+ *
+ * <p>See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
-class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
+class SigninManagerImpl implements IdentityManager.Observer, SigninManager, AccountsChangeObserver {
     private static final String TAG = "SigninManager";
     private static final int[] SYNC_DATA_TYPES = {BrowsingDataType.HISTORY, BrowsingDataType.CACHE,
             BrowsingDataType.COOKIES, BrowsingDataType.PASSWORDS, BrowsingDataType.FORM_DATA};
@@ -75,6 +80,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      */
     private long mNativeSigninManagerAndroid;
     private final AccountTrackerService mAccountTrackerService;
+    private final AccountManagerFacade mAccountManagerFacade;
     private final IdentityManager mIdentityManager;
     private final IdentityMutator mIdentityMutator;
     private final SyncService mSyncService;
@@ -117,8 +123,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         identityManager.addObserver(signinManager);
         AccountInfoServiceProvider.init(identityManager, accountTrackerService);
 
-        signinManager.reloadAllAccountsFromSystem(CoreAccountInfo.getIdFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            CoreAccountInfo primaryAccountInfo =
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            signinManager.reloadAllAccountsFromSystem(
+                    CoreAccountInfo.getIdFrom(primaryAccountInfo));
+        }
         return signinManager;
     }
 
@@ -134,6 +144,17 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         mSigninAllowedByPolicy =
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.addObserver(this);
+            Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
+                    mAccountManagerFacade.getCoreAccountInfos();
+            if (coreAccountInfosPromise.isFulfilled()) {
+                seedThenReloadAllAccountsFromSystem(
+                        CoreAccountInfo.getIdFrom(
+                                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+            }
+        }
     }
 
     /**
@@ -145,7 +166,24 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     void destroy() {
         AccountInfoServiceProvider.get().destroy();
         mIdentityManager.removeObserver(this);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.removeObserver(this);
+        }
         mNativeSigninManagerAndroid = 0;
+    }
+
+    /** Implements {@link AccountsChangeObserver}. */
+    @Override
+    public void onCoreAccountInfosChanged() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is disabled");
+        }
+        Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
+                mAccountManagerFacade.getCoreAccountInfos();
+        assert coreAccountInfosPromise.isFulfilled();
+        // TODO(crbug/1491005): Add the seeding logic here and move the primary account validation
+        // for the signin checker to here
     }
 
     /**
@@ -307,23 +345,53 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         mSignInState = signInState;
         signInState = null;
 
-        Log.i(TAG, "Signin starts (enabling sync: %b).", mSignInState.shouldTurnSyncOn());
-        AccountInfoServiceProvider.get()
-                .getAccountInfoByEmail(mSignInState.mAccount.name)
-                .then(accountInfo -> {
-                    mSignInState.mCoreAccountInfo = accountInfo;
-                    notifySignInAllowedChanged();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            // Retrieve the primary account and use it to seed and reload all accounts.
+            if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+                throw new IllegalStateException(
+                        "Account information should be available on signin");
+            }
+            mSignInState.mCoreAccountInfo =
+                    AccountUtils.findCoreAccountInfoByEmail(
+                            mAccountManagerFacade.getCoreAccountInfos().getResult(),
+                            mSignInState.mAccount.name);
+            if (mSignInState.mCoreAccountInfo == null) {
+                throw new IllegalStateException(
+                        "The account should be on the device before it can be set as primary.");
+            }
+            seedThenReloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
+            notifySignInAllowedChanged();
 
-                    if (mSignInState.shouldTurnSyncOn()) {
-                        Log.d(TAG, "Checking if account has policy management enabled");
-                        fetchAndApplyCloudPolicy(mSignInState.mCoreAccountInfo,
-                                this::finishSignInAfterPolicyEnforced);
-                    } else {
-                        // Sign-in without sync doesn't enforce enterprise policy, so skip that
-                        // step.
-                        finishSignInAfterPolicyEnforced();
-                    }
-                });
+            if (mSignInState.shouldTurnSyncOn()) {
+                Log.d(TAG, "Checking if account has policy management enabled");
+                fetchAndApplyCloudPolicy(
+                        mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
+            } else {
+                // Sign-in without sync doesn't enforce enterprise policy, so skip that
+                // step.
+                finishSignInAfterPolicyEnforced();
+            }
+        } else {
+            Log.i(TAG, "Signin starts (enabling sync: %b).", mSignInState.shouldTurnSyncOn());
+            AccountInfoServiceProvider.get()
+                    .getAccountInfoByEmail(mSignInState.mAccount.name)
+                    .then(
+                            accountInfo -> {
+                                mSignInState.mCoreAccountInfo = accountInfo;
+                                notifySignInAllowedChanged();
+
+                                if (mSignInState.shouldTurnSyncOn()) {
+                                    Log.d(TAG, "Checking if account has policy management enabled");
+                                    fetchAndApplyCloudPolicy(
+                                            mSignInState.mCoreAccountInfo,
+                                            this::finishSignInAfterPolicyEnforced);
+                                } else {
+                                    // Sign-in without sync doesn't enforce enterprise policy, so
+                                    // skip that step.
+                                    finishSignInAfterPolicyEnforced();
+                                }
+                            });
+        }
     }
 
     /**
@@ -338,7 +406,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         // Setting the primary account triggers observers which query accounts from IdentityManager.
         // Reloading before setting the primary ensures they don't get an empty list of accounts.
-        reloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            reloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
+        }
 
         @ConsentLevel
         int consentLevel =
@@ -520,6 +590,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         Log.d(TAG, "Signin flow aborted.");
         notifySignInAllowedChanged();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            seedThenReloadAllAccountsFromSystem(null);
+        }
     }
 
     @VisibleForTesting
@@ -537,6 +610,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                     0);
         }
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            seedThenReloadAllAccountsFromSystem(null);
+        }
         mSignOutState = null;
 
         if (signOutCallback != null) signOutCallback.signOutComplete();
@@ -572,13 +648,25 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
     @Override
     public void reloadAllAccountsFromSystem(@Nullable CoreAccountId primaryAccountId) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(primaryAccountId);
     }
 
-    /** Called when account seeding is complete. */
-    public void onAccountsSeeded(List<CoreAccountInfo> coreAccountInfos) {
-        // TODO(crbug/1491005): Call this right after seeding.
-        mIdentityManager.refreshAccountInfoIfStale(coreAccountInfos);
+    private void seedThenReloadAllAccountsFromSystem(@Nullable CoreAccountId primaryAccountId) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is disabled");
+        }
+        if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+            throw new IllegalStateException("Account information should be available when seeding");
+        }
+        mIdentityMutator.seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                mAccountManagerFacade.getCoreAccountInfos().getResult(), primaryAccountId);
+        mIdentityManager.refreshAccountInfoIfStale(
+                mAccountManagerFacade.getCoreAccountInfos().getResult());
     }
 
     /**

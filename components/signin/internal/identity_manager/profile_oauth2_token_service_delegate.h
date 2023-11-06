@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -162,6 +163,11 @@ class ProfileOAuth2TokenServiceDelegate {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+  // Triggers platform specific implementation to reload accounts from system.
+  virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+      const std::vector<CoreAccountInfo>& core_account_infos,
+      const absl::optional<CoreAccountId>& primary_account_id) {}
+
   // Returns a reference to the corresponding Java object.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif
