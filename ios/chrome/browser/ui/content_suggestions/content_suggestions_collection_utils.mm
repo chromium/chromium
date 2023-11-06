@@ -87,6 +87,16 @@ CGFloat FakeToolbarVerticalMargin() {
        kAdaptiveLocationBarVerticalMargin);
   return vertical_margin + dynamic_type_vertical_adjustment;
 }
+
+// Returns the color to use for the Lens and Voice icons in the Fakebox.
+UIColor* FakeboxIconColor() {
+  if (IsIOSLargeFakeboxEnabled()) {
+    return [UIColor colorNamed:kGrey700Color];
+  } else if (IsMagicStackEnabled()) {
+    return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
+  }
+  return [UIColor colorNamed:kTextfieldPlaceholderColor];
+}
 }
 
 namespace content_suggestions {
@@ -254,7 +264,7 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
 
   UIImage* mic_image = DefaultSymbolWithPointSize(
       kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
-  voice_search_button.tintColor = SearchHintLabelColor();
+  voice_search_button.tintColor = FakeboxIconColor();
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
   [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
@@ -284,7 +294,7 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
       kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
 
   [lens_button setImage:camera_image forState:UIControlStateNormal];
-  lens_button.tintColor = SearchHintLabelColor();
+  lens_button.tintColor = FakeboxIconColor();
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
 
@@ -315,7 +325,7 @@ BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
 
 UIColor* SearchHintLabelColor() {
   if (IsIOSLargeFakeboxEnabled()) {
-    return [UIColor colorNamed:kGrey700Color];
+    return [UIColor colorNamed:kGrey800Color];
   } else if (IsMagicStackEnabled()) {
     return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }
