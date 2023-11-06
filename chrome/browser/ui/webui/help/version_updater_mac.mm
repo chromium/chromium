@@ -31,6 +31,7 @@
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -357,7 +358,9 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
       status = VersionUpdater::Status::NEARLY_UPDATED;
       break;
     case updater::UpdateService::UpdateState::State::kNoUpdate:
-      status = VersionUpdater::Status::UPDATED;
+      status = UpgradeDetector::GetInstance()->is_upgrade_available()
+                   ? VersionUpdater::Status::NEARLY_UPDATED
+                   : VersionUpdater::Status::UPDATED;
       break;
     case updater::UpdateService::UpdateState::State::kUpdateError:
       status = VersionUpdater::Status::FAILED;
