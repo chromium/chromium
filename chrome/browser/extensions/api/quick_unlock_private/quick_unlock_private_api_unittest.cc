@@ -24,7 +24,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -253,8 +252,6 @@ class QuickUnlockPrivateUnitTest
     // Generate an auth token.
     auth_token_user_context_.SetAccountId(test_account);
     auth_token_user_context_.SetUserIDHash(kTestUserEmailHash);
-    auth_token_user_context_.SetSessionLifetime(
-        base::Time::Now() + ash::quick_unlock::AuthToken::kTokenExpiration);
     if (std::get<0>(GetParam()) == TestType::kCryptohome) {
       auto* fake_userdataauth_client_testapi =
           ash::FakeUserDataAuthClient::TestApi::Get();

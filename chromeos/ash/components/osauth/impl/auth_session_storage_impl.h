@@ -14,8 +14,6 @@
 #include "base/location.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -62,12 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   void Return(const AuthProofToken& token,
               std::unique_ptr<UserContext> context) override;
   void Invalidate(const AuthProofToken& token,
-                  absl::optional<InvalidationCallback> on_invalidated) override;
-  std::unique_ptr<ScopedSessionRefresher> KeepAlive(
-      const AuthProofToken& token) override;
+                  base::OnceClosure on_invalidated) override;
 
  private:
-  friend class ScopedSessionRefresherImpl;
   enum class TokenState {
     kOwned,         // UserContext is owned by storage
     kBorrowed,      // UserContext is currently borrowed
@@ -88,32 +83,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     // Data required to invalidate context upon return, if invalidation was
     // requested while context is borrowed.
     bool invalidate_on_return = false;
-
-    std::queue<InvalidationCallback> invalidation_queue;
+    base::OnceClosure invalidation_closure;
     std::queue<std::pair<base::Location, BorrowCallback>> borrow_queue;
-
-    // Timer to perform next action (extending or invalidating session).
-    std::unique_ptr<base::OneShotTimer> next_action_timer_;
-
-    // Number of entities that requested to keep session alive.
-    int keep_alive_counter = 0;
   };
 
   std::unique_ptr<UserContext> Borrow(const base::Location& location,
                                       const AuthProofToken& token);
   void OnSessionInvalidated(const AuthProofToken& token,
+                            base::OnceClosure on_invalidated,
                             std::unique_ptr<UserContext> context,
                             absl::optional<AuthenticationError> error);
-
-  void HandleSessionRefresh(const AuthProofToken& token);
-  void ExtendAuthSession(const AuthProofToken& token);
-  void OnExtendAuthSession(const AuthProofToken& token,
-                           std::unique_ptr<UserContext> context,
-                           absl::optional<AuthenticationError> error);
-
-  // Internal API for ScopedSessionRefresher.
-  void IncreaseKeepAliveCounter(const AuthProofToken& token);
-  void DecreaseKeepAliveCounter(const AuthProofToken& token);
 
   // Stored data for currently active tokens.
   base::flat_map<AuthProofToken, std::unique_ptr<TokenData>> tokens_;
@@ -123,20 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   const raw_ptr<const base::Clock> clock_;
 
   base::WeakPtrFactory<AuthSessionStorageImpl> weak_factory_{this};
-};
-
-class ScopedSessionRefresherImpl : public ScopedSessionRefresher {
- public:
-  ~ScopedSessionRefresherImpl() override;
-
- private:
-  friend class AuthSessionStorageImpl;
-
-  ScopedSessionRefresherImpl(base::WeakPtr<AuthSessionStorageImpl> storage,
-                             const AuthProofToken& token);
-
-  base::WeakPtr<AuthSessionStorageImpl> storage_;
-  AuthProofToken token_;
 };
 
 }  // namespace ash

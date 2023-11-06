@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/time/default_clock.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,47 +21,28 @@ namespace ash {
 
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 
 class AuthSessionStorageImplTest : public ::testing::Test {
  protected:
   AuthSessionStorageImplTest() {
-    storage_ = std::make_unique<AuthSessionStorageImpl>(
-        &mock_udac_, base::DefaultClock::GetInstance());
+    storage_ = std::make_unique<AuthSessionStorageImpl>(&mock_udac_);
   }
-
-  std::unique_ptr<UserContext> CreateContext() {
-    std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
-    context->SetAuthSessionIds("some-id", "broadcast");
-    context->SetSessionLifetime(base::Time::Now() + base::Seconds(60));
-    return context;
-  }
-
-  void ExpectExtendAuthsession(ash::MockUserDataAuthClient& mock_client) {
-    EXPECT_CALL(mock_udac_, ExtendAuthSession(_, _))
-        .WillOnce(
-            Invoke([](const ::user_data_auth::ExtendAuthSessionRequest& request,
-                      UserDataAuthClient::ExtendAuthSessionCallback callback) {
-              ::user_data_auth::ExtendAuthSessionReply reply;
-              reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
-              reply.set_seconds_left(request.extension_duration());
-              std::move(callback).Run(reply);
-            }));
-  }
-
-  base::test::SingleThreadTaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::SingleThreadTaskEnvironment task_environment;
   ash::MockUserDataAuthClient mock_udac_;
   std::unique_ptr<AuthSessionStorageImpl> storage_;
 };
 
 TEST_F(AuthSessionStorageImplTest, Basic) {
-  AuthProofToken token = storage_->Store(CreateContext());
+  std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
+  context->SetAuthSessionIds("some-id", "broadcast");
 
+  // Store UserContext;
+
+  AuthProofToken token = storage_->Store(std::move(context));
   ASSERT_TRUE(storage_->IsValid(token));
 
   // Borrow context, token is still valid.
-  auto context = storage_->BorrowForTests(FROM_HERE, token);
+  context = storage_->BorrowForTests(FROM_HERE, token);
   ASSERT_TRUE(storage_->IsValid(token));
 
   // Return context, token still valid
@@ -77,11 +57,14 @@ TEST_F(AuthSessionStorageImplTest, Basic) {
 }
 
 TEST_F(AuthSessionStorageImplTest, InvalidateOnReturn) {
-  AuthProofToken token = storage_->Store(CreateContext());
+  std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
+  context->SetAuthSessionIds("some-id", "broadcast");
 
+  // Store UserContext;
+  AuthProofToken token = storage_->Store(std::move(context));
   ASSERT_TRUE(storage_->IsValid(token));
   // Borrow context, token is still valid.
-  auto context = storage_->BorrowForTests(FROM_HERE, token);
+  context = storage_->BorrowForTests(FROM_HERE, token);
   ASSERT_TRUE(storage_->IsValid(token));
 
   // Do not expect to have any calls before context is returned.
@@ -101,7 +84,8 @@ TEST_F(AuthSessionStorageImplTest, InvalidateOnReturn) {
 }
 
 TEST_F(AuthSessionStorageImplTest, AsyncBorrow) {
-  std::unique_ptr<UserContext> context = CreateContext();
+  std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
+  context->SetAuthSessionIds("some-id", "broadcast");
 
   // Unknown token, callback should
   // be called with nullptr immediately.
@@ -182,116 +166,6 @@ TEST_F(AuthSessionStorageImplTest, AsyncBorrow) {
     ASSERT_TRUE(borrow_future.IsReady());
     ASSERT_EQ(borrow_future.Get().get(), nullptr);
   }
-}
-
-TEST_F(AuthSessionStorageImplTest, LifetimeInvalidateUponTimer) {
-  AuthProofToken token = storage_->Store(CreateContext());
-
-  ASSERT_TRUE(storage_->IsValid(token));
-
-  EXPECT_CALL(mock_udac_, InvalidateAuthSession(_, _));
-
-  // Should trigger invalidating AuthSession.
-  task_environment.AdvanceClock(base::Seconds(61));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_FALSE(storage_->IsValid(token));
-}
-
-TEST_F(AuthSessionStorageImplTest, LifetimeExtendWhenIdle) {
-  AuthProofToken token = storage_->Store(CreateContext());
-  base::Time start = base::Time::Now();
-
-  ASSERT_TRUE(storage_->IsValid(token));
-  auto keep_alive = storage_->KeepAlive(token);
-
-  ExpectExtendAuthsession(mock_udac_);
-
-  // Should trigger extending AuthSession.
-  task_environment.AdvanceClock(base::Seconds(59));
-  base::RunLoop().RunUntilIdle();
-  task_environment.AdvanceClock(base::Seconds(31));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(storage_->IsValid(token));
-  ASSERT_GE(storage_->Peek(token)->GetSessionLifetime(),
-            start + base::Seconds(90));
-  keep_alive.release();
-}
-
-TEST_F(AuthSessionStorageImplTest, LifetimeExtendUponReturn) {
-  AuthProofToken token = storage_->Store(CreateContext());
-  base::Time start = base::Time::Now();
-
-  ASSERT_TRUE(storage_->IsValid(token));
-  auto keep_alive = storage_->KeepAlive(token);
-
-  auto borrowed = storage_->BorrowForTests(FROM_HERE, token);
-
-  // Not extending session as context is borrowed.
-  task_environment.AdvanceClock(base::Seconds(59));
-  base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&mock_udac_);
-
-  // Session would be extended as soon as context is returned.
-  ExpectExtendAuthsession(mock_udac_);
-
-  storage_->Return(token, std::move(borrowed));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(storage_->IsValid(token));
-  ASSERT_GE(storage_->Peek(token)->GetSessionLifetime(),
-            start + base::Seconds(60));
-  keep_alive.release();
-}
-
-TEST_F(AuthSessionStorageImplTest, LifetimeInvalidateUponReturningTooLate) {
-  AuthProofToken token = storage_->Store(CreateContext());
-
-  ASSERT_TRUE(storage_->IsValid(token));
-  auto keep_alive = storage_->KeepAlive(token);
-
-  auto borrowed = storage_->BorrowForTests(FROM_HERE, token);
-
-  // Not invalidating session as context is borrowed.
-  task_environment.AdvanceClock(base::Seconds(61));
-  base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&mock_udac_);
-
-  // Session would be extended as soon as context is returned.
-  EXPECT_CALL(mock_udac_, InvalidateAuthSession(_, _))
-      .WillOnce(Invoke(
-          [](const ::user_data_auth::InvalidateAuthSessionRequest& request,
-             UserDataAuthClient::InvalidateAuthSessionCallback callback) {
-            ::user_data_auth::InvalidateAuthSessionReply reply;
-            reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
-            std::move(callback).Run(reply);
-          }));
-
-  storage_->Return(token, std::move(borrowed));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_FALSE(storage_->IsValid(token));
-  keep_alive.release();
-}
-
-TEST_F(AuthSessionStorageImplTest, LifetimeInvalidateUponTimerHadKeepalive) {
-  // Store UserContext;
-  AuthProofToken token = storage_->Store(CreateContext());
-  ASSERT_TRUE(storage_->IsValid(token));
-  auto keep_alive = storage_->KeepAlive(token);
-
-  task_environment.AdvanceClock(base::Seconds(30));
-  base::RunLoop().RunUntilIdle();
-  keep_alive.release();
-
-  EXPECT_CALL(mock_udac_, InvalidateAuthSession(_, _));
-
-  // Should trigger invalidating AuthSession.
-  task_environment.AdvanceClock(base::Seconds(31));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_FALSE(storage_->IsValid(token));
 }
 
 }  // namespace ash

@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
-#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_type.h"
@@ -102,8 +101,6 @@ class PinSetupScreenTest : public OobeBaseTest {
     auto session_ids =
         cryptohome_.AddSession(context->GetAccountId(), /*authenticated=*/true);
     context->SetAuthSessionIds(session_ids.first, session_ids.second);
-    context->SetSessionLifetime(base::Time::Now() +
-                                cryptohome::kAuthsessionInitialLifetime);
     if (ash::features::ShouldUseAuthSessionStorage()) {
       ash::AuthSessionStorage::Get()->Return(
           wizard_context->extra_factors_token.value(), std::move(context));
@@ -146,12 +143,10 @@ class PinSetupScreenTest : public OobeBaseTest {
     if (ash::features::ShouldUseAuthSessionStorage()) {
       std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
       context->SetAuthSessionIds("fake-session-id", "broadcast");
-      context->SetSessionLifetime(base::Time::Now() +
-                                  cryptohome::kAuthsessionInitialLifetime);
+      auto token = ash::AuthSessionStorage::Get()->Store(std::move(context));
       LoginDisplayHost::default_host()
           ->GetWizardContextForTesting()
-          ->extra_factors_token =
-          ash::AuthSessionStorage::Get()->Store(std::move(context));
+          ->extra_factors_token = token;
     } else {
       LoginDisplayHost::default_host()
           ->GetWizardContextForTesting()

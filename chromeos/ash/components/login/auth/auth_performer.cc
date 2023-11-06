@@ -421,7 +421,6 @@ void AuthPerformer::ExtendAuthSessionLifetime(
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
-    return;
   }
   LOGIN_LOG(EVENT) << "Requesting authsession lifetime extension";
   user_data_auth::ExtendAuthSessionRequest request;

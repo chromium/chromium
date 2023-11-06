@@ -21,16 +21,6 @@ namespace ash {
 
 class UserContext;
 
-class ScopedSessionRefresher {
- public:
-  ScopedSessionRefresher(const ScopedSessionRefresher&) = delete;
-  ScopedSessionRefresher& operator=(const ScopedSessionRefresher&) = delete;
-  virtual ~ScopedSessionRefresher() = default;
-
- protected:
-  ScopedSessionRefresher() = default;
-};
-
 // Helper class that stores and manages lifetime of authenticated UserContext.
 // Main usa cases for this class are the situations where authenticated
 // operations do not happen immediately after authentication, but require some
@@ -47,7 +37,6 @@ class ScopedSessionRefresher {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
  public:
   using BorrowCallback = base::OnceCallback<void(std::unique_ptr<UserContext>)>;
-  using InvalidationCallback = base::OnceCallback<void(void)>;
 
   // TODO (b/271249180): Define an observer for notifications about token
   // expiration/borrowing.
@@ -92,18 +81,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // AuthSession) once authentication is no longer needed.
   // In case when context is borrowed at the time of this call,
   // it would be properly invalidated once it is returned.
-  virtual void Invalidate(
-      const AuthProofToken& token,
-      absl::optional<InvalidationCallback> on_invalidated) = 0;
-
-  // This method allows caller to make sure that authenticated authsession
-  // associated with `token` would not expire by timeout as long as returned
-  // object exists. AuthSessionStorage would automatically issue refresh calls
-  // at required intervals. Note that this would only happen while Storage
-  // actually has a UserContext. If it was borrowed, it's lifetime would be
-  // refreshed only upon returning.
-  virtual std::unique_ptr<ScopedSessionRefresher> KeepAlive(
-      const AuthProofToken& token) = 0;
+  virtual void Invalidate(const AuthProofToken& token,
+                          base::OnceClosure on_invalidated) = 0;
 };
 
 }  // namespace ash
