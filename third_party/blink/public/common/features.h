@@ -635,6 +635,18 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPPFontURLPredictorMaxPreloadCount;
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
+
+// The type of preloading for LCP images which are loaded lazily.
+// crbug.com/1498777 for more details.
+enum class LcppPreloadLazyLoadImageType {
+  kNone,
+  kNativeLazyLoading,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    LcppPreloadLazyLoadImageType>
+    kLCPCriticalPathPredictorPreloadLazyLoadImageType;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);

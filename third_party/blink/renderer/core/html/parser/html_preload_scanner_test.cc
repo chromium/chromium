@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1719,6 +1720,38 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
              /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
   }
+}
+
+class HTMLPreloadScannerLCPPLazyLoadImageTest : public HTMLPreloadScannerTest {
+ public:
+  HTMLPreloadScannerLCPPLazyLoadImageTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kLCPPLazyLoadImagePreload,
+        {{blink::features::kLCPCriticalPathPredictorPreloadLazyLoadImageType
+              .name,
+          "native_lazy_loading"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HTMLPreloadScannerLCPPLazyLoadImageTest,
+       TokenStreamMatcherWithLoadingLazy) {
+  ElementLocator locator;
+  auto* c = locator.add_components()->mutable_id();
+  c->set_id_attr("target");
+
+  TokenStreamMatcherTestCase test_case = {locator,
+                                          R"HTML(
+    <div>
+      <img src="not-interesting.jpg">
+      <img src="super-interesting.jpg" id="target" loading="lazy">
+      <img src="not-interesting2.jpg">
+    </div>
+    )HTML",
+                                          "super-interesting.jpg"};
+  Test(test_case);
 }
 
 }  // namespace blink

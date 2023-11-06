@@ -1114,6 +1114,21 @@ const base::FeatureParam<double> kLCPPFontURLPredictorFrequencyThreshold{
 const base::FeatureParam<int> kLCPPFontURLPredictorMaxPreloadCount{
     &kLCPPFontURLPredictor, "lcpp_max_font_url_to_preload", 5};
 
+BASE_FEATURE(kLCPPLazyLoadImagePreload,
+             "LCPPLazyLoadImagePreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<LcppPreloadLazyLoadImageType>::Option
+    lcpp_preload_lazy_load_image[] = {
+        {LcppPreloadLazyLoadImageType::kNone, "none"},
+        {LcppPreloadLazyLoadImageType::kNativeLazyLoading,
+         "native_lazy_loading"},
+};
+const base::FeatureParam<LcppPreloadLazyLoadImageType>
+    kLCPCriticalPathPredictorPreloadLazyLoadImageType{
+        &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
+        LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
