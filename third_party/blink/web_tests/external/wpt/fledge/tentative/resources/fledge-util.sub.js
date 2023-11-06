@@ -408,7 +408,7 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
 
   if (reportWinSuccessCondition) {
     reportWin = `if (!(${reportWinSuccessCondition})) {
-                   sendReportTo('${createSellerReportURL(uuid, 'error')}');
+                   sendReportTo('${createBidderReportURL(uuid, 'error')}');
                    return false;
                  }
                  ${reportWin}`;

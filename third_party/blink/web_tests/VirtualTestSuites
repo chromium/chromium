@@ -1629,6 +1629,19 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "fledge-kanon-status-below-threshold",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
+    "bases": [
+      "external/wpt/fledge/tentative/kanon-status-below-threshold.https.window.js"
+    ],
+    "args": [
+      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity",
+      "--disable-features=CookieDeprecationFacilitatedTesting,FledgeEnforceKAnonymity"
+    ],
+    "expires": "Sep 1, 2024"
+  },
+  {
     "prefix": "fledge-rounding",
     "platforms": ["Linux", "Mac", "Win"],
     "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
