@@ -40,8 +40,13 @@
   }
 
   cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
     margin: 0;
     margin-inline-end: -6px;
+  }
+
+  :host-context([chrome-refresh-2023]) cr-icon-button {
+    --cr-icon-button-fill-color: var(--color-compose-dialog-foreground-subtle);
   }
 
   #bodyAndFooter {
