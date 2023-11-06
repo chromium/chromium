@@ -121,7 +121,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
     mixer[kColorComposeDialogTextarea] = {ui::kColorSysOnSurface};
     mixer[kColorComposeDialogTextareaOutline] = {ui::kColorSysNeutralOutline};
     mixer[kColorComposeDialogTextareaPlaceholder] = {
-        ui::kColorSysOnSurfaceSecondary};
+        ui::kColorSysOnSurfaceSubtle};
     mixer[kColorComposeDialogTextareaReadonlyBackground] = {
         ui::kColorSysNeutralContainer};
     mixer[kColorComposeDialogTextareaReadonlyForeground] = {
