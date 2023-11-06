@@ -300,8 +300,8 @@ void GetIconChromeRefresh(ContentSettingsType type,
                           raw_ptr<const gfx::VectorIcon>* icon) {
   switch (type) {
     case ContentSettingsType::COOKIES:
-      *icon = blocked ? &vector_icons::kCookieOffChromeRefreshIcon
-                      : &vector_icons::kCookieChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kDatabaseOffIcon
+                      : &vector_icons::kDatabaseIcon;
       return;
     case ContentSettingsType::IMAGES:
       *icon = blocked ? &vector_icons::kPhotoOffChromeRefreshIcon
@@ -391,7 +391,7 @@ void GetIconFromType(ContentSettingsType type,
   *badge = (blocked ? &vector_icons::kBlockedBadgeIcon : &gfx::kNoneIcon);
   switch (type) {
     case ContentSettingsType::COOKIES:
-      *icon = &vector_icons::kCookieIcon;
+      *icon = &vector_icons::kDatabaseIcon;
       return;
     case ContentSettingsType::IMAGES:
       *icon = &vector_icons::kPhotoIcon;

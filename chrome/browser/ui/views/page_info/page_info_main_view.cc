@@ -189,7 +189,7 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
           IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED);
     }
   } else {
-    icon = PageInfoViewFactory::GetPermissionIcon(info);
+    icon = PageInfoViewFactory::GetCookiesAndSiteDataIcon();
     title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER);
     tooltip = l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
   }
