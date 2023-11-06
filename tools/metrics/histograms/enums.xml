@@ -38118,6 +38118,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Checked dont launch"/>
 </enum>
 
+<enum name="HandleSubmittedFormStatus">
+  <int value="0" label="Handled"/>
+  <int value="1" label="Rejected, no WebState"/>
+  <int value="2" label="Rejected, no delegate"/>
+  <int value="3" label="Rejected, msg body not a dict"/>
+  <int value="4" label="Rejected, no frame for id"/>
+  <int value="5" label="Rejected, no trusted URL"/>
+  <int value="6" label="Rejected, can't extract form data"/>
+</enum>
+
 <enum name="HappinessTrackingSurveyDesktopBubbleUsage">
   <int value="0" label="Accepted"/>
   <int value="1" label="No Thanks"/>

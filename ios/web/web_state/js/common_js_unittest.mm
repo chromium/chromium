@@ -183,4 +183,39 @@ TEST_F(CommonJsTest, RemoveQueryAndReferenceFromURL) {
   }
 }
 
+// Tests that removeQueryAndReferenceFromURL() returns an empty string when
+// the window.URL prototype was corrupted (i.e. the hosted page replaces the
+// prototype by something else).
+TEST_F(CommonJsTest,
+       RemoveQueryAndReferenceFromURL_WithCorruptedURLPrototype__MissingProperty) {
+  LoadHtml(@"<p>");
+
+  // Replace the window.URL prototype.
+  web::test::ExecuteJavaScript(
+      web_view(), @"window.URL = function() { return { weird_field: 1 }; };");
+
+  id result = web::test::ExecuteJavaScript(
+      web_view(),
+      @"__gCrWeb.common.removeQueryAndReferenceFromURL('http://foo1.com/bar')");
+  EXPECT_NSEQ(@"", result);
+}
+
+// Tests that removeQueryAndReferenceFromURL() returns an empty string when
+// the window.URL prototype was corrupted (i.e. the hosted page replaces the
+// prototype by something else).
+TEST_F(CommonJsTest,
+       RemoveQueryAndReferenceFromURL_WithCorruptedURLPrototype_WrongType) {
+  LoadHtml(@"<p>");
+
+  // Replace the window.URL prototype.
+  web::test::ExecuteJavaScript(web_view(),
+                               @"window.URL = function() { return {"
+                                "origin: 'o', path: 'pa', protocol: 3 }; };");
+
+  id result = web::test::ExecuteJavaScript(
+      web_view(),
+      @"__gCrWeb.common.removeQueryAndReferenceFromURL('http://foo1.com/bar')");
+  EXPECT_NSEQ(@"", result);
+}
+
 }  // namespace web

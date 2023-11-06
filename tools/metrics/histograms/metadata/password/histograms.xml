@@ -1765,6 +1765,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.iOS.HandleSubmittedFormStatus"
+    enum="HandleSubmittedFormStatus" expires_after="2024-07-01">
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Tracks the status of handling password form submissions triggered by
+    password form buttons that aren't an input element of type
+    &quot;submit&quot;. Recorded on form submit button click.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
     expires_after="2024-03-10">
   <owner>djean@chromium.org</owner>

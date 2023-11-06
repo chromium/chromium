@@ -79,7 +79,6 @@ using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
-using password_manager::GetPageURLAndCheckTrustLevel;
 using password_manager::IsCrossOriginIframe;
 using password_manager::JsonStringToFormData;
 using password_manager::PasswordFormManagerForUI;
@@ -238,7 +237,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
 
-  if (!GetPageURLAndCheckTrustLevel(webState, nullptr)) {
+  if (!webState->GetLastCommittedURLIfTrusted()) {
     return;
   }
 
@@ -267,12 +266,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   // Retrieve the identity of the page. In case the page might be malicous,
   // returns early.
-  GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(webState, &pageURL)) {
+  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL) {
     return;
   }
 
-  if (!web::UrlHasWebScheme(pageURL)) {
+  if (!web::UrlHasWebScheme(*pageURL)) {
     return;
   }
 
@@ -409,7 +408,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion {
   DCHECK_EQ(_webState, webState);
-  if (!GetPageURLAndCheckTrustLevel(webState, nullptr)) {
+  if (!webState->GetLastCommittedURLIfTrusted()) {
     completion(NO);
     return;
   }
@@ -484,7 +483,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion {
   DCHECK_EQ(_webState, webState);
-  if (!GetPageURLAndCheckTrustLevel(webState, nullptr)) {
+  if (!webState->GetLastCommittedURLIfTrusted()) {
     completion({}, self);
     return;
   }
@@ -1000,9 +999,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
 
-  GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(webState, &pageURL) || !frame ||
-      params.input_missing) {
+  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL || !frame || params.input_missing) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();
     _lastFocusedFrame = nullptr;
