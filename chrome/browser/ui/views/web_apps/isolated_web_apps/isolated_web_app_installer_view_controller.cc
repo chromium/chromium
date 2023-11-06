@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
@@ -22,6 +21,19 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "url/gurl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
@@ -128,7 +140,22 @@ void IsolatedWebAppInstallerViewController::OnBundleOutdated(
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
-  // TODO(crbug.com/1479140): Implement
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  DCHECK(service->IsAvailable<crosapi::mojom::UrlHandler>());
+
+  GURL manage_isolated_web_apps_subpage_url =
+      GURL(chrome::kChromeUIOSSettingsURL)
+          .Resolve(
+              chromeos::settings::mojom::kManageIsolatedWebAppsSubpagePath);
+  service->GetRemote<crosapi::mojom::UrlHandler>()->OpenUrl(
+      manage_isolated_web_apps_subpage_url);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void IsolatedWebAppInstallerViewController::OnChildDialogCanceled() {
