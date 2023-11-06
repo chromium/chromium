@@ -2440,7 +2440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
-    enum="SqliteLoggedResultCode" expires_after="2024-08-11">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2450,7 +2450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ClearDatabase"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2460,7 +2460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteFile"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2471,7 +2471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForStorageKey"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2482,7 +2482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.OpenDatabase"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ReadFile"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2503,7 +2503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError.WriteFile"
-    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2514,7 +2514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.DatabaseOpenError"
-    enum="CdmStorageOpenError" expires_after="2024-08-11">
+    enum="CdmStorageOpenError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2524,7 +2524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.DatabaseOpenError.{ProfileType}"
-    enum="CdmStorageOpenError" expires_after="2024-08-11">
+    enum="CdmStorageOpenError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2539,7 +2539,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.CdmStorageManager.DatabaseOpenError.{ProfileType}.Migration"
-    enum="CdmStorageOpenError" expires_after="2024-08-11">
+    enum="CdmStorageOpenError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2554,7 +2554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2568,7 +2568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2583,7 +2583,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}.Migration"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2599,7 +2599,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2613,7 +2613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.ReadFileError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2628,7 +2628,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.CdmStorageManager.ReadFileError.{ProfileType}.Migration"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2643,7 +2643,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2658,7 +2658,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.CdmStorageManager.WriteFileError.{ProfileType}.Migration"
-    enum="BooleanError" expires_after="2024-08-11">
+    enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
