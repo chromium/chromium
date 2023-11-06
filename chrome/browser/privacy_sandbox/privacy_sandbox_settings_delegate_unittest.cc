@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/tpcd/experiment/mock_experiment_manager.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -284,6 +285,14 @@ class MockWebappRegistry : public WebappRegistry {
 
 struct CookieDeprecationExperimentEligibilityTestCase {
   bool force_eligible = false;
+  bool exclude_3pc_blocked = true;
+  bool exclude_not_seen_notice = true;
+  bool exclude_dasher_account = true;
+  bool exclude_new_user = true;
+  std::string install_time_new_user = "30d";
+#if BUILDFLAG(IS_ANDROID)
+  bool exclude_pwa_twa_installed = true;
+#endif
   absl::optional<bool> is_subject_to_enterprise_policies;
   content_settings::CookieControlsMode cookie_controls_mode_pref =
       content_settings::CookieControlsMode::kOff;
@@ -308,11 +317,19 @@ const CookieDeprecationExperimentEligibilityTestCase
             .expected_currently_eligible = false,
             .expected_reported_histogram = 2  // kHasNotSeenNotice
         },
-        {.force_eligible = true,
-         .expected_eligible = true,
-         .expected_currently_eligible = true,
-         // No histogram should be reported if the eligibility is forced.
-         .expected_reported_histogram = absl::nullopt},
+        {
+            .force_eligible = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+            // No histogram should be reported if the eligibility is forced.
+            .expected_reported_histogram = absl::nullopt
+        },
+        {
+            .exclude_not_seen_notice = false,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+            .expected_reported_histogram = 0  // kEligible,
+        },
         {
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
             .expected_eligible = true,
@@ -332,6 +349,15 @@ const CookieDeprecationExperimentEligibilityTestCase
             .expected_eligible = false,
             .expected_currently_eligible = false,
             .expected_reported_histogram = 1  // k3pCookiesBlocked
+        },
+        {
+            .exclude_3pc_blocked = false,
+            .cookie_controls_mode_pref =
+                content_settings::CookieControlsMode::kBlockThirdParty,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+            .expected_reported_histogram = 0  // kEligible,
         },
         {
             .cookie_content_setting = ContentSetting::CONTENT_SETTING_BLOCK,
@@ -355,11 +381,35 @@ const CookieDeprecationExperimentEligibilityTestCase
             .expected_reported_histogram = 3  // kNewUser
         },
         {
+            .install_time_new_user = "4d",  // base::Days(4)
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .install_date = kCurrentTime - base::Days(5),
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+            .expected_reported_histogram = 0  // kEligible,
+        },
+        {
+            .exclude_new_user = false,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .install_date = kCurrentTime - base::Days(5),
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+            .expected_reported_histogram = 0  // kEligible,
+        },
+        {
             .is_subject_to_enterprise_policies = true,
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
             .expected_eligible = false,
             .expected_currently_eligible = false,
             .expected_reported_histogram = 4  // kEnterpriseUser
+        },
+        {
+            .exclude_dasher_account = false,
+            .is_subject_to_enterprise_policies = true,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = true,
+            .expected_currently_eligible = true,
+            .expected_reported_histogram = 0  // kEligible,
         },
         {
             .is_subject_to_enterprise_policies = false,
@@ -470,7 +520,24 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   feature_list()->InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting,
       {{"use_profile_filtering", "true"},
-       {"force_eligible", test_case.force_eligible ? "true" : "false"}});
+        {"force_eligible", test_case.force_eligible ? "true" : "false"},
+        {tpcd::experiment::kExclude3PCBlockedName,
+         test_case.exclude_3pc_blocked ? "true" : "false"},
+        {tpcd::experiment::kExcludeNotSeenAdsAPIsNoticeName,
+         test_case.exclude_not_seen_notice ? "true" : "false"},
+        {tpcd::experiment::kExcludeDasherAccountName,
+         test_case.exclude_dasher_account ? "true" : "false"},
+        {tpcd::experiment::kExcludeNewUserName,
+         test_case.exclude_new_user ? "true" : "false"},
+        {tpcd::experiment::kInstallTimeForNewUserName,
+         test_case.install_time_new_user},
+#if BUILDFLAG(IS_ANDROID)
+        {
+          tpcd::experiment::kExcludePwaOrTwaInstalledName,
+              test_case.exclude_pwa_twa_installed ? "true" : "false"
+        }
+#endif
+      });
 
   if (test_case.expected_eligible_before) {
     EXPECT_EQ(delegate()->IsCookieDeprecationExperimentEligible(),
