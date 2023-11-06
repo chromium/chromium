@@ -230,6 +230,15 @@ interface PageHandler {
   // Force trigger the tab group tutorial.
   StartTabGroupTutorial();
 
+  // Initiate the sync flow.
+  TriggerSync();
+
+  // Initiate the sign in flow.
+  TriggerSignIn();
+
+  // Open the user's sync settings in a new tab.
+  OpenSyncSettings();
+
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 };

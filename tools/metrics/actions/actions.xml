@@ -34022,6 +34022,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromTabOrganization">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromTabSwitcher">
   <owner>bzanotti@chromium.org</owner>
   <description>

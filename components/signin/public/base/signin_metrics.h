@@ -212,6 +212,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE = 54,
   // Restore primary account info in case it was lost.
   ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD = 55,
+  // Access point for the tab organization UI within the tab search bubble.
+  ACCESS_POINT_TAB_ORGANIZATION = 56,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

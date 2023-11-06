@@ -64,6 +64,9 @@
 <div class="body">
   <tab-organization-not-started
       hidden="[[!isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
+      on-sync-click="onSyncClick_"
+      on-sign-in-click="onSignInClick_"
+      on-settings-click="onSettingsClick_"
       on-organize-tabs-click="onOrganizeTabsClick_"
       show-fre="[[showFRE_]]">
   </tab-organization-not-started>

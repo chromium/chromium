@@ -194,6 +194,66 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('requestTabOrganization'));
   });
 
+  test('Triggers sync when not syncing', async () => {
+    const syncInfo: SyncInfo = {
+      syncing: false,
+      syncingHistory: true,
+      paused: false,
+    };
+    await tabOrganizationPageSetup(syncInfo);
+
+    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-not-started');
+    assertTrue(!!notStarted);
+    assertTrue(isVisible(notStarted));
+
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    assertEquals(1, testApiProxy.getCallCount('triggerSync'));
+  });
+
+  test('Triggers sign in when paused', async () => {
+    const syncInfo: SyncInfo = {
+      syncing: true,
+      syncingHistory: true,
+      paused: true,
+    };
+    await tabOrganizationPageSetup(syncInfo);
+
+    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-not-started');
+    assertTrue(!!notStarted);
+    assertTrue(isVisible(notStarted));
+
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    assertEquals(1, testApiProxy.getCallCount('triggerSignIn'));
+  });
+
+  test('Opens settings when not syncing history', async () => {
+    const syncInfo: SyncInfo = {
+      syncing: true,
+      syncingHistory: false,
+      paused: false,
+    };
+    await tabOrganizationPageSetup(syncInfo);
+
+    const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-not-started');
+    assertTrue(!!notStarted);
+    assertTrue(isVisible(notStarted));
+
+    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    assertEquals(1, testApiProxy.getCallCount('openSyncSettings'));
+  });
+
   test('Updates with sync changes', async () => {
     await tabOrganizationPageSetup();
 

@@ -107,6 +107,18 @@ export class TabOrganizationPageElement extends PolymerElement {
     return this.state_ === TabOrganizationState.kFailure && this.showFRE_;
   }
 
+  private onSyncClick_() {
+    this.apiProxy_.triggerSync();
+  }
+
+  private onSignInClick_() {
+    this.apiProxy_.triggerSignIn();
+  }
+
+  private onSettingsClick_() {
+    this.apiProxy_.openSyncSettings();
+  }
+
   private onOrganizeTabsClick_() {
     this.apiProxy_.requestTabOrganization();
   }
