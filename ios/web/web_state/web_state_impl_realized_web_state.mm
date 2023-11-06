@@ -170,25 +170,24 @@ void WebStateImpl::RealizedWebState::InitWithProto(
 
 void WebStateImpl::RealizedWebState::SerializeToProto(
     proto::WebStateStorage& storage) const {
-  // If restorating is in progress, copy the currently cached storage.
-  // TODO(crbug.com/1383087): This is required to support legacy logic
-  // that captures the state of the WebState even while restoration is
-  // in progress. Remove when the feature is launched.
   if (restored_session_) {
-    DCHECK(!features::UseSessionSerializationOptimizations());
+    // If the WebState has recently transitioned from unrealized to realized
+    // state but the initial navigation has not been committed yet, return a
+    // copy of the data loaded from storage.
     storage = restored_session_->storage();
-    return;
+  } else {
+    // Ensure state is synchronized between CRWWebController and
+    // NavigationManagerImpl before starting the serialization.
+    [web_controller_ recordStateInHistory];
+
+    storage.set_has_opener(created_with_opener_);
+    storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
+    navigation_manager_->SerializeToProto(*storage.mutable_navigation());
+    certificate_policy_cache_->SerializeToProto(*storage.mutable_certs_cache());
   }
 
-  // Ensure state is synchronized between CRWWebController and
-  // NavigationManagerImpl before starting the serialization.
-  [web_controller_ recordStateInHistory];
-
-  storage.set_has_opener(created_with_opener_);
-  storage.set_user_agent(UserAgentTypeToProto(user_agent_type_));
-  navigation_manager_->SerializeToProto(*storage.mutable_navigation());
-  certificate_policy_cache_->SerializeToProto(*storage.mutable_certs_cache());
-
+  // Fill the WebStateMetadataStorage from the WebStateStorage and the current
+  // instance information (creation time, last active time, ...).
   proto::WebStateMetadataStorage& metadata = *storage.mutable_metadata();
   SerializeTimeToProto(creation_time_, *metadata.mutable_creation_time());
   SerializeTimeToProto(last_active_time_, *metadata.mutable_last_active_time());
@@ -204,6 +203,9 @@ void WebStateImpl::RealizedWebState::SerializeToProto(
     page_metadata.set_page_url(virtual_url.empty() ? item.url() : virtual_url);
     page_metadata.set_page_title(item.title());
   }
+
+  // The metadata must always be non-default at this point.
+  DCHECK(storage.has_metadata());
 }
 
 void WebStateImpl::RealizedWebState::TearDown() {

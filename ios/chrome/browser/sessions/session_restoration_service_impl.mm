@@ -465,7 +465,10 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       web_state->SerializeToProto(*storage);
 
       // Extract the metadata from `storage` to save it in its own file.
+      // The metadata must be non-null at this point (since at least the
+      // creation time or last active time will be non-default).
       auto metadata = base::WrapUnique(storage->release_metadata());
+      DCHECK(metadata);
 
       // Create requests to serialize both `metadata` and `storage`.
       requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
