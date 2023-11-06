@@ -626,8 +626,7 @@ export class FileTransferController {
 
     // If this drag operation is initiated by mouse, check if we should start
     // selecting area.
-    // TODO: Remove `as FileGrid` once FileTableList is converted to TS.
-    if (!this.touching_ && (list as FileGrid).shouldStartDragSelection(event)) {
+    if (!this.touching_ && list.shouldStartDragSelection!(event)) {
       event.preventDefault();
       this.dragSelector_.startDragSelection(list, event);
       return;

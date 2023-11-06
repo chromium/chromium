@@ -4,7 +4,7 @@
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {FileTableColumnModel} from './file_table.js';
+import {FileTableColumnModel, MIN_WIDTH} from './file_table.js';
 import {TableColumn} from './table/table_column.js';
 
 /** @type {!FileTableColumnModel} */
@@ -228,7 +228,7 @@ export function testNormalizeWidthWithSmallWidth() {
 
   // Should keep the minimum width.
   getColumnWidths(model).map(width => {
-    assertEquals(FileTableColumnModel.MIN_WIDTH_, width);
+    assertEquals(MIN_WIDTH, width);
   });
 }
 
@@ -241,11 +241,10 @@ export function testSetWidthAndKeepTotal() {
 
   // Should keep the minimum width.
   getColumnWidths(model).map(width => {
-    assertTrue(width >= FileTableColumnModel.MIN_WIDTH_);
+    assertTrue(width >= MIN_WIDTH);
   });
-  const minWidth = FileTableColumnModel.MIN_WIDTH_;
   // Total width = 500.
   const expectedWidths =
-      [100, 100, 500 - 100 * 2 - minWidth * 2, minWidth, minWidth];
+      [100, 100, 500 - 100 * 2 - MIN_WIDTH * 2, MIN_WIDTH, MIN_WIDTH];
   assertArrayEquals(expectedWidths, getColumnWidths(model));
 }

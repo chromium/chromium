@@ -135,6 +135,8 @@ export class List extends HTMLUListElement {
   private boundHandleLeadChange_: EventHandler|null = null;
   protected beforeFiller_: HTMLElement|null = null;
   protected afterFiller_: HTMLElement|null = null;
+  /** Managed by DragSelector */
+  cachedBounds: DOMRect|null = null;
 
   /**
    * Function used to create grid items.

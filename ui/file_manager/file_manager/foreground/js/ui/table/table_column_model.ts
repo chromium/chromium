@@ -43,8 +43,8 @@ export class TableColumnModel extends EventTarget {
    * @param index The index of the column.
    * @return Column id.
    */
-  getId(index: number): string {
-    return this.columns_[index]?.id ?? '';
+  getId(index: number): string|undefined {
+    return this.columns_[index]?.id;
   }
 
   /**

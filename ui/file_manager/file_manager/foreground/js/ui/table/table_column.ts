@@ -11,8 +11,9 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {jsSetter} from '../../../../common/js/cr_ui.js';
 
-export type RenderFunction = (_1: unknown, _2: string, _3: Element) =>
-    HTMLElement;
+import type {Table} from './table.js';
+
+export type RenderFunction = (_1: any, _2: string, _3: Table) => HTMLElement;
 
 export type SortDirection = 'asc'|'desc';
 /**

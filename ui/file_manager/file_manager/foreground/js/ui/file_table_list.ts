@@ -38,6 +38,7 @@ type OnMergeItemsCallback = (beginIndex: number, endIndex: number) => void;
  */
 export class FileTableList extends TableList {
   private onMergeItems_: null|OnMergeItemsCallback = null;
+  shouldStartDragSelection: null|((e: MouseEvent) => boolean) = null;
 
   constructor() {
     // To silence closure compiler.

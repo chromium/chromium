@@ -137,7 +137,7 @@ export class Table extends HTMLDivElement {
    * Returns render function for row.
    * @return Render function.
    */
-  getRenderFunction(): (_: unknown, _t: Table) => HTMLElement {
+  getRenderFunction(): (_: unknown, _t: Table) => ListItem {
     return this.renderFunction_;
   }
 
@@ -158,7 +158,7 @@ export class Table extends HTMLDivElement {
       }
       cell.hidden = !cm.isVisible(i);
       cell.appendChild(
-          cm.getRenderFunction(i).call(null, dataItem, cm.getId(i), table));
+          cm.getRenderFunction(i).call(null, dataItem, cm.getId(i)!, table));
 
       listItem.appendChild(cell);
     }
@@ -169,10 +169,9 @@ export class Table extends HTMLDivElement {
 
   /**
    * Sets render function for row.
-   * @param renderFunction Render
-   *     function.
+   * @param renderFunction Render function.
    */
-  setRenderFunction(renderFunction: (_: unknown, _t: Table) => ListItem) {
+  setRenderFunction(renderFunction: (_item: any, _t: Table) => ListItem) {
     if (renderFunction === this.renderFunction_) {
       return;
     }
@@ -192,7 +191,7 @@ export class Table extends HTMLDivElement {
   /**
    * Initializes the element.
    */
-  static decorate(element: Element) {
+  static decorate(element: Element, ..._: any[]) {
     Object.setPrototypeOf(element, Table.prototype);
     const table = element as Table;
 
@@ -327,7 +326,7 @@ export class Table extends HTMLDivElement {
       const sortDirection = sortStatus.direction == 'desc' ? 'asc' : 'desc';
       this.list.dataModel!.sort(sortStatus.field, sortDirection);
     } else {
-      this.list.dataModel!.sort(cm.getId(i), cm.getDefaultOrder(i));
+      this.list.dataModel!.sort(cm.getId(i)!, cm.getDefaultOrder(i));
     }
     if (this.selectionModel.selectedIndex == -1) {
       this.list.scrollTop = 0;
@@ -378,7 +377,7 @@ export class Table extends HTMLDivElement {
 
     const cm = this.columnModel_!;
     const dm = this.dataModel;
-    const columnId = cm.getId(index);
+    const columnId = cm.getId(index)!;
     const doc = this.ownerDocument;
     const render = cm.getRenderFunction(index);
     const table = this;
