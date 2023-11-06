@@ -640,7 +640,8 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     }
 
     auto result = connections_.emplace(
-        endpoint_id, std::make_unique<NearbyConnectionImpl>(this, endpoint_id));
+        endpoint_id, std::make_unique<NearbyConnectionImpl>(
+                         weak_ptr_factory_.GetWeakPtr(), endpoint_id));
     DCHECK(result.second);
     incoming_connection_listener_->OnIncomingConnectionAccepted(
         endpoint_id, it->second->endpoint_info, result.first->second.get());
@@ -652,7 +653,8 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     }
 
     auto result = connections_.emplace(
-        endpoint_id, std::make_unique<NearbyConnectionImpl>(this, endpoint_id));
+        endpoint_id, std::make_unique<NearbyConnectionImpl>(
+                         weak_ptr_factory_.GetWeakPtr(), endpoint_id));
     DCHECK(result.second);
     std::move(pending_it->second).Run(result.first->second.get());
     pending_outgoing_connections_.erase(pending_it);
@@ -689,9 +691,10 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
   // Destroying the NearbyConnectionImpl object may start a chain of callbacks
   // that can delete this NearbyConnectionsManagerImpl object. This may result
   // in a crash (see b/303675257). Update the |connections_| map, but wait to
-  // destroy the connection object until after this NearbyConnectionsManagerImpl
-  // object is no longer in use.
-  auto connection = std::move(connections_[endpoint_id]);
+  // destroy the connection object until after we're done modifying internal
+  // state in OnDisconnected() by letting the connection go out of scope.
+  std::unique_ptr<NearbyConnectionImpl> connection =
+      std::move(connections_[endpoint_id]);
   connections_.erase(endpoint_id);
 
   if (base::Contains(requested_bwu_endpoint_ids_, endpoint_id)) {
@@ -702,10 +705,6 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
   requested_bwu_endpoint_ids_.erase(endpoint_id);
   on_bandwidth_changed_endpoint_ids_.erase(endpoint_id);
   current_upgraded_mediums_.erase(endpoint_id);
-
-  // The NearbyConnectionImpl object may now be safely destroyed.
-  connection.reset();
-  // TODO(crbug/1111458): Support TransferManager.
 }
 
 void NearbyConnectionsManagerImpl::OnBandwidthChanged(
