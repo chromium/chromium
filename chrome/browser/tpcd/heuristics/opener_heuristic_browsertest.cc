@@ -476,6 +476,11 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
 
+  // Allow access for third-party cookies from popup_url.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  cookie_settings->SetCookieSetting(popup_url, CONTENT_SETTING_ALLOW);
+
   // Initialize interaction and popup.
   RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
@@ -699,6 +704,13 @@ IN_PROC_BROWSER_TEST_F(
   GURL popup_url_2 =
       embedded_test_server()->GetURL("b.test", "/server-redirect?title1.html");
   GURL popup_url_3 = embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  // Allow access for third-party cookies from the popup URLs.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  cookie_settings->SetCookieSetting(popup_url_1, CONTENT_SETTING_ALLOW);
+  cookie_settings->SetCookieSetting(popup_url_2, CONTENT_SETTING_ALLOW);
+  cookie_settings->SetCookieSetting(popup_url_3, CONTENT_SETTING_ALLOW);
 
   // Initialize popup and interaction.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
