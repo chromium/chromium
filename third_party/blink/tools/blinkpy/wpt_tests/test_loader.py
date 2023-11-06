@@ -96,7 +96,7 @@ class TestLoader(testloader.TestLoader):
             # A test file may be split between skipped and non-skipped variants.
             # Since `WPTAdapter` should never pass skipped tests to wptrunner,
             # there's no need to create their expectations here.
-            if exp_line.results == {ResultType.Skip}:
+            if ResultType.Skip in exp_line.results:
                 continue
             if exp_line.results == {ResultType.Pass} and not testharness_lines:
                 continue
