@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_COORDINATOR_H_
 
-#import "ios/chrome/browser/download/download_manager_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace web {

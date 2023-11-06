@@ -134,7 +134,7 @@ source_set("common") {
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/ios:unit_tests",
     "//components/download/internal/background_service/test:test_support",
-    "//ios/chrome/browser/download/background_service:background_service",
+    "//ios/chrome/browser/download/model/background_service:background_service",
   ]
 
   deps = [
@@ -175,7 +175,7 @@ source_set("storage") {
     "//components/download/content/factory",
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/test:test_support",
-    "//ios/chrome/browser/download/background_service",
+    "//ios/chrome/browser/download/model/background_service",
   ]
 
   deps = [

@@ -14,7 +14,7 @@
 #include "components/download/public/background_service/logger.h"
 #include "components/grit/download_internals_resources.h"
 #include "components/grit/download_internals_resources_map.h"
-#include "ios/chrome/browser/download/background_service/background_download_service_factory.h"
+#include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"

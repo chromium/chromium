@@ -3,7 +3,7 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/snapshots/model",
-  "+ios/chrome/browser/download/download_manager_tab_helper.h",
+  "+ios/chrome/browser/download/model/download_manager_tab_helper.h",
   "+ios/chrome/browser/ntp/new_tab_page_util.h",
   "+ios/chrome/browser/main/browser_util.h",
 ]

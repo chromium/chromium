@@ -81,7 +81,7 @@ source_set("main") {
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/crash_report/model:model_internal",
     "//ios/chrome/browser/device_sharing",
-    "//ios/chrome/browser/download",
+    "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/sessions",

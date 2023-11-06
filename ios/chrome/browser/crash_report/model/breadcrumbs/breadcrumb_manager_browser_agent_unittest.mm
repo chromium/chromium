@@ -9,7 +9,7 @@
 #import "base/functional/bind.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
-#import "ios/chrome/browser/download/confirm_download_replacing_overlay.h"
+#import "ios/chrome/browser/download/model/confirm_download_replacing_overlay.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"

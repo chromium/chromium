@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_TEST_FAKES_FAKE_DOWNLOAD_MANAGER_TAB_HELPER_DELEGATE_H_
 #define IOS_CHROME_TEST_FAKES_FAKE_DOWNLOAD_MANAGER_TAB_HELPER_DELEGATE_H_
 
-#import "ios/chrome/browser/download/download_manager_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
 
 // DownloadManagerTabHelperDelegate which stores the state of download task.
