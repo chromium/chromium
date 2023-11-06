@@ -389,6 +389,12 @@ void ChromeShellDelegate::OpenFeedbackDialog(
                              description_template);
 }
 
+void ChromeShellDelegate::OpenProfileManager() {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
+    crosapi::BrowserManager::Get()->OpenProfileManager();
+  }
+}
+
 // static
 void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
   disable_logging_redirect_for_testing = value;

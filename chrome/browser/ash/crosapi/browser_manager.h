@@ -248,6 +248,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       const std::string& app_name,
       int32_t restore_window_id);
 
+  // Opens the profile manager window in lacros-chrome.
+  void OpenProfileManager();
+
   // Ensures Lacros launches.
   // Returns true if Lacros could be launched, resumed, or is already in the
   // process of launching. Returns false if Lacros could not be launched.

@@ -178,6 +178,9 @@ class ASH_EXPORT ShellDelegate {
   virtual void OpenFeedbackDialog(FeedbackSource source,
                                   const std::string& description_template) = 0;
 
+  // Calls browser service to open the profile manager.
+  virtual void OpenProfileManager() = 0;
+
   // Returns the last committed URL from the web contents if the given |window|
   // contains a browser frame, otherwise returns GURL::EmptyURL().
   virtual const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window);

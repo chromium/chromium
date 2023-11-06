@@ -108,6 +108,8 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     Browser::Create(Browser::CreateParams(browser()->profile(), false));
   }
 
+  void OpenProfileManager() { browser_service()->OpenProfileManager(); }
+
   void VerifyFullscreenWindow() {
     // Verify the browser status.
     Browser* browser = BrowserList::GetInstance()->GetLastActive();
@@ -191,6 +193,20 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   const size_t browser_count = BrowserList::GetInstance()->size();
   CreateNewWindow();
   EXPECT_EQ(BrowserList::GetInstance()->size(), browser_count + 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+                       OpenProfileManagerTest) {
+  // Keep the browser process running during the test while the browser is
+  // closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  // Start in a state with no browser windows opened.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  OpenProfileManager();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,

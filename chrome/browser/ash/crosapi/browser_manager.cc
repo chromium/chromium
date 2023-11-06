@@ -798,6 +798,10 @@ void BrowserManager::CreateBrowserWithRestoredData(
       first_non_pinned_tab_index, app_name, restore_window_id));
 }
 
+void BrowserManager::OpenProfileManager() {
+  PerformOrEnqueue(BrowserAction::OpenProfileManager());
+}
+
 bool BrowserManager::EnsureLaunch() {
   // This method can only ensure Lacros's launch if the user profile is already
   // initialized.

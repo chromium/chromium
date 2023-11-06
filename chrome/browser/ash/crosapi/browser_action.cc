@@ -373,6 +373,16 @@ class CreateBrowserWithRestoredDataAction final : public BrowserAction {
   const int32_t restore_window_id_;
 };
 
+class OpenProfileManagerAction final : public BrowserAction {
+ public:
+  OpenProfileManagerAction() : BrowserAction(true) {}
+
+  void Perform(const VersionedBrowserService& service,
+               BrowserManagerCallback on_performed) override {
+    service.service->OpenProfileManager();
+  }
+};
+
 // static
 std::unique_ptr<BrowserAction> BrowserAction::NewWindow(
     bool incognito,
@@ -458,6 +468,11 @@ std::unique_ptr<BrowserAction> BrowserAction::CreateBrowserWithRestoredData(
   return std::make_unique<CreateBrowserWithRestoredDataAction>(
       urls, bounds, tab_groups, show_state, active_tab_index,
       first_non_pinned_tab_index, app_name, restore_window_id);
+}
+
+// static
+std::unique_ptr<BrowserAction> BrowserAction::OpenProfileManager() {
+  return std::make_unique<OpenProfileManagerAction>();
 }
 
 // No window will be opened in the following circumstances:

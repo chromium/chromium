@@ -104,6 +104,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void NotifyPolicyFetchAttempt() override {}
   void UpdateKeepAlive(bool enabled) override {}
   void OpenForFullRestore(bool skip_crash_restore) override {}
+  void OpenProfileManager() override {}
   void UpdateComponentPolicy(
       base::flat_map<policy::PolicyNamespace, base::Value> policy) override {}
 

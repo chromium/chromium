@@ -97,6 +97,7 @@ class TestShellDelegate : public ShellDelegate {
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackDialog(FeedbackSource source,
                           const std::string& description_template) override {}
+  void OpenProfileManager() override {}
   void SetLastCommittedURLForWindow(const GURL& url);
   version_info::Channel GetChannel() override;
   std::string GetVersionString() override;

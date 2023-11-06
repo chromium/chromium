@@ -425,6 +425,11 @@ void BrowserServiceLacros::OpenForFullRestore(bool skip_crash_restore) {
       /*can_trigger_fre=*/true);
 }
 
+void BrowserServiceLacros::OpenProfileManager() {
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+}
+
 void BrowserServiceLacros::OnSystemInformationReady(
     GetFeedbackDataCallback callback,
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {

@@ -78,6 +78,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackDialog(ShellDelegate::FeedbackSource source,
                           const std::string& description_template) override;
+  void OpenProfileManager() override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;

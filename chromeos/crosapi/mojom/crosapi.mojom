@@ -1658,8 +1658,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 74.
-// Next ID: 21
+// Next MinVersion: 75.
+// Next ID: 22
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1816,6 +1816,10 @@ interface BrowserService {
   [MinVersion=70]
   Launch@19([MinVersion=72] int64 target_display_id)
       => ([MinVersion=73] CreationResult result);
+
+  // Opens the Lacros profile manger window.
+  [MinVersion=74]
+  OpenProfileManager@21();
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular
