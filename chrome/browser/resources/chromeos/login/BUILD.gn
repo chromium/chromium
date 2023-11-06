@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
@@ -348,6 +347,9 @@ group("closure_compile") {
     "screens/common:closure_compile",
     "screens/login:closure_compile",
     "screens/oobe:closure_compile",
+
+    # TODO(antrim): re-enable once files are moved.
+    # t "screens/osauth:closure_compile",
     "test_api:closure_compile",
 
     # TODO(crbug.com/1229130)
