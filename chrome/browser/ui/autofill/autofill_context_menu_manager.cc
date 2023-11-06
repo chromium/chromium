@@ -327,7 +327,11 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
     ContentAutofillDriver& driver) {
   AutofillField* field =
       GetAutofillField(driver.GetAutofillManager(), driver.GetFrameToken());
-  CHECK(field);
+  if (!field) {
+    // `field` can be null when the user clicks on the correct input form field,
+    // which is not extracted by the BrowserAutofillManager.
+    return;
+  }
 
   static_cast<BrowserAutofillManager&>(driver.GetAutofillManager())
       .GetAutocompleteUnrecognizedFallbackEventLogger()
