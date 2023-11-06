@@ -184,8 +184,10 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/android/javascript_injector.h"
 #include "content/browser/android/text_suggestion_host_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
+#include "content/common/gin_java_bridge.mojom.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h"
@@ -1086,6 +1088,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
     map->Add<device::mojom::NFC>(base::BindRepeating(
         &RenderFrameHostImpl::BindNFCReceiver, base::Unretained(host)));
   }
+  map->Add<mojom::GinJavaBridgeHost>(base::BindRepeating(
+      &JavascriptInjector::BindGinJavaBridgeHost, base::Unretained(host)));
 #else
   map->Add<blink::mojom::HidService>(base::BindRepeating(
       &RenderFrameHostImpl::GetHidService, base::Unretained(host)));

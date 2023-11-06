@@ -259,6 +259,7 @@
 #include <cpu-features.h>
 
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #endif
 
 using base::Time;
@@ -1963,7 +1964,9 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   // Everything below subclasses RenderFrameObserver and is automatically
   // deleted when the RenderFrame gets deleted.
 #if BUILDFLAG(IS_ANDROID)
-  new GinJavaBridgeDispatcher(this);
+  if (!base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
+    new GinJavaBridgeDispatcher(this);
+  }
 #endif
 }
 
@@ -6129,7 +6132,23 @@ void RenderFrameImpl::RegisterMojoInterfaces() {
       ->AddInterface<blink::mojom::RenderAccessibility>(base::BindRepeating(
           &RenderAccessibilityManager::BindReceiver,
           base::Unretained(render_accessibility_manager_.get())));
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
+    GetAssociatedInterfaceRegistry()->AddInterface<mojom::GinJavaBridge>(
+        base::BindRepeating(&RenderFrameImpl::BindGinJavaBridge,
+                            weak_factory_.GetWeakPtr()));
+  }
+#endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void RenderFrameImpl::BindGinJavaBridge(
+    mojo::PendingAssociatedReceiver<mojom::GinJavaBridge> receiver) {
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<GinJavaBridgeDispatcher>(this), std::move(receiver));
+}
+#endif
 
 void RenderFrameImpl::BindMhtmlFileWriter(
     mojo::PendingAssociatedReceiver<mojom::MhtmlFileWriter> receiver) {

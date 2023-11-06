@@ -121,6 +121,10 @@
 #include "content/common/pepper_plugin.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/common/gin_java_bridge.mojom.h"
+#endif
+
 namespace blink {
 namespace scheduler {
 class WebAgentGroupScheduler;
@@ -701,6 +705,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // Binds to the MHTML file generation service in the browser.
   void BindMhtmlFileWriter(
       mojo::PendingAssociatedReceiver<mojom::MhtmlFileWriter> receiver);
+
+#if BUILDFLAG(IS_ANDROID)
+  void BindGinJavaBridge(
+      mojo::PendingAssociatedReceiver<mojom::GinJavaBridge> receiver);
+#endif
 
   // Binds to the autoplay configuration service in the browser.
   void BindAutoplayConfiguration(

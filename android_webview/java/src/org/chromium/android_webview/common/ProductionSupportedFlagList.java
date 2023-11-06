@@ -361,6 +361,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.EARLY_ESTABLISH_GPU_CHANNEL,
                 "Enable establishing the GPU channel early in renderer startup."),
         Flag.baseFeature(
+                ContentFeatures.GIN_JAVA_BRIDGE_MOJO,
+                "Enable the mojo based GIN java bridge implementation."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_CONTROL,
                 "Restricts insertion of XRequestedWith header on outgoing requests "
                         + "to those that have been allow-listed through the appropriate "

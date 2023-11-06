@@ -8,11 +8,13 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
+#include "content/common/gin_java_bridge.mojom.h"
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
 #include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "v8/include/v8-util.h"
 
 namespace blink {
@@ -45,16 +47,22 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
       blink::WebLocalFrame* frame,
       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
       const std::string& object_name,
-      GinJavaBridgeDispatcher::ObjectID object_id);
+      GinJavaBridgeDispatcher::ObjectID object_id,
+      bool mojo_enabled);
   static GinJavaBridgeObject* InjectAnonymous(
       blink::WebLocalFrame* frame,
       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
-      GinJavaBridgeDispatcher::ObjectID object_id);
+      GinJavaBridgeDispatcher::ObjectID object_id,
+      bool mojo_enabled);
+
+  // Returns the bound remote object, nullptr if mojo is disabled.
+  mojom::GinJavaBridgeRemoteObject* GetRemote();
 
  private:
   GinJavaBridgeObject(v8::Isolate* isolate,
                       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
-                      GinJavaBridgeDispatcher::ObjectID object_id);
+                      GinJavaBridgeDispatcher::ObjectID object_id,
+                      bool mojo_enabled);
   ~GinJavaBridgeObject() override;
 
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(v8::Isolate* isolate,
@@ -65,6 +73,7 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
   int frame_routing_id_;
   std::map<std::string, bool> known_methods_;
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
+  mojo::Remote<mojom::GinJavaBridgeRemoteObject> remote_;
 };
 
 }  // namespace content

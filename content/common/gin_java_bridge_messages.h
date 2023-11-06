@@ -38,7 +38,7 @@ IPC_MESSAGE_ROUTED1(GinJavaBridgeMsg_RemoveNamedObject,
 // objects is enabled on the browser side.
 IPC_SYNC_MESSAGE_ROUTED1_1(GinJavaBridgeHostMsg_GetMethods,
                            int32_t /* object_id */,
-                           std::set<std::string> /* returned_method_names */)
+                           std::vector<std::string> /* returned_method_names */)
 
 // Sent from renderer to browser to find out, if an object has a method with
 // the given name.

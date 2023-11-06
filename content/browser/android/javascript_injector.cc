@@ -77,6 +77,16 @@ jlong JNI_JavascriptInjectorImpl_Init(
   return reinterpret_cast<intptr_t>(injector);
 }
 
+void JavascriptInjector::BindGinJavaBridgeHost(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<mojom::GinJavaBridgeHost> receiver) {
+  auto* injector = JavascriptInjector::FromWebContents(
+      WebContents::FromRenderFrameHost(host));
+  CHECK(injector);
+  injector->java_bridge_dispatcher_host_->BindNewHost(host->GetGlobalId(),
+                                                      std::move(receiver));
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector);
 
 }  // namespace content

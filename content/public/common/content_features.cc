@@ -1244,6 +1244,11 @@ BASE_FEATURE(kAutoDisableAccessibilityV2,
              "AutoDisableAccessibilityV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the mojo based gin java bridge implementation.
+BASE_FEATURE(kGinJavaBridgeMojo,
+             "GinJavaBridgeMojo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
 BASE_FEATURE(kReduceGpuPriorityOnBackground,
