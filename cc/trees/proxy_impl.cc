@@ -68,7 +68,7 @@ class ScopedCommitCompletionEvent {
   ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
   ~ScopedCommitCompletionEvent() {
 
-    recordreplay::CommandDiagnosticTrace(
+    recordreplay::CommandDiagnostic(
       "[RUN-2110-2761] ~ScopedCommitCompletionEvent");
 
     event_.ExtractAsDangling()->Signal();

@@ -457,6 +457,10 @@ void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
       !!commit_completion_event_);
 
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
+
+    recordreplay::CommandDiagnostic(
+      "[RUN-2110-2761] LayerTreeHost::WaitForCommitCompletion 1");
+
     base::ElapsedTimer timer;
     commit_completion_event_->Wait();
     commit_completion_event_ = nullptr;
