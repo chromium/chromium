@@ -4794,8 +4794,9 @@ class SwarmingTests(TestCase):
     fbb = FakeBBGen(self.args, NO_DIMENSIONS_GTESTS_WATERFALL, MAC_TEST_SUITE,
                     MAC_LUCI_MILO_CFG)
     fbb.check_input_file_consistency(verbose=True)
-    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                                'os must be specified for all swarmed tests'):
+    with self.assertRaisesRegex(
+        generate_buildbot_json.BBGenErr,
+        'dimensions must be specified for all swarmed tests'):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 

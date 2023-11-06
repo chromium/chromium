@@ -2052,7 +2052,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'swarming' in step_data:
       dimensions = step_data['swarming'].get('dimensions')
       if not dimensions:
-        raise BBGenErr('%s: %s / %s : os must be specified for all '
+        raise BBGenErr('%s: %s / %s : dimensions must be specified for all '
                        'swarmed tests' % (filename, builder, step_name))
       if not dimensions.get('os'):
         raise BBGenErr('%s: %s / %s : os must be specified for all '
