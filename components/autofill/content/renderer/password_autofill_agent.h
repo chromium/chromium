@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -535,7 +535,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Keeps autofilled values for the form elements until a user gesture
   // is observed. At that point, the map is cleared.
   std::map<FieldRendererId, blink::WebString> autofilled_elements_cache_;
-  std::set<FieldRendererId> all_autofilled_elements_;
+  base::flat_set<FieldRendererId> all_autofilled_elements_;
   // Keeps forms structure (amount of elements, element types etc).
   // TODO(crbug/898109): It's too expensive to keep the whole FormData
   // structure. Replace FormData with a smaller structure.

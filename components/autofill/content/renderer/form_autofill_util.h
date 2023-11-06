@@ -456,7 +456,7 @@ blink::WebFormControlElement FindFormControlByRendererId(
 // expensive, because it retrieves all DOM elements.
 std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
     const blink::WebDocument& doc,
-    const std::vector<FieldRendererId>& queried_form_controls);
+    base::span<const FieldRendererId> queried_form_controls);
 
 // Returns form control elements by unique renderer id. The result has the same
 // number elements as |queried_form_controls| and the i-th element of the result
@@ -467,7 +467,7 @@ std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
 std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
     const blink::WebDocument& doc,
     FormRendererId form_renderer_id,
-    const std::vector<FieldRendererId>& queried_form_controls);
+    base::span<const FieldRendererId> queried_form_controls);
 
 blink::WebElement FindContentEditableByRendererId(
     FieldRendererId field_renderer_id);

@@ -1558,7 +1558,7 @@ bool ScriptModifiedUsernameAcceptable(
 // Build a map from entries in |form_control_renderer_ids| to their indices,
 // for more efficient lookup.
 base::flat_map<FieldRendererId, size_t> BuildRendererIdToIndex(
-    const std::vector<FieldRendererId>& form_control_renderer_ids) {
+    base::span<const FieldRendererId> form_control_renderer_ids) {
   std::vector<std::pair<FieldRendererId, size_t>> items;
   items.reserve(form_control_renderer_ids.size());
   for (size_t i = 0; i < form_control_renderer_ids.size(); i++)
@@ -2690,7 +2690,7 @@ WebFormControlElement FindFormControlByRendererId(
 
 std::vector<WebFormControlElement> FindFormControlsByRendererId(
     const WebDocument& doc,
-    const std::vector<FieldRendererId>& queried_form_controls) {
+    base::span<const FieldRendererId> queried_form_controls) {
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
     std::vector<WebFormControlElement> control_elements;
@@ -2723,7 +2723,7 @@ std::vector<WebFormControlElement> FindFormControlsByRendererId(
 std::vector<WebFormControlElement> FindFormControlsByRendererId(
     const WebDocument& doc,
     FormRendererId form_renderer_id,
-    const std::vector<FieldRendererId>& queried_form_controls) {
+    base::span<const FieldRendererId> queried_form_controls) {
   if (base::FeatureList::IsEnabled(
           blink::features::kAutofillUseDomNodeIdForRendererId)) {
     return FindFormControlsByRendererId(doc, queried_form_controls);

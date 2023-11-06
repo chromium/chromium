@@ -1521,8 +1521,8 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
   // Clear the actual field values.
   WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
   std::vector<WebFormControlElement> elements = FindFormControlsByRendererId(
-      doc, std::vector<FieldRendererId>(all_autofilled_elements_.begin(),
-                                        all_autofilled_elements_.end()));
+      doc, base::make_span(all_autofilled_elements_.begin(),
+                           all_autofilled_elements_.end()));
   for (WebFormControlElement& element : elements) {
     if (element.IsNull())
       continue;
