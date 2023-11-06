@@ -2835,7 +2835,9 @@ static bool IsDisplayOutside(CSSValueID id) {
 
 static bool IsDisplayInside(CSSValueID id) {
   return (id >= CSSValueID::kFlowRoot && id <= CSSValueID::kGrid) ||
-         id == CSSValueID::kMath || id == CSSValueID::kFlow;
+         id == CSSValueID::kMath || id == CSSValueID::kFlow ||
+         (RuntimeEnabledFeatures::CssDisplayRubyEnabled() &&
+          id == CSSValueID::kRuby);
 }
 
 static bool IsDisplayBox(CSSValueID id) {
@@ -2844,7 +2846,10 @@ static bool IsDisplayBox(CSSValueID id) {
 }
 
 static bool IsDisplayInternal(CSSValueID id) {
-  return id >= CSSValueID::kTableRowGroup && id <= CSSValueID::kTableCaption;
+  return (id >= CSSValueID::kTableRowGroup &&
+          id <= CSSValueID::kTableCaption) ||
+         (RuntimeEnabledFeatures::CssDisplayRubyEnabled() &&
+          (id == CSSValueID::kRubyBase || id == CSSValueID::kRubyText));
 }
 
 static bool IsDisplayLegacy(CSSValueID id) {
@@ -2909,6 +2914,7 @@ void DropDisplayKeywords(DisplayValidationResult& result) {
       }
       break;
     case CSSValueID::kMath:
+    case CSSValueID::kRuby:
       if (outside == CSSValueID::kInline) {
         result.outside = nullptr;
       }
@@ -3042,6 +3048,12 @@ const CSSValue* Display::CSSValueFromComputedStyleInternal(
     values->Append(*CSSIdentifierValue::Create(CSSValueID::kMath));
     return values;
   }
+  if (style.Display() == EDisplay::kBlockRuby) {
+    CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kBlock));
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kRuby));
+    return values;
+  }
   if (style.Display() == EDisplay::kInlineListItem) {
     CSSValueList* values = CSSValueList::CreateSpaceSeparated();
     values->Append(*CSSIdentifierValue::Create(CSSValueID::kInline));
@@ -3134,6 +3146,8 @@ void Display::ApplyValue(StyleResolverState& state,
       builder.SetDisplay(is_block ? EDisplay::kGrid : EDisplay::kInlineGrid);
     } else if (inside == CSSValueID::kMath) {
       builder.SetDisplay(is_block ? EDisplay::kBlockMath : EDisplay::kMath);
+    } else if (inside == CSSValueID::kRuby) {
+      builder.SetDisplay(is_block ? EDisplay::kBlockRuby : EDisplay::kRuby);
     }
     return;
   }

@@ -416,6 +416,13 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
+    case EDisplay::kRuby:
+    case EDisplay::kBlockRuby:
+    case EDisplay::kRubyBase:
+    case EDisplay::kRubyText:
+      // TODO(crbug.com/880802): Returns a LayoutRuby* instance.
+      NOTREACHED();
+      return CreateBlockFlowOrListItem(element, style);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
       return MakeGarbageCollected<LayoutCustom>(element);

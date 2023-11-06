@@ -507,6 +507,7 @@
     "flex",
     "grid",
     //"math",
+    //"ruby",
     // The order must match the order found in IsDisplayBox().
     "contents",
     //none
@@ -519,6 +520,8 @@
     "table-column",
     "table-cell",
     "table-caption",
+    "ruby-base",
+    "ruby-text",
     // The order must match the order found in IsDisplayLegacy().
     "inline-block",
     "inline-table",

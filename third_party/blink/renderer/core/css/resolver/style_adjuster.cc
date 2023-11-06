@@ -165,6 +165,7 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kFlex:
     case EDisplay::kGrid:
     case EDisplay::kBlockMath:
+    case EDisplay::kBlockRuby:
     case EDisplay::kListItem:
     case EDisplay::kFlowRoot:
     case EDisplay::kLayoutCustom:
@@ -179,6 +180,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kGrid;
     case EDisplay::kMath:
       return EDisplay::kBlockMath;
+    case EDisplay::kRuby:
+      return EDisplay::kBlockRuby;
     case EDisplay::kInlineLayoutCustom:
       return EDisplay::kLayoutCustom;
     case EDisplay::kInlineListItem:
@@ -197,6 +200,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kTableColumn:
     case EDisplay::kTableCell:
     case EDisplay::kTableCaption:
+    case EDisplay::kRubyBase:
+    case EDisplay::kRubyText:
       return EDisplay::kBlock;
     case EDisplay::kNone:
       NOTREACHED();

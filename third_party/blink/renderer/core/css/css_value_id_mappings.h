@@ -242,6 +242,15 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
   if (v == CSSValueID::kMath) {
     return EDisplay::kMath;
   }
+  if (v == CSSValueID::kRuby) {
+    return EDisplay::kRuby;
+  }
+  if (v == CSSValueID::kRubyBase) {
+    return EDisplay::kRubyBase;
+  }
+  if (v == CSSValueID::kRubyText) {
+    return EDisplay::kRubyText;
+  }
 
   NOTREACHED();
   return EDisplay::kInline;
@@ -328,6 +337,15 @@ inline CSSValueID PlatformEnumToCSSValueID(EDisplay v) {
   }
   if (v == EDisplay::kMath) {
     return CSSValueID::kMath;
+  }
+  if (v == EDisplay::kRuby) {
+    return CSSValueID::kRuby;
+  }
+  if (v == EDisplay::kRubyBase) {
+    return CSSValueID::kRubyBase;
+  }
+  if (v == EDisplay::kRubyText) {
+    return CSSValueID::kRubyText;
   }
 
   NOTREACHED();

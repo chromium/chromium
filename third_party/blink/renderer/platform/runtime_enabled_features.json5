@@ -880,6 +880,9 @@
       status: "stable",
     },
     {
+      name: "CssDisplayRuby",
+    },
+    {
       name: "CSSDynamicRangeLimit",
       status: "experimental",
     },
