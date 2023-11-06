@@ -577,7 +577,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   auto app = app_management::mojom::App::New();
   app->id = update.AppId();
   app->type = update.AppType();
-  app->title = update.Name();
+  app->title = update.ShortName();
 
   for (const auto& permission : update.Permissions()) {
     if (permission->permission_type == apps::PermissionType::kStorage &&
