@@ -1021,17 +1021,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DirectAction.Perform" enum="DirectActionId"
-    expires_after="2023-10-10">
-  <owner>arbesser@google.com</owner>
-  <owner>autofill_assistant@google.com</owner>
-  <summary>
-    Counts calls to Activity.onPerformDirectAction made by the system on behalf
-    of the assist app and which action was performed, if any. Available starting
-    with Android Q.
-  </summary>
-</histogram>
-
 <histogram name="Android.Download.Rename.Dialog.Action"
     enum="Android.Download.Rename.Dialog.Action" expires_after="2021-08-09">
   <obsolete>

@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
@@ -58,7 +57,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
-import org.chromium.chrome.browser.directactions.DirectActionInitializer;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -193,7 +191,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 /**
  * The root UI coordinator. This class will eventually be responsible for inflating and managing
@@ -259,7 +256,6 @@ public class RootUiCoordinator
     private SnackbarManager mBottomSheetSnackbarManager;
 
     private ScrimCoordinator mScrimCoordinator;
-    private DirectActionInitializer mDirectActionInitializer;
     private List<ButtonDataProvider> mButtonDataProviders;
     @Nullable
     private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
@@ -739,7 +735,6 @@ public class RootUiCoordinator
     @Override
     public void onPostInflationStartup() {
         initAppMenu();
-        initDirectActionInitializer();
         initBottomSheetObserver();
         initSnackbarObserver();
         initBrowserControlsObserver();
@@ -1099,35 +1094,6 @@ public class RootUiCoordinator
             // value simultaneously.
             mPageZoomCoordinator.hide();
         }
-    }
-
-    /**
-     * Performs a direct action.
-     *
-     * @param actionId Name of the direct action to perform.
-     * @param arguments Arguments for this action.
-     * @param cancellationSignal Signal used to cancel a direct action from the caller.
-     * @param callback Callback to run when the action is done.
-     */
-    public void onPerformDirectAction(String actionId, Bundle arguments,
-            CancellationSignal cancellationSignal, Consumer<Bundle> callback) {
-        if (mDirectActionInitializer == null) return;
-        mDirectActionInitializer.onPerformDirectAction(
-                actionId, arguments, cancellationSignal, callback);
-    }
-
-    /**
-     * Lists direct actions supported.
-     *
-     * Returns a list of direct actions supported by the Activity associated with this
-     * RootUiCoordinator.
-     *
-     * @param cancellationSignal Signal used to cancel a direct action from the caller.
-     * @param callback Callback to run when the action is done.
-     */
-    public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer<List> callback) {
-        if (mDirectActionInitializer == null) return;
-        mDirectActionInitializer.onGetDirectActions(cancellationSignal, callback);
     }
 
     // Protected class methods
@@ -1654,13 +1620,6 @@ public class RootUiCoordinator
     /** @return The {@link SnackbarManager} for the {@link BottomSheetController}. */
     public SnackbarManager getBottomSheetSnackbarManager() {
         return mBottomSheetSnackbarManager;
-    }
-
-    private void initDirectActionInitializer() {
-        mDirectActionInitializer = new DirectActionInitializer(mActivityType,
-                mMenuOrKeyboardActionController, mActivity::onBackPressed,
-                mTabModelSelectorSupplier.get(), mFindToolbarManager);
-        mActivityLifecycleDispatcher.register(mDirectActionInitializer);
     }
 
     /**

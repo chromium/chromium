@@ -19409,23 +19409,6 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Server redirect"/>
 </enum>
 
-<enum name="DirectActionId">
-  <int value="0" label="Unknown action"/>
-  <int value="1" label="A direct action not on this enum"/>
-  <int value="2" label="go_back"/>
-  <int value="3" label="reload"/>
-  <int value="4" label="go_forward"/>
-  <int value="5" label="bookmark_this_page"/>
-  <int value="6" label="downloads"/>
-  <int value="7" label="preferences"/>
-  <int value="8" label="open_history"/>
-  <int value="9" label="help"/>
-  <int value="10" label="new_tab"/>
-  <int value="11" label="close_tab"/>
-  <int value="12" label="close_all_tabs"/>
-  <int value="13" label="find_in_page"/>
-</enum>
-
 <enum name="DirectCompositionVideoPresentationMode">
   <int value="0" label="Zero copy decode swap chain"/>
   <int value="1" label="Upload and video processor blit"/>
