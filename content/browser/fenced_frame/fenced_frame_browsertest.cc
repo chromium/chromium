@@ -2103,7 +2103,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.
          {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesM119Features, {}},
+         {blink::features::kFencedFramesM120FeaturesPart1, {}},
          {blink::features::kFencedFramesAutomaticBeaconCredentials, {}}},
         {/* disabled_features */});
   }

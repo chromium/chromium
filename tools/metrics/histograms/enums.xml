@@ -64167,6 +64167,7 @@ from previous Chrome versions.
   <int value="-816984237" label="OfflinePagesAsyncDownload:enabled"/>
   <int value="-816895294" label="DiscoverApp:disabled"/>
   <int value="-816404462" label="TabGroupsAutoCreate:disabled"/>
+  <int value="-816221229" label="FencedFramesM120FeaturesPart2:enabled"/>
   <int value="-815616832"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:enabled"/>
   <int value="-815487797" label="WindowSplitting:enabled"/>
@@ -64458,7 +64459,6 @@ from previous Chrome versions.
   <int value="-676736440" label="ResetShortcutCustomizations:disabled"/>
   <int value="-676252846" label="ShimlessRMASkuDescription:disabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
-  <int value="-674654483" label="FencedFramesM120Features:enabled"/>
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
@@ -66807,7 +66807,6 @@ from previous Chrome versions.
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
-  <int value="457035941" label="FencedFramesM120Features:disabled"/>
   <int value="457265823" label="NtpWideModules:enabled"/>
   <int value="457301531" label="SiteIsolationForGuests:disabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
@@ -68969,6 +68968,7 @@ from previous Chrome versions.
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
   <int value="1515434814" label="CustomizeChromeColorExtraction:disabled"/>
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
+  <int value="1515587927" label="FencedFramesM120FeaturesPart2:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1517988103" label="FilesBannerFramework:disabled"/>
   <int value="1518314853" label="OsSettingsDeprecateSyncMetricsToggle:enabled"/>

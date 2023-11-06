@@ -689,7 +689,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kBiddingAndScoringDebugReportingAPI,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
          blink::features::kFledgeClearOriginJoinedAdInterestGroups,
-         blink::features::kFencedFramesM119Features,
+         blink::features::kFencedFramesM120FeaturesPart1,
          features::kBackForwardCache, features::kFledgeUseInterestGroupCache},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
@@ -15603,7 +15603,7 @@ class LeaveAdInterestGroupFromAdComponentBrowserTest
  public:
   LeaveAdInterestGroupFromAdComponentBrowserTest()
       : base::test::WithFeatureOverride(
-            blink::features::kFencedFramesM120Features) {}
+            blink::features::kFencedFramesM120FeaturesPart2) {}
 
   ~LeaveAdInterestGroupFromAdComponentBrowserTest() override = default;
 

@@ -7976,7 +7976,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-fenced-frames-M120-features",
      flag_descriptions::kEnableFencedFramesM120FeaturesName,
      flag_descriptions::kEnableFencedFramesM120FeaturesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kFencedFramesM120Features)},
+     FEATURE_VALUE_TYPE(blink::features::kFencedFramesM120FeaturesPart2)},
 
     {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,

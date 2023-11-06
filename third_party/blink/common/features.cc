@@ -760,9 +760,10 @@ const base::FeatureParam<double> kMinimumEntropyForLCP{
 // trials.
 BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the new fenced frame-related features in M119. (These are
+// Enable the new fenced frame-related features in M120. (These are
 // conditionally dependent on other fenced frame-related feature flags being
 // enabled.)
+// Part 1:
 // * Extra format for ad size macro substitution:
 //   ${AD_WIDTH} and ${AD_HEIGHT}, on top of the previous
 //   {%AD_WIDTH%} and {%AD_HEIGHT%}.
@@ -770,19 +771,19 @@ BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
 //   registerAdMacro keys and values.
 // * Send automatic beacons to all registered destinations without requiring
 //   event data to be in place.
-BASE_FEATURE(kFencedFramesM119Features,
-             "FencedFramesM119Features",
+BASE_FEATURE(kFencedFramesM120FeaturesPart1,
+             "FencedFramesM120FeaturesPart1",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1496372): Once the fenced frame M120 change is approved,
-// remove this flag. Enable the new fenced frame-related features in M120.
-// (These are conditionally dependent on other fenced frame-related feature
-// flags being enabled.)
+// Enable the new fenced frame-related features in M120. (These are
+// conditionally dependent on other fenced frame-related feature flags being
+// enabled.)
+// Part 2:
 // * Support leaving interest group from ad components.
 // * Relax the attestation requirement of post-impression beacons from Protected
 // Audience only to either Protected Audience or Attribution Reporting.
-BASE_FEATURE(kFencedFramesM120Features,
-             "FencedFramesM120Features",
+BASE_FEATURE(kFencedFramesM120FeaturesPart2,
+             "FencedFramesM120FeaturesPart2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Temporarily un-disable credentials on fenced frame automatic beacons until
