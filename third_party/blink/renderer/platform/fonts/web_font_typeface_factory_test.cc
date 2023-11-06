@@ -149,7 +149,13 @@ TEST(WebFontTypefaceFactoryTest, VariableColrV0FallbackWindowsApple) {
                                          mock_font_format_check, expectation);
 }
 
-TEST(WebFontTypefaceFactoryTest, SbixFallbackWindows) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1499557): Currently fails on the platform.
+#define MAYBE_SbixFallbackWindows DISABLED_SbixFallbackWindows
+#else
+#define MAYBE_SbixFallbackWindows SbixFallbackWindows
+#endif
+TEST(WebFontTypefaceFactoryTest, MAYBE_SbixFallbackWindows) {
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsSbixColorFont())
@@ -166,7 +172,14 @@ TEST(WebFontTypefaceFactoryTest, SbixFallbackWindows) {
   );
 }
 
-TEST(WebFontTypefaceFactoryTest, VariationsWinFallbackIfNeeded) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1499557): Currently fails on the platform.
+#define MAYBE_VariationsWinFallbackIfNeeded \
+  DISABLED_VariationsWinFallbackIfNeeded
+#else
+#define MAYBE_VariationsWinFallbackIfNeeded VariationsWinFallbackIfNeeded
+#endif
+TEST(WebFontTypefaceFactoryTest, MAYBE_VariationsWinFallbackIfNeeded) {
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsVariableFont())

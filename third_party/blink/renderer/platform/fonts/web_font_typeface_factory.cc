@@ -115,7 +115,7 @@ sk_sp<SkTypeface> MakeColrV0VariationsTypeface(
 sk_sp<SkTypeface> MakeUseFallbackIfNeeded(
     sk_sp<SkData> data,
     const WebFontTypefaceFactory::FontInstantiator& instantiator) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   return instantiator.make_fallback(data);
 #else
   return instantiator.make_system(data);
