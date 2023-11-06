@@ -114,7 +114,6 @@ class IndexedDBFactoryTest : public testing::Test {
         EXPECT_TRUE(success.Get());
       }
     }
-    IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(nullptr);
     quota_manager_.reset();
     // Wait for mojo pipes to flush or there may be leaks.
     task_environment_.RunUntilIdle();
@@ -136,17 +135,6 @@ class IndexedDBFactoryTest : public testing::Test {
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
-  }
-
-  void SetUpContextWithFactories(LevelDBFactory* factory) {
-    context_ = base::MakeRefCounted<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_proxy_.get(),
-        /*blob_storage_context=*/mojo::NullRemote(),
-        /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        base::SequencedTaskRunner::GetCurrentDefault());
-    if (factory)
-      IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(factory);
   }
 
   void RunPostedTasks() {
@@ -412,7 +400,7 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
 }
 
 TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
-  SetUpContextWithFactories(nullptr);
+  SetUpContext();
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -519,7 +507,7 @@ TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
 }
 
 TEST_F(IndexedDBFactoryTest, TombstoneSweeperTiming) {
-  SetUpContextWithFactories(nullptr);
+  SetUpContext();
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -560,7 +548,7 @@ TEST_F(IndexedDBFactoryTest, TombstoneSweeperTiming) {
 }
 
 TEST_F(IndexedDBFactoryTest, CompactionTaskTiming) {
-  SetUpContextWithFactories(nullptr);
+  SetUpContext();
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -817,10 +805,14 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
 }
 
 TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
-  FakeLevelDBFactory fake_ldb_factory({}, "indexed-db");
-  fake_ldb_factory.EnqueueNextOpenLevelDBStateResult(
-      nullptr, leveldb::Status::IOError("Disk is full."), true);
-  SetUpContextWithFactories(&fake_ldb_factory);
+  SetUpContext();
+  leveldb_env::SetDBFactoryForTesting(base::BindRepeating(
+      [](const leveldb_env::Options& options, const std::string& name,
+         std::unique_ptr<leveldb::DB>* dbptr) {
+        return leveldb_env::MakeIOError("foobar", "disk full",
+                                        leveldb_env::MethodID::kCreateDir,
+                                        base::File::FILE_ERROR_NO_SPACE);
+      }));
 
   // Bind the IDBFactory.
   const blink::StorageKey storage_key =

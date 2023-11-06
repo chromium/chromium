@@ -305,6 +305,13 @@ LEVELDB_EXPORT leveldb::Status OpenDB(const leveldb_env::Options& options,
                                       const std::string& name,
                                       std::unique_ptr<leveldb::DB>* dbptr);
 
+// Overrides OpenDB with the given closure.
+using DBFactoryMethod =
+    base::RepeatingCallback<leveldb::Status(const leveldb_env::Options&,
+                                            const std::string&,
+                                            std::unique_ptr<leveldb::DB>*)>;
+LEVELDB_EXPORT void SetDBFactoryForTesting(DBFactoryMethod factory);
+
 // Copies the content of |dbptr| into a fresh database to remove traces of
 // deleted data. |options| and |name| of the old database are required to create
 // an identical copy. |dbptr| will be replaced with the new database on success.

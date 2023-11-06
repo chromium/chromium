@@ -359,11 +359,6 @@ class BreakOnCallbackDB : public leveldb::DB {
 
 }  // namespace
 
-FakeLevelDBFactory::FakeLevelDBFactory(leveldb_env::Options database_options,
-                                       const std::string& in_memory_db_name)
-    : DefaultLevelDBFactory(database_options, in_memory_db_name) {}
-FakeLevelDBFactory::~FakeLevelDBFactory() {}
-
 // static
 std::unique_ptr<leveldb::DB> FakeLevelDBFactory::CreateFlakyDB(
     std::unique_ptr<leveldb::DB> db,
@@ -389,49 +384,6 @@ scoped_refptr<LevelDBState> FakeLevelDBFactory::GetBrokenLevelDB(
   return LevelDBState::CreateForDiskDB(
       leveldb::BytewiseComparator(),
       std::make_unique<BrokenDB>(error_to_return), reported_file_path);
-}
-
-void FakeLevelDBFactory::EnqueueNextOpenDBResult(
-    std::unique_ptr<leveldb::DB> db,
-    leveldb::Status status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  next_dbs_.push(std::make_tuple(std::move(db), status));
-}
-
-std::tuple<std::unique_ptr<leveldb::DB>, leveldb::Status>
-FakeLevelDBFactory::OpenDB(const std::string& name,
-                           bool create_if_missing,
-                           size_t write_buffer_size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (next_dbs_.empty())
-    return DefaultLevelDBFactory::OpenDB(name, create_if_missing,
-                                         write_buffer_size);
-  auto tuple = std::move(next_dbs_.front());
-  next_dbs_.pop();
-  return tuple;
-}
-
-void FakeLevelDBFactory::EnqueueNextOpenLevelDBStateResult(
-    scoped_refptr<LevelDBState> state,
-    leveldb::Status status,
-    bool is_disk_full) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  next_leveldb_states_.push(
-      std::make_tuple(std::move(state), status, is_disk_full));
-}
-
-std::tuple<scoped_refptr<LevelDBState>, leveldb::Status, bool /*disk_full*/>
-FakeLevelDBFactory::OpenLevelDBState(const base::FilePath& file_name,
-                                     bool create_if_missing,
-                                     size_t write_buffer_size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (next_leveldb_states_.empty()) {
-    return DefaultLevelDBFactory::OpenLevelDBState(file_name, create_if_missing,
-                                                   write_buffer_size);
-  }
-  auto tuple = std::move(next_leveldb_states_.front());
-  next_leveldb_states_.pop();
-  return tuple;
 }
 
 }  // namespace content
