@@ -9,6 +9,9 @@ android_library("java") {
   visibility = [
     ":*",
     "//chrome/android:*",
+
+    # For access to resource IDs and view names for Hub public transit framework code.
+    "//chrome/test/android:chrome_java_transit",
   ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonData.java",

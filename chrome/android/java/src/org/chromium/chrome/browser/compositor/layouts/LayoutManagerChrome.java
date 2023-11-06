@@ -22,6 +22,9 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.hub.HubLayout;
+import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -74,6 +77,12 @@ public class LayoutManagerChrome
      */
     protected Layout mTabSwitcherLayout;
 
+    /**
+     * A {@link Layout} that should be used when the user is in the tab switcher when the refactor
+     * flag and hub flags are enabled.
+     */
+    protected Layout mHubLayout;
+
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
 
@@ -91,106 +100,142 @@ public class LayoutManagerChrome
     private final ScrimCoordinator mScrimCoordinator;
     private final Callable<ViewGroup> mCreateTabSwitcherOrStartSurfaceCallable;
 
+    private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
+
     // Theme Color
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
     private ThemeColorObserver mThemeColorObserver;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
-     * @param host         A {@link LayoutManagerHost} instance.
+     *
+     * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher.
-     *         Creates overviewLayout with this surface if this is has value. If not, {@link
-     *         #showLayout(int, boolean)} will create overviewLayout.
+     *     Creates overviewLayout with this surface if this is has value. If not, {@link
+     *     #showLayout(int, boolean)} will create overviewLayout.
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *         Start surface refactor is enabled. Used to create overviewLayout if it has value,
-     *         otherwise will use the accessibility overview layout.
+     *     Start surface refactor is enabled. Used to create overviewLayout if it has value,
+     *     otherwise will use the accessibility overview layout.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *         controls.
+     *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
-     *         when overview is visible.
+     *     when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @param delayedTabSwitcherOrStartSurfaceCallable Callable to create StartSurface/GTS views.
+     * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
-    public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
-            Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
+    public LayoutManagerChrome(
+            LayoutManagerHost host,
+            ViewGroup contentContainer,
+            Supplier<StartSurface> startSurfaceSupplier,
+            Supplier<TabSwitcher> tabSwitcherSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator,
-            Callable<ViewGroup> delayedTabSwitcherOrStartSurfaceCallable) {
+            ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator,
+            Callable<ViewGroup> delayedTabSwitcherOrStartSurfaceCallable,
+            HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
 
         // Build Event Filter Handlers
         mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown = */ true);
 
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mTabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
-            @Override
-            public void onResult(TabContentManager manager) {
-                manager.addThumbnailChangeListener((id) -> requestUpdate());
-                if (mOverviewLayout != null) {
-                    mOverviewLayout.setTabContentManager(manager);
-                }
-                if (mTabSwitcherLayout != null) {
-                    mTabSwitcherLayout.setTabContentManager(manager);
-                }
-                if (mStartSurfaceHomeLayout != null) {
-                    mStartSurfaceHomeLayout.setTabContentManager(manager);
-                }
-                tabContentManagerSupplier.removeObserver(this);
-            }
-        });
+        mTabContentManagerSupplier.addObserver(
+                new Callback<TabContentManager>() {
+                    @Override
+                    public void onResult(TabContentManager manager) {
+                        manager.addThumbnailChangeListener((id) -> requestUpdate());
+                        if (mOverviewLayout != null) {
+                            mOverviewLayout.setTabContentManager(manager);
+                        }
+                        if (mTabSwitcherLayout != null) {
+                            mTabSwitcherLayout.setTabContentManager(manager);
+                        }
+                        if (mStartSurfaceHomeLayout != null) {
+                            mStartSurfaceHomeLayout.setTabContentManager(manager);
+                        }
+                        if (mHubLayout != null) {
+                            mHubLayout.setTabContentManager(manager);
+                        }
+                        tabContentManagerSupplier.removeObserver(this);
+                    }
+                });
 
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mScrimCoordinator = scrimCoordinator;
         mCreateTabSwitcherOrStartSurfaceCallable = delayedTabSwitcherOrStartSurfaceCallable;
+        mHubLayoutDependencyHolder = hubLayoutDependencyHolder;
 
         Context context = host.getContext();
         if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context)) {
             if (mStartSurfaceSupplier.hasValue() || mTabSwitcherSupplier.hasValue()) {
-                createLayoutsForStartSurfaceAndTabSwitcher(mStartSurfaceSupplier.get(),
-                        mTabSwitcherSupplier.get(), browserControlsStateProvider, scrimCoordinator,
-                        tabSwitcherScrimAnchor);
+                createLayoutsForStartSurfaceAndTabSwitcher(
+                        mStartSurfaceSupplier.get(),
+                        mTabSwitcherSupplier.get(),
+                        browserControlsStateProvider,
+                        scrimCoordinator,
+                        tabSwitcherScrimAnchor,
+                        hubLayoutDependencyHolder);
             }
         } else if (mStartSurfaceSupplier.hasValue()) {
-            createLayoutsForStartSurfaceAndTabSwitcher(mStartSurfaceSupplier.get(),
-                    /*tabSwitcher=*/null, browserControlsStateProvider, scrimCoordinator,
-                    tabSwitcherScrimAnchor);
+            createLayoutsForStartSurfaceAndTabSwitcher(
+                    mStartSurfaceSupplier.get(),
+                    /* tabSwitcher= */ null,
+                    browserControlsStateProvider,
+                    scrimCoordinator,
+                    tabSwitcherScrimAnchor,
+                    hubLayoutDependencyHolder);
         }
     }
 
     /**
      * Creates {@link org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout}
-     * or ({@link org.chromium.chrome.features.start_surface.StartSurfaceHomeLayout} AND
-     * {@link org.chromium.chrome.features.tasks.tab_management.TabSwitcherLayout}).
+     * or ({@link org.chromium.chrome.features.start_surface.StartSurfaceHomeLayout} AND {@link
+     * org.chromium.chrome.features.tasks.tab_management.TabSwitcherLayout}).
+     *
      * @param startSurface An interface to talk to the Grid Tab Switcher when Start surface refactor
-     *         is disabled.
+     *     is disabled.
      * @param tabSwitcher An interface to talk to the GridTabSwitcher when Start surface refactor is
-     *         enabled and DeferTabSwitcherLayoutCreation is disabled.
+     *     enabled and DeferTabSwitcherLayoutCreation is disabled.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *         controls.
+     *     controls.
      * @param scrimCoordinator scrim coordinator for GTS
      * @param tabSwitcherScrimAnchor scrim anchor view for GTS
+     * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
-    protected void createLayoutsForStartSurfaceAndTabSwitcher(@Nullable StartSurface startSurface,
+    protected void createLayoutsForStartSurfaceAndTabSwitcher(
+            @Nullable StartSurface startSurface,
             @Nullable TabSwitcher tabSwitcher,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ScrimCoordinator scrimCoordinator, ViewGroup tabSwitcherScrimAnchor) {
-        assert mOverviewLayout == null && mTabSwitcherLayout == null
-                && mStartSurfaceHomeLayout == null;
+            ScrimCoordinator scrimCoordinator,
+            ViewGroup tabSwitcherScrimAnchor,
+            HubLayoutDependencyHolder hubLayoutDependencyHolder) {
+        assert mOverviewLayout == null
+                && mTabSwitcherLayout == null
+                && mStartSurfaceHomeLayout == null
+                && mHubLayout == null;
         boolean isRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
 
         if (isRefactorEnabled) {
             // TabSwitcherLayout creation is deferred until it is first shown.
             if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled()) {
-                assert tabSwitcher != null;
-                createTabSwitcherLayout(tabSwitcher, browserControlsStateProvider, scrimCoordinator,
-                        tabSwitcherScrimAnchor);
+                if (HubFieldTrial.isHubEnabled()) {
+                    createHubLayout(hubLayoutDependencyHolder);
+                } else {
+                    assert tabSwitcher != null;
+                    createTabSwitcherLayout(
+                            tabSwitcher,
+                            browserControlsStateProvider,
+                            scrimCoordinator,
+                            tabSwitcherScrimAnchor);
+                }
             }
             if (startSurface != null) {
                 createStartSurfaceHomeLayout(startSurface);
@@ -246,6 +291,29 @@ public class LayoutManagerChrome
         }
         if (mFinishNativeInitialization) {
             mTabSwitcherLayout.onFinishNativeInitialization();
+        }
+    }
+
+    /** Creates {@link org.chromium.chrome.browser.hub.HubLayout}. */
+    protected void createHubLayout(@NonNull HubLayoutDependencyHolder hubLayoutDependencyHolder) {
+        Context context = mHost.getContext();
+        LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
+
+        mHubLayout =
+                new HubLayout(
+                        context,
+                        /* updateHost= */ this,
+                        renderHost,
+                        /* layoutStateProvider= */ this,
+                        hubLayoutDependencyHolder);
+        if (mTabContentManagerSupplier.hasValue()) {
+            mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
+        }
+        if (getTabModelSelector() != null) {
+            mHubLayout.setTabModelSelector(getTabModelSelector());
+        }
+        if (mFinishNativeInitialization) {
+            mHubLayout.onFinishNativeInitialization();
         }
     }
 
@@ -384,13 +452,20 @@ public class LayoutManagerChrome
             mStartSurfaceHomeLayout.setTabContentManager(content);
             mStartSurfaceHomeLayout.onFinishNativeInitialization();
         }
+        if (mHubLayout != null) {
+            mHubLayout.setTabModelSelector(selector);
+            mHubLayout.setTabContentManager(content);
+            mHubLayout.onFinishNativeInitialization();
+        }
         mFinishNativeInitialization = true;
     }
 
     @Override
     public void showLayout(int layoutType, boolean animate) {
-        if (layoutType == LayoutType.TAB_SWITCHER && mOverviewLayout == null
-                && mTabSwitcherLayout == null) {
+        if (layoutType == LayoutType.TAB_SWITCHER
+                && mOverviewLayout == null
+                && mTabSwitcherLayout == null
+                && mHubLayout == null) {
             initTabSwitcher();
         }
         super.showLayout(layoutType, animate);
@@ -402,23 +477,32 @@ public class LayoutManagerChrome
      * refactor is enabled for phones.
      */
     private void initTabSwitcher() {
+        boolean isRefactorEnabled =
+                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
+
+        // Implicitly guarded by sDeferTabSwitcherLayoutCreation as mTabSwitcherSupplier will
+        // have a value already if the feature is disabled.
+        if (mStartSurfaceSupplier.hasValue()
+                && (!isRefactorEnabled || mTabSwitcherSupplier.hasValue())) {
+            return;
+        }
+
+        if (isRefactorEnabled && HubFieldTrial.isHubEnabled()) {
+            createHubLayout(mHubLayoutDependencyHolder);
+            return;
+        }
+
         try {
-            boolean isRefactorEnabled =
-                    ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext());
-
-            // Implicitly guarded by sDeferTabSwitcherLayoutCreation as mTabSwitcherSupplier will
-            // have a value already if the feature is disabled.
-            if (mStartSurfaceSupplier.hasValue()
-                    && (!isRefactorEnabled || mTabSwitcherSupplier.hasValue())) {
-                return;
-            }
-
             final ViewGroup containerView = mCreateTabSwitcherOrStartSurfaceCallable.call();
+
             if (isRefactorEnabled) {
                 final TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
                 assert tabSwitcher != null;
-                createTabSwitcherLayout(tabSwitcher, mHost.getBrowserControlsManager(),
-                        mScrimCoordinator, containerView);
+                createTabSwitcherLayout(
+                        tabSwitcher,
+                        mHost.getBrowserControlsManager(),
+                        mScrimCoordinator,
+                        containerView);
             } else {
                 final StartSurface startSurface = mStartSurfaceSupplier.get();
                 assert startSurface != null;
@@ -449,6 +533,9 @@ public class LayoutManagerChrome
         if (mStartSurfaceHomeLayout != null) {
             mStartSurfaceHomeLayout.setTabModelSelector(selector);
         }
+        if (mHubLayout != null) {
+            mHubLayout.setTabModelSelector(selector);
+        }
     }
 
     @Override
@@ -476,6 +563,10 @@ public class LayoutManagerChrome
             mStartSurfaceHomeLayout.destroy();
             mStartSurfaceHomeLayout = null;
         }
+        if (mHubLayout != null) {
+            mHubLayout.destroy();
+            mHubLayout = null;
+        }
         if (mToolbarSwipeLayout != null) {
             mToolbarSwipeLayout.destroy();
         }
@@ -492,7 +583,9 @@ public class LayoutManagerChrome
         if (layoutType == LayoutType.TOOLBAR_SWIPE) {
             layout = mToolbarSwipeLayout;
         } else if (layoutType == LayoutType.TAB_SWITCHER) {
-            if (mTabSwitcherLayout != null) {
+            if (mHubLayout != null) {
+                layout = mHubLayout;
+            } else if (mTabSwitcherLayout != null) {
                 layout = mTabSwitcherLayout;
             } else {
                 layout = mOverviewLayout;
@@ -720,7 +813,9 @@ public class LayoutManagerChrome
         private boolean isTabSwitcherReady() {
             // On Tablets, or with Start Surface Refactor, attempting to show the GTS while it's
             // null will trigger its creation.
-            return mOverviewLayout != null || mTabSwitcherLayout != null
+            return mOverviewLayout != null
+                    || mTabSwitcherLayout != null
+                    || mHubLayout != null
                     || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())
                     || (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mHost.getContext())
                             && ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled());

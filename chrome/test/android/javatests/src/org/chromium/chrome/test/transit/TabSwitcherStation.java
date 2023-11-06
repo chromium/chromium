@@ -17,6 +17,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -56,8 +57,21 @@ public class TabSwitcherStation extends TransitStation {
             }
         }
 
+        elements.declareEnterCondition(new HubIsDisabled());
         elements.declareEnterCondition(new TabSwitcherLayoutShowing());
         elements.declareExitCondition(new TabSwitcherLayoutNotShowing());
+    }
+
+    private class HubIsDisabled extends UiThreadCondition {
+        @Override
+        public boolean check() {
+            return !HubFieldTrial.isHubEnabled();
+        }
+
+        @Override
+        public String buildDescription() {
+            return "HubFieldTrial Hub is disabled";
+        }
     }
 
     private class TabSwitcherLayoutShowing extends UiThreadCondition {

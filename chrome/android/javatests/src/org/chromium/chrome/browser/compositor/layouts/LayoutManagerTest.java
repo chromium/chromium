@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -108,6 +109,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private StartSurface mStartSurface;
 
     @Mock private TabSwitcher mTabSwitcher;
+
+    @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
 
     @Mock private TabSwitcher.TabListDelegate mTabListDelegate;
     @Mock private TabSwitcher.Controller mTabSwitcherController;
@@ -256,7 +259,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         () -> {
                             mTabSwitcherSupplier.set(mTabSwitcher);
                             return container;
-                        });
+                        },
+                        mHubLayoutDependencyHolder);
 
         setUpLayouts();
 

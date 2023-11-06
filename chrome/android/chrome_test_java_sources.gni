@@ -10,6 +10,7 @@ import("//components/feed/features.gni")
 
 chrome_test_java_sources = [
   "java/src/org/chromium/chrome/browser/app/feed/NavigationRecorderTest.java",
+  "java/src/org/chromium/chrome/browser/hub/HubLayoutPublicTransitTest.java",
   "javatests/src/org/chromium/chrome/browser/ActivityTabProviderTest.java",
   "javatests/src/org/chromium/chrome/browser/ChromeActionModeHandlerTest.java",
   "javatests/src/org/chromium/chrome/browser/ChromeTabbedActivityTest.java",

@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -213,6 +214,9 @@ public class TopToolbarCoordinator implements Toolbar {
                     startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled,
                     shouldCreateLogoInStartToolbar, this::onStartSurfaceToolbarTransitionFinished,
                     mToolbarColorObserverManager);
+        } else if (HubFieldTrial.isHubEnabled()) {
+            // Hub has an entirely separate toolbar.
+            mTabSwitcherModeCoordinator = null;
         } else if (mToolbarLayout instanceof ToolbarPhone
                 || mToolbarLayout instanceof ToolbarTablet) {
             mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,

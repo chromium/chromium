@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
@@ -100,7 +101,14 @@ public class HubLayout extends Layout {
             @NonNull HubLayoutDependencyHolder dependencyHolder) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
+        // This is the R.id.tab_switcher_view_holder. It is used by tablets for the tab switcher,
+        // but in that case it is the animated object and is opaque. Here we will animate the
+        // HubContainerView instead and just animate and just use this view as a transparent
+        // container for z-indexing and geometry.
+        // TODO(crbug/1499984): Consider removing the tab_switcher_view_holder post launch.
         mRootView = dependencyHolder.getHubRootView();
+        mRootView.setBackgroundColor(Color.TRANSPARENT);
+
         HubManager hubManager = dependencyHolder.getHubManager();
         mHubController = hubManager.getHubController();
         mPaneManager = hubManager.getPaneManager();
@@ -212,9 +220,11 @@ public class HubLayout extends Layout {
                     }
                 });
 
+        mRootView.setVisibility(View.VISIBLE);
         containerView.setVisibility(View.INVISIBLE);
         mRootView.addView(
                 containerView,
+                /* index= */ 0,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         containerView.runOnNextLayout(this::queueAnimation);
     }
@@ -290,8 +300,9 @@ public class HubLayout extends Layout {
     public void doneHiding() {
         super.doneHiding();
         HubContainerView containerView = mHubController.getContainerView();
-        mRootView.removeView(containerView);
         containerView.setVisibility(View.INVISIBLE);
+        mRootView.removeView(containerView);
+        mRootView.setVisibility(View.GONE);
         mCurrentAnimationRunner = null;
         mHubController.onHubLayoutDoneHiding();
 
@@ -318,8 +329,8 @@ public class HubLayout extends Layout {
 
     @Override
     public boolean onBackPressed() {
-        // TODO(crbug/1487209): Forward this to the HubManager. Legacy backpress handler soon to be
-        // obsolete.
+        // TODO(crbug/1487209): Forward this to the HubManager. This is for the legacy backpress
+        // handler which will soon be obsolete.
         return false;
     }
 

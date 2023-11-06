@@ -132,6 +132,7 @@ android_library("java") {
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/hub:java",
     "//chrome/browser/incognito:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/paint_preview/android:java",

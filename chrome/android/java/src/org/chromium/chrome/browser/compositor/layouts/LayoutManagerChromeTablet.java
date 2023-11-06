@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -68,6 +69,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param lifecycleDispatcher @{@link ActivityLifecycleDispatcher} to be passed to TabStrip
      *     helper.
      * @param delayedTabSwitcherOrStartSurfaceCallable Callable to create StartSurface/GTS views.
+     * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link StripLayoutHelper}
      *     to support tab drag and drop.
      * @param dragAndDropDelegate @{@link DragAndDropDelegate} passed to {@link
@@ -89,13 +91,23 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callable<ViewGroup> delayedTabSwitcherOrStartSurfaceCallable,
+            HubLayoutDependencyHolder hubLayoutDependencyHolder,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub) {
-        super(host, contentContainer, startSurfaceSupplier, tabSwitcherSupplier,
-                browserControlsStateProvider, tabContentManagerSupplier, topUiThemeColorProvider,
-                tabSwitcherViewHolder, scrimCoordinator, delayedTabSwitcherOrStartSurfaceCallable);
+        super(
+                host,
+                contentContainer,
+                startSurfaceSupplier,
+                tabSwitcherSupplier,
+                browserControlsStateProvider,
+                tabContentManagerSupplier,
+                topUiThemeColorProvider,
+                tabSwitcherViewHolder,
+                scrimCoordinator,
+                delayedTabSwitcherOrStartSurfaceCallable,
+                hubLayoutDependencyHolder);
         mTabStripLayoutHelperManager =
                 new StripLayoutHelperManager(
                         host.getContext(),

@@ -12,6 +12,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
+import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -34,30 +35,45 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
-     * @param host         A {@link LayoutManagerHost} instance.
+     *
+     * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *         Start surface refactor is disabled. Used to create overviewLayout if it has value,
-     *         otherwise will use the accessibility overview layout.
+     *     Start surface refactor is disabled. Used to create overviewLayout if it has value,
+     *     otherwise will use the accessibility overview layout.
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *         Start surface refactor is enabled. Used to create overviewLayout if it has value,
-     *         otherwise will use the accessibility overview layout.
+     *     Start surface refactor is enabled. Used to create overviewLayout if it has value,
+     *     otherwise will use the accessibility overview layout.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *         controls.
+     *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param delayedTabSwitcherCallable Callable to create GTS view if Start Surface refactor and
-     *         DeferCreateTabSwitcherLayout are enabled.
+     *     DeferCreateTabSwitcherLayout are enabled.
+     * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
-    public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
-            Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
+    public LayoutManagerChromePhone(
+            LayoutManagerHost host,
+            ViewGroup contentContainer,
+            Supplier<StartSurface> startSurfaceSupplier,
+            Supplier<TabSwitcher> tabSwitcherSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            Callable<ViewGroup> delayedTabSwitcherCallable) {
-        super(host, contentContainer, startSurfaceSupplier, tabSwitcherSupplier,
-                browserControlsStateProvider, tabContentManagerSupplier, topUiThemeColorProvider,
-                null, null, delayedTabSwitcherCallable);
+            Callable<ViewGroup> delayedTabSwitcherCallable,
+            HubLayoutDependencyHolder hubLayoutDependencyHolder) {
+        super(
+                host,
+                contentContainer,
+                startSurfaceSupplier,
+                tabSwitcherSupplier,
+                browserControlsStateProvider,
+                tabContentManagerSupplier,
+                topUiThemeColorProvider,
+                null,
+                null,
+                delayedTabSwitcherCallable,
+                hubLayoutDependencyHolder);
     }
 
     @Override

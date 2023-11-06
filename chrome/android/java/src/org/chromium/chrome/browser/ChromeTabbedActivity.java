@@ -51,6 +51,7 @@ import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -104,6 +105,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
+import org.chromium.chrome.browser.hub.HubProvider;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
 import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
@@ -379,6 +384,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<Tab> mStartSurfaceParentTabSupplier =
             new ObservableSupplierImpl<>();
+    private HubProvider mHubProvider;
     private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     // Calls isStartSurfaceRefactorEnabled() instead of using this variable directly.
     private Boolean mIsStartSurfaceRefactorEnabled;
@@ -668,6 +674,28 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
+    private HubLayoutDependencyHolder createHubLayoutDependencyHolder() {
+        if (!HubFieldTrial.isHubEnabled()) return null;
+
+        // The tab_switcher_view_holder can be used on both tablet and phone because Hub's
+        // animations don't depend on the compositor. This differs from the current tab switcher
+        // behavior on phones.
+        LazyOneshotSupplier<ViewGroup> rootViewSupplier =
+                LazyOneshotSupplier.fromSupplier(
+                        () -> {
+                            ViewStub stub =
+                                    (ViewStub) findViewById(R.id.tab_switcher_view_holder_stub);
+                            return (ViewGroup) stub.inflate();
+                        });
+
+        return new HubLayoutDependencyHolder(
+                mHubProvider.getHubManagerSupplier(),
+                rootViewSupplier,
+                mRootUiCoordinator.getScrimCoordinator(),
+                rootViewSupplier::get,
+                mTabModelSelector::isIncognitoSelected);
+    }
+
     private void setupCompositorContentPreNativeForPhone() {
         if (isTablet()) return;
 
@@ -679,13 +707,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // We should inline createStartSurface() (if enabled) once the refactor is launched.
             createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
 
-            mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
-                getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider,
-                () -> {
-                    createGridTabSwitcher(compositorViewHolder, compositorViewHolder);
-                    return compositorViewHolder;
-                });
+            mLayoutManager =
+                    new LayoutManagerChromePhone(
+                            compositorViewHolder,
+                            mContentContainer,
+                            mStartSurfaceSupplier,
+                            mTabSwitcherSupplier,
+                            getBrowserControlsManager(),
+                            getTabContentManagerSupplier(),
+                            mRootUiCoordinator::getTopUiThemeColorProvider,
+                            () -> {
+                                createGridTabSwitcher(compositorViewHolder, compositorViewHolder);
+                                return compositorViewHolder;
+                            },
+                            createHubLayoutDependencyHolder());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
@@ -718,6 +753,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mRootUiCoordinator.getScrimCoordinator(),
                             getLifecycleDispatcher(),
                             () -> createAndSetStartSurfaceForTablet(),
+                            createHubLayoutDependencyHolder(),
                             mMultiInstanceManager,
                             mDragDropDelegate,
                             toolbarContainerView,
@@ -1798,6 +1834,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         if (DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()) {
             mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
+        }
+        if (HubFieldTrial.isHubEnabled()) {
+            mHubProvider = new HubProvider(this, new DefaultPaneOrderController());
         }
     }
 
