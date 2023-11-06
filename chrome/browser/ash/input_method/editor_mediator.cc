@@ -142,6 +142,9 @@ void EditorMediator::OnActivateIme(std::string_view engine_id) {
 
 void EditorMediator::OnTabletModeStarting() {
   editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/true);
+  if (mako_bubble_coordinator_.IsShowingUI()) {
+    mako_bubble_coordinator_.CloseUI();
+  }
 }
 
 void EditorMediator::OnTabletModeEnded() {
