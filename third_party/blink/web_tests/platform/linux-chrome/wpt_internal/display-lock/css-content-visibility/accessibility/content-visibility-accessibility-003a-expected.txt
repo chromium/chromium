@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] A11y tree is updated after ContentVisibilityAutoStateChange fires when element gains focus via element.focus()
+  accessibilityController is not defined
+Harness: the test ran to completion.

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] UseCounter for LoAF should not be triggered for non-loaf types
+  promise_test: Unhandled rejection with value: object "ReferenceError: internals is not defined"
+[FAIL] UseCounter for LoAF requested should be triggered at appropriate times
+  promise_test: Unhandled rejection with value: object "ReferenceError: internals is not defined"
+[FAIL] UseCounter for LoAF observer should be triggered at appropriate times
+  promise_test: Unhandled rejection with value: object "ReferenceError: internals is not defined"
+Harness: the test ran to completion.

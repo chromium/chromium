@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] entries() in an iframe must be updated after navigating back to a bfcached page
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

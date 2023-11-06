@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] clicking a file input with the webkitdirectory attribute launches a file chooser
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

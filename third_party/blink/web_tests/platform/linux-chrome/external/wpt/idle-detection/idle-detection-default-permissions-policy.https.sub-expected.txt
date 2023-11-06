@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: Tried to run in a non-testharness window without a call to set_test_context
+[NOTRUN] Default "idle-detection" permissions policy "self" allows the top-level document.
+[NOTRUN] Default "idle-detection" permissions policy "self" allows same-origin iframes.
+[NOTRUN] Default "idle-detection" permissions policy "self" disallows cross-origin iframes.
+Harness: the test ran to completion.

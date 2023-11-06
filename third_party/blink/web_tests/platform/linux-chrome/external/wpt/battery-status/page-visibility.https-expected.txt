@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] battery status events only fire on visible pages
+  assert_equals: expected 0.6 but got 0.55
+Harness: the test ran to completion.

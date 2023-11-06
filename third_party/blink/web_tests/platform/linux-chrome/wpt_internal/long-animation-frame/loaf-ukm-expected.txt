@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] UKM recorder should receive LoAF entries
+  promise_test: Unhandled rejection with value: object "ReferenceError: internals is not defined"
+Harness: the test ran to completion.

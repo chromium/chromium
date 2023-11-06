@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] same-origin > w => w.frames
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'property')"
+[FAIL] cross-origin > w => w.frames
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'property')"
+Harness: the test ran to completion.

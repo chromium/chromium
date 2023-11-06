@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] pressing Enter on a focused webkitdirectory file input does not show a chooser if keyup on the element is handled with preventDefault()
+  eventSender is not defined
+Harness: the test ran to completion.

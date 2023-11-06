@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Message ports get GCed after they are no longer referenced.
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+Harness: the test ran to completion.

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] We should use the local font to render the page when the primary remote font is loading
+  assert_equals: expected 250 but got 150
+Harness: the test ran to completion.

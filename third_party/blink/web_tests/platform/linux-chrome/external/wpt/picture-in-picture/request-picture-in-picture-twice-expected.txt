@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] request Picture-in-Picture consumes user gesture
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
+[FAIL] request Picture-in-Picture does not require user gesture if document.pictureInPictureElement is set
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
+Harness: the test ran to completion.

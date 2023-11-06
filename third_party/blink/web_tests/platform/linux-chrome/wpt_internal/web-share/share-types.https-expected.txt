@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] share of types other than string (expect implicitly converted to string)
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share of null/undefined dict values
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

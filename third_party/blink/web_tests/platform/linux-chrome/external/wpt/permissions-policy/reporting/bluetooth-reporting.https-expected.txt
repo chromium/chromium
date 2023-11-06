@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] bluetooth-reporting
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: https://web-platform.test:8444/gen/content/web_test/common/fake_bluetooth_chooser.mojom.m.js"
+Harness: the test ran to completion.

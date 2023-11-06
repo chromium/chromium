@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test for Session Storage with DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning enabled and a cross-origin redirect
+  assert_true: The session storage data must be consistent. expected true got false
+Harness: the test ran to completion.

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] detaching from iframe invalidates reference to the iframe USB object
+  promise_test: Unhandled rejection with value: object "ReferenceError: GCController is not defined"
+Harness: the test ran to completion.

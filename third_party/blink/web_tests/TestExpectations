@@ -1,4 +1,4 @@
-# tags: [ Fuchsia Linux Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS16-simulator]
+# tags: [ Chrome Fuchsia Linux Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS16-simulator]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Skip ]
 
@@ -430,7 +430,9 @@ crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/up
 
 # This test has a bug in it that prevents it from being able to deal with order
 # differences it claims to support.
-crbug.com/1076129 external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Failure Pass ]
+crbug.com/1076129 [ Win ] external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Failure Pass ]
+crbug.com/1076129 [ Mac ] external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Failure Pass ]
+crbug.com/1076129 [ Linux ] external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Failure Pass ]
 
 # Flakily timing out or failing.
 # TODO(ccameron): Investigate this.
@@ -4204,7 +4206,9 @@ crbug.com/979336 [ Mac ] fast/dynamic/anonymous-block-orphaned-lines.html [ Fail
 # Sheriff 2019-07-04
 crbug.com/981267 http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Failure Pass Timeout ]
 # TODO(crbug.com/980588): reenable once WPT is fixed
-crbug.com/980588 external/wpt/screen-orientation/lock-unlock-check.html [ Failure Pass ]
+crbug.com/980588 [ Win ] external/wpt/screen-orientation/lock-unlock-check.html [ Failure Pass ]
+crbug.com/980588 [ Mac ] external/wpt/screen-orientation/lock-unlock-check.html [ Failure Pass ]
+crbug.com/980588 [ Linux ] external/wpt/screen-orientation/lock-unlock-check.html [ Failure Pass ]
 
 # WebRTC tests that fails (by timing out) because `getSynchronizationSources()`
 # on the audio side needs a hardware sink for the returned dictionary entries to
@@ -4478,8 +4482,12 @@ crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-navig
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure Pass ]
 crbug.com/1287036 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html [ Skip Timeout ]
 crbug.com/1287036 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Failure Pass ]
-crbug.com/1265587 external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Failure ]
-crbug.com/1270351 external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
+crbug.com/1265587 [ Win ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Failure ]
+crbug.com/1265587 [ Mac ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Failure ]
+crbug.com/1265587 [ Linux ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Failure ]
+crbug.com/1270351 [ Win ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
+crbug.com/1270351 [ Mac ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
+crbug.com/1270351 [ Linux ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Failure ]
 crbug.com/1159661 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-failure.https.html [ Timeout ]
 crbug.com/1317079 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-sharedworker-failure.https.html [ Timeout ]
@@ -5785,7 +5793,9 @@ crbug.com/1454956 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-canva
 crbug.com/1454956 [ Mac ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 crbug.com/1345886 [ Linux ] plugins/user-gesture.html [ Failure ]
 crbug.com/1464848 [ Mac10.15 ] http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
-crbug.com/1466578 external/wpt/event-timing/event-click-visibilitychange.html [ Failure Pass ]
+crbug.com/1466578 [ Win ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure Pass ]
+crbug.com/1466578 [ Mac ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure Pass ]
+crbug.com/1466578 [ Linux ] external/wpt/event-timing/event-click-visibilitychange.html [ Failure Pass ]
 crbug.com/1446711 [ Mac ] media/controls/playback-speed-menu.html [ Timeout ]
 crbug.com/1446711 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/accessibility-playback-speed-button.html [ Timeout ]
 crbug.com/1426680 [ Mac13-arm64 ] fast/canvas/OffscreenCanvas-copyImage.html [ Timeout ]
@@ -6384,7 +6394,9 @@ http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failu
 # Sheriff 2023-01-23
 crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Failure Pass Timeout ]
 
-external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
+[ Win ] external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
+[ Mac ] external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
+[ Linux ] external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
 
 # Sheriff 2023-01-27
 crbug.com/1289550 fast/block/float/4145535-crash.html [ Failure Pass ]
@@ -6783,7 +6795,9 @@ crbug.com/1459347 [ Fuchsia ] virtual/text-antialias/stroking-decorations.html [
 crbug.com/1459347 [ Fuchsia ] paint/invalidation/shadow-multiple.html [ Failure Pass ]
 
 # Remove when crbug.com/1453780 is fixed
-crbug.com/1453780 external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
+crbug.com/1453780 [ Win ] external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
+crbug.com/1453780 [ Mac ] external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
+crbug.com/1453780 [ Linux ] external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
 
 # Temporarily disable test to land frontend color and margin changes
 crbug.com/1456690 http/tests/devtools/console/console-viewport-control.js [ Failure Pass ]
@@ -7040,6 +7054,369 @@ crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsi
 
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/animations/mask-position-interpolation.html [ Failure ]
 crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-position-valid.html [ Failure ]
+
+# Chrome specific failures
+crbug.com/1499775 [ Chrome ] external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/attribution-reporting/request-format.sub.https.html?method=fetch&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/attribution-reporting/request-format.sub.https.html?method=xhr&eligible={"eventSourceEligible":true,"triggerEligible":false}&expected-eligible=event-source [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/abort.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/fetch-uploads.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/fetch.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/match.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/background-fetch/update-ui.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/compat/webkit-box-rtl-flex.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/content-security-policy/inheritance/blob-inherits-from-meta-http-equiv-with-invalid-characters.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-abort.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-after-abort.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-auto-selected-flag.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-basic.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-client-metadata-not-cached.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-cross-origin-policy.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-domainhint.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-endpoint-redirects.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-error-basic.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-iframe.https.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-loginhint.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-manifest-not-in-list.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-no-login-url.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-nonce-is-optional.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-not-observed-by-service-worker.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-pending-call-rejected.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-returning-account-auto-reauthn.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-revoke.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-store.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/credential-management/fedcm-token-returned-with-http-error.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/floats/float-nowrap-2.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/inline-formatting-context-004.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/inline-formatting-context-005.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/inline-formatting-context-006.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/vertical-align-sub-001.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/linebox/vertical-align-super-001.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/anonymous-table-box-width-001.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/table-anonymous-objects-087.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/table-anonymous-objects-088.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/table-anonymous-objects-089.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/table-anonymous-objects-090.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/table-anonymous-objects-091.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/tables/table-anonymous-objects-092.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/bidi-span-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-decoration-va-length-002.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-transform-bicameral-017.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-transform-bicameral-018.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-transform-bicameral-019.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-transform-bicameral-020.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-transform-bicameral-021.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/CSS2/text/text-transform-bicameral-022.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-blended-with-transform-and-perspective.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-both-parent-and-blended-with-3D-transform.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-canvas-parent.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-canvas-sibling.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-iframe-parent.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-iframe-sibling.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-with-transform-and-preserve-3D.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-color/composited-filters-under-opacity.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-color/filters-under-will-change-opacity.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-contain/contain-layout-ink-overflow-019.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-contain/contain-layout-overflow-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/korean-hangul-formal/counter-korean-hangul-formal.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/korean-hanja-formal/counter-korean-hanja-formal.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/simp-chinese-informal/counter-simp-chinese-informal.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-counter-styles/trad-chinese-informal/counter-trad-chinese-informal.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-before-after-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-before-after-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-before-after-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-button.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-details.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-fieldset.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-shadow-dom-1.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-td-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-display/display-contents-unusual-html-elements-none.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/font-display/font-display-change.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/font-display/font-display-preload.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/font-display/font-display.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/font-variant-emoji-1.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/font-variant-position-04.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/quoted-generic-ignored.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/size-adjust-01.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-fonts/size-adjust-unicode-range-system-fallback.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby-tall.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-rtl.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/initial-letter/initial-letter-float-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-lists/content-property/marker-text-matches-lower-greek.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/clip-path/clip-path-inline-010.html [ Failure ] # pass on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/multicol-fill-auto-block-children-002.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-multicol/multicol-width-ch-001.xht [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/webkit-line-clamp-024.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/webkit-line-clamp-025.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-overflow/webkit-line-clamp-036.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-letter-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-letter-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-letter-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/first-line-with-inline-block.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-cascade-008.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ruby/block-ruby-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-001a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-001b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-color-property-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-position-property-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-position-property-001a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-position-property-001b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-position-property-001c.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-property-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-property-003b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-property-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-property-004a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-style-property-012.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-style-property-012a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-style-property-012b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-style-property-016.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text-decor/text-emphasis-style-property-016a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphenate-limit-chars-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-003.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-005.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-010.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-control.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-inline-010.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-auto-last-word-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-character.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/hyphens/hyphens-punctuation-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/i18n/css3-text-line-break-opclns-201.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/letter-spacing/letter-spacing-bengali-yaphala-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/line-break/line-break-normal-hyphens-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/line-break/line-break-strict-hyphens-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/white-space/pre-wrap-018.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-rtl-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-rtl-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/white-space/white-space-pre-wrap-justify-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/word-break/word-break-break-all-005.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/word-break/word-break-break-all-032.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/word-break/word-break-keep-all-006.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/word-break/word-break-normal-bo-000.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/word-break/word-break-normal-hi-000.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-text/word-break/word-break-normal-lo-000.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-transforms/backface-visibility-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ui/text-overflow-027.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-ui/text-overflow-028.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/css-will-change/will-change-transform-zero-size-child-overflow-visible.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/filter-effects/backdrop-filter-fixed-clip.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/filter-effects/backdrop-filter-isolation.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/filter-effects/backdrop-filter-plus-filter.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/filter-effects/backdrop-filter-reference-filter.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/monolithic-overflow-024-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/monolithic-overflow-025-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/page-margin-001-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/page-margin-002-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/page-margin-003-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/page-size-001-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/page-size-002-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/printing/page-size-006-print.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/dir-style-01a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/dir-style-01b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/invalidation/fullscreen-pseudo-class-in-has.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/invalidation/modal-pseudo-class-in-has.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/css/selectors/modal-pseudo-class.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/dom/events/scrolling/input-text-scroll-event-when-using-arrow-keys.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/event-timing/event-click-visibilitychange.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/eventsource/eventsource-request-cancellation.window.any.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/eventsource/eventsource-request-cancellation.window.any.worker.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/eventsource/request-credentials.window.any.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fetch/stale-while-revalidate/fetch.any.serviceworker.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-non-top.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-options.tentative.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-same-element.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-same.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-screen-size.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-svg-svg.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-timing.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-top.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-twice.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen-two-elements.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/element-request-fullscreen.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/fullscreen-display-contents.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/fullscreen-reordering.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/promises-resolve.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/api/shadowroot-fullscreen-element.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/model/remove-last.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/model/remove-parent.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/model/remove-single.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-css-invalidation.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-css-transition.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-pseudo-class.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-root-block-scroll.html [ Timeout ] # pass on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/fullscreen-root-block-size.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/fullscreen/rendering/ua-style-iframe.html [ Timeout ] # pass on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/canvas/element/manual/filters/tentative/canvas-filter-object-turbulence.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/canvas/element/text/direction-inherit-rtl.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/canvas/element/text/direction-rtl.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/capability-delegation/delegate-fullscreen-request-popup-cross-origin.https.sub.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/capability-delegation/delegate-fullscreen-request-popup-same-origin.https.tentative.html [ Timeout ] # pass on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/html/capability-delegation/delegate-fullscreen-request-subframe-cross-origin.https.sub.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/capability-delegation/delegate-fullscreen-request-subframe-same-origin.https.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-embedder-policy/reporting-to-document-reporting-endpoint.https.window.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Failure ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-other_coop-ro_cross-origin.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-opener_coop-ro_cross-origin.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro_cross-origin.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-blur.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-top.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/reporting/document-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?5-6 [ Crash Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?7-8 [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?7-8 [ Crash Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002c.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006c.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009a.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009b.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009c.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-004.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-005.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-overflow.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/input-image-inline-alt.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/embedded-content/the-img-element/image-compositing-change.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/forms/the-selectlist-element/selectlist-explicit-size.tentative.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/popovers/popover-top-layer-combinations.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/semantics/popovers/popover-top-layer-interactions.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/activation-trigger-keyboard-enter.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/activation-trigger-mouse-left.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/activation-trigger-mouse-right.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?mouse [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?pen [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/activation-trigger-pointerevent.html?touch [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/user-activation/propagation-same-and-cross-origin.sub.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/html/webappapis/scripting/event-loops/fully_active_document.window.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/infrastructure/assumptions/ahem.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/long-animation-frame/tentative/loaf-first-ui-event.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/mathml/relations/css-styling/mozilla-393760-2.xml [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/mathml/relations/html5-tree/tabindex-002.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/notifications/event-onclose.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/notifications/event-onshow.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/notifications/getnotifications-across-processes.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/page-visibility/visibility-state-entry.tentative.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/performance-timeline/back-forward-cache-restoration.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/permissions-policy/reporting/fullscreen-report-only.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/permissions-policy/reporting/report-only-and-enforce.https.sub.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/permissions-policy/reporting/report-only-single-endpoint.https.sub.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/permissions-policy/reporting/report-to-multiple-endpoints.https.sub.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/permissions-policy/reporting/report-to-single-endpoint.https.sub.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/event-before-promise.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/fullscreen-interactions.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/lock-basic.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/lock-sandboxed-iframe.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/lock-unlock-check.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/nested-documents.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/onchange-event.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/unlock.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/screen-wake-lock/chrome-bug-1348019.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-invalid_integrity_header.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-mi_error.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-ok.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-parse_error.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error-downgraded.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ] # fail on wpt.fyi
+crbug.com/1499775 [ Chrome ] external/wpt/soft-navigation-heuristics/keydown.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/soft-navigation-heuristics/keypress.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/svg/text/reftests/lang-attribute.svg [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/svg/text/reftests/xml-lang-attribute.svg [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] external/wpt/webrtc-stats/hardware-capability-stats.https.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/websockets/send-many-64K-messages-with-backpressure.any.sharedworker.html?wpt_flags=h2 [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/websockets/stream/tentative/backpressure-send.any.sharedworker.html?wpt_flags=h2 [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/webxr/dom-overlay/ar_dom_overlay_hit_test.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] external/wpt/webxr/dom-overlay/nested_fullscreen.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/credential-management/fedcm-mismatch-dialog.tentative.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/credential-management/fedcm-reauth-with-signin-status.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-borders/subpixel-border-width-when-zoom-changes.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/font-glyph-synthesis-mac.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/font-size-ex-ch-with-zoom.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-cursive.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-fantasy.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-math.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-monospace.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-sans-serif.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-serif.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/generic-families/font-family-standard.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-fonts/size-adjust-ex-zoom.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-lists/before-after-selectors-on-code-element.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-masking/mask-clip-text-not-supported.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-overflow/scrollbar-gutter-background-paint.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-overflow/scrollbar-gutter-content-overflowing.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-pseudo/grammar-error-color-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-002.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/display-lock/css-content-visibility/content-visibility-event-sender-001.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/hid/requestDevice/sandboxed_iframe.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/infrastructure/printing-reftest-pages.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/infrastructure/printing-set-size.html [ Failure ]  # Reftest image failure
+crbug.com/1499775 [ Chrome ] wpt_internal/prerender/restriction-speech-recognition.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/prerender/restriction-storage-estimate.https.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/prerender/restriction-web-audio.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/prerender/session-storage.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-controller-close-connection.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-controller-connection-closed-by-receiver.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-controller-terminate-connection.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-receiver-terminate-connection.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-reconnect.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-start-error.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentation-start.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/presentation/presentationconnectionavailableevent-ctor-mock.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/soft-navigation-heuristics/browser-initiated-popstate.tentative.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Skip Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/storage-access-api/storage-access-origin-trial.sub.https.window.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-receive.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/loopback-with-timestamp.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webmidi/requestmidiaccess-upgrade.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/websocket-cookies/third-party-cookie-blocked.https.html [ Failure ]  # Flaky output
+crbug.com/1499775 [ Chrome ] wpt_internal/webusb/usbDevice-iframe.https.html [ Timeout ]
+crbug.com/1499775 [ Chrome ] wpt_internal/webxr/ar/iframe-oopif.sub.https.html [ Timeout ]
 
 # Gardener 2023-10-17
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Page with <embed type=application/javascript src=/resources/test-only-api.js>
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] Page with <object type=application/javascript data=/resources/test-only-api.js>
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

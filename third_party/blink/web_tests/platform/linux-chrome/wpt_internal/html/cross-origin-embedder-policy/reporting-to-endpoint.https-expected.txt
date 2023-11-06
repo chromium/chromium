@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+[FAIL] subresource CORP
+  assert_unreached: A report whose blockedURL is https://www1.web-platform.test:8444/common/text-plain.txt and url is https://web-platform.test:8444/wpt_internal/html/cross-origin-embedder-policy/resources/reporting-empty-frame.html?pipe=header(cross-origin-embedder-policy,require-corp;report-to=%22endpoint%22)|header(cross-origin-embedder-policy-report-only,require-corp;report-to=%22report-only-endpoint%22) is not found. Reached unreachable code
+[FAIL] navigation CORP
+  assert_unreached: A report whose blockedURL is https://www1.web-platform.test:8444/common/blank.html and url is https://web-platform.test:8444/wpt_internal/html/cross-origin-embedder-policy/resources/reporting-empty-frame.html?pipe=header(cross-origin-embedder-policy,require-corp;report-to=%22endpoint%22)|header(cross-origin-embedder-policy-report-only,require-corp;report-to=%22report-only-endpoint%22) is not found. Reached unreachable code
+[FAIL] COEP violation on nested frame navigation
+  assert_unreached: A report whose blockedURL is https://web-platform.test:8444/common/blank.html and url is https://web-platform.test:8444/wpt_internal/html/cross-origin-embedder-policy/resources/reporting-empty-frame.html?pipe=header(cross-origin-embedder-policy,require-corp;report-to=%22endpoint%22)|header(cross-origin-embedder-policy-report-only,require-corp;report-to=%22report-only-endpoint%22) is not found. Reached unreachable code
+[FAIL] Two COEP headers, split inside report-to value
+  assert_unreached: A report whose blockedURL is https://web-platform.test:8444/common/blank.html and url is https://web-platform.test:8444/wpt_internal/html/cross-origin-embedder-policy/resources/reporting-empty-frame-multiple-headers.html.asis is not found. Reached unreachable code
+[FAIL] Shared worker fetch
+  assert_unreached: A report whose blockedURL is https://www1.web-platform.test:8444/common/blank.html and url is https://web-platform.test:8444/wpt_internal/html/cross-origin-embedder-policy/resources/shared-worker.js?pipe=header(cross-origin-embedder-policy,require-corp;report-to=%22endpoint%22)|header(cross-origin-embedder-policy-report-only,require-corp;report-to=%22report-only-endpoint%22) is not found. Reached unreachable code
+Harness: the test ran to completion.

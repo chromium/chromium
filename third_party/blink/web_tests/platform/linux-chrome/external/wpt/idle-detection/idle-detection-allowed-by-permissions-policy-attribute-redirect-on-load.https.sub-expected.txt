@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: Tried to run in a non-testharness window without a call to set_test_context
+[NOTRUN] Attribute allow="idle-detection" in top-level frame allows same-origin relocation.
+[NOTRUN] Attribute allow="idle-detection" in top-level frame allows workers in same-origin relocation.
+[NOTRUN] Attribute allow="idle-detection" in top-level frame disallows cross-origin relocation.
+[NOTRUN] Attribute allow="idle-detection" in top-level frame disallows workers in cross-origin relocation.
+Harness: the test ran to completion.

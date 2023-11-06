@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] RequestDevice from a sandboxed iframe is valid.
+  assert_equals: expected (object) object "[object Object]" but got (string) "FAIL: NotFoundError: Failed to execute 'requestDevice' on 'USB': No device selected."
+Harness: the test ran to completion.

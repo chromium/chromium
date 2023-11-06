@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Losing focus must cause readings to be suspended
+  assert_implements: window.internals is required undefined
+Harness: the test ran to completion.

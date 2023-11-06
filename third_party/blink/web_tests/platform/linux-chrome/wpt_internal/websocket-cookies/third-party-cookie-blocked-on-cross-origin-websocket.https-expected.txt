@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test that first-party cookies are blocked for WebSockets conforming the requirements of the SameSite attribute.
+  assert_equals: expected "DONE: (none)" but got "DONE: samesite-none=value"
+Harness: the test ran to completion.

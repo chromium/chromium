@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test for Picture-In-Picture and Shadow DOM
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
+Harness: the test ran to completion.

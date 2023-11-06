@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+[FAIL] TaskSignals can be GCed when they have no references or event listeners
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+[FAIL] A TaskSignal with a prioritychange listener can be GCed when its priority source has been GCed
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+[FAIL] TaskSignals with prioritychange listeners are not GCed if their priority source is alive
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+[FAIL] TaskSignals with prioritychange listeners are not GCed after their abort source is GCed if their priority source is alive
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+[FAIL] TaskSignals with prioritychange listeners are not GCed after they are aborted if their priority source is alive
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+[FAIL] Composite TaskSignals with pending tasks are not GCed if their priority source is alive
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+Harness: the test ran to completion.

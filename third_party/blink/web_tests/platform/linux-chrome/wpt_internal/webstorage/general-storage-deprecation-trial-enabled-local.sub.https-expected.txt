@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test for Local Storage with DisableThirdPartySessionStoragePartitioning enabled
+  assert_true: IDs pulled from same-origin un-partitioned frames shouldn't be different. expected true got false
+Harness: the test ran to completion.

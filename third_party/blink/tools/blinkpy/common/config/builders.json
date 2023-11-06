@@ -55,6 +55,15 @@
         "is_try_builder": true,
         "is_cq_builder": true
     },
+    "linux-wpt-fyi-rel": {
+        "main": "chromium.fyi",
+        "port_name": "chrome",
+        "specifiers": ["Chrome", "Release"],
+        "is_try_builder": true,
+        "steps": {
+            "wpt_tests_suite (with patch)": {}
+        }
+    },
     "linux-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "linux",

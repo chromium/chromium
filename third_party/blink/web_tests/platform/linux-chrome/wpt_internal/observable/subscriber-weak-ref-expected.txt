@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Subscriber is not arbitrarily kept alive until the subscription ends, but can be garbage collected if it is weakly owned throughout the subscription
+  promise_test: Unhandled rejection with value: object "ReferenceError: gc is not defined"
+Harness: the test ran to completion.

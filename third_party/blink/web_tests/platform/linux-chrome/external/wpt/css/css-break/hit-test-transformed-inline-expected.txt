@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] First x
+  assert_equals: expected "span" but got "firstchild"
+[FAIL] First child
+  assert_equals: expected "firstchild" but got "mc"
+[FAIL] Second child
+  assert_equals: expected "secondchild" but got "span"
+[FAIL] Last x
+  assert_equals: expected "span" but got "mc"
+Harness: the test ran to completion.

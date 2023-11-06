@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Eligibility (in-flight fetch): CORS succeeded when in BFCache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] Eligibility (in-flight fetch): CORS failed when in BFCache
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

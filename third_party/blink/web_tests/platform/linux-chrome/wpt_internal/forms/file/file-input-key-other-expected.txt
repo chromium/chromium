@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] pressing a key other than Enter or Space with focus on a file input does not launch a file chooser
+  eventSender is not defined
+Harness: the test ran to completion.
