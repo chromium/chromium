@@ -89,9 +89,12 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
   self.viewController.parentViewControllerHeight =
       self.baseViewController.view.frame.size.height;
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -171,6 +174,11 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   // Send a notification to fill the credit card related fields.
   [self.mediator didSelectCreditCard:backendIdentifier];
   [self.mediator disconnect];
+}
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.viewController.image);
 }
 
 @end

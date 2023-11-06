@@ -101,9 +101,12 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
     return;
   }
 
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -148,6 +151,13 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
         showPasswordDetailsForCredential:credential.value()];
   }
   // TODO(crbug.com/1422344): Add metric for when the credential is nil.
+}
+
+#pragma mark - Private
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.viewController.aboveTitleView);
 }
 
 @end

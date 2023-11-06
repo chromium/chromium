@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -89,6 +90,7 @@ CGFloat const kSpacingAfterTitle = 4;
 - (void)viewDidLoad {
   _tableViewIsMinimized = YES;
 
+  self.view.accessibilityViewIsModal = YES;
   self.aboveTitleView = [self setUpTitleView];
   self.customSpacing = kSpacingAfterTitle;
   self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeTitle;
@@ -152,6 +154,12 @@ CGFloat const kSpacingAfterTitle = 4;
 #endif
 
   [self updateHeightConstraints];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.aboveTitleView.accessibilityLabel);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -491,6 +499,12 @@ CGFloat const kSpacingAfterTitle = 4;
   cell.URLLabel.text = _domain;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
+  cell.accessibilityLabel =
+      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+                              base::SysNSStringToUTF16(cell.titleLabel.text),
+                              base::SysNSStringToUTF16(_domain),
+                              base::NumberToString16(indexPath.row + 1),
+                              base::NumberToString16(_suggestions.count));
 
   cell.userInteractionEnabled = YES;
 

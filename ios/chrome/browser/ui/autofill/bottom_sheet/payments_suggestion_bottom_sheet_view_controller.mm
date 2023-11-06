@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
@@ -108,6 +109,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // minimized bottom sheet.
   _tableViewIsMinimized = _creditCardData.count > 2;
 
+  self.view.accessibilityViewIsModal = YES;
   self.image = [self titleImage];
   self.imageViewAccessibilityLabel = [NSString
       stringWithFormat:@"%@. %@",
@@ -144,6 +146,12 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   [self selectFirstRow];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.imageViewAccessibilityLabel);
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
@@ -169,6 +177,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
   if (self.disableBottomSheetOnExit) {
     [self.delegate disableBottomSheet];
   }
@@ -331,7 +340,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 // Returns an accessible card name at a given row in the table view.
 - (NSString*)accessibleCardNameAtRow:(NSInteger)row {
-  return [_creditCardData[row] accessibleCardName];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+      base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"",
+      base::NumberToString16(row + 1),
+      base::NumberToString16(_creditCardData.count));
 }
 
 // Creates the payments bottom sheet's table view.
@@ -537,6 +550,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
+  cell.accessibilityIdentifier = cell.textLabel.text;
   [cell setDetailText:[self descriptionAtRow:indexPath.row]];
   [cell setIconImage:[self iconAtRow:indexPath.row]
             tintColor:nil
