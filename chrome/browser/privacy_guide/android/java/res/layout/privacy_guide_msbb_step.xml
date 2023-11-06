@@ -28,14 +28,12 @@ found in the LICENSE file.
             android:src="@drawable/privacy_guide_msbb_image"
             android:importantForAccessibility="no" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
+        <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
             android:id="@+id/msbb_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/all_content_marginHorizontal"
-            android:showText="false"
             android:text="@string/url_keyed_anonymized_data_title"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:foreground="?attr/selectableItemBackground"
             android:background="@null" />
 

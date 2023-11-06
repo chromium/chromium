@@ -9,9 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.widget.SwitchCompat;
-
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /**
@@ -26,7 +25,8 @@ public class SearchSuggestionsFragment extends PrivacyGuideBasePage {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        SwitchCompat searchSuggestionsSwitch = view.findViewById(R.id.search_suggestions_switch);
+        MaterialSwitchWithText searchSuggestionsSwitch =
+                view.findViewById(R.id.search_suggestions_switch);
         searchSuggestionsSwitch.setChecked(
                 PrivacyGuideUtils.isSearchSuggestionsEnabled(getProfile()));
 

@@ -12,8 +12,6 @@ found in the LICENSE file.
     <!-- Control colors for toggles, checkboxes, radio buttons, list item highlight, and accent.
          Note that these should NOT be used for icon tint. -->
     <color name="control_highlight_color">@color/default_control_color_highlight_dark</color>
-    <color name="switch_track_disabled_color_baseline">@color/switch_track_disabled_color_baseline_light</color>
-    <color name="switch_thumb_disabled_color_baseline">@color/switch_thumb_disabled_color_baseline_dark</color>
 
     <!-- Empty states colors -->
     <color name="empty_state_icon_color">@color/material_primary_80</color>

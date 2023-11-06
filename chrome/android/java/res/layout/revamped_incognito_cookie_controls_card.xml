@@ -26,14 +26,14 @@ found in the LICENSE file.
         android:layout_alignParentStart="true"
         app:tint="@color/default_icon_color_light" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/revamped_cookie_controls_card_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:theme="@style/SwitchMaterialDark"
         android:layout_alignParentEnd="true"
         android:contentDescription="@string/revamped_incognito_ntp_otr_third_party_cookie"
+        style="@style/Widget.BrowserUI.Switch.Incognito"
         app:showText="false" />
 
     <org.chromium.ui.widget.TextViewWithLeading

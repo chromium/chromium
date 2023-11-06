@@ -12,9 +12,9 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -39,7 +39,7 @@ public class HistorySyncFragment
         mSyncService = SyncServiceFactory.getForProfile(getProfile());
         mInitialKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
 
-        SwitchCompat historySyncSwitch = view.findViewById(R.id.history_sync_switch);
+        MaterialSwitchWithText historySyncSwitch = view.findViewById(R.id.history_sync_switch);
         historySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled(getProfile()));
 
         historySyncSwitch.setOnCheckedChangeListener(this);

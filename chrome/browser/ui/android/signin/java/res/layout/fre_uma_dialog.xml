@@ -32,7 +32,7 @@ found in the LICENSE file.
                 android:text="@string/signin_fre_uma_dialog_title"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
                 android:id="@+id/fre_uma_dialog_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
