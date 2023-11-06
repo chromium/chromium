@@ -1090,21 +1090,6 @@
             ]
         }
     ],
-    "AudioServiceSandboxLinux": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "AudioProcessSandboxLinux",
-                    "enable_features": [
-                        "AudioServiceSandbox"
-                    ]
-                }
-            ]
-        }
-    ],
     "AugmentExistingImageLabels": [
         {
             "platforms": [
