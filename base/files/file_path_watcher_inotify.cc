@@ -761,12 +761,22 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
        current = enumerator.Next()) {
     DCHECK(enumerator.GetInfo().IsDirectory());
 
+    // Check `recursive_watches_by_path_` as a heuristic to determine if this
+    // needs to be an add or update operation.
     if (!Contains(recursive_watches_by_path_, current)) {
-      // Add new watches.
+      // Try to add new watches.
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded)
         return false;
+
+      // The `watch` returned by inotify already exists. This is actually an
+      // update operation.
+      auto it = recursive_paths_by_watch_.find(watch);
+      if (it != recursive_paths_by_watch_.end()) {
+        recursive_watches_by_path_.erase(it->second);
+        recursive_paths_by_watch_.erase(it);
+      }
       TrackWatchForRecursion(watch, current);
     } else {
       // Update existing watches.
