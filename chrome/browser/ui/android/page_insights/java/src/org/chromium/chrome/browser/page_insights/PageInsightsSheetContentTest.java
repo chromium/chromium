@@ -29,12 +29,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -80,6 +83,10 @@ public class PageInsightsSheetContentTest {
         mBackPressHandlerCalled = false;
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         TestThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
+
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        FeatureList.setTestValues(testValues);
 
         mScrimCoordinator = new ScrimCoordinator(
                 sTestRule.getActivity(), new ScrimCoordinator.SystemUiScrimDelegate() {
@@ -219,7 +226,7 @@ public class PageInsightsSheetContentTest {
                                     .findViewById(R.id.page_insights_feed_content);
                     assertEquals(testView, feedView.getChildAt(0));
                     int expectedHeight =
-                            (int) (mFullHeight * PageInsightsSheetContent.FULL_HEIGHT_RATIO)
+                            (int) (mFullHeight * PageInsightsSheetContent.DEFAULT_FULL_HEIGHT_RATIO)
                                     - sTestRule
                                             .getActivity()
                                             .getResources()
@@ -307,7 +314,7 @@ public class PageInsightsSheetContentTest {
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
-                            PageInsightsSheetContent.PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE,
+                            PageInsightsSheetContent.DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO,
                             ratio,
                             ASSERTION_DELTA);
                     assertEquals(
@@ -315,7 +322,7 @@ public class PageInsightsSheetContentTest {
                             getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
 
                     int expectedFullContentHeight =
-                            (int) (mFullHeight * PageInsightsSheetContent.FULL_HEIGHT_RATIO)
+                            (int) (mFullHeight * PageInsightsSheetContent.DEFAULT_FULL_HEIGHT_RATIO)
                                     - sTestRule
                                             .getActivity()
                                             .getResources()
@@ -344,7 +351,7 @@ public class PageInsightsSheetContentTest {
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
-                            PageInsightsSheetContent.PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE,
+                            PageInsightsSheetContent.DEFAULT_PEEK_HEIGHT_RATIO,
                             ratio,
                             ASSERTION_DELTA);
                     assertEquals(
@@ -391,7 +398,7 @@ public class PageInsightsSheetContentTest {
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(
-                            PageInsightsSheetContent.PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE,
+                            PageInsightsSheetContent.DEFAULT_PEEK_HEIGHT_RATIO,
                             ratio,
                             ASSERTION_DELTA);
                     assertEquals(
@@ -641,8 +648,7 @@ public class PageInsightsSheetContentTest {
                     assertEquals(
                             (int)
                                     (mFullHeight
-                                            * PageInsightsSheetContent
-                                                    .PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE),
+                                            * PageInsightsSheetContent.DEFAULT_PEEK_HEIGHT_RATIO),
                             mSheetContent.getPeekHeight());
                 });
     }
