@@ -270,10 +270,6 @@ bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
 
-BASE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch,
-             "BlockSimultaneousCellSelectionKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSSaveToDrive,
              "IOSSaveToDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);

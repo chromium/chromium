@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
@@ -271,18 +270,16 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
       base::apple::ObjCCastStrict<TableViewCell>(cell);
   [item configureCell:tableViewCell withStyler:self.styler];
 
-  if (base::FeatureList::IsEnabled(kBlockSimultaneousCellSelectionKillSwitch)) {
-    // Enabling `exclusiveTouch` for all cells to prevent simultanoeus cell
-    // selection. Not blocking simultaneous cell selection can lead to starting
-    // one or more of a coordinator's child coordinators multiple times, which
-    // can result in multiple view controllers being presented back-to-back. If
-    // there's a need for `exclusiveTouch` to be disabled for some cells,
-    // `exclusiveTouch` can be overridden for those cells in the
-    // LegacyChromeTableViewController subclass that implments them.
-    // TODO(crbug.com/1471527): Make Chrome Coordinators robust against the
-    // launch of multiple child coordinators.
-    cell.exclusiveTouch = YES;
-  }
+  // Enabling `exclusiveTouch` for all cells to prevent simultanoeus cell
+  // selection. Not blocking simultaneous cell selection can lead to starting
+  // one or more of a coordinator's child coordinators multiple times, which
+  // can result in multiple view controllers being presented back-to-back. If
+  // there's a need for `exclusiveTouch` to be disabled for some cells,
+  // `exclusiveTouch` can be overridden for those cells in the
+  // LegacyChromeTableViewController subclass that implments them.
+  // TODO(crbug.com/1471527): Make Chrome Coordinators robust against the
+  // launch of multiple child coordinators.
+  cell.exclusiveTouch = YES;
 
   return cell;
 }
