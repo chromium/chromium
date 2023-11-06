@@ -139,7 +139,7 @@ class ClipboardDocUrlBrowserTestP : public ClipboardHostImplBrowserTest,
  public:
   ClipboardDocUrlBrowserTestP() {
     scoped_feature_list_.InitWithFeatureState(
-        blink::features::kClipboardUnsanitizedContent, GetParam());
+        blink::features::kClipboardWellFormedHtmlSanitizationWrite, GetParam());
   }
 
  private:
