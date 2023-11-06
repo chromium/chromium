@@ -1833,7 +1833,9 @@ AutofillTable::GetAutofillProfileFromLegacyTable(
   }
 
   auto profile = std::make_unique<AutofillProfile>(
-      guid, AutofillProfile::Source::kLocalOrSyncable);
+      guid, AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+
   DCHECK(base::Uuid::ParseCaseInsensitive(profile->guid()).is_valid());
 
   // Get associated name info using guid.

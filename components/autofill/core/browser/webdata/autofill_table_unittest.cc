@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/webdata/autofill_table.h"
-#include "components/autofill/core/browser/field_types.h"
 
 #include <map>
 #include <memory>
@@ -24,12 +23,14 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
@@ -212,7 +213,7 @@ class AutofillTableProfileTest
 
   // Creates an `AutofillProfile` with `profile_source()` as its source.
   AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(profile_source());
+    return AutofillProfile(profile_source(), AddressCountryCode("ES"));
   }
 
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
@@ -1010,8 +1011,10 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 // Not part of the `AutofillTableProfileTest` fixture, as it doesn't benefit
 // from parameterization on the `profile_source()`.
 TEST_F(AutofillTableTest, GetAutofillProfiles) {
-  AutofillProfile local_profile(AutofillProfile::Source::kLocalOrSyncable);
-  AutofillProfile account_profile(AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile(AutofillProfile::Source::kLocalOrSyncable,
+                                AddressCountryCode("ES"));
+  AutofillProfile account_profile(AutofillProfile::Source::kAccount,
+                                  AddressCountryCode("ES"));
   EXPECT_TRUE(table_->AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_->AddAutofillProfile(account_profile));
 
@@ -1570,7 +1573,7 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Los Angeles");
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"ES");
   profile.SetRawInfo(ADDRESS_HOME_OVERFLOW, u"Andar 1, Apto. 12");
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark");
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
@@ -2318,7 +2321,8 @@ TEST_F(AutofillTableTest, AddUpdateServerCardMetadata) {
 }
 
 TEST_F(AutofillTableTest, UpdateServerAddressMetadataDoesNotChangeData) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123");
+  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
+                      AddressCountryCode("ES"));
   std::vector<AutofillProfile> inputs;
   inputs.push_back(one);
   table_->SetServerProfiles(inputs);
@@ -2522,7 +2526,8 @@ TEST_F(AutofillTableTest, SetServerCardsData_ExistingMetadata) {
 }
 
 TEST_F(AutofillTableTest, SetServerAddressesData) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123");
+  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
+                      AddressCountryCode("ES"));
   std::vector<AutofillProfile> inputs;
   inputs.push_back(one);
   table_->SetServerAddressesData(inputs);
@@ -2782,7 +2787,8 @@ TEST_F(AutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress) {
 }
 
 TEST_F(AutofillTableTest, SetServerProfile) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123");
+  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
+                      AddressCountryCode("ES"));
   std::vector<AutofillProfile> inputs;
   inputs.push_back(one);
   table_->SetServerProfiles(inputs);
@@ -2795,7 +2801,8 @@ TEST_F(AutofillTableTest, SetServerProfile) {
   outputs.clear();
 
   // Set a different profile.
-  AutofillProfile two(AutofillProfile::SERVER_PROFILE, "b456");
+  AutofillProfile two(AutofillProfile::SERVER_PROFILE, "b456",
+                      AddressCountryCode("ES"));
   inputs[0] = two;
   table_->SetServerProfiles(inputs);
 
@@ -2808,7 +2815,8 @@ TEST_F(AutofillTableTest, SetServerProfile) {
 }
 
 TEST_F(AutofillTableTest, SetServerProfileUpdateUsageStats) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123");
+  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
+                      AddressCountryCode("ES"));
   std::vector<AutofillProfile> inputs;
   inputs.push_back(one);
   table_->SetServerProfiles(inputs);
