@@ -372,6 +372,7 @@ source_set("crosapi") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/printing/browser",
+    "//components/search_engines",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/session_manager/core",
     "//components/ukm:ukm",

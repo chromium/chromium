@@ -28,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -249,7 +250,11 @@ TemplateURLService::TemplateURLService(
     std::unique_ptr<SearchTermsData> search_terms_data,
     const scoped_refptr<KeywordWebDataService>& web_data_service,
     std::unique_ptr<TemplateURLServiceClient> client,
-    const base::RepeatingClosure& dsp_change_callback)
+    const base::RepeatingClosure& dsp_change_callback
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    , bool for_lacros_main_profile
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    )
     : prefs_(prefs),
       search_terms_data_(std::move(search_terms_data)),
       web_data_service_(web_data_service),
@@ -258,7 +263,11 @@ TemplateURLService::TemplateURLService(
       default_search_manager_(
           prefs_,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
-                              base::Unretained(this))),
+                              base::Unretained(this))
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          , for_lacros_main_profile
+#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
+          ),
       enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs)) {
   DCHECK(search_terms_data_);
   Init(nullptr, 0);
@@ -269,7 +278,11 @@ TemplateURLService::TemplateURLService(const Initializer* initializers,
     : default_search_manager_(
           prefs_,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
-                              base::Unretained(this))),
+                              base::Unretained(this))
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          , false
+#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
+          ),
       enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs_)) {
   Init(initializers, count);
 }

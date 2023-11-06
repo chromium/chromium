@@ -75,7 +75,7 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
       base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent), rlz_lib::CHROME,
       rlz::RLZTracker::ChromeOmnibox(), rlz_lib::SET_TO_GOOGLE);
 #endif
-  Profile* profile = static_cast<Profile*>(context);
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
       profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
@@ -84,7 +84,11 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
           new ChromeTemplateURLServiceClient(
               HistoryServiceFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS))),
-      dsp_change_callback);
+      dsp_change_callback
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      , profile->IsMainProfile()
+#endif  // BUIDFLAG(IS_CHROMEOS_LACROS)
+  );
 }
 
 TemplateURLServiceFactory::TemplateURLServiceFactory()

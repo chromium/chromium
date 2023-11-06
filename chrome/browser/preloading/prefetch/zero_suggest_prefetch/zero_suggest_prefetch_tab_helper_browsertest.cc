@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -53,7 +54,11 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
     auto template_url_service = std::make_unique<TemplateURLService>(
         /*prefs=*/nullptr, std::make_unique<SearchTermsData>(),
         /*web_data_service=*/nullptr,
-        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
+        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        , /*for_lacros_main_profile=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
 
     auto client_ = std::make_unique<MockAutocompleteProviderClient>();
     client_->set_template_url_service(std::move(template_url_service));
